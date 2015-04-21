@@ -73,7 +73,6 @@ module.exports = function quote(tokenizer, openingToken, state, out) {
         token = tokenizer.next();
     }
 
-    debugger;
     if (innerToken.length === 0) {
         E.throwError(quoteE.empty, state);
     }
