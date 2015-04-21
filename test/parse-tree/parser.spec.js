@@ -18,6 +18,6 @@ it('should parse a string with a range', function() {
 });
 it('should parse a string with a set of tokens', function() {
     var out = parser('one["test", \'test2\'].oneMore');
-    testRunner.compare(['one', ['test', 'test2'], 'oneMore'], out);
+    expect(out).to.deep.equal(['one', ['test', 'test2'], 'oneMore']);
 });
 

@@ -2,6 +2,7 @@ var TokenTypes = require('./../TokenTypes');
 var E = require('./../exceptions');
 var idxE = E.indexer;
 var range = require('./range');
+var quote = require('./quote');
 
 /**
  * The indexer is all the logic that happens in between
@@ -9,8 +10,8 @@ var range = require('./range');
  */
 module.exports = function indexer(tokenizer, openingToken, state, out) {
     var token = tokenizer.next();
-    var first = true;
     var done = false;
+    var allowedMaxLength = 1;
 
     // State variables
     state.indexer = [];
@@ -19,6 +20,16 @@ module.exports = function indexer(tokenizer, openingToken, state, out) {
 
         // continue to build the parse string.
         state.parseString += token.token;
+        switch (token.type) {
+            case TokenTypes.token:
+            case TokenTypes.quote:
+
+                // ensures that token adders are properly delimited.
+                if (state.indexer.length === allowedMaxLength) {
+                    E.throwError(idxE.requiresComma, state);
+                }
+                break;
+        }
 
         switch (token.type) {
             case TokenTypes.token:
@@ -31,7 +42,7 @@ module.exports = function indexer(tokenizer, openingToken, state, out) {
 
             // dotSeparators at the top level have no meaning
             case TokenTypes.dotSeparator:
-                if (first) {
+                if (!state.indexer.length) {
                     E.throwError(idxE.leadingDot, state);
                 }
                 range(tokenizer, token, state, out);
@@ -46,9 +57,19 @@ module.exports = function indexer(tokenizer, openingToken, state, out) {
                 break;
 
 
+            // The quotes require their own tree due to what can be in it.
+            case TokenTypes.quote:
+                quote(tokenizer, token, state, out);
+                break;
+
+
             // Its time to decend the parse tree.
             case TokenTypes.openingBracket:
                 E.throwError(idxE.nested, state);
+                break;
+
+            case TokenTypes.commaSeparator:
+                ++allowedMaxLength;
                 break;
 
             default:
@@ -60,13 +81,11 @@ module.exports = function indexer(tokenizer, openingToken, state, out) {
             break;
         }
 
-        first = false;
-
         // Keep cycling through the tokenizer.
         token = tokenizer.next();
     }
 
-    if (first) {
+    if (state.indexer.length === 0) {
         E.throwError(idxE.empty, state);
     }
 
@@ -74,6 +93,7 @@ module.exports = function indexer(tokenizer, openingToken, state, out) {
     if (state.indexer.length === 1) {
         state.indexer = state.indexer[0];
     }
+
     out[out.length] = state.indexer;
 
     // Clean state.

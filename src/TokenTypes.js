@@ -6,6 +6,7 @@ var TokenTypes = {
     closingBracket: ']',
     openingBrace: '{',
     closingBrace: '}',
+    escape: '\\',
     space: ' ',
     quote: 'quote',
     unknown: 'unknown'

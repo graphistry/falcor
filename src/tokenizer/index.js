@@ -5,11 +5,12 @@ var OPENING_BRACKET = '[';
 var CLOSING_BRACKET = ']';
 var OPENING_BRACE = '{';
 var CLOSING_BRACE = '}';
+var ESCAPE = '\\';
 var DOUBLE_OUOTES = '"';
 var SINGE_OUOTES = "'";
 var SPACE = " ";
-var SPECIAL_CHARACTERS = '\'"[]., ';
-var EXT_SPECIAL_CHARACTERS = '{}\'"[]., ';
+var SPECIAL_CHARACTERS = '\\\'"[]., ';
+var EXT_SPECIAL_CHARACTERS = '\\{}\'"[]., ';
 
 var Tokenizer = module.exports = function(string, ext) {
     this._string = string;
@@ -114,6 +115,9 @@ function getNext(string, idx, ext) {
             case DOUBLE_OUOTES:
             case SINGE_OUOTES:
                 type = TokenTypes.quote;
+                break;
+            case ESCAPE:
+                type = TokenTypes.escape;
                 break;
             default:
                 type = TokenTypes.unknown;
