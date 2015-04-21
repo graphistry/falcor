@@ -1,0 +1,28 @@
+{
+  "name": "falcor-path-syntax",
+  "version": "0.1.0",
+  "description": "",
+  "main": "src/index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mocha test/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/Netflix/falcor-path-syntax.git"
+  },
+  "keywords": [
+    "falcor"
+  ],
+  "author": "Michael Paulson <michael.b.paulson@gmail.com>",
+  "license": "ALV2",
+  "bugs": {
+    "url": "https://github.com/Netflix/falcor-path-syntax/issues"
+  },
+  "homepage": "https://github.com/Netflix/falcor-path-syntax",
+  "devDependencies": {
+    "chai": "~2.2.0"
+  }
+}
