@@ -24,4 +24,8 @@ it('should treat 07 as 7', function() {
     var out = parser('one[07, 0001].oneMore');
     expect(out).to.deep.equal(['one', [7, 1], 'oneMore']);
 });
+it('inner quoted', function() {
+    var out = parser('one[07, 0001].oneMore');
+    expect(out).to.deep.equal(['one', [7, 1], 'oneMore']);
+});
 
