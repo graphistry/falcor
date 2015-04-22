@@ -20,7 +20,7 @@ parser.fromPathsOrPathValues = function(paths, ext) {
 
         // is the path a path value with a string value.
         else if (typeof paths[i].path === 'string') {
-            out[i].path = pathSyntax(paths[i].path, ext);
+            out[i].path = parser(paths[i].path, ext);
         }
 
         // just copy it over.
