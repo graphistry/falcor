@@ -1,9 +1,10 @@
 var Tokenizer = require('./tokenizer');
 var head = require('./parse-tree/head');
-
-module.exports = function parser(string, extendedRules) {
+var parser = function parser(string, extendedRules) {
     return head(new Tokenizer(string, extendedRules));
 };
+
+module.exports = parser;
 
 // Constructs the paths from paths / pathValues that have strings.
 // If it does not have a string, just moves the value into the return
