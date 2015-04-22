@@ -24,8 +24,46 @@ it('should treat 07 as 7', function() {
     var out = parser('one[07, 0001].oneMore');
     expect(out).to.deep.equal(['one', [7, 1], 'oneMore']);
 });
-it('inner quoted', function() {
-    var out = parser('one[07, 0001].oneMore');
-    expect(out).to.deep.equal(['one', [7, 1], 'oneMore']);
+
+
+describe('#fromPath', function() {
+    it('should convert a string to path.', function() {
+        var input = 'videos[1234].summary';
+        var output = ['videos', 1234, 'summary'];
+        expect(parser.fromPath(input)).to.deep.equal(output);
+    });
+
+    it('should return a provided array.', function() {
+        var input = ['videos', 1234, 'summary'];
+        var output = ['videos', 1234, 'summary'];
+        expect(parser.fromPath(input)).to.deep.equal(output);
+    });
 });
 
+describe('#fromPathsOrPathValues', function() {
+    it('should convert a string to path.', function() {
+        var input = ['videos[1234].summary'];
+        var output = [['videos', 1234, 'summary']];
+        expect(parser.fromPathsOrPathValues(input)).to.deep.equal(output);
+    });
+
+    it('should return a provided array.', function() {
+        var input = [['videos', 1234, 'summary']];
+        var output = [['videos', 1234, 'summary']];
+        expect(parser.fromPathsOrPathValues(input)).to.deep.equal(output);
+    });
+
+    it('should convert with a bunch of values.', function() {
+        var input = [
+            ['videos', 1234, 'summary'],
+            'videos[555].summary',
+            {path: 'videos[444].summary', value: 5}
+        ];
+        var output = [
+            ['videos', 1234, 'summary'],
+            ['videos', 555, 'summary'],
+            {path: ['videos', 444, 'summary'], value: 5}
+        ];
+        expect(parser.fromPathsOrPathValues(input)).to.deep.equal(output);
+    });
+});
