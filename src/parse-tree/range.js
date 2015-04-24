@@ -18,7 +18,7 @@ module.exports = function range(tokenizer, openingToken, state, out) {
     var to;
 
     if (isNaN(from)) {
-        E.throwError(E.range.precedingNaN, state);
+        E.throwError(E.range.precedingNaN, tokenizer);
     }
 
     // Why is number checking so difficult in javascript.
@@ -30,7 +30,7 @@ module.exports = function range(tokenizer, openingToken, state, out) {
             // dotSeparators at the top level have no meaning
             case TokenTypes.dotSeparator:
                 if (dotCount === 3) {
-                    E.throwError(E.unexpectedToken, state);
+                    E.throwError(E.unexpectedToken, tokenizer);
                 }
                 ++dotCount;
 
@@ -43,12 +43,9 @@ module.exports = function range(tokenizer, openingToken, state, out) {
                 // move the tokenizer forward and save to.
                 to = Tokenizer.toNumber(tokenizer.next().token);
 
-                // continue to build the parse string.
-                state.parseString += token.token;
-
                 // throw potential error.
                 if (isNaN(to)) {
-                    E.throwError(E.range.suceedingNaN, state);
+                    E.throwError(E.range.suceedingNaN, tokenizer);
                 }
 
                 done = true;
@@ -64,9 +61,6 @@ module.exports = function range(tokenizer, openingToken, state, out) {
         // character.
         if (!done) {
             tokenizer.next();
-
-            // continue to build the parse string.
-            state.parseString += token.token;
 
             // go to the next token without consuming.
             token = tokenizer.peek();

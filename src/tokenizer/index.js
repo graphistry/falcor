@@ -5,17 +5,19 @@ var OPENING_BRACKET = '[';
 var CLOSING_BRACKET = ']';
 var OPENING_BRACE = '{';
 var CLOSING_BRACE = '}';
+var COLON = ':';
 var ESCAPE = '\\';
 var DOUBLE_OUOTES = '"';
 var SINGE_OUOTES = "'";
 var SPACE = " ";
 var SPECIAL_CHARACTERS = '\\\'"[]., ';
-var EXT_SPECIAL_CHARACTERS = '\\{}\'"[]., ';
+var EXT_SPECIAL_CHARACTERS = '\\{}\'"[]., :';
 
 var Tokenizer = module.exports = function(string, ext) {
     this._string = string;
     this._idx = -1;
     this._extended = ext;
+    this.parseString = '';
 };
 
 Tokenizer.prototype = {
@@ -29,6 +31,7 @@ Tokenizer.prototype = {
 
         this._idx = nextToken.idx;
         this._nextToken = false;
+        this.parseString += nextToken.token.token;
 
         return nextToken.token;
     },
@@ -118,6 +121,9 @@ function getNext(string, idx, ext) {
                 break;
             case ESCAPE:
                 type = TokenTypes.escape;
+                break;
+            case COLON:
+                type = TokenTypes.colon;
                 break;
             default:
                 type = TokenTypes.unknown;

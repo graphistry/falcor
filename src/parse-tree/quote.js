@@ -3,8 +3,11 @@ var E = require('./../exceptions');
 var quoteE = E.quote;
 
 /**
- * The indexer is all the logic that happens in between
- * the '[', opening bracket, and ']' closing bracket.
+ * quote is all the parse tree in between quotes.  This includes the only
+ * escaping logic.
+ *
+ * parse-tree:
+ * <opening-quote>(.|(<escape><opening-quote>))*<opening-quote>
  */
 module.exports = function quote(tokenizer, openingToken, state, out) {
     var token = tokenizer.next();
@@ -14,9 +17,6 @@ module.exports = function quote(tokenizer, openingToken, state, out) {
     var done = false;
 
     while (!token.done) {
-
-        // continue to build the parse string.
-        state.parseString += token.token;
 
         switch (token.type) {
             case TokenTypes.token:
@@ -30,7 +30,7 @@ module.exports = function quote(tokenizer, openingToken, state, out) {
             case TokenTypes.openingBrace:
             case TokenTypes.closingBrace:
                 if (escaping) {
-                    E.throwError(quoteE.illegalEscape, state);
+                    E.throwError(quoteE.illegalEscape, tokenizer);
                 }
 
                 innerToken += token.token;
@@ -61,7 +61,7 @@ module.exports = function quote(tokenizer, openingToken, state, out) {
                 break;
 
             default:
-                E.throwError(E.unexpectedToken, state);
+                E.throwError(E.unexpectedToken, tokenizer);
         }
 
         // If done, leave loop
@@ -74,7 +74,7 @@ module.exports = function quote(tokenizer, openingToken, state, out) {
     }
 
     if (innerToken.length === 0) {
-        E.throwError(quoteE.empty, state);
+        E.throwError(quoteE.empty, tokenizer);
     }
 
     state.indexer[state.indexer.length] = innerToken;

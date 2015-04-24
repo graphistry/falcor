@@ -1,5 +1,7 @@
 var Tokenizer = require('./tokenizer');
 var head = require('./parse-tree/head');
+var RoutedTokens = require('./RoutedTokens');
+
 var parser = function parser(string, extendedRules) {
     return head(new Tokenizer(string, extendedRules));
 };
@@ -42,3 +44,6 @@ parser.fromPath = function(path, ext) {
     }
     return path;
 };
+
+// Potential routed tokens.
+parser.RoutedTokens = RoutedTokens;

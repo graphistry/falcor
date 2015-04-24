@@ -1,5 +1,5 @@
 var TokenTypes = require('./../TokenTypes');
-var Expections = require('./../exceptions');
+var E = require('./../exceptions');
 var indexer = require('./indexer');
 
 /**
@@ -8,27 +8,24 @@ var indexer = require('./indexer');
  */
 module.exports = function head(tokenizer) {
     var token = tokenizer.next();
-    var first = true;
-    var state = {
-        parseString: ''
-    };
+    var state = {};
     var out = [];
 
     while (!token.done) {
 
-        // continue to build the parse string.
-        state.parseString += token.token;
-
         switch (token.type) {
             case TokenTypes.token:
+                var first = +token.token[0];
+                if (!isNaN(first)) {
+                    E.throwError(E.invalidIdentifier, tokenizer);
+                }
                 out[out.length] = token.token;
                 break;
 
             // dotSeparators at the top level have no meaning
             case TokenTypes.dotSeparator:
-                if (first) {
-                    // TODO: Fix me
-                    throw 'ohh no!';
+                if (out.length === 0) {
+                    E.throwError(E.unexpectedToken, tokenizer);
                 }
                 break;
 
@@ -44,20 +41,17 @@ module.exports = function head(tokenizer) {
                 indexer(tokenizer, token, state, out);
                 break;
 
-            // TODO: Fix me
             default:
-                throw 'ohh no!';
+                E.throwError(E.unexpectedToken, tokenizer);
+                break;
         }
-
-        first = false;
 
         // Keep cycling through the tokenizer.
         token = tokenizer.next();
     }
 
-    if (first) {
-        // TODO: Ohh no! Fix me
-        throw 'ohh no!';
+    if (out.length === 0) {
+        E.throwError(E.invalidPath, tokenizer);
     }
 
     return out;

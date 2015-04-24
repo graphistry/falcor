@@ -8,6 +8,7 @@ var TokenTypes = {
     closingBrace: '}',
     escape: '\\',
     space: ' ',
+    colon: ':',
     quote: 'quote',
     unknown: 'unknown'
 };
