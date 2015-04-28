@@ -71,11 +71,11 @@ describe('#fromPathsOrPathValues', function() {
 describe('#routed', function() {
     it('should create a routed token for the path.', function() {
         var out = parser('one[{ranges}].oneMore', true);
-        expect(out).to.deep.equal(['one', {route: 'ranges', named: false, name: ''}, 'oneMore']);
+        expect(out).to.deep.equal(['one', {type: 'ranges', named: false, name: ''}, 'oneMore']);
     });
     it('should create a named routed token for the path.', function() {
         var out = parser('one[{ranges:foo}].oneMore', true);
-        expect(out).to.deep.equal(['one', {route: 'ranges', named: true, name: 'foo'}, 'oneMore']);
+        expect(out).to.deep.equal(['one', {type: 'ranges', named: true, name: 'foo'}, 'oneMore']);
     });
 });
 

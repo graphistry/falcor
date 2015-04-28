@@ -48,7 +48,7 @@ module.exports = function routed(tokenizer, openingToken, state, out) {
 
     if (next.type === TokenTypes.closingBrace) {
         var outputToken = {
-            route: routeToken.token,
+            type: routeToken.token,
             named: named,
             name: name
         };
