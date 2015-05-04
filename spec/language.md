@@ -25,8 +25,8 @@
 ```javascript
 <index> ::= 0-9  
 <escape> ::= \  
-<single-quote-escape> ::= (.*|\')*  
-<double-quote-escape> ::= (.*|\")*  
+<single-quote-escape> ::= (<identifier-all>|\')*  
+<double-quote-escape> ::= (<identifier-all>|\")*  
 <identifier> ::= [a-Z_$]a-Z_$0-9  
 <identifier-all> ::= .*  
 <inner-routed-token> ::= ranges | integers | keys  
