@@ -80,7 +80,8 @@ module.exports = function indexer(tokenizer, openingToken, state, out) {
                 break;
 
             default:
-                E.throwError(idxE.unexpectedToken, tokenizer);
+                E.throwError(E.unexpectedToken, tokenizer);
+                break;
         }
 
         // If done, leave loop
