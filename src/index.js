@@ -12,6 +12,10 @@ module.exports = parser;
 // If it does not have a string, just moves the value into the return
 // results.
 parser.fromPathsOrPathValues = function(paths, ext) {
+    if (!paths) {
+        return [];
+    }
+
     var out = [];
     for (i = 0, len = paths.length; i < len; i++) {
 
@@ -39,9 +43,14 @@ parser.fromPathsOrPathValues = function(paths, ext) {
 // If the argument is a string, this with convert, else just return
 // the path provided.
 parser.fromPath = function(path, ext) {
+    if (!path) {
+        return [];
+    }
+
     if (typeof path === 'string') {
         return parser(path, ext);
     }
+
     return path;
 };
 
