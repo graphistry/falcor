@@ -38,12 +38,24 @@ describe('#fromPath', function() {
         var output = ['videos', 1234, 'summary'];
         expect(parser.fromPath(input)).to.deep.equal(output);
     });
+
+    it('should convert an undefined.', function() {
+        var input = undefined;
+        var output = [];
+        expect(parser.fromPath(input)).to.deep.equal(output);
+    });
 });
 
 describe('#fromPathsOrPathValues', function() {
     it('should convert a string to path.', function() {
         var input = ['videos[1234].summary'];
         var output = [['videos', 1234, 'summary']];
+        expect(parser.fromPathsOrPathValues(input)).to.deep.equal(output);
+    });
+
+    it('should convert an undefined to path.', function() {
+        var input = undefined;
+        var output = [];
         expect(parser.fromPathsOrPathValues(input)).to.deep.equal(output);
     });
 
