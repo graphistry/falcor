@@ -24,6 +24,14 @@ it('should treat 07 as 7', function() {
     var out = parser('one[07, 0001].oneMore');
     expect(out).to.deep.equal(['one', [7, 1], 'oneMore']);
 });
+it('should parse out a range.', function() {
+    var out = parser('one[0..1].oneMore');
+    expect(out).to.deep.equal(['one', {from: 0, to: 1}, 'oneMore']);
+});
+it('should parse out multiple ranges.', function() {
+    var out = parser('one[0..1,3..4].oneMore');
+    expect(out).to.deep.equal(['one', [{from: 0, to: 1}, {from: 3, to: 4}], 'oneMore']);
+});
 
 
 describe('#fromPath', function() {
