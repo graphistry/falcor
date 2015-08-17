@@ -1,7 +1,7 @@
 {
   "name": "falcor-path-syntax",
   "version": "0.2.1",
-  "description": "",
+  "description": "Parser for Falcor Path Syntax",
   "main": "src/index.js",
   "directories": {
     "test": "test"
@@ -14,7 +14,9 @@
     "url": "git://github.com/Netflix/falcor-path-syntax.git"
   },
   "keywords": [
-    "falcor"
+    "falcorjs",
+    "Observable",
+    "Netflix"
   ],
   "author": "Michael Paulson <michael.b.paulson@gmail.com>",
   "license": "ALV2",
