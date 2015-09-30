@@ -25,7 +25,8 @@
   },
   "homepage": "https://github.com/Netflix/falcor-path-syntax",
   "devDependencies": {
-    "chai": "~2.2.0"
+    "chai": "~2.2.0",
+    "mocha": "^2.3.0"
   },
   "dependencies": {}
 }
