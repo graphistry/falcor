@@ -17,7 +17,7 @@ parser.fromPathsOrPathValues = function(paths, ext) {
     }
 
     var out = [];
-    for (i = 0, len = paths.length; i < len; i++) {
+    for (var i = 0, len = paths.length; i < len; i++) {
 
         // Is the path a string
         if (typeof paths[i] === 'string') {
