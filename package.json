@@ -1,0 +1,39 @@
+{
+	"author": {
+		"email": "giovanni.calo@live.it",
+		"name": "Giovanni Calò",
+		"url": "https://github.com/giovannicalo"
+	},
+	"bugs": {
+		"url": "https://github.com/giovannicalo/falcor-websocket-datasource/issues"
+	},
+	"dependencies": {
+		"babel": "latest",
+		"babel-runtime": "latest"
+	},
+	"description": "",
+	"devDependencies": {
+		"babel-eslint": "latest",
+		"chai": "latest",
+		"coveralls": "latest",
+		"eslint": "latest",
+		"isparta": "latest",
+		"mocha": "latest"
+	},
+	"homepage": "https://github.com/giovannicalo/falcor-websocket-datasource",
+	"keywords": [],
+	"license": "MIT",
+	"main": "dist/index.js",
+	"name": "falcor-websocket-datasource",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/giovannicalo/falcor-websocket-datasource.git"
+	},
+	"scripts": {
+		"coverage": "babel-node node_modules/isparta/bin/isparta cover node_modules/mocha/bin/_mocha --report lcovonly -- --compilers js:babel/register --recursive && cat coverage/lcov.info | node node_modules/coveralls/bin/coveralls.js && rm -rf coverage",
+		"install": "babel source --out-dir dist",
+		"lint": "eslint .",
+		"test": "mocha --compilers js:babel/register --recursive"
+	},
+	"version": "0.0.0"
+}

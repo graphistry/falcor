@@ -1,0 +1,25 @@
+{
+	"env": {
+		"development": {
+			"sourceMaps": "both"
+		},
+		"production": {
+			"comments": false,
+			"compact": true,
+			"optional": [
+				"minification.removeConsole",
+				"minification.removeDebugger",
+				"optimisation.react.constantElements",
+				"optimisation.react.inlineElements"
+			]
+		}
+	},
+	"optional": [
+		"minification.memberExpressionLiterals",
+		"minification.propertyLiterals",
+		"runtime",
+		"spec.undefinedToVoid",
+		"validation.react"
+	],
+	"stage": 0
+}
