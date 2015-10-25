@@ -1,0 +1,5 @@
+{
+	"dependencies": {
+		"unused-ignores": ["babel", "babel-runtime"]
+	}
+}
