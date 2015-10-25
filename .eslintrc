@@ -82,7 +82,7 @@
 		"handle-callback-err": 0,
 		"id-length": [1, {
 			"exceptions": [],
-			"max": 20,
+			"max": 25,
 			"min": 1,
 			"properties": "always"
 		}],
