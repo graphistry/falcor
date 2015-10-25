@@ -8,17 +8,22 @@
 		"url": "https://github.com/giovannicalo/falcor-websocket-datasource/issues"
 	},
 	"dependencies": {
-		"babel": "latest",
-		"babel-runtime": "latest"
+		"babel": "^5.8.29",
+		"babel-runtime": "^5.8.29",
+		"falcor": "^0.1.13",
+		"rx": "^4.0.6",
+		"socket.io-client": "^1.3.7",
+		"uuid": "^2.0.1"
 	},
 	"description": "",
 	"devDependencies": {
-		"babel-eslint": "latest",
-		"chai": "latest",
-		"coveralls": "latest",
-		"eslint": "latest",
-		"isparta": "latest",
-		"mocha": "latest"
+		"babel-eslint": "^4.1.3",
+		"chai": "^3.4.0",
+		"coveralls": "^2.11.4",
+		"eslint": "^1.7.3",
+		"isparta": "^3.1.0",
+		"mocha": "^2.3.3",
+		"socket.io": "^1.3.7"
 	},
 	"homepage": "https://github.com/giovannicalo/falcor-websocket-datasource",
 	"keywords": [],
