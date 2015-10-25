@@ -1,1 +1,1 @@
-# Falcor WebSocket DataSource
+# Falcor Socket DataSource

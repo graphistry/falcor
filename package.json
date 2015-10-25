@@ -5,7 +5,7 @@
 		"url": "https://github.com/giovannicalo"
 	},
 	"bugs": {
-		"url": "https://github.com/giovannicalo/falcor-websocket-datasource/issues"
+		"url": "https://github.com/giovannicalo/falcor-socket-datasource/issues"
 	},
 	"dependencies": {
 		"babel": "^5.8.29",
@@ -26,14 +26,14 @@
 		"mocha": "^2.3.3",
 		"socket.io": "^1.3.7"
 	},
-	"homepage": "https://github.com/giovannicalo/falcor-websocket-datasource",
+	"homepage": "https://github.com/giovannicalo/falcor-socket-datasource",
 	"keywords": [],
 	"license": "MIT",
 	"main": "dist/index.js",
-	"name": "falcor-websocket-datasource",
+	"name": "falcor-socket-datasource",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/giovannicalo/falcor-websocket-datasource.git"
+		"url": "https://github.com/giovannicalo/falcor-socket-datasource.git"
 	},
 	"scripts": {
 		"coverage": "babel-node node_modules/isparta/bin/isparta cover node_modules/mocha/bin/_mocha --report lcovonly -- --compilers js:babel/register --recursive && cat coverage/lcov.info | node node_modules/coveralls/bin/coveralls.js && rm -rf coverage",
