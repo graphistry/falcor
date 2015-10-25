@@ -31,3 +31,5 @@ model.get(...).subscribe(...);
 ```
 
 This library uses [Socket.IO Client](https://github.com/socketio/socket.io-client), so using [Socket.IO](https://github.com/socketio/socket.io) as a server would be a wise choice.
+
+An example of a simple socket server can be found in [this test file](https://github.com/giovannicalo/falcor-socket-datasource/blob/master/test/server.js).
