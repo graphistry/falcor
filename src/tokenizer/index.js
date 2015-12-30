@@ -9,9 +9,12 @@ var COLON = ':';
 var ESCAPE = '\\';
 var DOUBLE_OUOTES = '"';
 var SINGE_OUOTES = "'";
+var TAB = "\t";
 var SPACE = " ";
-var SPECIAL_CHARACTERS = '\\\'"[]., ';
-var EXT_SPECIAL_CHARACTERS = '\\{}\'"[]., :';
+var LINE_FEED = '\n';
+var CARRIAGE_RETURN = '\r';
+var SPECIAL_CHARACTERS = '\\\'"[]., \t\n\r';
+var EXT_SPECIAL_CHARACTERS = '\\{}\'"[]., :\t\n\r';
 
 var Tokenizer = module.exports = function(string, ext) {
     this._string = string;
@@ -114,7 +117,10 @@ function getNext(string, idx, ext) {
             case CLOSING_BRACE:
                 type = TokenTypes.closingBrace;
                 break;
+            case TAB:
             case SPACE:
+            case LINE_FEED:
+            case CARRIAGE_RETURN:
                 type = TokenTypes.space;
                 break;
             case DOUBLE_OUOTES:
