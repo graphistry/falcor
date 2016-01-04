@@ -1,4 +1,5 @@
 var parser = require('./../../src');
+var exceptions = require('./../../src/exceptions');
 var expect = require('chai').expect;
 it('should parse a simple key string', function() {
     var out = parser('one.two.three');
@@ -32,7 +33,12 @@ it('should parse out multiple ranges.', function() {
     var out = parser('one[0..1,3..4].oneMore');
     expect(out).to.deep.equal(['one', [{from: 0, to: 1}, {from: 3, to: 4}], 'oneMore']);
 });
-
+it('should parse paths with newlines and whitespace between indexer keys.', function() {
+    var out = parser('one[\n\
+        0, 1, 2, 3, 4, \n\
+        5, 6, 7, 8, 9].oneMore');
+    expect(out).to.deep.equal(['one', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 'oneMore']);
+});
 
 describe('#fromPath', function() {
     it('should convert a string to path.', function() {
@@ -97,8 +103,30 @@ describe('#routed', function() {
         var out = parser('one[{ranges:foo}].oneMore', true);
         expect(out).to.deep.equal(['one', {type: 'ranges', named: true, name: 'foo'}, 'oneMore']);
     });
+    it('should create a named routed token for the path and allow white space before the definition.', function() {
+        var out = parser('one[{ranges: \t\n\rfoo}].oneMore', true);
+        expect(out).to.deep.equal(['one', {type: 'ranges', named: true, name: 'foo'}, 'oneMore']);
+    });
+    it('should create a named routed token for the path and allow white space after the definition.', function() {
+        var out = parser('one[{ranges:foo \t\n\r}].oneMore', true);
+        expect(out).to.deep.equal(['one', {type: 'ranges', named: true, name: 'foo'}, 'oneMore']);
+    });
+    it('should create a named routed token for the path and allow white space before and after the definition.', function() {
+        var out = parser('one[{ranges: \t\n\rfoo \t\n\r}].oneMore', true);
+        expect(out).to.deep.equal(['one', {type: 'ranges', named: true, name: 'foo'}, 'oneMore']);
+    });
 });
 
 describe('#errors', function() {
+    it('should create a named routed token for the path and fail if white space divides the token name.', function() {
+        var out, errText = exceptions.routed.invalid;
+        try {
+            out = parser('one[{ranges:f o o}].oneMore', true);
+        } catch (e) {
+            out = undefined;
+            expect(e.substr(0, errText.length)).to.equal(errText);
+        }
+        expect(out).to.equal(undefined);
+    });
 
 });

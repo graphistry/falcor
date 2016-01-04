@@ -33,15 +33,26 @@ module.exports = function routed(tokenizer, openingToken, state, out) {
     if (next.type === TokenTypes.colon) {
         named = true;
 
-        // Get the token name.
+        // Get the token name or a white space character.
         next = tokenizer.next();
+
+        // Skip over preceeding white space
+        while (next.type === TokenTypes.space) {
+            next = tokenizer.next();
+        }
+
         if (next.type !== TokenTypes.token) {
             E.throwError(routedE.invalid, tokenizer);
         }
         name = next.token;
 
-        // move to the closing brace.
+        // Move to the closing brace or white space character
         next = tokenizer.next();
+
+        // Skip over any white space to get to the closing brace
+        while (next.type === TokenTypes.space) {
+            next = tokenizer.next();
+        }
     }
 
     // must close with a brace.
