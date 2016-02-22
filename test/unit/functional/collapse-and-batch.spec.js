@@ -207,15 +207,9 @@ describe('Collapse and Batch', function() {
                 return Observable.
                     from(aliasMap.ids).
                     map(function(id) {
-                        if (id === 0) {
-                            return {
-                                path: ['lists', id],
-                                value: $ref('two.be[956]')
-                            };
-                        }
                         return {
                             path: ['lists', id],
-                            value: $ref('lists[0]')
+                            value: $ref('two.be[' + (956 + id) + ']')
                         };
                     });
             }
@@ -228,7 +222,7 @@ describe('Collapse and Batch', function() {
                         serviceCalls++;
                         return {
                             path: ['two', 'be', id, 'summary'],
-                            value: 'hello world'
+                            value: 'hello world ' + id
                         };
                     });
             }
@@ -243,12 +237,15 @@ describe('Collapse and Batch', function() {
                     jsonGraph: {
                         lists: {
                             0: $ref('two.be[956]'),
-                            1: $ref('lists[0]')
+                            1: $ref('two.be[957]')
                         },
                         two: {
                             be: {
                                 956: {
-                                    summary: 'hello world'
+                                    summary: 'hello world 956'
+                                },
+                                957: {
+                                    summary: 'hello world 957'
                                 }
                             }
                         }
