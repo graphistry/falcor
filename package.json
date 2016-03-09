@@ -18,7 +18,7 @@
     "test": "test"
   },
   "dependencies": {
-    "falcor-path-syntax": "0.2.4",
+    "falcor-path-syntax": "netflix/falcor-path-syntax",
     "falcor-path-utils": "0.3.0",
     "rxjs": "graphistry/RxJS-v5"
   },
