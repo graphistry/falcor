@@ -1,5 +1,3 @@
-/* global afterEach, beforeEach, describe, it */
-
 import Chai from "chai";
 import Falcor from "falcor";
 
@@ -41,7 +39,7 @@ describe("Falcor", () => {
 			});
 		});
 		it("should call a function on the server", (done) => {
-			model.call("bar", ["foo"]).subscribe((data) => {
+			model.call("bar", ["foo"]).subscribe((data) => { // eslint-disable-line prefer-reflect
 				try {
 					expect(data.json.foo.bar).to.equal("foo");
 					done();
