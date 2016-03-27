@@ -23,11 +23,7 @@ export default class FalcorWebSocketDataSource {
 
 	subscribe(method, parameters) {
 		const id = Uuid();
-		const data = { id, method };
-		Object.entries(parameters).forEach(([key, value]) => {
-			data[key] = value;
-		});
-		this.socket.emit(this.event, data);
+		this.socket.emit(this.event, { id, method, ...parameters });
 		return Rx.Observable.create((observer) => {
 			this.socket.on(this.event, (data) => {
 				if (data.id === id) {
