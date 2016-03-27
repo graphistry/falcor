@@ -1,5 +1,5 @@
 {
 	"dependencies": {
-		"unused-ignores": []
+		"unused-ignores": ["babel-cli"]
 	}
 }
