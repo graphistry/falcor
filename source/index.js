@@ -24,7 +24,7 @@ export default class FalcorWebSocketDataSource {
 	subscribe(method, parameters) {
 		const id = Uuid();
 		const data = { id, method };
-		Object.entries(parameters).map(([key, value]) => {
+		Object.entries(parameters).forEach(([key, value]) => {
 			data[key] = value;
 		});
 		this.socket.emit(this.event, data);
