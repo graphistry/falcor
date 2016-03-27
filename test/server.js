@@ -27,7 +27,7 @@ export default class Server {
 	}
 
 	getUrl() {
-		return `ws://localhost: ${this.socket.httpServer.address().port}`;
+		return `ws://localhost:${this.socket.httpServer.address().port}`;
 	}
 
 }
