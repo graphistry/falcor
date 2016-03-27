@@ -8,25 +8,19 @@ export default class Server {
 		this.socket = new SocketIo();
 		this.socket.on("connection", (socket) => {
 			socket.on(event, ({ args, functionPath, id, jsonGraphEnvelope, method, pathSets, refSuffixes, thisPaths }) => {
-				if (~["call", "get", "set"].indexOf(method)) {
-					let parameters = [];
-					switch (method) {
-						case "call":
-							parameters = [functionPath, args, refSuffixes, thisPaths];
-							break;
-						case "get":
-							parameters = [pathSets];
-							break;
-						case "set":
-							parameters = [jsonGraphEnvelope];
-							break;
-					}
-					Router[method](...parameters).subscribe((data) => {
-						socket.emit(event, { ...data, id });
-					});
+				let parameters = [];
+				if (method === "call") {
+					parameters = [functionPath, args, refSuffixes, thisPaths];
+				} else if (method === "get") {
+					parameters = [pathSets];
+				} else if (method === "set") {
+					parameters = [jsonGraphEnvelope];
 				} else {
 					throw new Error(`${method} is not a valid method`);
 				}
+				Router[method](...parameters).subscribe((data) => {
+					socket.emit(event, { ...data, id });
+				});
 			});
 		});
 		this.socket.listen(port, config);
