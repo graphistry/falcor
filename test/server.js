@@ -8,7 +8,7 @@ export default class Server {
 		this.socket = new SocketIo();
 		this.socket.on("connection", (socket) => {
 			socket.on(event, ({ args, functionPath, id, jsonGraphEnvelope, method, pathSets, refSuffixes, thisPaths }) => {
-				if (["call", "get", "set"].includes(method)) {
+				if (~["call", "get", "set"].indexOf(method)) {
 					let parameters = [];
 					switch (method) {
 						case "call":
@@ -22,11 +22,10 @@ export default class Server {
 							break;
 					}
 					Router[method](...parameters).subscribe((data) => {
-						data.id = id;
-						socket.emit(event, data);
+						socket.emit(event, { ...data, id });
 					});
 				} else {
-					throw new Error(method + " is not a valid method");
+					throw new Error(`${method} is not a valid method`);
 				}
 			});
 		});
@@ -34,7 +33,7 @@ export default class Server {
 	}
 
 	getUrl() {
-		return "ws://localhost:" + this.socket.httpServer.address().port;
+		return `ws://localhost: ${this.socket.httpServer.address().port}`;
 	}
 
 }
