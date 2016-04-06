@@ -7,7 +7,6 @@ var expect = chai.expect;
 var falcor = require('falcor');
 var $ref = falcor.Model.ref;
 var $atom = falcor.Model.atom;
-var $refset = require('../../../src/support/types').$refset;
 var Observable = require('rx').Observable;
 var sinon = require('sinon');
 
@@ -443,10 +442,7 @@ describe('Get', function() {
             doAction(function(x) {
                 expect(x).to.deep.equals({
                     jsonGraph: {
-                        myList: {
-                            $type: $refset,
-                            value: ['videos', [0, 1, 2]]
-                        }
+                        myList: $ref(['videos', [0, 1, 2]])
                     }
                 });
                 called++;
@@ -464,10 +460,7 @@ describe('Get', function() {
             doAction(function(x) {
                 expect(x).to.deep.equals({
                     jsonGraph: {
-                        myList: {
-                            $type: $refset,
-                            value: ['videos', [0, 1, 2]]
-                        },
+                        myList: $ref(['videos', [0, 1, 2]]),
                         videos: {
                             0: {
                                 title: 'title 0',
@@ -617,10 +610,7 @@ describe('Get', function() {
             get: function() {
                 return [{
                     path: ['myList'],
-                    value: {
-                        $type: $refset,
-                        value: ['videos', [0, 1, 2]]
-                    }
+                    value: $ref(['videos', [0, 1, 2]])
                 }]
             }
         }]);

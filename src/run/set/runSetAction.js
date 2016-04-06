@@ -31,8 +31,7 @@ function runSetAction(routerInstance, jsongMessage, matchAndPath, jsongCache) {
         // Determine which paths from the JSONGraph message haven't been set
         // into the JSONGraph cache. The `spreadPaths` operation takes care of
         // splitting complex paths into simple paths, but with the addition of
-        // refsets, a single "simple" path can still explode out to multiple
-        // other paths.
+        // complex refs, a reference can now explode out to multiple paths too.
         //
         // Select each requested path with at least one corresponding optimized
         // path that intersects with the matched requested path.

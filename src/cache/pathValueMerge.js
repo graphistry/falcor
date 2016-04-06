@@ -1,7 +1,6 @@
 var clone = require('./../support/clone');
 var types = require('./../support/types');
 var $ref = types.$ref;
-var $refset = types.$refset;
 var iterateKeySet = require('falcor-path-utils').iterateKeySet;
 
 /**
@@ -25,7 +24,7 @@ module.exports = function pathValueMerge(cache, pathValue) {
 
     // References and reference sets. Needed for evaluating suffixes in all
     // three types, get, call and set.
-    else if (type === $ref || type === $refset) {
+    else if (type === $ref) {
         refs.push({
             path: path,
             value: value.value

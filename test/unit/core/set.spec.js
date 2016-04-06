@@ -487,20 +487,17 @@ describe('Set', function() {
     it('should perform a set with get reference set following.', function(done) {
         var did = false;
         var called = 0;
-        var refsetFollowed = false;
+        var refFollowed = false;
         var router = new R(
             Routes().Genrelists.Integers(function() {
-                refsetFollowed = true;
+                refFollowed = true;
             }).concat(
             [{
                 route: 'genreLists.selected',
                 get: function() {
                     return {
                         path: ['genreLists', 'selected'],
-                        value: {
-                            $type: 'refset',
-                            value: ['genreLists', [0, 1, 2]]
-                        }
+                        value: $ref(['genreLists', [0, 1, 2]])
                     };
                 }
             }, {
@@ -536,10 +533,7 @@ describe('Set', function() {
             set({
                 jsonGraph: {
                     genreLists: {
-                        selected: {
-                            $type: 'refset',
-                            value: ['genreLists', [0, 1, 2]]
-                        },
+                        selected: $ref(['genreLists', [0, 1, 2]]),
                         0: {
                             rating: 5
                         },
@@ -559,10 +553,7 @@ describe('Set', function() {
                 expect(res).to.deep.equals({
                     jsonGraph: {
                         genreLists: {
-                            selected: {
-                                $type: 'refset',
-                                value: ['genreLists', [0, 1, 2]]
-                            },
+                            selected: $ref(['genreLists', [0, 1, 2]]),
                             0: $ref('videos[0]'),
                             1: $ref('videos[1]'),
                             2: $ref('videos[2]')
@@ -584,7 +575,7 @@ describe('Set', function() {
             subscribe(noOp, done, function() {
                 if (!did) {
                     try {
-                        expect(called && refsetFollowed).to.be.ok;
+                        expect(called && refFollowed).to.be.ok;
                         done();
                     } catch(e) {
                         done(e);

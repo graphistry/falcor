@@ -1,7 +1,6 @@
 var iterateKeySet = require('falcor-path-utils').iterateKeySet;
 var types = require('./../support/types');
 var $ref = types.$ref;
-var $refset = types.$refset;
 var clone = require('./../support/clone');
 var cloneArray = require('./../support/cloneArray');
 var catAndSlice = require('./../support/catAndSlice');
@@ -49,7 +48,7 @@ function merge(config, cache, message, depth, path, fromParent, fromKey) {
         // NOTE: If we have found a reference at our cloning position
         // and we have resolved our path then add the reference to
         // the unfulfilledRefernces.
-        if (messageType === $ref || messageType === $refset) {
+        if (messageType === $ref) {
             var references = config.references;
             references.push({
                 path: cloneArray(requestedPath),
@@ -80,8 +79,8 @@ function merge(config, cache, message, depth, path, fromParent, fromKey) {
 
     var outerKey = path[depth];
     var iteratorNote = {};
-    var key;
-    key = iterateKeySet(outerKey, iteratorNote);
+    var isBranchKey = depth < path.length - 1;
+    var key = iterateKeySet(outerKey, iteratorNote);
 
     // We always attempt this as a loop.  If the memo exists then
     // we assume that the permutation is needed.
@@ -116,8 +115,7 @@ function merge(config, cache, message, depth, path, fromParent, fromKey) {
             messageType = messageRes && messageRes.$type;
             // There is only a need to consider message references since the
             // merge is only for the path that is provided.
-            if ((messageType === $ref || messageType === $refset) &&
-                depth < path.length - 1) {
+            if (isBranchKey && messageType === $ref) {
 
                 nextDepth = 0;
                 nextPath = catAndSlice(messageRes.value, path, depth + 1);

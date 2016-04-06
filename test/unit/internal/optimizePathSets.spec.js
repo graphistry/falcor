@@ -138,7 +138,7 @@ describe('optimizePathSets', function() {
         expect(out).to.deep.equal(expected);
     });
 
-    it('should throw.', function() {
+    xit('should throw on inner references.', function() {
         var cache = getCache();
         var paths = [['videosList', 'inner', 'summary']];
 

@@ -109,32 +109,20 @@ describe('Call', function() {
                 expect(onNext.getCall(0).args[0]).to.deep.equals({
                     jsonGraph: {
                         genrelist: {
-                            selected: {
-                                $type: 'refset',
-                                value: ['genrelist', [0, 1, 2]]
-                            },
+                            selected: $ref(['genrelist', [0, 1, 2]]),
                             0: {
                                 titles: {
-                                    2: {
-                                        $type: 'ref',
-                                        value: ['titlesById', 1]
-                                    }
+                                    2: $ref(['titlesById', 1])
                                 }
                             },
                             1: {
                                 titles: {
-                                    2: {
-                                        $type: 'ref',
-                                        value: ['titlesById', 1]
-                                    }
+                                    2: $ref(['titlesById', 1])
                                 }
                             },
                             2: {
                                 titles: {
-                                    2: {
-                                        $type: 'ref',
-                                        value: ['titlesById', 1]
-                                    }
+                                    2: $ref(['titlesById', 1])
                                 }
                             }
                         },
@@ -628,10 +616,7 @@ describe('Call', function() {
             get: function() {
                 return {
                     path: ['genrelist', 'selected'],
-                    value: {
-                        $type: 'refset',
-                        value: ['genrelist', [0, 1, 2]]
-                    }
+                    value: $ref(['genrelist', [0, 1, 2]])
                 }
             }
         }, {
