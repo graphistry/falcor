@@ -38,21 +38,17 @@ function merge(config, cache, message, depth, path, fromParent, fromKey) {
     var requestedPath = config.requestedPath;
     var ignoreCount = config.ignoreCount;
     var typeOfMessage = typeof message;
-    var requestIdx = config.requestIdx;
-    var updateRequestedPath = ignoreCount <= depth;
-    if (updateRequestedPath) {
-        requestIdx = ++config.requestIdx;
-    }
+    var messageType = message && message.$type;
 
     // The message at this point should always be defined.
     // Reached the end of the JSONG message path
-    if (message === null || typeOfMessage !== 'object' || message.$type) {
+    if (message === null || typeOfMessage !== 'object' || messageType) {
         fromParent[fromKey] = clone(message);
 
         // NOTE: If we have found a reference at our cloning position
         // and we have resolved our path then add the reference to
         // the unfulfilledRefernces.
-        if (message && message.$type === $ref) {
+        if (messageType === $ref) {
             var references = config.references;
             references.push({
                 path: cloneArray(requestedPath),
@@ -67,17 +63,24 @@ function merge(config, cache, message, depth, path, fromParent, fromKey) {
             var values = config.values;
             values.push({
                 path: cloneArray(requestedPath),
-                value: (message && message.type) ? message.value : message
+                value: messageType ? message.value : message
             });
         }
 
         return;
     }
 
+    var requestIdx = config.requestIdx;
+    var updateRequestedPath = ignoreCount <= depth;
+
+    if (updateRequestedPath) {
+        requestIdx = ++config.requestIdx;
+    }
+
     var outerKey = path[depth];
     var iteratorNote = {};
-    var key;
-    key = iterateKeySet(outerKey, iteratorNote);
+    var isBranchKey = depth < path.length - 1;
+    var key = iterateKeySet(outerKey, iteratorNote);
 
     // We always attempt this as a loop.  If the memo exists then
     // we assume that the permutation is needed.
@@ -109,10 +112,10 @@ function merge(config, cache, message, depth, path, fromParent, fromKey) {
             // references are always pathSets of 1, they can be evaluated
             // iteratively.
 
+            messageType = messageRes && messageRes.$type;
             // There is only a need to consider message references since the
             // merge is only for the path that is provided.
-            if (messageRes && messageRes.$type === $ref &&
-                depth < path.length - 1) {
+            if (isBranchKey && messageType === $ref) {
 
                 nextDepth = 0;
                 nextPath = catAndSlice(messageRes.value, path, depth + 1);
@@ -138,4 +141,8 @@ function merge(config, cache, message, depth, path, fromParent, fromKey) {
         // Are we done with the loop?
         key = iterateKeySet(outerKey, iteratorNote);
     } while (!iteratorNote.done);
+
+    if (updateRequestedPath) {
+        requestIdx = --config.requestIdx;
+    }
 }
