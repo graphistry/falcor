@@ -29,4 +29,55 @@ describe('Precedence Matching', function() {
             }).
             subscribe(noOp, done, done);
     });
+
+    it('should properly precedence match with different lengths from call', function(done) {
+        var refCalled = 0;
+        var leafCalled = 0;
+        var router = new R([{
+            route: 'init',
+            call: function(path) {
+                debugger
+                return {
+                    path: ['init'],
+                    value: {
+                        $type: 'ref',
+                        value: ['get']
+                    }
+                }
+            }
+        }, {
+            route: 'get.refs',
+            get: function(path) {
+                refCalled++;
+                return {
+                    path: ['get', 'refs'],
+                    value: {
+                        $type: 'ref',
+                        value: ['get', ['foos', 'bars']]
+                    }
+                }
+            }
+        }, {
+            route: 'get[{keys}][{keys}]',
+            get: function(path) {
+                var leaf = path[2][0];
+                var branch = path[1];
+                leafCalled++;
+                return branch.map(function (branch) {
+                    expect(branch).to.not.equal('refs');
+                    return {
+                        path: ['get', branch, leaf],
+                        value: 'leaf value'
+                    };
+                });
+            }
+        }]);
+
+        router.
+            call(['init'], [], [['refs', 'value']]).
+            doAction(noOp, noOp, function() {
+                expect(leafCalled > refCalled);
+            }).
+            subscribe(noOp, done, done);
+    });
 });

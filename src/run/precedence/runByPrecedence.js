@@ -8,15 +8,7 @@ module.exports = function runByPrecedence(pathSet, matches, actionRunner) {
 
     // Precendence matching
     var sortedMatches = matches.
-        sort(function(a, b) {
-            if (a.precedence < b.precedence) {
-                return 1;
-            } else if (a.precedence > b.precedence) {
-                return -1;
-            }
-
-            return 0;
-        });
+        sort(sortByLengthAndPrecedence);
 
     var execs = getExecutableMatches(sortedMatches, [pathSet]);
 
@@ -47,3 +39,26 @@ module.exports = function runByPrecedence(pathSet, matches, actionRunner) {
 
     return setOfMatchedPaths;
 };
+
+function sortByLengthAndPrecedence(a, b) {
+
+    var aLen = a.requested.length;
+    var bLen = b.requested.length;
+
+    if (aLen < bLen) {
+        return -1;
+    } else if (aLen > bLen) {
+        return 1;
+    }
+
+    var aPrecedence = a.precedence;
+    var bPrecedence = b.precedence;
+
+    if (aPrecedence < bPrecedence) {
+        return 1;
+    } else if (aPrecedence > bPrecedence) {
+        return -1;
+    }
+
+    return 0;
+}
