@@ -13,7 +13,7 @@ module.exports = function normalizePathSets(path) {
             normalizePathSets(key);
         }
 
-        else if (typeof key === 'object') {
+        else if (key && typeof key === 'object') {
             path[i] = normalize(path[i]);
         }
     });
