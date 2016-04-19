@@ -8,7 +8,7 @@ module.exports = function runByPrecedence(pathSet, matches, actionRunner) {
 
     // Precendence matching
     var sortedMatches = matches.
-        sort(sortByLengthAndPrecedence);
+        sort(sortByPrecedence);
 
     var execs = getExecutableMatches(sortedMatches, [pathSet]);
 
@@ -40,16 +40,7 @@ module.exports = function runByPrecedence(pathSet, matches, actionRunner) {
     return setOfMatchedPaths;
 };
 
-function sortByLengthAndPrecedence(a, b) {
-
-    var aLen = a.requested.length;
-    var bLen = b.requested.length;
-
-    if (aLen < bLen) {
-        return -1;
-    } else if (aLen > bLen) {
-        return 1;
-    }
+function sortByPrecedence(a, b) {
 
     var aPrecedence = a.precedence;
     var bPrecedence = b.precedence;
