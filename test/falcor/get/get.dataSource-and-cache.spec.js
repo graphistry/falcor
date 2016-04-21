@@ -278,8 +278,9 @@ describe('DataSource and Partial Cache', function() {
                     var out = strip(onNext.getCall(0).args[0]);
                     var expected = strip({
                         jsonGraph: cacheGenerator(0, 2),
-                        paths: [['lolomo', 0, 0, 'item', 'title'],
-                            ['lolomo', 0, 1, 'item', 'title']]
+                        paths: [
+                            ['lolomo', 0, {from: 0, to: 1}, 'item', 'title']
+                        ]
                     });
                     expect(out).to.deep.equals(expected);
                 }).
@@ -297,8 +298,9 @@ describe('DataSource and Partial Cache', function() {
                     var out = strip(onNext.getCall(0).args[0]);
                     var expected = strip({
                         jsonGraph: cacheGenerator(0, 2),
-                        paths: [['lolomo', 0, 0, 'item', 'title'],
-                            ['lolomo', 0, 1, 'item', 'title']]
+                        paths: [
+                            ['lolomo', 0, {from: 0, to: 1}, 'item', 'title']
+                        ]
                     });
                     expect(out).to.deep.equals(expected);
                 }).
