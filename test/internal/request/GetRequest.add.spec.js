@@ -1,7 +1,6 @@
 var sinon = require('sinon');
 var expect = require('chai').expect;
 var GetRequest = require('./../../../lib/request/GetRequestV2');
-var ASAPScheduler = require('./../../../lib/schedulers/ASAPScheduler');
 var ImmediateScheduler = require('./../../../lib/schedulers/ImmediateScheduler');
 var Rx = require('rx');
 var Model = require('./../../../lib').Model;

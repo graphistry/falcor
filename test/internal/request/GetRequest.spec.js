@@ -1,6 +1,6 @@
 var sinon = require('sinon');
 var expect = require('chai').expect;
-var ASAPScheduler = require('./../../../lib/schedulers/ASAPScheduler');
+var TimeoutScheduler = require('./../../../lib/schedulers/TimeoutScheduler');
 var Rx = require('rx');
 var Model = require('./../../../lib').Model;
 
@@ -105,7 +105,7 @@ describe('GetRequest', function() {
         });
 
         var model = new Model({
-            scheduler: new ASAPScheduler(),
+            scheduler: new TimeoutScheduler(16),
             cache: {
                 list: {
                     0: { name: "test" }

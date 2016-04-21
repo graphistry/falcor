@@ -1,6 +1,6 @@
 {
   "name": "falcor",
-  "version": "0.1.16",
+  "version": "0.2.0",
   "description": "A JavaScript library for efficient data fetching.",
   "main": "./lib/index.js",
   "homepage": "https://github.com/Netflix/falcor",
@@ -70,18 +70,16 @@
     "lodash": "^2.4.1",
     "minimist": "^1.1.0",
     "mkdirp": "^0.5.1",
-    "rxjs": "^5.0.0-beta.1",
+    "rx": "2.5.3",
+    "rxjs": "~5.0.0-beta.6",
     "sinon": "^1.15.4",
     "through2": "^0.6.1",
     "underscore": "^1.8.3",
     "vinyl-source-stream": "^1.1.0"
   },
   "dependencies": {
-    "asap": "2.0.3",
     "falcor-json-graph": "trxcllnt/falcor-json-graph",
     "falcor-path-syntax": "trxcllnt/falcor-path-syntax",
-    "falcor-path-utils": "trxcllnt/falcor-path-utils",
-    "promise": "7.0.4",
-    "rx": "2.5.3"
+    "falcor-path-utils": "trxcllnt/falcor-path-utils"
   }
 }

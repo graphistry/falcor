@@ -1,7 +1,7 @@
 var sinon = require('sinon');
 var expect = require('chai').expect;
 var RequestQueue = require('./../../../lib/request/RequestQueueV2');
-var ASAPScheduler = require('./../../../lib/schedulers/ASAPScheduler');
+var TimeoutScheduler = require('./../../../lib/schedulers/TimeoutScheduler');
 var ImmediateScheduler = require('./../../../lib/schedulers/ImmediateScheduler');
 var Rx = require('rx');
 var Model = require('./../../../lib').Model;
@@ -46,7 +46,7 @@ describe('#get', function() {
     });
 
     it('should make a couple requests and have them batched together.', function(done) {
-        var scheduler = new ASAPScheduler();
+        var scheduler = new TimeoutScheduler(16);
         var getSpy = sinon.spy();
         var source = new LocalDataSource(Cache());
         var model = new Model({source: source});

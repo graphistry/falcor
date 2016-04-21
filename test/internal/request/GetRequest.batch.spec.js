@@ -1,7 +1,7 @@
 var sinon = require('sinon');
 var expect = require('chai').expect;
 var GetRequest = require('./../../../lib/request/GetRequestV2');
-var ASAPScheduler = require('./../../../lib/schedulers/ASAPScheduler');
+var TimeoutScheduler = require('./../../../lib/schedulers/TimeoutScheduler');
 var ImmediateScheduler = require('./../../../lib/schedulers/ImmediateScheduler');
 var Rx = require('rx');
 var Model = require('./../../../lib').Model;
@@ -57,7 +57,7 @@ describe('#batch', function() {
 
     it('should make a request to the dataSource with an async scheduler.', function(done) {
         var inlineBoolean = true;
-        var scheduler = new ASAPScheduler();
+        var scheduler = new TimeoutScheduler(16);
         var getSpy = sinon.spy();
         var source = new LocalDataSource(Cache(), {
             onGet: getSpy
@@ -95,7 +95,7 @@ describe('#batch', function() {
     });
 
     it('should batch some requests together.', function(done) {
-        var scheduler = new ASAPScheduler();
+        var scheduler = new TimeoutScheduler(16);
         var getSpy = sinon.spy();
         var source = new LocalDataSource(Cache(), {
             onGet: getSpy
@@ -132,7 +132,7 @@ describe('#batch', function() {
     });
 
     it('should batch some requests together and dispose the first one.', function(done) {
-        var scheduler = new ASAPScheduler();
+        var scheduler = new TimeoutScheduler(16);
         var getSpy = sinon.spy();
         var source = new LocalDataSource(Cache(), {
             onGet: getSpy
@@ -169,7 +169,7 @@ describe('#batch', function() {
     });
 
     it('should batch some requests together and dispose the second one.', function(done) {
-        var scheduler = new ASAPScheduler();
+        var scheduler = new TimeoutScheduler(16);
         var getSpy = sinon.spy();
         var source = new LocalDataSource(Cache(), {
             onGet: getSpy
