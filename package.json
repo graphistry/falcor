@@ -18,14 +18,14 @@
     "test": "test"
   },
   "dependencies": {
-    "falcor-path-syntax": "0.2.4",
-    "falcor-path-utils": "0.5.0",
+    "falcor-path-syntax": "trxcllnt/falcor-path-syntax",
+    "falcor-path-utils": "trxcllnt/falcor-path-utils",
     "rxjs": "5.0.0-beta.6"
   },
   "devDependencies": {
     "chai": "^2.3.0",
     "coveralls": "^2.11.2",
-    "falcor": "Netflix/falcor",
+    "falcor": "trxcllnt/falcor#onChangesCompleted",
     "gulp": "~3.8.11",
     "gulp-bump": "~0.1.13",
     "gulp-clean": "~0.3.1",
@@ -43,7 +43,9 @@
   "scripts": {
     "test": "node node_modules/gulp/bin/gulp.js test-coverage",
     "dist": "node node_modules/gulp/bin/gulp.js dist",
-    "lint": "node node_modules/gulp/bin/gulp.js lint"
+    "lint": "node node_modules/gulp/bin/gulp.js lint",
+    "test-detail": "_mocha ./test/index.js",
+    "test-debug": "node-debug _mocha ./test/index.js"
   },
   "repository": {
     "type": "git",
