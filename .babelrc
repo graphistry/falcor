@@ -1,1 +1,1 @@
-{ "presets": ["node-giovanni"] }
+{ "presets": "node-giovanni" }
