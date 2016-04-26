@@ -42,5 +42,5 @@
 		"prepublish": "npm run lint && npm test && babel source --out-dir dist",
 		"test": "mocha --compilers js:babel-register --recursive"
 	},
-	"version": "1.0.3"
+	"version": "1.0.4"
 }
