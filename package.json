@@ -8,21 +8,18 @@
 		"url": "https://github.com/giovannicalo/falcor-socket-datasource/issues"
 	},
 	"dependencies": {
-		"babel-cli": "^6.6.5",
-		"babel-preset-node-giovanni": "^1.1.0",
-		"falcor": "^0.1.16",
+		"babel-cli": "^6.7.7",
+		"babel-preset-node-giovanni": "^1.1.2",
+		"falcor": "^0.1.17",
 		"rx": "^4.1.0",
 		"socket.io-client": "^1.4.5",
-		"uuid": "^2.0.1"
+		"uuid": "^2.0.2"
 	},
 	"description": "A socket DataSource for Falcor",
 	"devDependencies": {
-		"babel-eslint": "^6.0.0",
-		"babel-register": "^6.7.2",
 		"chai": "^3.5.0",
 		"coveralls": "^2.11.9",
-		"eslint": "^2.5.1",
-		"eslint-config-giovanni": "^1.1.1",
+		"eslint-config-giovanni": "^1.1.5",
 		"falcor-router": "^0.4.0",
 		"isparta": "^4.0.0",
 		"mocha": "^2.4.5",
