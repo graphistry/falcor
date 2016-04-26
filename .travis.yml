@@ -1,4 +1,4 @@
-language: node_js
+language: "node_js"
 node_js: "5.11.0"
-before_install: npm install -g npm@latest
-after_script: npm run coverage
+before_install: "npm install -g npm@latest"
+after_script: "npm run coverage && npm run lint"
