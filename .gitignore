@@ -1,5 +1,5 @@
+.coveralls.yml
 coverage
 dist
 node_modules
-.coveralls.yml
 npm-debug.log
