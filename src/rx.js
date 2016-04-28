@@ -7,6 +7,7 @@ require('rxjs/add/observable/fromPromise');
 require('rxjs/add/observable/of');
 require('rxjs/add/observable/throw');
 
+require('rxjs/add/operator/catch');
 require('rxjs/add/operator/concat');
 require('rxjs/add/operator/defaultIfEmpty');
 require('rxjs/add/operator/do');
@@ -16,6 +17,7 @@ require('rxjs/add/operator/map');
 require('rxjs/add/operator/materialize');
 require('rxjs/add/operator/mergeMap');
 require('rxjs/add/operator/reduce');
+require('rxjs/add/operator/toArray');
 
 Observable.return = Observable.of;
 

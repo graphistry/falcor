@@ -549,7 +549,7 @@ describe('Set', function() {
                     ['genreLists', 'selected', 'rating']
                 ]
             }).
-            doAction(function(res) {
+            do(function(res) {
                 expect(res).to.deep.equals({
                     jsonGraph: {
                         genreLists: {

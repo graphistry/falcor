@@ -103,8 +103,8 @@ describe('Call', function() {
             call(['genrelist', 'selected', 'titles', 'push'],
                  [{ $type: 'ref', value: ['titlesById', 1] }],
                  [['name'], ['rating']]).
-            doAction(onNext).
-            doAction(noOp, noOp, function(x) {
+            do(onNext).
+            do(noOp, noOp, function(x) {
                 expect(onNext.called).to.be.ok;
                 expect(onNext.getCall(0).args[0]).to.deep.equals({
                     jsonGraph: {

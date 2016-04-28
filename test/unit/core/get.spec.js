@@ -439,7 +439,7 @@ describe('Get', function() {
         var router = getPrecedenceRouter();
         router.
             get([['myList']]).
-            doAction(function(x) {
+            do(function(x) {
                 expect(x).to.deep.equals({
                     jsonGraph: {
                         myList: $ref(['videos', [0, 1, 2]])
@@ -457,7 +457,7 @@ describe('Get', function() {
         var router = getPrecedenceRouter();
         router.
             get([['myList', ['title', 'rating']]]).
-            doAction(function(x) {
+            do(function(x) {
                 expect(x).to.deep.equals({
                     jsonGraph: {
                         myList: $ref(['videos', [0, 1, 2]]),
