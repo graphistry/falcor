@@ -4,7 +4,7 @@ A socket DataSource for [Falcor](https://github.com/Netflix/falcor).
 
 ## Installation
 
-```
+```bash
 npm install falcor-socket-datasource
 ```
 
@@ -15,7 +15,7 @@ npm install falcor-socket-datasource
 3. Set its source to a new `FalcorSocketDataSource`
 4. Use the model as usual
 
-```
+```javascript
 import Falcor from "falcor";
 import FalcorSocketDataSource from "falcor-socket-datasource";
 
