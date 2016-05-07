@@ -1,7 +1,1 @@
-module.exports = {
-	extends: [
-		"giovanni/client",
-		"giovanni/library"
-	],
-	rules: { "sort-imports": 0 }
-};
+module.exports = { extends: "giovanni/library" };
