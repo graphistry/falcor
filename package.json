@@ -1,5 +1,5 @@
 {
-  "name": "falcor",
+  "name": "@graphistry/falcor",
   "version": "0.2.0",
   "description": "A JavaScript library for efficient data fetching.",
   "main": "./lib/index.js",
