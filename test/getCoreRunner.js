@@ -35,7 +35,8 @@ module.exports = function(testConfig) {
     else {
         model = new Model({
             cache: cache,
-            source: source
+            source: source,
+            branchSelector: testConfig.branchSelector || null
         });
     }
 
@@ -86,8 +87,8 @@ module.exports = function(testConfig) {
     // $size is stripped out of basic core tests.
     // We have to strip out parent as well from the output since it will produce
     // infinite recursion.
-    clean(valueNode, {strip: ['$size']});
-    clean(expectedOutput, {strip: ['$size']});
+    clean(valueNode, {strip: ['$size', '$__version']});
+    clean(expectedOutput, {strip: ['$size', '$__version']});
 
     if (expectedOutput) {
         expect(valueNode).to.deep.equals(expectedOutput);

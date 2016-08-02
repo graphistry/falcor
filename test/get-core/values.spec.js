@@ -22,6 +22,31 @@ describe('Values', function() {
             cache: cacheGenerator(0, 1)
         });
     });
+    it('should use the branch selector and get a simple value out of the cache', function() {
+        getCoreRunner({
+            input: [['videos', 0, 'title']],
+            output: outputGenerator.videoGenerator([0]),
+            branchSelector: function(node, ref) {
+                var branch = Object.create(Array.prototype);
+                if (node.ツabsolutePath) {
+                    branch.$__falcor_path = node.ツabsolutePath;
+                }
+                return branch;
+            },
+            output: {
+                json: {
+                    videos: {
+                        $__falcor_path: ['videos'],
+                        0: {
+                            $__falcor_path: ['videos', 0],
+                            title: 'Video 0'
+                        }
+                    }
+                }
+            },
+            cache: cacheGenerator(0, 1)
+        });
+    });
     it('should get a value of type atom when in materialized mode.', function() {
         getCoreRunner({
             input: [['videos', {to:1}, 'title']],
