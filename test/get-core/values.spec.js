@@ -5,6 +5,8 @@ var jsonGraph = require('falcor-json-graph');
 var atom = jsonGraph.atom;
 var ref = jsonGraph.ref;
 var _ = require('lodash');
+var expect = require('chai').expect;
+var InvalidKeySetError = require('./../../lib/errors/InvalidKeySetError');
 
 describe('Values', function() {
     // PathMap ----------------------------------------
@@ -60,10 +62,24 @@ describe('Values', function() {
     });
     it('should get a value through references with complex pathSet.', function() {
         getCoreRunner({
-            input: [['lolomo', {to: 1}, {to: 1}, 'item', 'title']],
+            input: [['lolomo', {to: 1}, {length: 1}, 'item', 'title']],
             output: outputGenerator.lolomoGenerator([0, 1], [0, 1]),
             cache: cacheGenerator(0, 30)
         });
+    });
+    it('should throw if a KeySet includes another KeySet.', function() {
+        var error;
+        try {
+            getCoreRunner({
+                input: [['lolomo', [[{ to: 1}]], {length: 1}, 'item', 'title']],
+                output: outputGenerator.lolomoGenerator([0, 1], [0, 1]),
+                cache: cacheGenerator(0, 30)
+            });
+        } catch (e) {
+            error = e;
+        } finally {
+            expect(error instanceof InvalidKeySetError).to.be.ok;
+        }
     });
     it('should allow for multiple arguments with different length paths.', function() {
         var lolomo0 = {
@@ -138,8 +154,8 @@ describe('Values', function() {
     });
     it('should use the branchSelector to build JSON branches if provided', function() {
         getCoreRunner({
-            input: [['videos', 0, 'title']],
-            cache: cacheGenerator(0, 1),
+            input: [['videos', [0, 1], 'title']],
+            cache: cacheGenerator(0, 2),
             branchSelector: function(json, node, key, depth, isRoot, isLeaf, referenceContainer) {
                 if (!json) {
                     json = { $__userGenerated: true };
@@ -163,6 +179,11 @@ describe('Values', function() {
                             $__path: ['videos', 0],
                             $__userGenerated: true,
                             title: 'Video 0'
+                        },
+                        1: {
+                            $__path: ['videos', 1],
+                            $__userGenerated: true,
+                            title: 'Video 1'
                         }
                     }
                 }
@@ -249,7 +270,7 @@ describe('Values', function() {
     });
     it('should get JSONGraph through references with complex pathSet.', function() {
         getCoreRunner({
-            input: [['lolomo', {to: 1}, {to: 1}, 'item', 'title']],
+            input: [['lolomo', {to: 1}, {length: 1}, 'item', 'title']],
             isJSONG: true,
             output: {
                 jsonGraph: _.merge(cacheGenerator(0, 2), cacheGenerator(10, 2, undefined, false)),
@@ -262,6 +283,21 @@ describe('Values', function() {
             },
             cache: cacheGenerator(0, 30)
         });
+    });
+    it('should throw getting JSONGraph if a KeySet includes another KeySet.', function() {
+        var error;
+        try {
+            getCoreRunner({
+                isJSONG: true,
+                input: [['lolomo', [[{ to: 1}]], {length: 1}, 'item', 'title']],
+                output: outputGenerator.lolomoGenerator([0, 1], [0, 1]),
+                cache: cacheGenerator(0, 30)
+            });
+        } catch (e) {
+            error = e;
+        } finally {
+            expect(error instanceof InvalidKeySetError).to.be.ok;
+        }
     });
 });
 
