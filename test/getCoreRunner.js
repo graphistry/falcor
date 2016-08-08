@@ -36,7 +36,7 @@ module.exports = function(testConfig) {
         model = new Model({
             cache: cache,
             source: source,
-            branchSelector: testConfig.branchSelector || null
+            branchSelector: testConfig.branchSelector
         });
     }
 
@@ -61,7 +61,7 @@ module.exports = function(testConfig) {
         // add the reference container to the model as well if there is one.
         if (testConfig.referenceContainer) {
             model._referenceContainer =
-                getCachePosition(model, testConfig.referenceContainer);
+                getCachePosition(model._root.cache, testConfig.referenceContainer);
         }
     }
 
@@ -87,8 +87,8 @@ module.exports = function(testConfig) {
     // $size is stripped out of basic core tests.
     // We have to strip out parent as well from the output since it will produce
     // infinite recursion.
-    clean(valueNode, {strip: ['$size', '$__version']});
-    clean(expectedOutput, {strip: ['$size', '$__version']});
+    clean(valueNode, {strip: ['$size']});
+    clean(expectedOutput, {strip: ['$size']});
 
     if (expectedOutput) {
         expect(valueNode).to.deep.equals(expectedOutput);
