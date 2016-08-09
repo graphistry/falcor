@@ -2008,6 +2008,9 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path,
                     }
                 }
 
+                // Set the reported branch or leaf into this branch.
+                json[nextKey] = nextJSON;
+
                 // If the user provided a custom function to instrument branches
                 // themselves, call the branchSelector with the existing branch
                 // node. This is necessary if the user wants to ensure branch
@@ -2016,9 +2019,6 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path,
                     json = branchSelector(json, next, nextKey, nextDepth,
                                           false, nextDepth === requestedLength);
                 }
-
-                // Set the reported branch or leaf into this branch.
-                json[nextKey] = nextJSON;
             }
 
         }
