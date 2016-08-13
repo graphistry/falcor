@@ -1902,7 +1902,7 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path,
             rangeEnd = keyset.to;
             nextKey = keyset.from || 0;
             if ("number" !== typeof rangeEnd) {
-                rangeEnd = nextKey + (keyset.length || 0);
+                rangeEnd = nextKey + (keyset.length || 0) - 1;
             }
             if ((rangeEnd - nextKey) < 0) {
                 break iteratingKeyset;
@@ -2418,7 +2418,7 @@ function walkPathAndBuildOutput(cacheRoot, node, path,
             rangeEnd = keyset.to;
             nextKey = keyset.from || 0;
             if ("number" !== typeof rangeEnd) {
-                rangeEnd = nextKey + (keyset.length || 0);
+                rangeEnd = nextKey + (keyset.length || 0) - 1;
             }
             if ((rangeEnd - nextKey) < 0) {
                 break iteratingKeyset;

@@ -62,7 +62,7 @@ describe('Values', function() {
     });
     it('should get a value through references with complex pathSet.', function() {
         getCoreRunner({
-            input: [['lolomo', {to: 1}, {length: 1}, 'item', 'title']],
+            input: [['lolomo', {to: 1}, {length: 2}, 'item', 'title']],
             output: outputGenerator.lolomoGenerator([0, 1], [0, 1]),
             cache: cacheGenerator(0, 30)
         });
@@ -71,7 +71,7 @@ describe('Values', function() {
         var error;
         try {
             getCoreRunner({
-                input: [['lolomo', [[{ to: 1}]], {length: 1}, 'item', 'title']],
+                input: [['lolomo', [[{ to: 1}]], {length: 2}, 'item', 'title']],
                 output: outputGenerator.lolomoGenerator([0, 1], [0, 1]),
                 cache: cacheGenerator(0, 30)
             });
@@ -270,7 +270,7 @@ describe('Values', function() {
     });
     it('should get JSONGraph through references with complex pathSet.', function() {
         getCoreRunner({
-            input: [['lolomo', {to: 1}, {length: 1}, 'item', 'title']],
+            input: [['lolomo', {to: 1}, {length: 2}, 'item', 'title']],
             isJSONG: true,
             output: {
                 jsonGraph: _.merge(cacheGenerator(0, 2), cacheGenerator(10, 2, undefined, false)),
@@ -289,7 +289,7 @@ describe('Values', function() {
         try {
             getCoreRunner({
                 isJSONG: true,
-                input: [['lolomo', [[{ to: 1}]], {length: 1}, 'item', 'title']],
+                input: [['lolomo', [[{ to: 1}]], {length: 2}, 'item', 'title']],
                 output: outputGenerator.lolomoGenerator([0, 1], [0, 1]),
                 cache: cacheGenerator(0, 30)
             });
