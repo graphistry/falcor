@@ -5027,9 +5027,9 @@ TimerDisposable.prototype.dispose = function() {
 module.exports = TimeoutScheduler;
 
 },{}],73:[function(require,module,exports){
-var createHardlink = require(83);
+var arr = new Array(5);
 var $ref = require(118);
-
+var createHardlink = require(83);
 var isExpired = require(91);
 var isFunction = require(93);
 var isPrimitive = require(99);
@@ -5085,6 +5085,12 @@ module.exports = function setJSONGraphs(model, jsonGraphEnvelopes, errorSelector
             );
         }
     }
+
+    arr[0] = undefined;
+    arr[1] = undefined;
+    arr[2] = undefined;
+    arr[3] = undefined;
+    arr[4] = undefined;
 
     var newVersion = cache.ツversion;
     var rootChangeHandler = modelRoot.onChange;
@@ -5153,49 +5159,60 @@ function setReference(
     root, node, messageRoot, message, requestedPath, optimizedPath,
     version, expired, lru, comparator, errorSelector) {
 
+    var parent;
+    var messageParent;
     var reference = node.value;
     optimizedPath = reference.slice(0);
 
     if (isExpired(node)) {
-        optimizedPath.index = reference.length;
         expireNode(node, expired, lru);
-        return [undefined, root, message, messageRoot, optimizedPath];
-    }
+        node = undefined;
+        parent = root;
+        messageParent = messageRoot;
+        optimizedPath.index = reference.length;
+    } else {
 
-    var index = 0;
-    var container = node;
-    var count = reference.length - 1;
-    var parent = node = root;
-    var messageParent = message = messageRoot;
+        var index = 0;
+        var container = node;
+        var count = reference.length - 1;
+        parent = node = root;
+        messageParent = message = messageRoot;
 
-    do {
-        var key = reference[index];
-        var branch = index < count;
+        do {
+            var key = reference[index];
+            var branch = index < count;
+            optimizedPath.index = index;
+
+            var results = setNode(
+                root, parent, node, messageRoot, messageParent, message,
+                key, branch, true, requestedPath, optimizedPath,
+                version, expired, lru, comparator, errorSelector
+            );
+            node = results[0];
+            optimizedPath = results[4];
+            if (isPrimitive(node)) {
+                optimizedPath.index = index;
+                return results;
+            }
+            parent = results[1];
+            message = results[2];
+            messageParent = results[3];
+        } while (index++ < count);
+
         optimizedPath.index = index;
 
-        var results = setNode(
-            root, parent, node, messageRoot, messageParent, message,
-            key, branch, true, requestedPath, optimizedPath,
-            version, expired, lru, comparator, errorSelector
-        );
-        node = results[0];
-        optimizedPath = results[4];
-        if (isPrimitive(node)) {
-            optimizedPath.index = index;
-            return results;
+        if (container.ツcontext !== node) {
+            createHardlink(container, node);
         }
-        parent = results[1];
-        message = results[2];
-        messageParent = results[3];
-    } while (index++ < count);
-
-    optimizedPath.index = index;
-
-    if (container.ツcontext !== node) {
-        createHardlink(container, node);
     }
 
-    return [node, parent, message, messageParent, optimizedPath];
+    arr[0] = node;
+    arr[1] = parent;
+    arr[2] = message;
+    arr[3] = messageParent;
+    arr[4] = optimizedPath;
+
+    return arr;
 }
 
 function setNode(
@@ -5225,39 +5242,42 @@ function setNode(
         type = node.$type;
     }
 
-    if (type !== void 0) {
-        return [node, parent, message, messageParent, optimizedPath];
-    }
-
-    if (key == null) {
-        if (branch) {
-            throw new NullInPathError();
-        } else if (node) {
-            key = node.ツkey;
+    if (type === undefined) {
+        if (key == null) {
+            if (branch) {
+                throw new NullInPathError();
+            } else if (node) {
+                key = node.ツkey;
+            }
+        } else {
+            parent = node;
+            messageParent = message;
+            node = parent[key];
+            message = messageParent && messageParent[key];
         }
-    } else {
-        parent = node;
-        messageParent = message;
-        node = parent[key];
-        message = messageParent && messageParent[key];
+
+        node = mergeJSONGraphNode(
+            parent, node, message, key, requestedPath, optimizedPath,
+            version, expired, lru, comparator, errorSelector
+        );
     }
 
-    node = mergeJSONGraphNode(
-        parent, node, message, key, requestedPath, optimizedPath,
-        version, expired, lru, comparator, errorSelector
-    );
+    arr[0] = node;
+    arr[1] = parent;
+    arr[2] = message;
+    arr[3] = messageParent;
+    arr[4] = optimizedPath;
 
-    return [node, parent, message, messageParent, optimizedPath];
+    return arr;
 }
 
 },{"100":100,"118":118,"141":141,"16":16,"83":83,"84":84,"91":91,"93":93,"99":99}],74:[function(require,module,exports){
-var createHardlink = require(83);
-var __prefix = require(42);
-var $ref = require(118);
-
-var getCachePosition = require(21);
-
+var arr = new Array(3);
 var isArray = Array.isArray;
+var $ref = require(118);
+var __prefix = require(42);
+var createHardlink = require(83);
+var getCachePosition = require(21);
 var hasOwn = require(89);
 var isObject = require(97);
 var isExpired = require(92);
@@ -5306,6 +5326,10 @@ module.exports = function setPathMaps(model, pathMapEnvelopes, errorSelector, co
             version, expired, lru, comparator, errorSelector
         );
     }
+
+    arr[0] = undefined;
+    arr[1] = undefined;
+    arr[2] = undefined;
 
     var newVersion = cache.ツversion;
     var rootChangeHandler = modelRoot.onChange;
@@ -5378,56 +5402,62 @@ function setReference(
     value, root, node, requestedPath, optimizedPath,
     version, expired, lru, comparator, errorSelector) {
 
+    var parent;
     var reference = node.value;
     optimizedPath = reference.slice(0);
 
     if (isExpired(node)) {
-        optimizedPath.index = reference.length;
         expireNode(node, expired, lru);
-        return [undefined, root, optimizedPath];
-    }
-
-    var container = node;
-    var parent = root;
-
-    node = node.ツcontext;
-
-    if (node != null) {
-        parent = node.ツparent || root;
+        node = undefined;
+        parent = root;
         optimizedPath.index = reference.length;
     } else {
+        var container = node;
+        parent = root;
 
-        var index = 0;
-        var count = reference.length - 1;
-        optimizedPath.index = index;
+        node = node.ツcontext;
 
-        parent = node = root;
+        if (node != null) {
+            parent = node.ツparent || root;
+            optimizedPath.index = reference.length;
+        } else {
 
-        do {
-            var key = reference[index];
-            var branch = index < count;
-            var results = setNode(
-                root, parent, node, key, value,
-                branch, true, requestedPath, optimizedPath,
-                version, expired, lru, comparator, errorSelector
-            );
-            node = results[0];
-            optimizedPath = results[2];
-            if (isPrimitive(node)) {
-                optimizedPath.index = index;
-                return results;
+            var index = 0;
+            var count = reference.length - 1;
+            optimizedPath.index = index;
+
+            parent = node = root;
+
+            do {
+                var key = reference[index];
+                var branch = index < count;
+                var results = setNode(
+                    root, parent, node, key, value,
+                    branch, true, requestedPath, optimizedPath,
+                    version, expired, lru, comparator, errorSelector
+                );
+                node = results[0];
+                optimizedPath = results[2];
+                if (isPrimitive(node)) {
+                    optimizedPath.index = index;
+                    return results;
+                }
+                parent = results[1];
+            } while (index++ < count);
+
+            optimizedPath.index = index;
+
+            if (container.ツcontext !== node) {
+                createHardlink(container, node);
             }
-            parent = results[1];
-        } while (index++ < count);
-
-        optimizedPath.index = index;
-
-        if (container.ツcontext !== node) {
-            createHardlink(container, node);
         }
     }
 
-    return [node, parent, optimizedPath];
+    arr[0] = node;
+    arr[1] = parent;
+    arr[2] = optimizedPath;
+
+    return arr;
 }
 
 function setNode(
@@ -5454,28 +5484,30 @@ function setNode(
         type = node && node.$type;
     }
 
-    if (type !== void 0) {
-        return [node, parent, optimizedPath];
-    }
-
-    if (key == null) {
-        if (branch) {
-            throw new NullInPathError();
-        } else if (node) {
-            key = node.ツkey;
+    if (type === void 0) {
+        if (key == null) {
+            if (branch) {
+                throw new NullInPathError();
+            } else if (node) {
+                key = node.ツkey;
+            }
+        } else {
+            parent = node;
+            node = parent[key];
         }
-    } else {
-        parent = node;
-        node = parent[key];
+
+        node = mergeValueOrInsertBranch(
+            parent, node, key, value,
+            branch, reference, requestedPath, optimizedPath,
+            version, expired, lru, comparator, errorSelector
+        );
     }
 
-    node = mergeValueOrInsertBranch(
-        parent, node, key, value,
-        branch, reference, requestedPath, optimizedPath,
-        version, expired, lru, comparator, errorSelector
-    );
+    arr[0] = node;
+    arr[1] = parent;
+    arr[2] = optimizedPath;
 
-    return [node, parent, optimizedPath];
+    return arr;
 }
 
 function getKeys(pathMap) {
@@ -5499,11 +5531,10 @@ function getKeys(pathMap) {
 }
 
 },{"101":101,"118":118,"16":16,"21":21,"42":42,"83":83,"84":84,"89":89,"92":92,"93":93,"97":97,"99":99}],75:[function(require,module,exports){
-var createHardlink = require(83);
+var arr = new Array(3);
 var $ref = require(118);
-
+var createHardlink = require(83);
 var getCachePosition = require(21);
-
 var isExpired = require(92);
 var isFunction = require(93);
 var isPrimitive = require(99);
@@ -5554,6 +5585,10 @@ module.exports = function setPathValues(model, pathValues, errorSelector, compar
         );
     }
 
+    arr[0] = undefined;
+    arr[1] = undefined;
+    arr[2] = undefined;
+
     var newVersion = cache.ツversion;
     var rootChangeHandler = modelRoot.onChange;
 
@@ -5588,6 +5623,9 @@ function setPathSet(
             version, expired, lru, comparator, errorSelector
         );
 
+        requestedPath[depth] = key;
+        requestedPath.index = depth;
+
         var nextNode = results[0];
         var nextParent = results[1];
         var nextOptimizedPath = results[2];
@@ -5619,57 +5657,64 @@ function setReference(
     value, root, node, requestedPath, optimizedPath,
     version, expired, lru, comparator, errorSelector) {
 
+    var parent;
     var reference = node.value;
     optimizedPath = reference.slice(0);
 
     if (isExpired(node)) {
-        optimizedPath.index = reference.length;
         expireNode(node, expired, lru);
-        return [undefined, root, optimizedPath];
-    }
-
-    var container = node;
-    var parent = root;
-
-    node = node.ツcontext;
-
-    if (node != null) {
-        parent = node.ツparent || root;
+        node = undefined;
+        parent = root;
         optimizedPath.index = reference.length;
     } else {
 
-        var index = 0;
-        var count = reference.length - 1;
+        var container = node;
+        parent = root;
 
-        parent = node = root;
+        node = node.ツcontext;
 
-        do {
-            var key = reference[index];
-            var branch = index < count;
+        if (node != null) {
+            parent = node.ツparent || root;
+            optimizedPath.index = reference.length;
+        } else {
+
+            var index = 0;
+            var count = reference.length - 1;
+
+            parent = node = root;
+
+            do {
+                var key = reference[index];
+                var branch = index < count;
+                optimizedPath.index = index;
+
+                var results = setNode(
+                    root, parent, node, key, value,
+                    branch, true, requestedPath, optimizedPath,
+                    version, expired, lru, comparator, errorSelector
+                );
+                node = results[0];
+                optimizedPath = results[2];
+                if (isPrimitive(node)) {
+                    optimizedPath.index = index;
+                    return results;
+                }
+                parent = results[1];
+            } while (index++ < count);
+
             optimizedPath.index = index;
 
-            var results = setNode(
-                root, parent, node, key, value,
-                branch, true, requestedPath, optimizedPath,
-                version, expired, lru, comparator, errorSelector
-            );
-            node = results[0];
-            optimizedPath = results[2];
-            if (isPrimitive(node)) {
-                optimizedPath.index = index;
-                return results;
+            if (container.ツcontext !== node) {
+                createHardlink(container, node);
             }
-            parent = results[1];
-        } while (index++ < count);
-
-        optimizedPath.index = index;
-
-        if (container.ツcontext !== node) {
-            createHardlink(container, node);
         }
     }
 
-    return [node, parent, optimizedPath];
+    arr[0] = node;
+    arr[1] = parent;
+    arr[2] = optimizedPath;
+
+    return arr;
 }
 
 function setNode(
@@ -5697,28 +5742,30 @@ function setNode(
         type = node.$type;
     }
 
-    if (branch && type !== void 0) {
-        return [node, parent, optimizedPath];
-    }
-
-    if (key == null) {
-        if (branch) {
-            throw new NullInPathError();
-        } else if (node) {
-            key = node.ツkey;
+    if (!branch || type === undefined) {
+        if (key == null) {
+            if (branch) {
+                throw new NullInPathError();
+            } else if (node) {
+                key = node.ツkey;
+            }
+        } else {
+            parent = node;
+            node = parent[key];
         }
-    } else {
-        parent = node;
-        node = parent[key];
+
+        node = mergeValueOrInsertBranch(
+            parent, node, key, value,
+            branch, reference, requestedPath, optimizedPath,
+            version, expired, lru, comparator, errorSelector
+        );
     }
 
-    node = mergeValueOrInsertBranch(
-        parent, node, key, value,
-        branch, reference, requestedPath, optimizedPath,
-        version, expired, lru, comparator, errorSelector
-    );
+    arr[0] = node;
+    arr[1] = parent;
+    arr[2] = optimizedPath;
 
-    return [node, parent, optimizedPath];
+    return arr;
 }
 
 },{"101":101,"118":118,"141":141,"16":16,"21":21,"83":83,"84":84,"92":92,"93":93,"99":99}],76:[function(require,module,exports){
