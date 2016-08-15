@@ -2097,7 +2097,7 @@ function getJSONGraph(model, paths, values) {
 
 },{"35":35,"9":9}],32:[function(require,module,exports){
 var arr = new Array(2);
-var onValue = require(34);
+var clone = require(18);
 var $ref = require(118);
 var inlineValue = require(33);
 var promote = require(47);
@@ -2156,9 +2156,7 @@ function getReferenceTarget(root, ref, modelRoot, seed, boxValues, materialized)
 
                 promote(modelRoot, node);
 
-                inlineValue(onValue(node, type, null, null, null, null,
-                                    false, boxValues, materialized),
-                            path, length, seed);
+                inlineValue(clone(node), path, length, seed);
 
                 depth = 0;
                 ref = node;
@@ -2214,7 +2212,7 @@ function getReferenceTarget(root, ref, modelRoot, seed, boxValues, materialized)
 }
 /* eslint-enable */
 
-},{"10":10,"118":118,"33":33,"34":34,"47":47,"83":83,"92":92}],33:[function(require,module,exports){
+},{"10":10,"118":118,"18":18,"33":33,"47":47,"83":83,"92":92}],33:[function(require,module,exports){
 module.exports = inlineJSONGraphValue;
 
 /* eslint-disable no-constant-condition */
@@ -2568,7 +2566,7 @@ function isEmptyKeySet(keyset) {
     var rangeEnd = keyset.to,
         from = keyset.from || 0;
     if ("number" !== typeof rangeEnd) {
-        rangeEnd = from + ((keyset.length || 0) - 1);
+        rangeEnd = from + (keyset.length || 0);
     }
 
     // false if trying to request incorrect or empty ranges
@@ -3384,7 +3382,7 @@ GetRequestV2.prototype = {
                     value: error
                 };
             });
-            setPathValues(model, pathValues, null, errorSelector, comparator);
+            setPathValues(model, pathValues, errorSelector, comparator);
         }
 
         // Insert the jsonGraph from the dataSource.
@@ -3392,7 +3390,7 @@ GetRequestV2.prototype = {
             setJSONGraphs(model, [{
                 paths: nextPaths,
                 jsonGraph: data.jsonGraph
-            }], null, errorSelector, comparator);
+            }], errorSelector, comparator);
         }
 
         // return the model"s boundPath
@@ -3805,7 +3803,7 @@ var sendSetRequest = function(originalJsonGraph, model, callback) {
             var successfulPaths = setJSONGraphs(model, [{
                 paths: paths,
                 jsonGraph: jsonGraphEnvelope.jsonGraph
-            }], null, errorSelector, comparator);
+            }], errorSelector, comparator);
 
             jsonGraphEnvelope.paths = successfulPaths[1];
 
@@ -3822,7 +3820,7 @@ var sendSetRequest = function(originalJsonGraph, model, callback) {
                     path: path,
                     value: dataSourceError
                 };
-            }), null, errorSelector, comparator);
+            }), errorSelector, comparator);
 
             model._path = boundPath;
 
@@ -4829,7 +4827,7 @@ module.exports = function setGroupsIntoCache(model, groups) {
         if (methodArgs.length > 0) {
             var operationName = "_set" + inputType;
             var operationFunc = model[operationName];
-            var successfulPaths = operationFunc(model, methodArgs, null, errorSelector);
+            var successfulPaths = operationFunc(model, methodArgs, errorSelector);
 
             optimizedPaths.push.apply(optimizedPaths, successfulPaths[1]);
 
@@ -5048,7 +5046,7 @@ var NullInPathError = require(16);
  * @return {Array.<Array.<Path>>} - an Array of Arrays where each inner Array is a list of requested and optimized paths (respectively) for the successfully set values.
  */
 
-module.exports = function setJSONGraphs(model, jsonGraphEnvelopes, x, errorSelector, comparator) {
+module.exports = function setJSONGraphs(model, jsonGraphEnvelopes, errorSelector, comparator) {
 
     var modelRoot = model._root;
     var lru = modelRoot;
@@ -5123,20 +5121,23 @@ function setJSONGraphPathSet(
 
         requestedPath[depth] = key;
         requestedPath.index = depth;
-        optimizedPath[optimizedPath.index++] = key;
+
         var nextNode = results[0];
         var nextParent = results[1];
+        var nextOptimizedPath = results[4];
+        nextOptimizedPath[nextOptimizedPath.index++] = key;
+
         if (nextNode) {
             if (branch) {
                 setJSONGraphPathSet(
                     path, depth + 1, root, nextParent, nextNode,
                     messageRoot, results[3], results[2],
-                    requestedPaths, optimizedPaths, requestedPath, optimizedPath,
+                    requestedPaths, optimizedPaths, requestedPath, nextOptimizedPath,
                     version, expired, lru, comparator, errorSelector
                 );
             } else {
                 requestedPaths.push(requestedPath.slice(0, requestedPath.index + 1));
-                optimizedPaths.push(optimizedPath.slice(0, optimizedPath.index));
+                optimizedPaths.push(nextOptimizedPath.slice(0, nextOptimizedPath.index));
             }
         }
         key = iterateKeySet(keySet, note);
@@ -5153,13 +5154,12 @@ function setReference(
     version, expired, lru, comparator, errorSelector) {
 
     var reference = node.value;
-    optimizedPath.splice(0, optimizedPath.length);
-    optimizedPath.push.apply(optimizedPath, reference);
+    optimizedPath = reference.slice(0);
 
     if (isExpired(node)) {
         optimizedPath.index = reference.length;
         expireNode(node, expired, lru);
-        return [undefined, root, message, messageRoot];
+        return [undefined, root, message, messageRoot, optimizedPath];
     }
 
     var index = 0;
@@ -5179,6 +5179,7 @@ function setReference(
             version, expired, lru, comparator, errorSelector
         );
         node = results[0];
+        optimizedPath = results[4];
         if (isPrimitive(node)) {
             optimizedPath.index = index;
             return results;
@@ -5194,7 +5195,7 @@ function setReference(
         createHardlink(container, node);
     }
 
-    return [node, parent, message, messageParent];
+    return [node, parent, message, messageParent, optimizedPath];
 }
 
 function setNode(
@@ -5220,11 +5221,12 @@ function setNode(
         parent = results[1];
         message = results[2];
         messageParent = results[3];
+        optimizedPath = results[4];
         type = node.$type;
     }
 
     if (type !== void 0) {
-        return [node, parent, message, messageParent];
+        return [node, parent, message, messageParent, optimizedPath];
     }
 
     if (key == null) {
@@ -5245,7 +5247,7 @@ function setNode(
         version, expired, lru, comparator, errorSelector
     );
 
-    return [node, parent, message, messageParent];
+    return [node, parent, message, messageParent, optimizedPath];
 }
 
 },{"100":100,"118":118,"141":141,"16":16,"83":83,"84":84,"91":91,"93":93,"99":99}],74:[function(require,module,exports){
@@ -5273,7 +5275,7 @@ var NullInPathError = require(16);
  * @return {Array.<Array.<Path>>} - an Array of Arrays where each inner Array is a list of requested and optimized paths (respectively) for the successfully set values.
  */
 
-module.exports = function setPathMaps(model, pathMapEnvelopes, x, errorSelector, comparator) {
+module.exports = function setPathMaps(model, pathMapEnvelopes, errorSelector, comparator) {
 
     var modelRoot = model._root;
     var lru = modelRoot;
@@ -5345,20 +5347,22 @@ function setPathMap(
             requestedPath[depth] = key;
             requestedPath.index = depth;
 
-            optimizedPath[optimizedPath.index++] = key;
             var nextNode = results[0];
             var nextParent = results[1];
+            var nextOptimizedPath = results[2];
+            nextOptimizedPath[nextOptimizedPath.index++] = key;
+
             if (nextNode) {
                 if (branch) {
                     setPathMap(
                         child, depth + 1,
                         root, nextParent, nextNode,
-                        requestedPaths, optimizedPaths, requestedPath, optimizedPath,
+                        requestedPaths, optimizedPaths, requestedPath, nextOptimizedPath,
                         version, expired, lru, comparator, errorSelector
                     );
                 } else {
                     requestedPaths.push(requestedPath.slice(0, requestedPath.index + 1));
-                    optimizedPaths.push(optimizedPath.slice(0, optimizedPath.index));
+                    optimizedPaths.push(nextOptimizedPath.slice(0, nextOptimizedPath.index));
                 }
             }
             if (++keyIndex >= keyCount) {
@@ -5375,13 +5379,12 @@ function setReference(
     version, expired, lru, comparator, errorSelector) {
 
     var reference = node.value;
-    optimizedPath.splice(0, optimizedPath.length);
-    optimizedPath.push.apply(optimizedPath, reference);
+    optimizedPath = reference.slice(0);
 
     if (isExpired(node)) {
         optimizedPath.index = reference.length;
         expireNode(node, expired, lru);
-        return [undefined, root];
+        return [undefined, root, optimizedPath];
     }
 
     var container = node;
@@ -5409,6 +5412,7 @@ function setReference(
                 version, expired, lru, comparator, errorSelector
             );
             node = results[0];
+            optimizedPath = results[2];
             if (isPrimitive(node)) {
                 optimizedPath.index = index;
                 return results;
@@ -5423,7 +5427,7 @@ function setReference(
         }
     }
 
-    return [node, parent];
+    return [node, parent, optimizedPath];
 }
 
 function setNode(
@@ -5446,11 +5450,12 @@ function setNode(
         }
 
         parent = results[1];
+        optimizedPath = results[2];
         type = node && node.$type;
     }
 
     if (type !== void 0) {
-        return [node, parent];
+        return [node, parent, optimizedPath];
     }
 
     if (key == null) {
@@ -5470,7 +5475,7 @@ function setNode(
         version, expired, lru, comparator, errorSelector
     );
 
-    return [node, parent];
+    return [node, parent, optimizedPath];
 }
 
 function getKeys(pathMap) {
@@ -5515,7 +5520,7 @@ var NullInPathError = require(16);
  * @return {Array.<Array.<Path>>} - an Array of Arrays where each inner Array is a list of requested and optimized paths (respectively) for the successfully set values.
  */
 
-module.exports = function setPathValues(model, pathValues, x, errorSelector, comparator) {
+module.exports = function setPathValues(model, pathValues, errorSelector, comparator) {
 
     var modelRoot = model._root;
     var lru = modelRoot;
@@ -5574,28 +5579,31 @@ function setPathSet(
     do {
 
         requestedPath.depth = depth;
+        requestedPath[depth] = key;
+        requestedPath.index = depth;
 
         var results = setNode(
             root, parent, node, key, value,
             branch, false, requestedPath, optimizedPath,
             version, expired, lru, comparator, errorSelector
         );
-        requestedPath[depth] = key;
-        requestedPath.index = depth;
-        optimizedPath[optimizedPath.index++] = key;
+
         var nextNode = results[0];
         var nextParent = results[1];
+        var nextOptimizedPath = results[2];
+        nextOptimizedPath[nextOptimizedPath.index++] = key;
+
         if (nextNode) {
             if (branch) {
                 setPathSet(
                     value, path, depth + 1,
                     root, nextParent, nextNode,
-                    requestedPaths, optimizedPaths, requestedPath, optimizedPath,
+                    requestedPaths, optimizedPaths, requestedPath, nextOptimizedPath,
                     version, expired, lru, comparator, errorSelector
                 );
             } else {
                 requestedPaths.push(requestedPath.slice(0, requestedPath.index + 1));
-                optimizedPaths.push(optimizedPath.slice(0, optimizedPath.index));
+                optimizedPaths.push(nextOptimizedPath.slice(0, nextOptimizedPath.index));
             }
         }
         key = iterateKeySet(keySet, note);
@@ -5612,13 +5620,12 @@ function setReference(
     version, expired, lru, comparator, errorSelector) {
 
     var reference = node.value;
-    optimizedPath.splice(0, optimizedPath.length);
-    optimizedPath.push.apply(optimizedPath, reference);
+    optimizedPath = reference.slice(0);
 
     if (isExpired(node)) {
         optimizedPath.index = reference.length;
         expireNode(node, expired, lru);
-        return [undefined, root];
+        return [undefined, root, optimizedPath];
     }
 
     var container = node;
@@ -5647,6 +5654,7 @@ function setReference(
                 version, expired, lru, comparator, errorSelector
             );
             node = results[0];
+            optimizedPath = results[2];
             if (isPrimitive(node)) {
                 optimizedPath.index = index;
                 return results;
@@ -5661,7 +5669,7 @@ function setReference(
         }
     }
 
-    return [node, parent];
+    return [node, parent, optimizedPath];
 }
 
 function setNode(
@@ -5685,11 +5693,12 @@ function setNode(
         }
 
         parent = results[1];
+        optimizedPath = results[2];
         type = node.$type;
     }
 
     if (branch && type !== void 0) {
-        return [node, parent];
+        return [node, parent, optimizedPath];
     }
 
     if (key == null) {
@@ -5709,7 +5718,7 @@ function setNode(
         version, expired, lru, comparator, errorSelector
     );
 
-    return [node, parent];
+    return [node, parent, optimizedPath];
 }
 
 },{"101":101,"118":118,"141":141,"16":16,"21":21,"83":83,"84":84,"92":92,"93":93,"99":99}],76:[function(require,module,exports){
@@ -5786,7 +5795,7 @@ module.exports = function setValueSync(pathArg, valueArg, errorSelectorArg, comp
     }
 
     this._syncCheck("setValueSync");
-    setPathValues(this, [value], null, errorSelector, comparator);
+    setPathValues(this, [value], errorSelector, comparator);
     return this.__getValueSync(this, value.path).value;
 };
 
