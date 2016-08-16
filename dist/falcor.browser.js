@@ -1979,19 +1979,23 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path,
                     if (branchSelector) {
 
                         // branchSelector = (
-                        //    json: Object|void,
-                        //    node: Object,
-                        //    nodeKey: String|Number,
-                        //    nodeDepth: Number,
-                        //    isRootNode: Boolean,
-                        //    isLeafNode: Boolean,
-                        //    refContainer?: Object
+                        //     nodeKey: String|Number|null,
+                        //     nodePath: Array|null,
+                        //     nodeVersion: Number,
+                        //     requestedPath: Array,
+                        //     requestedDepth: Number,
+                        //     referencePath: Array|null,
+                        //     pathToReference: Array|null
                         // ) => Object { $__path?, $__refPath?, $__toReference? }
 
-                        json = branchSelector(json, node, nodeKey, depth,
-                                              0 === depth, false,
-                                              allowFromWhenceYouCame &&
-                                              referenceContainer);
+                        json = branchSelector(nodeKey,
+                                              node.ツabsolutePath,
+                                              node.ツversion, path, depth,
+                                              allowFromWhenceYouCame && referenceContainer &&
+                                                  referenceContainer.value || undefined,
+                                              allowFromWhenceYouCame && referenceContainer &&
+                                                  referenceContainer.ツabsolutePath || undefined);
+
                     }
                     // Otherwise, create a branch ourselves and assign the required metadata
                     else {
@@ -2010,15 +2014,6 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path,
 
                 // Set the reported branch or leaf into this branch.
                 json[nextKey] = nextJSON;
-
-                // If the user provided a custom function to instrument branches
-                // themselves, call the branchSelector with the existing branch
-                // node. This is necessary if the user wants to ensure branch
-                // immutability, compute hashes, etc.
-                if (branchSelector) {
-                    json = branchSelector(json, next, nextKey, nextDepth,
-                                          false, nextDepth === requestedLength);
-                }
             }
 
         }

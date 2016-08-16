@@ -156,16 +156,27 @@ describe('Values', function() {
         getCoreRunner({
             input: [['videos', [0, 1], 'title']],
             cache: cacheGenerator(0, 2),
-            branchSelector: function(json, node, key, depth, isRoot, isLeaf, referenceContainer) {
-                if (!json) {
-                    json = { $__userGenerated: true };
-                    if (isRoot === false) {
-                        json.$__path = node.ツabsolutePath;
-                    }
-                    if (referenceContainer) {
-                        json.$__refPath = referenceContainer.value;
-                        json.$__toReference = referenceContainer.ツabsolutePath;
-                    }
+
+            // branchSelector = (
+            //     nodeKey: String|Number|null,
+            //     nodePath: Array|null,
+            //     nodeVersion: Number,
+            //     requestedPath: Array,
+            //     requestedDepth: Number,
+            //     referencePath: Array|null,
+            //     pathToReference: Array|null
+            // ) => Object { $__path?, $__refPath?, $__toReference? }
+
+            branchSelector: function(key, path, version,
+                                     requestedPath, requestedDepth,
+                                     referencePath, pathToReference) {
+                var json = { $__userGenerated: true };
+                if (path) {
+                    json.$__path = path;
+                }
+                if (referencePath && pathToReference) {
+                    json.$__refPath = referencePath;
+                    json.$__toReference = pathToReference;
                 }
                 return json;
             },
