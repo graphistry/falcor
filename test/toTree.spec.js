@@ -50,5 +50,20 @@ describe('toTree', function() {
 
         expect(output).to.deep.equals(input);
     });
+
+    it('should not insert nulls', function() {
+        var input = [
+            ['one', ['two', 'three'], null],
+            ['one', {from: 0, to: 3}, null]
+        ];
+        var out = {
+            one: {
+                three: null, two: null,
+                0: null, 1: null, 2: null, 3: null
+            }
+        };
+
+        expect(toTree(input)).to.deep.equals(out);
+    });
 });
 
