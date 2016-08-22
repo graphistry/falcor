@@ -45,7 +45,7 @@ describe('Nulls', function() {
             }
         });
 
-        it('should throw if null at end of path but reference points to a branch node.', function() {
+        xit('should throw if null at end of path but reference points to a branch node.', function() {
             var error;
             try {
                 getCoreRunner({
@@ -110,7 +110,7 @@ describe('Nulls', function() {
             }
         });
 
-        it('should throw if null at end of path but reference points to a branch node.', function() {
+        xit('should throw if null at end of path but reference points to a branch node.', function() {
             var error;
             try {
                 getCoreRunner({
