@@ -71,13 +71,13 @@ describe('toPaths', function() {
 
     it('should explode a simplePath.', function() {
         var out = ['one', 'two'];
-        var input = {2: {one: {two: null}}};
+        var input = {2: {one: {two: undefined}}};
 
         expect(toPaths(input)).to.deep.equals([out]);
     });
 
     it('should explode a complex.', function() {
-        var input = {2: {one: {two: null, three: null}}};
+        var input = {2: {one: {two: undefined, three: undefined}}};
         var out = ['one', ['three', 'two']];
         var output = toPaths(input);
         output[0][1].sort();
@@ -93,16 +93,16 @@ describe('toPaths', function() {
         var input = {
             2: {
                 one: {
-                    three: null,
-                    two: null
+                    three: undefined,
+                    two: undefined
                 }
             },
             3: {
                 one: {
-                    0: { summary: null },
-                    1: { summary: null },
-                    2: { summary: null },
-                    3: { summary: null }
+                    0: { summary: undefined },
+                    1: { summary: undefined },
+                    2: { summary: undefined },
+                    3: { summary: undefined }
                 }
             }
         };
@@ -122,32 +122,61 @@ describe('toPaths', function() {
     it('should translate between toPaths and toTrees', function() {
         var expectedTree = {
             one: {
-                0: { summary: null },
-                1: { summary: null },
-                2: { summary: null },
-                3: { summary: null },
-                three: null,
-                two: null
+                0: { summary: undefined },
+                1: { summary: undefined },
+                2: { summary: undefined },
+                3: { summary: undefined },
+                three: undefined,
+                two: undefined
             }
         };
         var treeMap = {
             2: {
                 one: {
-                    three: null,
-                    two: null
+                    three: undefined,
+                    two: undefined
                 }
             },
             3: {
                 one: {
-                    0: { summary: null },
-                    1: { summary: null },
-                    2: { summary: null },
-                    3: { summary: null }
+                    0: { summary: undefined },
+                    1: { summary: undefined },
+                    2: { summary: undefined },
+                    3: { summary: undefined }
                 }
             }
         };
 
         expect(toTree(toPaths(treeMap))).to.deep.equals(expectedTree);
+    });
+
+    it('should insert nulls at the end of paths', function() {
+        var out = [
+            ['one', [0, 1, 2, 3, 'three', 'two', ], null]
+        ];
+        var input = {
+            3: {
+                one: {
+                    three: { $__null__$: undefined },
+                    two: { $__null__$: undefined },
+                    0: { $__null__$: undefined },
+                    1: { $__null__$: undefined },
+                    2: { $__null__$: undefined },
+                    3: { $__null__$: undefined }
+                }
+            }
+        };
+
+        var output = toPaths(input);
+        if (!Array.isArray(output[0][1])) {
+            var tmp = output[0];
+            output[0] = output[1];
+            output[1] = tmp;
+        }
+
+        output[0][1].sort();
+
+        expect(output).to.deep.equals(out);
     });
 });
 

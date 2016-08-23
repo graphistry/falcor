@@ -5,14 +5,14 @@ var expect = require('chai').expect;
 describe('toTree', function() {
     it('should explode a simplePath.', function() {
         var input = ['one', 'two'];
-        var out = {one: {two: null}};
+        var out = {one: {two: undefined}};
 
         expect(toTree([input])).to.deep.equals(out);
     });
 
     it('should explode a complex.', function() {
         var input = ['one', ['two', 'three']];
-        var out = {one: {three: null, two: null}};
+        var out = {one: {three: undefined, two: undefined}};
 
         expect(toTree([input])).to.deep.equals(out);
     });
@@ -24,12 +24,12 @@ describe('toTree', function() {
         ];
         var out = {
             one: {
-                three: null,
-                two: null,
-                0: { summary: null },
-                1: { summary: null },
-                2: { summary: null },
-                3: { summary: null }
+                three: undefined,
+                two: undefined,
+                0: { summary: undefined },
+                1: { summary: undefined },
+                2: { summary: undefined },
+                3: { summary: undefined }
             }
         };
 
@@ -51,15 +51,19 @@ describe('toTree', function() {
         expect(output).to.deep.equals(input);
     });
 
-    it('should not insert nulls', function() {
+    it('should insert nulls with special key name', function() {
         var input = [
             ['one', ['two', 'three'], null],
             ['one', {from: 0, to: 3}, null]
         ];
         var out = {
             one: {
-                three: null, two: null,
-                0: null, 1: null, 2: null, 3: null
+                three: { $__null__$: undefined },
+                two: { $__null__$: undefined },
+                0: { $__null__$: undefined },
+                1: { $__null__$: undefined },
+                2: { $__null__$: undefined },
+                3: { $__null__$: undefined }
             }
         };
 
