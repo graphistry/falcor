@@ -1,46 +1,54 @@
 {
-	"author": {
-		"email": "giovanni.calo@live.it",
-		"name": "Giovanni Calò",
-		"url": "https://github.com/giovannicalo"
-	},
-	"bugs": {
-		"url": "https://github.com/giovannicalo/falcor-socket-datasource/issues"
-	},
-	"dependencies": {
-		"falcor": "^0.1.17",
-		"rx": "^4.1.0",
-		"socket.io-client": "^1.4.6",
-		"uuid": "^2.0.2"
-	},
-	"description": "A socket DataSource for Falcor",
-	"devDependencies": {
-		"babel-cli": "^6.8.0",
-		"babel-preset-node-giovanni": "^1.1.2",
-		"chai": "^3.5.0",
-		"coveralls": "^2.11.9",
-		"eslint-config-giovanni": "^2.0.0",
-		"falcor-router": "^0.4.0",
-		"isparta": "^4.0.0",
-		"mocha": "^2.4.5",
-		"posix-cat": "^1.1.1",
-		"rimraf": "^2.5.2",
-		"socket.io": "^1.4.6"
-	},
-	"homepage": "https://github.com/giovannicalo/falcor-socket-datasource",
-	"keywords": ["datasource", "falcor", "socket", "socket.io", "websocket"],
-	"license": "MIT",
-	"main": "dist/index.js",
-	"name": "falcor-socket-datasource",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/giovannicalo/falcor-socket-datasource.git"
-	},
-	"scripts": {
-		"coverage": "babel-node node_modules/isparta/bin/isparta cover node_modules/mocha/bin/_mocha --report lcovonly -- --compilers js:babel-register --recursive && cat coverage/lcov.info | node node_modules/coveralls/bin/coveralls.js && rimraf coverage",
-		"lint": "eslint .",
-		"prepublish": "npm run lint && npm test && babel source --out-dir dist",
-		"test": "mocha --compilers js:babel-register --recursive"
-	},
-	"version": "1.0.4"
+  "author": {
+    "email": "giovanni.calo@live.it",
+    "name": "Giovanni Calò",
+    "url": "https://github.com/giovannicalo"
+  },
+  "bugs": {
+    "url": "https://github.com/giovannicalo/falcor-socket-datasource/issues"
+  },
+  "dependencies": {
+    "socket.io-client": "^1.4.6",
+    "uuid": "^2.0.2"
+  },
+  "description": "A socket DataSource for Falcor",
+  "devDependencies": {
+    "babel-cli": "^6.8.0",
+    "babel-preset-node-giovanni": "^1.1.2",
+    "chai": "^3.5.0",
+    "coveralls": "^2.11.9",
+    "eslint-config-giovanni": "^2.0.0",
+    "falcor": "netflix/falcor",
+    "falcor-router": "^0.4.0",
+    "isparta": "^4.0.0",
+    "mocha": "^2.4.5",
+    "posix-cat": "^1.1.1",
+    "rimraf": "^2.5.2",
+    "rx": "~4.1.0",
+    "rxjs": "~5.0.0-beta.11",
+    "socket.io": "^1.4.6"
+  },
+  "homepage": "https://github.com/giovannicalo/falcor-socket-datasource",
+  "keywords": [
+    "datasource",
+    "falcor",
+    "socket",
+    "socket.io",
+    "websocket"
+  ],
+  "license": "MIT",
+  "main": "dist/index.js",
+  "name": "falcor-socket-datasource",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/giovannicalo/falcor-socket-datasource.git"
+  },
+  "scripts": {
+    "coverage": "babel-node node_modules/isparta/bin/isparta cover node_modules/mocha/bin/_mocha --report lcovonly -- --compilers js:babel-register --recursive && cat coverage/lcov.info | node node_modules/coveralls/bin/coveralls.js && rimraf coverage",
+    "lint": "eslint .",
+    "prepublish": "npm run lint && npm test && babel source --out-dir dist",
+    "test": "_mocha --compilers js:babel-register --recursive",
+    "test-debug": "node --inspect --debug-brk ./node_modules/.bin/_mocha --compilers js:babel-register --recursive"
+  },
+  "version": "1.0.4"
 }

@@ -1,3 +1,4 @@
+import { Observable } from "rxjs";
 import FalcorRouter from "falcor-router";
 
 export default new FalcorRouter([{
@@ -13,4 +14,13 @@ export default new FalcorRouter([{
 	set: (jsonGraph) => {
 		return { jsonGraph };
 	}
+}, {
+	get: () => {
+		return Observable.timer(5000).map((value) => {
+			return {
+				path: ["long", "running", "operation"], value
+			};
+		});
+	},
+	route: ["long", "running", "operation"]
 }]);
