@@ -1,5 +1,5 @@
 var Observable = require('Rx').Observable;
-var R = require('falcor-router');
+var R = require('@graphistry/falcor-router');
 var Cache = require('./../Cache');
 module.exports = function() {
     return {
@@ -21,7 +21,7 @@ module.exports = function() {
                                             ['lists', listId, idx]
                                         ]
                                     };
-                                    
+
                                     // The reference case
                                     if (Array.isArray(cachedList)) {
                                         list[listId] = cachedList;

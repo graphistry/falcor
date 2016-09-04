@@ -189,6 +189,7 @@ describe('#add', function() {
                 }).
                 subscribe(noOp, done, done);
         });
+        debugger
         var disposable1 = request.batch([videos0], [videos0], zip);
         expect(request.sent, 'request should be sent').to.be.ok;
 

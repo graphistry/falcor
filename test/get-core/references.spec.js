@@ -100,7 +100,7 @@ describe('References', function() {
             input: [['toExpiredTitle', null]],
             output: { },
             cache: referenceCache,
-            optimizedMissingPaths: [['expired', 'title', null]],
+            optimizedMissingPaths: [['expired', 'title']],
             requestedMissingPaths: [['toExpiredTitle', null]]
         });
         getCoreRunner({
@@ -112,7 +112,7 @@ describe('References', function() {
                 }
             },
             cache: referenceCache,
-            optimizedMissingPaths: [['expired', 'title', null]],
+            optimizedMissingPaths: [['expired', 'title']],
             requestedMissingPaths: [['toExpiredTitle', null]]
         });
     });

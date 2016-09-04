@@ -1,6 +1,6 @@
 var falcor = require('../../lib');
 var Rx = require('rx');
-var R = require('falcor-router');
+var R = require('@graphistry/falcor-router');
 var noOp = function() {};
 var chai = require('chai');
 var expect = chai.expect;
