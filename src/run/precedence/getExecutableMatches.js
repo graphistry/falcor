@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-var pathUtils = require('falcor-path-utils');
+var pathUtils = require('@graphistry/falcor-path-utils');
 var collapse = pathUtils.collapse;
 var stripPath = require('./../../operations/strip/stripPath');
 var hasIntersection = require('./../../operations/matcher/intersection/hasIntersection');

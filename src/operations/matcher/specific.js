@@ -1,4 +1,4 @@
-var iterateKeySet = require('falcor-path-utils').iterateKeySet;
+var iterateKeySet = require('@graphistry/falcor-path-utils').iterateKeySet;
 
 module.exports = function specificMatcher(keySet, currentNode) {
     // --------------------------------------

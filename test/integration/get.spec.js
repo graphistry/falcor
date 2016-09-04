@@ -1,4 +1,4 @@
-var falcor = require('falcor');
+var falcor = require('@graphistry/falcor');
 var Rx = require('rxjs');
 var R = require('./../../src/Router');
 var Routes = require('./../data');

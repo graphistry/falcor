@@ -3,7 +3,7 @@ var noOp = function() {};
 var chai = require('chai');
 var expect = chai.expect;
 var sinon = require('sinon');
-var falcor = require('falcor');
+var falcor = require('@graphistry/falcor');
 var $ref = falcor.Model.ref;
 var circularReference = require('./../../../src/exceptions').circularReference;
 var Promise = require('promise');
@@ -72,10 +72,12 @@ describe('Error', function() {
         var router = new R([{
             route: 'videos[{integers:id}].rating',
             get: function(json) {
+                /* eslint-disable no-throw-literal */
                 throw {
                     message: "not authorized",
                     unauthorized: true
                 };
+                /* eslint-enable no-throw-literal */
             }
         }]);
         var onNext = sinon.spy();
@@ -162,10 +164,12 @@ describe('Error', function() {
         var router = new R([{
             route: 'videos[{integers:id}].rating',
             set: function(json) {
+                /* eslint-disable no-throw-literal */
                 throw {
                     message: "not authorized",
                     unauthorized: true
                 };
+                /* eslint-enable no-throw-literal */
             }
         }]);
         var onNext = sinon.spy();

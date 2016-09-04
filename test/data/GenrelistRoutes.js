@@ -1,7 +1,7 @@
 var Rx = require('rxjs');
 var Observable = Rx.Observable;
 var TestRunner = require('./../TestRunner');
-var falcor = require('falcor');
+var falcor = require('@graphistry/falcor');
 var $ref = falcor.Model.ref;
 
 module.exports = function() {

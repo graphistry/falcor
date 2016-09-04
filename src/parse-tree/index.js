@@ -1,6 +1,6 @@
 var Keys = require('../Keys');
 var actionWrapper = require('./actionWrapper');
-var pathSyntax = require('falcor-path-syntax');
+var pathSyntax = require('@graphistry/falcor-path-syntax');
 var convertTypes = require('./convertTypes');
 var prettifyRoute = require('./../support/prettifyRoute');
 var errors = require('./../exceptions');

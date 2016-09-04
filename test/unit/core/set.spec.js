@@ -3,7 +3,7 @@ var Routes = require('./../../data');
 var noOp = function() {};
 var chai = require('chai');
 var expect = chai.expect;
-var falcor = require('falcor');
+var falcor = require('@graphistry/falcor');
 var $ref = falcor.Model.ref;
 var sinon = require("sinon");
 
@@ -467,106 +467,6 @@ describe('Set', function() {
                         videos: {
                             0: {
                                 rating: 5
-                            }
-                        }
-                    }
-                });
-            }).
-            subscribe(noOp, done, function() {
-                if (!did) {
-                    try {
-                        expect(called && refFollowed).to.be.ok;
-                        done();
-                    } catch(e) {
-                        done(e);
-                    }
-                }
-            });
-    });
-
-    it('should perform a set with get reference set following.', function(done) {
-        var did = false;
-        var called = 0;
-        var refFollowed = false;
-        var router = new R(
-            Routes().Genrelists.Integers(function() {
-                refFollowed = true;
-            }).concat(
-            [{
-                route: 'genreLists.selected',
-                get: function() {
-                    return {
-                        path: ['genreLists', 'selected'],
-                        value: $ref(['genreLists', [0, 1, 2]])
-                    };
-                }
-            }, {
-                route: 'videos[{integers:id}].rating',
-                set: function(json) {
-                    called++;
-                    try {
-                        expect(json).to.deep.equals({
-                            videos: {
-                                0: { rating: 5 },
-                                1: { rating: 4 },
-                                2: { rating: 3 }
-                            }
-                        });
-                    } catch (e) {
-                        done(e);
-                        did = true;
-                    }
-                    return [{
-                        path: ['videos', 0, 'rating'],
-                        value: 5
-                    }, {
-                        path: ['videos', 1, 'rating'],
-                        value: 4
-                    }, {
-                        path: ['videos', 2, 'rating'],
-                        value: 3
-                    }];
-                }
-            }]));
-
-        router.
-            set({
-                jsonGraph: {
-                    genreLists: {
-                        selected: $ref(['genreLists', [0, 1, 2]]),
-                        0: {
-                            rating: 5
-                        },
-                        1: {
-                            rating: 4
-                        },
-                        2: {
-                            rating: 3
-                        }
-                    }
-                },
-                paths: [
-                    ['genreLists', 'selected', 'rating']
-                ]
-            }).
-            do(function(res) {
-                expect(res).to.deep.equals({
-                    jsonGraph: {
-                        genreLists: {
-                            selected: $ref(['genreLists', [0, 1, 2]]),
-                            0: $ref('videos[0]'),
-                            1: $ref('videos[1]'),
-                            2: $ref('videos[2]')
-                        },
-                        videos: {
-                            0: {
-                                rating: 5
-                            },
-                            1: {
-                                rating: 4
-                            },
-                            2: {
-                                rating: 3
                             }
                         }
                     }

@@ -1,7 +1,7 @@
 var clone = require('./../support/clone');
 var types = require('./../support/types');
 var $ref = types.$ref;
-var iterateKeySet = require('falcor-path-utils').iterateKeySet;
+var iterateKeySet = require('@graphistry/falcor-path-utils').iterateKeySet;
 
 /**
  * merges pathValue into a cache

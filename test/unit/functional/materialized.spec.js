@@ -4,7 +4,7 @@ var noOp = function() {};
 var sinon = require('sinon');
 var chai = require('chai');
 var expect = chai.expect;
-var falcor = require('falcor');
+var falcor = require('@graphistry/falcor');
 var $ref = falcor.Model.ref;
 var Observable = require('rxjs').Observable;
 

@@ -2,7 +2,7 @@ var Rx = require('rxjs');
 var Observable = Rx.Observable;
 var R = require('../../src/Router');
 var TestRunner = require('./../TestRunner');
-var Model = require('falcor').Model;
+var Model = require('@graphistry/falcor').Model;
 var $atom = Model.atom;
 
 module.exports = function() {

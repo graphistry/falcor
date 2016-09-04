@@ -2,7 +2,7 @@ var chai = require('chai');
 var expect = chai.expect;
 var Router = require('../../../src/Router');
 var MaxPathsExceededError = require('../../../src/errors/MaxPathsExceededError');
-var pathCount = require('falcor-path-utils').pathCount;
+var pathCount = require('@graphistry/falcor-path-utils').pathCount;
 
 describe('MaxPaths', function() {
 

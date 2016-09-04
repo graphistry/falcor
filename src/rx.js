@@ -19,6 +19,4 @@ require('rxjs/add/operator/mergeMap');
 require('rxjs/add/operator/reduce');
 require('rxjs/add/operator/toArray');
 
-Observable.return = Observable.of;
-
 module.exports = { Observable: Observable };

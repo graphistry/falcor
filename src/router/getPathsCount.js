@@ -1,4 +1,4 @@
-var falcorPathUtils = require('falcor-path-utils');
+var falcorPathUtils = require('@graphistry/falcor-path-utils');
 
 function getPathsCount(pathSets) {
     return pathSets.reduce(function(numPaths, pathSet) {

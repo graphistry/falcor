@@ -3,7 +3,7 @@ var Routes = require('./../../data');
 var noOp = function() {};
 var chai = require('chai');
 var expect = chai.expect;
-var falcor = require('falcor');
+var falcor = require('@graphistry/falcor');
 var $ref = falcor.Model.ref;
 var $atom = falcor.Model.atom;
 var Observable = require('rxjs').Observable;
@@ -186,66 +186,6 @@ describe('Collapse and Batch', function() {
                             be: {
                                 956: {
                                     summary: 'hello world'
-                                }
-                            }
-                        }
-                    }
-                });
-                count++;
-            }, noOp, function() {
-                expect(count, 'expect onNext called 1 time.').to.equal(1);
-                expect(serviceCalls).to.equal(1);
-            }).
-            subscribe(noOp, done, done);
-    });
-
-    it('should validate batching/collapsing makes one request since updating to Rx5 uses a recursive subscription strategy when expanding.', function(done) {
-        var serviceCalls = 0;
-        var routes = [{
-            route: 'lists[{keys:ids}]',
-            get: function(aliasMap) {
-                return Observable.
-                    from(aliasMap.ids).
-                    map(function(id) {
-                        return {
-                            path: ['lists', id],
-                            value: $ref('two.be[' + (956 + id) + ']')
-                        };
-                    });
-            }
-        }, {
-            route: 'two.be[{integers:ids}].summary',
-            get: function(aliasMap) {
-                return Observable.
-                    from(aliasMap.ids).
-                    map(function(id) {
-                        serviceCalls++;
-                        return {
-                            path: ['two', 'be', id, 'summary'],
-                            value: 'hello world ' + id
-                        };
-                    });
-            }
-        }];
-        var router = new R(routes);
-        var obs = router.
-            get([['lists', [0, 1], 'summary']]);
-        var count = 0;
-        obs.
-            do(function(res) {
-                expect(res).to.deep.equals({
-                    jsonGraph: {
-                        lists: {
-                            0: $ref('two.be[956]'),
-                            1: $ref('two.be[957]')
-                        },
-                        two: {
-                            be: {
-                                956: {
-                                    summary: 'hello world 956'
-                                },
-                                957: {
-                                    summary: 'hello world 957'
                                 }
                             }
                         }

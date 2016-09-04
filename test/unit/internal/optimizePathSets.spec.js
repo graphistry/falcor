@@ -1,5 +1,5 @@
 var optimizePathSets = require('./../../../src/cache/optimizePathSets');
-var Model = require('falcor').Model;
+var Model = require('@graphistry/falcor').Model;
 var $ref = Model.ref;
 var $atom = Model.atom;
 var expect = require('chai').expect;
