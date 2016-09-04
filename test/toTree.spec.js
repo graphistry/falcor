@@ -1,18 +1,19 @@
 var toTree = require('../lib/toTree');
 var toPaths = require('../lib/toPaths');
 var expect = require('chai').expect;
+var nullTerminator = require('../lib/support/nullTerminator');
 
 describe('toTree', function() {
     it('should explode a simplePath.', function() {
         var input = ['one', 'two'];
-        var out = {one: {two: undefined}};
+        var out = {one: {two: null}};
 
         expect(toTree([input])).to.deep.equals(out);
     });
 
     it('should explode a complex.', function() {
         var input = ['one', ['two', 'three']];
-        var out = {one: {three: undefined, two: undefined}};
+        var out = {one: {three: null, two: null}};
 
         expect(toTree([input])).to.deep.equals(out);
     });
@@ -24,12 +25,12 @@ describe('toTree', function() {
         ];
         var out = {
             one: {
-                three: undefined,
-                two: undefined,
-                0: { summary: undefined },
-                1: { summary: undefined },
-                2: { summary: undefined },
-                3: { summary: undefined }
+                three: null,
+                two: null,
+                0: { summary: null },
+                1: { summary: null },
+                2: { summary: null },
+                3: { summary: null }
             }
         };
 
@@ -58,12 +59,12 @@ describe('toTree', function() {
         ];
         var out = {
             one: {
-                three: { $__null__$: undefined },
-                two: { $__null__$: undefined },
-                0: { $__null__$: undefined },
-                1: { $__null__$: undefined },
-                2: { $__null__$: undefined },
-                3: { $__null__$: undefined }
+                three: nullTerminator,
+                two: nullTerminator,
+                0: nullTerminator,
+                1: nullTerminator,
+                2: nullTerminator,
+                3: nullTerminator
             }
         };
 
