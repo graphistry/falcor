@@ -8,7 +8,7 @@ var sinon = require('sinon');
 var expect = require('chai').expect;
 var strip = require('./../../cleanData').stripDerefAndVersionKeys;
 var cacheGenerator = require('./../../CacheGenerator');
-var jsonGraph = require('falcor-json-graph');
+var jsonGraph = require('@graphistry/falcor-json-graph');
 
 var M = function(m) {
     return cacheGenerator(0, 1);

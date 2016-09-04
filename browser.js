@@ -1,5 +1,5 @@
 var falcor = require("./lib");
-var jsong = require("falcor-json-graph");
+var jsong = require("@graphistry/falcor-json-graph");
 
 falcor.atom = jsong.atom;
 falcor.ref = jsong.ref;

@@ -7,7 +7,7 @@ var strip = require('./../../cleanData').stripDerefAndVersionKeys;
 var cacheGenerator = require('./../../CacheGenerator');
 var Cache = require('./../../data/Cache');
 var toValue = function(x) { return {value: x}; };
-var jsonGraph = require('falcor-json-graph');
+var jsonGraph = require('@graphistry/falcor-json-graph');
 
 describe('Cache Only', function() {
     describe('toJSON', function() {

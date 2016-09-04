@@ -1,4 +1,4 @@
-var jsonGraph = require('falcor-json-graph');
+var jsonGraph = require('@graphistry/falcor-json-graph');
 var ref = jsonGraph.ref;
 var atom = jsonGraph.atom;
 var VIDEO_COUNT_PER_LIST = 10;

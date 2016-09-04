@@ -8,7 +8,7 @@ var isPathValue = require("./../../../lib/support/isPathValue");
 var expect = require("chai").expect;
 var sinon = require('sinon');
 var cacheGenerator = require('./../../CacheGenerator');
-var atom = require('falcor-json-graph').atom;
+var atom = require('@graphistry/falcor-json-graph').atom;
 var MaxRetryExceededError = require('./../../../lib/errors/MaxRetryExceededError');
 var strip = require('./../../cleanData').stripDerefAndVersionKeys;
 

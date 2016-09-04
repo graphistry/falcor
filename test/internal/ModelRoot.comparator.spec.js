@@ -1,6 +1,6 @@
 var ModelRoot = require('./../../lib/ModelRoot');
 var comparator = new ModelRoot({}).comparator;
-var jsonGraphUtil = require('falcor-json-graph');
+var jsonGraphUtil = require('@graphistry/falcor-json-graph');
 var atom = jsonGraphUtil.atom;
 var error = jsonGraphUtil.error;
 var expect = require('chai').expect;

@@ -1,5 +1,5 @@
 var falcor = require("./browser.js");
-var Router = require("falcor-router");
+var Router = require("@graphistry/falcor-router");
 
 falcor.Router = Router;
 

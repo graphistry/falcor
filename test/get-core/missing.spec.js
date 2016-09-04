@@ -1,6 +1,6 @@
 var getCoreRunner = require('./../getCoreRunner');
 var cacheGenerator = require('./../CacheGenerator');
-var jsonGraph = require('falcor-json-graph');
+var jsonGraph = require('@graphistry/falcor-json-graph');
 var atom = jsonGraph.atom;
 var ref = jsonGraph.ref;
 var _ = require('lodash');

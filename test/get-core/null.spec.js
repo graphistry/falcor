@@ -1,5 +1,5 @@
 var getCoreRunner = require('./../getCoreRunner');
-var jsonGraph = require('falcor-json-graph');
+var jsonGraph = require('@graphistry/falcor-json-graph');
 var atom = jsonGraph.atom;
 var ref = jsonGraph.ref;
 var NullInPathError = require('./../../lib/errors/NullInPathError');

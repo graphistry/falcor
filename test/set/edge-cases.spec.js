@@ -9,9 +9,9 @@ var Rx = require('rx');
 var Observable = Rx.Observable;
 
 var strip = require("./support/strip");
-var $ref = require("falcor-json-graph").ref;
-var $atom = require("falcor-json-graph").atom;
-var $error = require("falcor-json-graph").error;
+var $ref = require("@graphistry/falcor-json-graph").ref;
+var $atom = require("@graphistry/falcor-json-graph").atom;
+var $error = require("@graphistry/falcor-json-graph").error;
 var cleanStrip = require("./../cleanData").stripDerefAndVersionKeys;
 
 describe("Special Cases", function() {

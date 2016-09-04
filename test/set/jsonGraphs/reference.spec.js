@@ -1,8 +1,8 @@
-var $ref = require("falcor-json-graph").ref;
+var $ref = require("@graphistry/falcor-json-graph").ref;
 var strip = require("../support/strip");
-var $atom = require("falcor-json-graph").atom;
-var $error = require("falcor-json-graph").error;
-var $pathValue = require("falcor-json-graph").pathValue;
+var $atom = require("@graphistry/falcor-json-graph").atom;
+var $error = require("@graphistry/falcor-json-graph").error;
+var $pathValue = require("@graphistry/falcor-json-graph").pathValue;
 var $jsonGraph = require("../support/jsonGraph");
 var $jsonGraphEnvelope = require("../support/jsonGraphEnvelope");
 

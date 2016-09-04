@@ -1,6 +1,6 @@
-var $ref = require("falcor-json-graph").ref;
+var $ref = require("@graphistry/falcor-json-graph").ref;
 var strip = require("../support/strip");
-var $atom = require("falcor-json-graph").atom;
+var $atom = require("@graphistry/falcor-json-graph").atom;
 var $pathMapEnvelope = require("../support/pathMapEnvelope");
 
 var expect = require('chai').expect;

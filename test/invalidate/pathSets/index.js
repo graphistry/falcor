@@ -1,8 +1,8 @@
-var $ref = require("falcor-json-graph").ref;
+var $ref = require("@graphistry/falcor-json-graph").ref;
 var strip = require("../../set/support/strip");
-var $atom = require("falcor-json-graph").atom;
-var $path = require("falcor-path-syntax").fromPath;
-var $pathValue = require("falcor-json-graph").pathValue;
+var $atom = require("@graphistry/falcor-json-graph").atom;
+var $path = require("@graphistry/falcor-path-syntax").fromPath;
+var $pathValue = require("@graphistry/falcor-json-graph").pathValue;
 
 var expect = require('chai').expect;
 var getModel = require("../../set/support/getModel");
