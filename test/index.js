@@ -1,5 +1,5 @@
 import Chai from "chai";
-import Falcor from "falcor";
+import Falcor from "@graphistry/falcor";
 import Rx4 from "rx";
 import Rx5 from "rxjs";
 

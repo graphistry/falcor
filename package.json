@@ -5,7 +5,7 @@
     "url": "https://github.com/giovannicalo"
   },
   "bugs": {
-    "url": "https://github.com/giovannicalo/falcor-socket-datasource/issues"
+    "url": "https://github.com/graphistry/falcor-socket-datasource/issues"
   },
   "dependencies": {
     "socket.io-client": "^1.4.6",
@@ -17,9 +17,8 @@
     "babel-preset-node-giovanni": "^1.1.2",
     "chai": "^3.5.0",
     "coveralls": "^2.11.9",
-    "eslint-config-giovanni": "^2.0.0",
-    "falcor": "netflix/falcor",
-    "falcor-router": "^0.4.0",
+    "@graphistry/falcor": "0.2.0",
+    "@graphistry/falcor-router": "0.5.0",
     "isparta": "^4.0.0",
     "mocha": "^2.4.5",
     "posix-cat": "^1.1.1",
@@ -28,7 +27,7 @@
     "rxjs": "~5.0.0-beta.11",
     "socket.io": "^1.4.6"
   },
-  "homepage": "https://github.com/giovannicalo/falcor-socket-datasource",
+  "homepage": "https://github.com/graphistry/falcor-socket-datasource",
   "keywords": [
     "datasource",
     "falcor",
@@ -38,17 +37,16 @@
   ],
   "license": "MIT",
   "main": "dist/index.js",
-  "name": "falcor-socket-datasource",
+  "name": "@graphistry/falcor-socket-datasource",
   "repository": {
     "type": "git",
-    "url": "https://github.com/giovannicalo/falcor-socket-datasource.git"
+    "url": "https://github.com/graphistry/falcor-socket-datasource.git"
   },
   "scripts": {
     "coverage": "babel-node node_modules/isparta/bin/isparta cover node_modules/mocha/bin/_mocha --report lcovonly -- --compilers js:babel-register --recursive && cat coverage/lcov.info | node node_modules/coveralls/bin/coveralls.js && rimraf coverage",
-    "lint": "eslint .",
-    "prepublish": "npm run lint && npm test && babel source --out-dir dist",
+    "prepublish": "npm test && babel source --out-dir dist",
     "test": "_mocha --compilers js:babel-register --recursive",
     "test-debug": "node --inspect --debug-brk ./node_modules/.bin/_mocha --compilers js:babel-register --recursive"
   },
-  "version": "1.0.4"
+  "version": "1.1.0"
 }

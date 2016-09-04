@@ -1,5 +1,5 @@
 import { Observable } from "rxjs";
-import FalcorRouter from "falcor-router";
+import FalcorRouter from "@graphistry/falcor-router";
 
 export default new FalcorRouter([{
 	call: (path, parameters) => {

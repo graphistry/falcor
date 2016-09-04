@@ -1,1 +1,1 @@
-module.exports = { extends: "giovanni/library" };
+module.exports = {};
