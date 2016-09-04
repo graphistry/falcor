@@ -1,4 +1,4 @@
-var fromPath = require('falcor-path-syntax').fromPath;
+var fromPath = require('@graphistry/falcor-path-syntax').fromPath;
 
 function sentinel(type, value, props) {
     var copy = Object.create(null);

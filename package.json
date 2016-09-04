@@ -1,5 +1,5 @@
 {
-  "name": "falcor-json-graph",
+  "name": "@graphistry/falcor-json-graph",
   "version": "1.1.5",
   "description": "A set of factory functions for creating JSON Graph values.",
   "main": "src/index.js",
@@ -8,12 +8,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Netflix/falcor-json-graph.git"
+    "url": "https://github.com/graphistry/falcor-json-graph.git"
   },
   "author": "Jafar Husain <jhusain@gmail.com>",
   "license": "Apache 2.0",
   "bugs": {
-    "url": "https://github.com/Netflix/falcor-json-graph/issues"
+    "url": "https://github.com/graphistry/falcor-json-graph/issues"
   },
   "keywords": [
     "falcorjs",
@@ -21,8 +21,8 @@
     "JSON",
     "JSON Graph"
   ],
-  "homepage": "https://github.com/Netflix/falcor-json-graph",
+  "homepage": "https://github.com/graphistry/falcor-json-graph",
   "dependencies": {
-    "falcor-path-syntax": "netflix/falcor-path-syntax"
+    "@graphistry/falcor-path-syntax": "0.2.5"
   }
 }
