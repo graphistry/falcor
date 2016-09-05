@@ -1,0 +1,54 @@
+{
+  "name": "@graphistry/falcor-react-redux",
+  "version": "0.0.1",
+  "description": "",
+  "main": "lib/index.js",
+  "browser": "lib/index.js",
+  "scripts": {
+    "clean": "rimraf lib && mkdirp lib",
+    "build": "npm run clean && babel src -d lib --source-maps",
+    "watch": "npm run clean && babel src -d lib --source-maps --watch",
+    "prepublish": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/graphistry/falcor-react-redux.git"
+  },
+  "keywords": [
+    "Falcor",
+    "React",
+    "Redux",
+    "RxJS"
+  ],
+  "author": "Paul Taylor <paul.e.taylor@me.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/graphistry/falcor-react-redux/issues"
+  },
+  "homepage": "https://github.com/graphistry/falcor-react-redux/blob/master/README.md",
+  "devDependencies": {
+    "babel-cli": "~6.11.4",
+    "babel-preset-es2015": "6.13.2",
+    "babel-preset-stage-0": "~6.5.0",
+    "mkdirp": "~0.5.1",
+    "rimraf": "~2.5.4"
+  },
+  "peerDependencies": {
+  },
+  "dependencies": {
+    "babel-plugin-transform-runtime": "~6.12.0",
+    "babel-preset-react": "~6.11.1",
+    "babel-preset-stage-0": "~6.5.0",
+    "hoist-non-react-statics": "~1.2.0",
+    "react": "~15.3.1",
+    "react-redux": "~4.4.5",
+    "redux": "~3.6.0",
+    "@graphistry/falcor": "0.2.2",
+    "@graphistry/falcor-json-graph": "1.1.5",
+    "@graphistry/falcor-path-utils": "0.5.3",
+    "@graphistry/falcor-path-syntax": "0.2.5",
+    "@graphistry/falcor-query-syntax": "0.1.6",
+    "recompose": "~0.20.2",
+    "rxjs": "~5.0.0-beta.11"
+  }
+}
