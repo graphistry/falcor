@@ -30,17 +30,14 @@ const contextTypes = {
 const containerBase = compose(
     getContext(contextTypes),
     shouldUpdate((props, nextProps) => {
-        const { version: thisVersion } = props;
-        const { version: nextVersion } = nextProps;
+        const { version: thisVersion, data: thisJSON, ...restProps } = props;
+        const { version: nextVersion, data: nextJSON, ...restNextProps } = nextProps;
         if (thisVersion !== nextVersion) {
             return true;
-        }
-        const { data: thisJSON } = props;
-        const { data: nextJSON } = nextProps;
-        if (!thisJSON || !nextJSON || thisJSON.$__hash !== nextJSON.$__hash) {
+        } else if (!thisJSON || !nextJSON || thisJSON.$__hash !== nextJSON.$__hash) {
             return true;
         }
-        return !shallowEqual(props, nextProps);
+        return !shallowEqual(restProps, restNextProps);
     }),
     mapPropsStream((props) => props
         .map((({ data, falcor, ...rest }) => {
@@ -79,8 +76,8 @@ function loadContainerDataUntilSettled(state) {
             falcor, getFragment } = state;
     const query = getFragment(data, rest);
     if (query !== prev) {
-        return falcor
-            .get(...FalcorQuerySyntax.call(null, query))
+        return Observable
+            .from(falcor.get(...FalcorQuerySyntax.call(null, query)))
             .map(({ json }) => Object.assign(state, {
                 prev: query, data: mergeIntoFalcorJSON(data, json)
             }))
@@ -124,7 +121,11 @@ const container = (
         mapProps(({ data, error, falcor, version, loading, dispatch, getFragment, ...rest }) => {
             const mappedFragment = mapFragment(data, { error, ...rest });
             const mappedDispatch = mapDispatch(dispatch, mappedFragment, falcor);
-            const allMergedProps = mergeFragmentAndProps(mappedFragment, mappedDispatch, rest);
+            const {
+                $__key, $__path, $__refPath, $__version,
+                $__hash__$, $__keysPath, $__keyDepth, $__toReference,
+                ...allMergedProps
+            } = mergeFragmentAndProps(mappedFragment, mappedDispatch, rest);
             return allMergedProps;
         })
     )(BaseComponent);

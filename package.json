@@ -38,16 +38,15 @@
   "dependencies": {
     "babel-plugin-transform-runtime": "~6.12.0",
     "babel-preset-react": "~6.11.1",
-    "babel-preset-stage-0": "~6.5.0",
     "hoist-non-react-statics": "~1.2.0",
     "react": "~15.3.1",
     "react-redux": "~4.4.5",
     "redux": "~3.6.0",
-    "@graphistry/falcor": "0.2.2",
-    "@graphistry/falcor-json-graph": "1.1.5",
-    "@graphistry/falcor-path-utils": "0.5.3",
-    "@graphistry/falcor-path-syntax": "0.2.5",
-    "@graphistry/falcor-query-syntax": "0.1.6",
+    "@graphistry/falcor": "^0.2.3",
+    "@graphistry/falcor-json-graph": "^1.1.5",
+    "@graphistry/falcor-path-utils": "^0.5.3",
+    "@graphistry/falcor-path-syntax": "^0.2.5",
+    "@graphistry/falcor-query-syntax": "^0.1.6",
     "recompose": "~0.20.2",
     "rxjs": "~5.0.0-beta.11"
   }

@@ -15,9 +15,26 @@ import bindActionCreators from '../utils/bindActionCreators';
 import setObservableConfig from 'recompose/setObservableConfig';
 import rxjsObservableConfig from 'recompose/rxjsObservableConfig';
 
-import { Observable, Scheduler } from 'rxjs';
+import { Observable, BehaviorSubject, Scheduler } from 'rxjs';
 import React, { PropTypes, Children } from 'react';
 import { connect as connectRedux } from 'react-redux';
+
+import { Model } from '@graphistry/falcor';
+Model.prototype.changes = function() {
+    const { _root } = this;
+    let { changes } = _root;
+    if (!changes) {
+        changes = _root.changes = new BehaviorSubject(this);
+        const { onChangesCompleted } = _root;
+        _root.onChangesCompleted = function() {
+            if (onChangesCompleted) {
+                onChangesCompleted.call(this);
+            }
+            changes.next(this);
+        }
+    }
+    return changes;
+}
 
 setObservableConfig(rxjsObservableConfig);
 
