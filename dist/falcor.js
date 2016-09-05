@@ -4184,10 +4184,17 @@ module.exports = function deref(boundJSONArg) {
     // the model.
     if (absolutePath) {
         var cacheRoot = this._root.cache;
-        var cacheNode = cacheRoot;
+        var cacheNode = getCachePosition(cacheRoot, absolutePath);
         var validContainer = CONTAINER_DOES_NOT_EXIST;
 
-        if (absolutePath.length > 0 && toReference) {
+        if (absolutePath.length === 0) {
+            return this._clone({
+                _path: absolutePath,
+                _referenceContainer: true
+            });
+        }
+
+        if (toReference) {
 
             validContainer = false;
 
@@ -4201,28 +4208,24 @@ module.exports = function deref(boundJSONArg) {
                 }
             }
 
-            if (!originalRefPath) {
-                cacheNode = getCachePosition(cacheRoot, toReference);
-            }
             // If the reference container is still a sentinel value then compare
             // the reference value with refPath.  If they are the same, then the
             // model is still valid.
-            else if (referenceContainer && referenceContainer.$type === $ref) {
-                    i = 0;
-                    len = originalRefPath.length;
-                    currentRefPath = referenceContainer.value;
+            if (originalRefPath && referenceContainer && referenceContainer.$type === $ref) {
+                i = 0;
+                len = originalRefPath.length;
+                currentRefPath = referenceContainer.value;
 
-                    validContainer = true;
-                    for (; validContainer && i < len; ++i) {
-                        if (currentRefPath[i] !== originalRefPath[i]) {
-                            validContainer = false;
-                        }
+                validContainer = true;
+                for (; validContainer && i < len; ++i) {
+                    if (currentRefPath[i] !== originalRefPath[i]) {
+                        validContainer = false;
                     }
-                } else {
-                    cacheNode = referenceContainer;
                 }
-        } else {
-            cacheNode = getCachePosition(cacheRoot, absolutePath);
+                if (validContainer === false) {
+                    cacheNode = undefined;
+                }
+            }
         }
 
         // Signal to the deref'd model that it has been disconnected from the
