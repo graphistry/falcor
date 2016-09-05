@@ -2,6 +2,7 @@ var getCoreRunner = require('./../getCoreRunner');
 var cacheGenerator = require('./../CacheGenerator');
 var outputGenerator = require('./../outputGenerator');
 var jsonGraph = require('@graphistry/falcor-json-graph');
+var Model = require('./../../lib').Model;
 var atom = jsonGraph.atom;
 var ref = jsonGraph.ref;
 var _ = require('lodash');
@@ -200,6 +201,61 @@ describe('Values', function() {
                 }
             }
         });
+    });
+    it('should build json output with hash codes if JSONWithHashCodes is true', function() {
+
+        var model = new Model({
+            JSONWithHashCodes: true,
+            cache: cacheGenerator(0, 2)
+        });
+
+        var actualJSON = model._getPathValuesAsPathMap(
+            model,
+            [['videos', [0, {from: 1, length: 1}], 'title']],
+            [{}]
+        ).values[0];
+
+        expect(actualJSON).to.deep.equals({
+            json: {
+                $__key: '$__cache__$',
+                $__path: [],
+                $__version: 0,
+                $__keysPath: ['videos', [0, {from: 1, length: 1}], 'title'],
+                $__keyDepth: 0,
+                videos: {
+                    $__key: 'videos',
+                    $__path: ['videos'],
+                    $__version: 0,
+                    $__keysPath: ['videos', [0, {from: 1, length: 1}], 'title'],
+                    $__keyDepth: 1,
+                    0: {
+                        $__key: '0',
+                        $__path: ['videos', '0'],
+                        $__version: 0,
+                        $__keysPath: ['videos', [0, {from: 1, length: 1}], 'title'],
+                        $__keyDepth: 2,
+                        title: 'Video 0'
+                    },
+                    1: {
+                        $__key: '1',
+                        $__path: ['videos', '1'],
+                        $__version: 0,
+                        $__keysPath: ['videos', [0, {from: 1, length: 1}], 'title'],
+                        $__keyDepth: 2,
+                        title: 'Video 1'
+                    }
+                }
+            }
+        });
+
+        expect(actualJSON.json.$__hash).to.equal('1169336459');
+        expect(actualJSON.json.$__hash__$).to.equal('1169336459');
+        expect(actualJSON.json.videos.$__hash).to.equal('2161227570');
+        expect(actualJSON.json.videos.$__hash__$).to.equal('2161227570');
+        expect(actualJSON.json.videos[0].$__hash).to.equal('1464653548');
+        expect(actualJSON.json.videos[0].$__hash__$).to.equal('1464653548');
+        expect(actualJSON.json.videos[1].$__hash).to.equal('2339530808');
+        expect(actualJSON.json.videos[1].$__hash__$).to.equal('2339530808');
     });
 
     // JSONGraph ----------------------------------------

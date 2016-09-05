@@ -1,6 +1,6 @@
 var sinon = require('sinon');
 var expect = require('chai').expect;
-var RequestQueue = require('./../../../lib/request/RequestQueueV2');
+var RequestQueue = require('./../../../lib/request/RequestQueue');
 var TimeoutScheduler = require('./../../../lib/schedulers/TimeoutScheduler');
 var ImmediateScheduler = require('./../../../lib/schedulers/ImmediateScheduler');
 var Rx = require('rx');

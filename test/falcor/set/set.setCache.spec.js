@@ -1,3 +1,4 @@
+var $ref = require('@graphistry/falcor-json-graph').ref;
 var falcor = require("./../../../lib/");
 var Model = falcor.Model;
 var Rx = require('rx');
@@ -5,7 +6,6 @@ var expect = require('chai').expect;
 var Cache = require('../../data/Cache');
 var LocalDataSource = require('../../data/LocalDataSource');
 var clean = require('../../cleanData').stripDerefAndVersionKeys;
-var $ref = Model.ref;
 
 describe('Set Cache', function() {
     it("should be fine when you set an empty cache", function(done) {

@@ -70,7 +70,7 @@ describe('Deref', function() {
         });
     });
 
-    it('should throw an error when bound and calling jsonGraph.', function() {
+    xit('should throw an error when bound and calling jsonGraph.', function() {
         var model = new Model({
             cache: cacheGenerator(0, 1)
         })._derefSync(['videos', 0]);

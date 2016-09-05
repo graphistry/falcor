@@ -4,7 +4,6 @@ var isInternalKey = require("./../../lib/support/isInternalKey");
 var clean = require('./../cleanData').clean;
 var Model = falcor.Model;
 var expect = require('chai').expect;
-var atom = Model.atom;
 
 function deepExpectations(o, expectExpression) {
     for (var k in o) {

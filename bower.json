@@ -1,12 +1,12 @@
 
 {
   "name": "falcor",
-  "main": "./dist/falcor.browser.js",
+  "main": "./dist/falcor.js",
   "ignore": [
-    "build", 
-    "examples", 
-    "lib", 
-    "performance", 
+    "build",
+    "examples",
+    "lib",
+    "performance",
     "test",
     ".bithoundrc",
     ".eslintrc",

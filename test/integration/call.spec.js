@@ -1,4 +1,6 @@
+var $ref = require('@graphistry/falcor-json-graph').ref;
 var falcor = require('../../lib');
+var Model = falcor.Model;
 var Rx = require('rx');
 var R = require('@graphistry/falcor-router');
 var noOp = function() {};
@@ -6,7 +8,6 @@ var chai = require('chai');
 var expect = chai.expect;
 var sinon = require('sinon');
 var strip = require('./../cleanData').stripDerefAndVersionKeys;
-var $ref = falcor.Model.ref;
 
 describe('call', function() {
     it('#339 should use the router as a data source and make a call to the router.', function(done) {
@@ -32,10 +33,10 @@ describe('call', function() {
             }
         }]);
 
-        var model = new falcor.Model({
+        var model = new Model({
             source: router
         });
-        var args = [falcor.Model.ref('titlesById[1]')];
+        var args = [$ref('titlesById[1]')];
         var onNext = sinon.spy();
         toObservable(model.
             call("genreList[0].titles.push", args, ['name'])).
@@ -72,10 +73,10 @@ describe('call', function() {
             }
         }]);
 
-        var model = new falcor.Model({
+        var model = new Model({
             source: router
         });
-        var args = [falcor.Model.ref('titlesById[1]')];
+        var args = [$ref('titlesById[1]')];
         var onNext = sinon.spy();
         toObservable(model.
             call("genreList[0].titles.push", args, ['name'])).
@@ -101,11 +102,11 @@ describe('call', function() {
             }
         }]);
 
-        var model = new falcor.Model({
+        var model = new Model({
             source: router
         });
 
-        var args = [falcor.Model.ref('titlesById[1]')];
+        var args = [$ref('titlesById[1]')];
 
         var onNext = sinon.spy();
 

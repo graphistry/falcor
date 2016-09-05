@@ -1,9 +1,9 @@
 // This file starts the server and exposes the Router at /model.json
 var express = require('express');
 var FalcorServer = require('falcor-express');
-var falcor = require('./../../browser');
+var falcor = require('./../../lib');
 var Model = falcor.Model;
-var HttpDataSource = falcor.HttpDataSource;
+var HttpDataSource = require('falcor-http-datasource');
 var expect = require('chai').expect;
 var sinon = require('sinon');
 var noOp = function() {};
@@ -41,8 +41,8 @@ describe('Get Integration Tests', function() {
     });
 
     it('should be able to return null from a router. #535', function(done) {
-        var model = new falcor.Model({
-            source: new falcor.HttpDataSource('http://localhost:1337/model.json')
+        var model = new Model({
+            source: new HttpDataSource('http://localhost:1337/model.json')
         });
         var onNext = sinon.spy();
 

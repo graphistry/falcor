@@ -1,6 +1,6 @@
 var sinon = require('sinon');
 var expect = require('chai').expect;
-var GetRequest = require('./../../../lib/request/GetRequestV2');
+var GetRequest = require('./../../../lib/request/GetRequest');
 var ImmediateScheduler = require('./../../../lib/schedulers/ImmediateScheduler');
 var Rx = require('rx');
 var Model = require('./../../../lib').Model;
@@ -163,7 +163,6 @@ describe('#add', function() {
             model: model
         });
 
-
         var zip = zipSpy(2, function() {
             var onNext = sinon.spy();
             toObservable(model.
@@ -189,7 +188,7 @@ describe('#add', function() {
                 }).
                 subscribe(noOp, done, done);
         });
-        debugger
+
         var disposable1 = request.batch([videos0], [videos0], zip);
         expect(request.sent, 'request should be sent').to.be.ok;
 

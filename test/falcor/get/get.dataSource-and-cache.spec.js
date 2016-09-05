@@ -1,3 +1,5 @@
+var $ref = require('@graphistry/falcor-json-graph').ref;
+var $atom = require('@graphistry/falcor-json-graph').atom;
 var falcor = require("./../../../lib/");
 var Model = falcor.Model;
 var Rx = require('rx');
@@ -93,9 +95,9 @@ describe('DataSource and Partial Cache', function() {
             var onGet = sinon.spy();
             var model = new Model({
                 cache: {
-                    a: Model.ref(['c']),
+                    a: $ref(['c']),
                     c: {
-                        0: Model.atom('hello')
+                        0: $atom('hello')
                     }
                 },
                 source: {
@@ -116,9 +118,9 @@ describe('DataSource and Partial Cache', function() {
             var onGet = sinon.spy();
             var model = new Model({
                 cache: {
-                    a: Model.ref(['c']),
+                    a: $ref(['c']),
                     c: {
-                        0: Model.atom('hello')
+                        0: $atom('hello')
                     }
                 },
                 source: {
@@ -243,8 +245,8 @@ describe('DataSource and Partial Cache', function() {
                 },
                 source: new LocalDataSource({
                     paths: {
-                        2: Model.atom(undefined),
-                        3: Model.atom(undefined)
+                        2: $atom(undefined),
+                        3: $atom(undefined)
                     }
                 }, {materialize: true})
             });
@@ -596,10 +598,10 @@ describe('DataSource and Partial Cache', function() {
             return {
                 videos: {
                     1: {
-                        bookmark: Model.atom('remote value', {$timestamp: t0})
+                        bookmark: $atom('remote value', {$timestamp: t0})
                     },
                     2: {
-                        previous: Model.ref(['videos', 1])
+                        previous: $ref(['videos', 1])
                     }
                 }
             };
@@ -609,7 +611,7 @@ describe('DataSource and Partial Cache', function() {
             var cache = {
                 videos: {
                     1: {
-                        bookmark: Model.atom('cached value', {$timestamp: t1})
+                        bookmark: $atom('cached value', {$timestamp: t1})
                     }
                 }
             };
@@ -629,7 +631,7 @@ describe('DataSource and Partial Cache', function() {
             var cache = {
                 videos: {
                     1: {
-                        bookmark: Model.atom('cached value', {$timestamp: t1, $expires: t1})
+                        bookmark: $atom('cached value', {$timestamp: t1, $expires: t1})
                     }
                 }
             };

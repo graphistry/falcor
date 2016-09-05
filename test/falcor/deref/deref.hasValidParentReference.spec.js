@@ -1,3 +1,4 @@
+var $ref = require('@graphistry/falcor-json-graph').ref;
 var falcor = require('./../../../lib');
 var Model = falcor.Model;
 var sinon = require('sinon');
@@ -107,7 +108,7 @@ describe('fromWhenceYouCame', function() {
         model.
             set({
                 path: ['lolomo'],
-                value: Model.ref(['lolomos', '555'])
+                value: $ref(['lolomos', '555'])
             }).
             subscribe();
 

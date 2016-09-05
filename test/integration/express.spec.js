@@ -3,9 +3,9 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var FalcorServer = require('falcor-express');
 var falcorRouterDemoFactory = require('falcor-router-demo');
-var falcor = require('./../../browser');
+var falcor = require('./../../lib');
 var Model = falcor.Model;
-var HttpDataSource = falcor.HttpDataSource;
+var HttpDataSource = require('falcor-http-datasource');
 var expect = require('chai').expect;
 var sinon = require('sinon');
 var noOp = function() {};
@@ -34,8 +34,8 @@ describe('Express Integration', function() {
     });
 
     it('should be able to perform the express demo.', function(done) {
-        var model = new falcor.Model({
-            source: new falcor.HttpDataSource('http://localhost:1337/model.json')
+        var model = new Model({
+            source: new HttpDataSource('http://localhost:1337/model.json')
         });
         var onNext = sinon.spy();
 

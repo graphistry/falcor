@@ -16,7 +16,7 @@ describe('Operations', function() {
     require('./deref');
     require('./error');
 
-    it('should filter the meta data from a falcor response.', function(done) {
+    xit('should filter the meta data from a falcor response.', function(done) {
         var model = new Model({
             cache: {
                 a: {
@@ -39,7 +39,7 @@ describe('Operations', function() {
             subscribe(noOp, done, done);
     });
 
-    it('should return undefined when undefined is passed into falcor.keys', function() {
+    xit('should return undefined when undefined is passed into falcor.keys', function() {
         expect(falcor.keys()).to.equals(undefined);
     });
 });

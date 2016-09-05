@@ -8,7 +8,7 @@ var expect = require("chai").expect;
 var sinon = require('sinon');
 var clean = require('./../../cleanData').stripDerefAndVersionKeys;
 var cacheGenerator = require('./../../CacheGenerator');
-var atom = Model.atom;
+var $atom = require('@graphistry/falcor-json-graph').atom;
 
 describe('Cache as DataSource', function() {
     describe('toJSON', function() {
@@ -53,7 +53,7 @@ describe('Cache as DataSource', function() {
                         jsonGraph: {
                             videos: {
                                 0: {
-                                    title: atom('Video 0')
+                                    title: $atom('Video 0')
                                 }
                             }
                         },
