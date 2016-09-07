@@ -7,14 +7,13 @@ export default function memoizeQueryies(limit = 100) {
     return function memoizedQuerySyntax(query) {
         let entry = map[query];
         if (entry === undefined) {
-            count++;
+            if (++count > limit) {
+                delete map[lru.tail.query];
+                splice(lru, lru.tail);
+            }
             entry = map[query] = { query, paths: FalcorQuerySyntax(query) };
         }
         promote(lru, entry);
-        if (count > limit) {
-            delete map[lru.tail.query];
-            splice(lru, lru.tail);
-        }
         return entry.paths;
     }
 }
