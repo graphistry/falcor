@@ -1,0 +1,26 @@
+{
+  "name": "@graphistry/falcor-path-utils",
+  "version": "0.5.3",
+  "description": "",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "./node_modules/.bin/gulp test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/graphistry/falcor-path-utils.git"
+  },
+  "author": "Netflix",
+  "license": "ALV2",
+  "bugs": {
+    "url": "https://github.com/graphistry/falcor-path-utils/issues"
+  },
+  "homepage": "https://github.com/graphistry/falcor-path-utils#readme",
+  "devDependencies": {
+    "chai": "^3.2.0",
+    "falcor-json-graph": "^1.1.7",
+    "sinon": "^1.15.4",
+    "gulp-mocha": "~2.2.0",
+    "gulp": "^3.9.0"
+  }
+}
