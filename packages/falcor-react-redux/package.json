@@ -1,6 +1,6 @@
 {
   "name": "@graphistry/falcor-react-redux",
-  "version": "0.0.4",
+  "version": "2.0.0",
   "description": "",
   "main": "lib/index.js",
   "browser": "lib/index.js",
@@ -33,8 +33,7 @@
     "mkdirp": "~0.5.1",
     "rimraf": "~2.5.4"
   },
-  "peerDependencies": {
-  },
+  "peerDependencies": {},
   "dependencies": {
     "babel-plugin-transform-runtime": "~6.12.0",
     "babel-preset-react": "~6.11.1",
@@ -42,11 +41,11 @@
     "react": "~15.3.1",
     "react-redux": "~4.4.5",
     "redux": "~3.6.0",
-    "@graphistry/falcor": "^0.2.3",
-    "@graphistry/falcor-json-graph": "^1.1.5",
+    "@graphistry/falcor": "^2.0.0",
+    "@graphistry/falcor-json-graph": "^2.0.0",
     "@graphistry/falcor-path-utils": "^0.5.3",
-    "@graphistry/falcor-path-syntax": "^0.2.5",
-    "@graphistry/falcor-query-syntax": "^0.1.6",
+    "@graphistry/falcor-path-syntax": "^2.0.0",
+    "@graphistry/falcor-query-syntax": "^2.0.0",
     "recompose": "~0.20.2",
     "rxjs": "~5.0.0-beta.11"
   }
