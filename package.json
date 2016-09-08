@@ -1,0 +1,58 @@
+{
+  "name": "@graphistry/falcor-router",
+  "version": "0.5.1",
+  "description": "A router DataSource constructor for falcor that allows you to model all your cloud data sources as a single JSON resource.",
+  "main": "src/Router.js",
+  "homepage": "https://github.com/graphistry/falcor-router",
+  "author": {
+    "name": "Netflix",
+    "url": "https://github.com/Netflix/falcor-router/authors.txt"
+  },
+  "license": "Apache-2.0",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "@graphistry/falcor-path-syntax": "0.2.5",
+    "@graphistry/falcor-path-utils": "0.5.3",
+    "rxjs": ">=5.0.0-beta.11"
+  },
+  "devDependencies": {
+    "chai": "^2.3.0",
+    "coveralls": "^2.11.2",
+    "@graphistry/falcor": "0.2.1",
+    "gulp": "~3.8.11",
+    "gulp-bump": "~0.1.13",
+    "gulp-clean": "~0.3.1",
+    "gulp-concat": "~2.4.3",
+    "gulp-eslint": "^2.0.0",
+    "gulp-istanbul": "^0.9.0",
+    "gulp-license": "~1.0.0",
+    "gulp-mocha": "~2.0.1",
+    "gulp-rename": "~1.2.0",
+    "lodash": "~3.8.0",
+    "promise": "~7.0.1",
+    "sinon": "~1.15.4",
+    "through2": "~0.6.3"
+  },
+  "scripts": {
+    "test": "node node_modules/gulp/bin/gulp.js test-coverage",
+    "dist": "node node_modules/gulp/bin/gulp.js dist",
+    "lint": "node node_modules/gulp/bin/gulp.js lint",
+    "test-detail": "_mocha ./test/index.js",
+    "test-debug": "node --inspect --debug-brk ./node_modules/.bin/_mocha ./test/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/graphistry/falcor-router.git"
+  },
+  "keywords": [
+    "Falcor",
+    "Router",
+    "Netflix",
+    "falcorjs"
+  ],
+  "bugs": {
+    "url": "https://github.com/graphistry/falcor-router/issues"
+  }
+}
