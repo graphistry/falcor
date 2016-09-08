@@ -1,0 +1,8 @@
+{
+	"files.eol": "\n",
+	"files.insertFinalNewline": true,
+	"files.trimTrailingWhitespace": true,
+	"editor.insertSpaces": false,
+	"eslint.enable": true,
+	"javascript.validate.enable": false
+}
