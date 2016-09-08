@@ -1,0 +1,32 @@
+{
+  "name": "@graphistry/falcor-path-syntax",
+  "version": "0.2.5",
+  "description": "Parser for Falcor Path Syntax",
+  "main": "src/index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mocha test/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/graphistry/falcor-path-syntax.git"
+  },
+  "keywords": [
+    "falcorjs",
+    "Observable",
+    "Netflix"
+  ],
+  "author": "Michael Paulson <michael.b.paulson@gmail.com>",
+  "license": "ALV2",
+  "bugs": {
+    "url": "https://github.com/graphistry/falcor-path-syntax/issues"
+  },
+  "homepage": "https://github.com/graphistry/falcor-path-syntax",
+  "devDependencies": {
+    "chai": "~2.2.0",
+    "mocha": "^2.3.0"
+  },
+  "dependencies": {}
+}
