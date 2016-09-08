@@ -35,7 +35,7 @@ class FalcorContainer extends React.Component {
         this.mapFragment = mapFragment;
         this.mergeFragmentAndProps = mergeFragmentAndProps;
 
-        this.state = { data, falcor, version, dispatch };
+        this.state = { falcor, version, dispatch, ...props };
         this.propsStream = new Subject();
         this.propsAction = this.propsStream
             .map((({ data, falcor, ...rest }) => {
