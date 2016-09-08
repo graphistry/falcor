@@ -1,0 +1,47 @@
+{
+  "name": "@graphistry/falcor-query-syntax",
+  "version": "0.1.6",
+  "description": "ES6 Template String and Builder function for Creating Falcor Paths (Experimental)",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha test/index.js",
+    "perf": "node perf",
+    "build-paths": "pegjs -o lib/paths-parser.peg.js --format umd peg/paths-parser.peg && java -jar compiler/closure-compiler-v20160822.jar --js_output_file=lib/paths-parser.js lib/paths-parser.peg.js && rimraf lib/paths-parser.peg.js",
+    "build-route": "pegjs -o lib/route-parser.peg.js --format umd peg/route-parser.peg && java -jar compiler/closure-compiler-v20160822.jar --js_output_file=lib/route-parser.js lib/route-parser.peg.js && rimraf lib/route-parser.peg.js",
+    "build": "npm-run-all -l -p build-paths build-route",
+    "start": "npm run build && npm test",
+    "prepublish": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/graphistry/falcor-query-syntax.git"
+  },
+  "keywords": [
+    "falcor",
+    "path",
+    "map",
+    "es6",
+    "template",
+    "string"
+  ],
+  "authors": [
+    "Jafar Husain <jhusain@gmail.com> (https://github.com/jhusain/)",
+    "Paul Taylor <paul.e.taylor@me.com> (https://github.com/trxcllnt/)"
+  ],
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/graphistry/falcor-query-syntax/issues"
+  },
+  "homepage": "https://github.com/graphistry/falcor-query-syntax/blob/master/README.md",
+  "dependencies": {
+    "babel-plugin-transform-runtime": "~6.12.0",
+    "pegjs": "0.10.0"
+  },
+  "devDependencies": {
+    "benchmark": "~2.1.1",
+    "chai": "~3.5.0",
+    "mocha": "~3.0.2",
+    "npm-run-all": "~3.0.0",
+    "rimraf": "~2.5.4"
+  }
+}
