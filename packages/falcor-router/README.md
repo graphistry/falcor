@@ -1,10 +1,9 @@
-# Falcor Router [![Build Status](https://travis-ci.org/Netflix/falcor-router.svg?branch=master)](https://travis-ci.org/Netflix/falcor-router)
+# Falcor Router
 
-## Developer Preview
+This is the [Graphistry](http://graphistry.com) fork of the Falcor Router library.
 
-**This release is a developer preview.** We are looking for community help to track down and fix bugs. We are also looking for help porting the Router to other platforms.
+This fork has been updated to use RxJS5, which is an order of magnitude faster than RxJS4. This is critical to the performance of our server infrastructure.
 
-You can check out a working example server for a Netflix-like application [here](http://github.com/netflix/falcor-express-demo) right now. Alternately you can go through this short tutorial:
 
 ## Getting Started
 

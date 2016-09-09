@@ -2,34 +2,128 @@
   <img src="https://cloud.githubusercontent.com/assets/1016365/8711049/66438ebc-2b03-11e5-8a8a-75934f7ca7ec.png">
 </p>
 
-# Falcor [![Build Status](https://travis-ci.org/Netflix/falcor.svg)](https://travis-ci.org/Netflix/falcor) [![Coverage Status](https://coveralls.io/repos/Netflix/falcor/badge.svg?branch=master&service=github)](https://coveralls.io/github/Netflix/falcor?branch=master) [![bitHound Score](https://www.bithound.io/github/Netflix/falcor/badges/score.svg)](https://www.bithound.io/github/Netflix/falcor)
+# Falcor
 
-## Developer Preview
+This is the [Graphistry](http://graphistry.com) fork of the FalcorJS client library. This library includes a number of bug fixes, performance improvements, and additional features, and will be actively maintained and developed.
 
-**1.x** does not mean we are out of _developer_ preview mode.  Simply means we
-are breaking the contract and we would like to respect `^` within peoples NPM
-dependencies.  1.x does contain breaking changes that can be reviewed [here](https://github.com/Netflix/falcor/blob/master/MIGRATIONS.md)
+## Differences between this project and Netflix/falcor
 
-**This release is a developer preview.** We are looking for community help to track down and fix bugs. We are also looking for help integrating with existing MVC frameworks, as well as ports to other platforms.
+- Critical bugs have been fixed.
+- Core `get` algorithm has been improved by ~100%.
+- `getVersion` runtime is now `O(1)`.
+- Performance tests have been added to benchmark against Netflix/falcor wherever possible.
+- An optional `branchSelector` has been introduced to allow users to customize the results from `get` calls.
+- An optional `JSONWithHashCodes` flag has been added which uses the `branchSelector` function to output JSON with lazily computed hashcodes so the JSON can be easily diff'd in methods like React's `shouldComponentUpdate`, Rx's `distinctUntilChanged`, etc.
+- An `onChangesCompleted` callback has been added to the API. This callback is similar to the existing `onChange` callback, except it's only called after all the operations that will change the cache have finished (this is more explicit than debouncing the `onChange` callback).
+- `falcor-http-datasource` has been removed from the public browser build.
+- The path syntax has been removed. To use the path syntax, you can use the [@graphistry/falcor-path-syntax](https://github.com/graphistry/falcor/tree/master/packages/falcor-path-syntax) module to parse strings into paths. Better yet, use the new [query syntax](https://github.com/graphistry/falcor/tree/master/packages/falcor-query-syntax) template string.
 
-* *master* currently reflects work in progress, and contains backward incompatible changes which will become the next major version bump.
-* *0.x* reflects the currently published npm version. Bug fixes specific to 0.x can be submitted against this branch.
+## Roadmap
 
-## Important Note for Webpack Users
+- Apply `get` improvements to `set`.
+- Internal code cleanup to reduce boilerplate and filesize.
+- Add an option to diff and recycle the same JSON tree across `get` calls to make React integration more seamless and further improve `get` performance.
 
-If you're including falcor in your app, via npm and `require('falcor')`, and you're building a browser bundle for your app with Webpack, you'll need to add an alias entry for the 'rx' module in your webpack config, to avoid this RxJS bug: 'https://github.com/Reactive-Extensions/RxJS/issues/832'. You may already have such an entry, if you're using RxJS already. An example is below:
+## Performance tests
 
-In webpack.config.js:
+```
+running Get Tests
+finished Get Tests
+@netflix/falcor    getJSON - 100 paths from Cache reusing the JSON seed: 
+    14351.183452763491 ops/s
+    0.07 ms/op
+    0.42% of 1 frame @ 60FPS
 
-```js
-module.exports = {
-  resolve: {
-    alias: {
-      // Workaround https://github.com/Reactive-Extensions/RxJS/issues/832, until it's fixed
-      'rx$': <path to rx/dist/rx.js file >
-    }
-  }
-};
+@graphistry/falcor getJSON - 100 paths from Cache reusing the JSON seed: 
+    31000.389350234313 ops/s
+    0.03 ms/op
+    0.18% of 1 frame @ 60FPS
+
+@graphistry/falcor getJSON - 100 paths from Cache reusing the JSON seed with hash codes: 
+    30572.051743342377 ops/s
+    0.03 ms/op
+    0.18% of 1 frame @ 60FPS
+
+@netflix/falcor    getJSON - 100 paths from Cache with a new JSON seed each time: 
+    14270.922475469748 ops/s
+    0.07 ms/op
+    0.42% of 1 frame @ 60FPS
+
+@graphistry/falcor getJSON - 100 paths from Cache with a new JSON seed each time: 
+    28208.509515725207 ops/s
+    0.04 ms/op
+    0.24% of 1 frame @ 60FPS
+
+@graphistry/falcor getJSON - 100 paths from Cache with a new JSON seed each time with hash codes: 
+    13935.847714830654 ops/s
+    0.07 ms/op
+    0.42% of 1 frame @ 60FPS
+
+@netflix/falcor    getJSONGraph - 100 paths from Cache with a new JSON seed each time: 
+    2952.6794755701467 ops/s
+    0.34 ms/op
+    2.04% of 1 frame @ 60FPS
+
+@graphistry/falcor getJSONGraph - 100 paths from Cache with a new JSON seed each time: 
+    3622.151260827047 ops/s
+    0.28 ms/op
+    1.68% of 1 frame @ 60FPS
+
+running Set Tests
+finished Set Tests
+@netflix/falcor    setCache - cache with 100 videos: 
+    958.7964400940479 ops/s
+    1.04 ms/op
+    6.24% of 1 frame @ 60FPS
+
+@graphistry/falcor setCache - cache with 100 videos: 
+    1346.9744029939243 ops/s
+    0.74 ms/op
+    4.44% of 1 frame @ 60FPS
+
+@netflix/falcor    setJSONGraph - 100 paths into Cache: 
+    4900.926111980225 ops/s
+    0.2 ms/op
+    1.2% of 1 frame @ 60FPS
+
+@graphistry/falcor setJSONGraph - 100 paths into Cache: 
+    5848.8269367686025 ops/s
+    0.17 ms/op
+    1.02% of 1 frame @ 60FPS
+
+running Get Version Tests
+finished Get Version Tests
+@netflix/falcor    getVersion: 
+    2389084.197179795 ops/s
+    0 ms/op
+    0% of 1 frame @ 60FPS
+
+@graphistry/falcor getVersion: 
+    3460093.371710837 ops/s
+    0 ms/op
+    0% of 1 frame @ 60FPS
+
+running DataSource Tests
+finished DataSource Tests
+@netflix/falcor    getJSON + setJSONGraph + getJSON - 100 paths from DataSource: 
+    817.0315602606574 ops/s
+    1.22 ms/op
+    7.32% of 1 frame @ 60FPS
+
+@graphistry/falcor getJSON + setJSONGraph + getJSON - 100 paths from DataSource: 
+    922.4957205839061 ops/s
+    1.08 ms/op
+    6.48% of 1 frame @ 60FPS
+
+@netflix/falcor    getJSONGraph + setJSONGraph + getJSONGraph - 100 paths from DataSource: 
+    681.1629459899017 ops/s
+    1.47 ms/op
+    8.82% of 1 frame @ 60FPS
+
+@graphistry/falcor getJSONGraph + setJSONGraph + getJSONGraph - 100 paths from DataSource: 
+    635.8154879127488 ops/s
+    1.57 ms/op
+    9.42% of 1 frame @ 60FPS
 ```
 
 ## Getting Started
