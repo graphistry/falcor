@@ -3,7 +3,7 @@
   "version": "2.0.2",
   "description": "A router DataSource constructor for falcor that allows you to model all your cloud data sources as a single JSON resource.",
   "main": "src/Router.js",
-  "homepage": "https://github.com/graphistry/falcor-router",
+  "homepage": "https://github.com/graphistry/falcor/blob/master/packages/falcor-router/README.md",
   "author": {
     "name": "Netflix",
     "url": "https://github.com/Netflix/falcor-router/authors.txt"
@@ -44,7 +44,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/graphistry/falcor-router.git"
+    "url": "git://github.com/graphistry/falcor.git"
   },
   "keywords": [
     "Falcor",
@@ -53,6 +53,6 @@
     "falcorjs"
   ],
   "bugs": {
-    "url": "https://github.com/graphistry/falcor-router/issues"
+    "url": "https://github.com/graphistry/falcor/issues"
   }
 }

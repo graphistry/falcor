@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/graphistry/falcor-path-syntax.git"
+    "url": "git://github.com/graphistry/falcor.git"
   },
   "keywords": [
     "falcorjs",
@@ -21,9 +21,9 @@
   "author": "Michael Paulson <michael.b.paulson@gmail.com>",
   "license": "ALV2",
   "bugs": {
-    "url": "https://github.com/graphistry/falcor-path-syntax/issues"
+    "url": "https://github.com/graphistry/falcor/issues"
   },
-  "homepage": "https://github.com/graphistry/falcor-path-syntax",
+  "homepage": "https://github.com/graphistry/falcor/blob/master/packages/falcor-path-syntax/README.md",
   "devDependencies": {
     "chai": "~2.2.0",
     "mocha": "^2.3.0"

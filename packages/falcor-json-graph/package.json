@@ -8,12 +8,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/graphistry/falcor-json-graph.git"
+    "url": "https://github.com/graphistry/falcor.git"
   },
   "author": "Jafar Husain <jhusain@gmail.com>",
   "license": "Apache 2.0",
   "bugs": {
-    "url": "https://github.com/graphistry/falcor-json-graph/issues"
+    "url": "https://github.com/graphistry/falcor/issues"
   },
   "keywords": [
     "falcorjs",
@@ -21,7 +21,7 @@
     "JSON",
     "JSON Graph"
   ],
-  "homepage": "https://github.com/graphistry/falcor-json-graph",
+  "homepage": "https://github.com/graphistry/falcor/blob/master/packages/falcor-json-graph/README.md",
   "dependencies": {
     "@graphistry/falcor-path-syntax": "^2.0.0"
   }

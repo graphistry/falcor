@@ -8,17 +8,17 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/graphistry/falcor-path-utils.git"
+    "url": "git+https://github.com/graphistry/falcor.git"
   },
   "author": "Netflix",
   "license": "ALV2",
   "bugs": {
-    "url": "https://github.com/graphistry/falcor-path-utils/issues"
+    "url": "https://github.com/graphistry/falcor/issues"
   },
-  "homepage": "https://github.com/graphistry/falcor-path-utils#readme",
+  "homepage": "https://github.com/graphistry/falcor/blob/master/packages/falcor-path-utils/README.md",
   "devDependencies": {
     "chai": "^3.2.0",
-    "falcor-json-graph": "^1.1.7",
+    "@graphistry/falcor-json-graph": "^2.0.0",
     "sinon": "^1.15.4",
     "gulp-mocha": "~2.2.0",
     "gulp": "^3.9.0"

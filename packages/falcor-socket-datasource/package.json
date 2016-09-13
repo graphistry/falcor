@@ -13,7 +13,7 @@
     "url": "https://github.com/giovannicalo"
   },
   "bugs": {
-    "url": "https://github.com/graphistry/falcor-socket-datasource/issues"
+    "url": "https://github.com/graphistry/falcor/issues"
   },
   "dependencies": {
     "babel-plugin-transform-runtime": "~6.12.0",
@@ -38,7 +38,7 @@
     "rxjs": "~5.0.0-beta.11",
     "socket.io": "^1.4.6"
   },
-  "homepage": "https://github.com/graphistry/falcor-socket-datasource",
+  "homepage": "https://github.com/graphistry/falcor/blob/master/packages/falcor-socket-datasource/readme.md",
   "keywords": [
     "datasource",
     "falcor",
@@ -50,6 +50,6 @@
   "main": "dist/index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/graphistry/falcor-socket-datasource.git"
+    "url": "https://github.com/graphistry/falcor.git"
   }
 }
