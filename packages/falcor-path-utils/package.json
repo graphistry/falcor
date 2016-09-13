@@ -1,6 +1,6 @@
 {
   "name": "@graphistry/falcor-path-utils",
-  "version": "2.0.1",
+  "version": "2.0.4",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
@@ -18,7 +18,7 @@
   "homepage": "https://github.com/graphistry/falcor/blob/master/packages/falcor-path-utils/README.md",
   "devDependencies": {
     "chai": "^3.2.0",
-    "@graphistry/falcor-json-graph": "^2.0.0",
+    "@graphistry/falcor-json-graph": "^2.0.4",
     "sinon": "^1.15.4",
     "gulp-mocha": "~2.2.0",
     "gulp": "^3.9.0"
