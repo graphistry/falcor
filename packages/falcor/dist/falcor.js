@@ -87,7 +87,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 128);
+/******/ 	return __webpack_require__(__webpack_require__.s = 131);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -132,9 +132,9 @@ module.exports = function isExpired(node) {
 /* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
-var noop = __webpack_require__(24);
-var Symbol = __webpack_require__(78);
-var toEsObservable = __webpack_require__(126);
+/* WEBPACK VAR INJECTION */(function(Promise) {var noop = __webpack_require__(24);
+var Symbol = __webpack_require__(80);
+var toEsObservable = __webpack_require__(128);
 
 /**
  * A ModelResponse is a container for the results of a get, set, or call operation performed on a Model. The ModelResponse provides methods which can be used to specify the output format of the data retrieved from a Model, as well as how that data is delivered.
@@ -246,7 +246,7 @@ ModelResponse.prototype.then = function then(onNext, onError) {
     /* global Promise */
     var self = this;
     if (!self._promise) {
-        self._promise = new (typeof Promise === "function" ? Promise : require("promise"))(function (resolve, reject) {
+        self._promise = new Promise(function (resolve, reject) {
             var rejected = false;
             var values = [];
             self.subscribe(function (value) {
@@ -270,6 +270,7 @@ ModelResponse.prototype.then = function then(onNext, onError) {
 };
 
 module.exports = ModelResponse;
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(65)))
 
 /***/ },
 /* 5 */
@@ -308,14 +309,14 @@ module.exports = function getSize(node) {
 module.exports = {
     iterateKeySet: __webpack_require__(40),
     toTree: __webpack_require__(44),
-    toTreeWithUnion: __webpack_require__(74),
-    pathsComplementFromTree: __webpack_require__(72),
-    pathsComplementFromLengthTree: __webpack_require__(71),
+    toTreeWithUnion: __webpack_require__(76),
+    pathsComplementFromTree: __webpack_require__(74),
+    pathsComplementFromLengthTree: __webpack_require__(73),
     hasIntersection: __webpack_require__(26),
     toPaths: __webpack_require__(43),
-    collapse: __webpack_require__(66),
-    optimizePathSets: __webpack_require__(69),
-    pathCount: __webpack_require__(70)
+    collapse: __webpack_require__(68),
+    optimizePathSets: __webpack_require__(71),
+    pathCount: __webpack_require__(72)
 };
 
 
@@ -559,12 +560,12 @@ module.exports = __webpack_require__(5) + "version";
 var arr = new Array(5);
 var $ref = __webpack_require__(1);
 var createHardlink = __webpack_require__(13);
-var isExpired = __webpack_require__(120);
+var isExpired = __webpack_require__(122);
 var isFunction = __webpack_require__(2);
 var isPrimitive = __webpack_require__(9);
 var expireNode = __webpack_require__(6);
 var iterateKeySet = __webpack_require__(8).iterateKeySet;
-var mergeJSONGraphNode = __webpack_require__(122);
+var mergeJSONGraphNode = __webpack_require__(124);
 var NullInPathError = __webpack_require__(14);
 
 /**
@@ -920,8 +921,8 @@ module.exports = { $__null__$: null };
 /***/ function(module, exports, __webpack_require__) {
 
 module.exports = {
-    getWithPathsAsPathMap: __webpack_require__(87),
-    getWithPathsAsJSONGraph: __webpack_require__(92)
+    getWithPathsAsPathMap: __webpack_require__(89),
+    getWithPathsAsJSONGraph: __webpack_require__(94)
 };
 
 /***/ },
@@ -1477,8 +1478,8 @@ module.exports = Date.now;
 var $ref = __webpack_require__(1);
 var splice = __webpack_require__(51);
 var isObject = __webpack_require__(0);
-var unlinkBackReferences = __webpack_require__(124);
-var unlinkForwardReference = __webpack_require__(125);
+var unlinkBackReferences = __webpack_require__(126);
+var unlinkForwardReference = __webpack_require__(127);
 
 module.exports = function removeNode(node, parent, key, lru) {
     if (isObject(node)) {
@@ -2412,7 +2413,7 @@ module.exports = AssignableDisposable;
 
 var ModelResponse = __webpack_require__(4);
 var checkCacheAndReport = __webpack_require__(55);
-var getRequestCycle = __webpack_require__(106);
+var getRequestCycle = __webpack_require__(108);
 var noop = __webpack_require__(24);
 var empty = { dispose: noop, unsubscribe: noop };
 var collectLru = __webpack_require__(30);
@@ -2510,7 +2511,7 @@ GetResponse.prototype._subscribe = function _subscribe(observer) {
 /***/ function(module, exports, __webpack_require__) {
 
 var gets = __webpack_require__(28);
-var mergeInto = __webpack_require__(108);
+var mergeInto = __webpack_require__(110);
 var collapse = __webpack_require__(8).collapse;
 var getWithPathsAsPathMap = gets.getWithPathsAsPathMap;
 var getWithPathsAsJSONGraph = gets.getWithPathsAsJSONGraph;
@@ -2638,7 +2639,7 @@ var isArray = Array.isArray;
 var isPathValue = __webpack_require__(23);
 var isJSONGraphEnvelope = __webpack_require__(33);
 var isJSONEnvelope = __webpack_require__(22);
-var setRequestCycle = __webpack_require__(111);
+var setRequestCycle = __webpack_require__(113);
 var __version = __webpack_require__(20);
 
 /**
@@ -2780,7 +2781,7 @@ module.exports = function insertNode(node, parent, key, version, optimizedPath) 
 
 var $ref = __webpack_require__(1);
 var $error = __webpack_require__(19);
-var getType = __webpack_require__(119);
+var getType = __webpack_require__(121);
 var getSize = __webpack_require__(7);
 var getTimestamp = __webpack_require__(58);
 
@@ -2871,7 +2872,7 @@ module.exports = function reconstructPath(currentPath, key) {
 /***/ function(module, exports, __webpack_require__) {
 
 var isObject = __webpack_require__(0);
-var transferBackReferences = __webpack_require__(123);
+var transferBackReferences = __webpack_require__(125);
 var removeNodeAndDescendants = __webpack_require__(36);
 var updateBackReferenceVersions = __webpack_require__(63);
 
@@ -2921,10 +2922,10 @@ var expiresNow = __webpack_require__(39);
 
 var atomSize = 50;
 
-var clone = __webpack_require__(117);
+var clone = __webpack_require__(119);
 var isArray = Array.isArray;
 var getSize = __webpack_require__(7);
-var getExpires = __webpack_require__(118);
+var getExpires = __webpack_require__(120);
 var atomType = __webpack_require__(25);
 
 module.exports = function wrapNode(nodeArg, typeArg, value) {
@@ -2986,10 +2987,1195 @@ module.exports = function wrapNode(nodeArg, typeArg, value) {
 /* 65 */
 /***/ function(module, exports, __webpack_require__) {
 
+/* WEBPACK VAR INJECTION */(function(process, Promise, global) {var require;/*!
+ * @overview es6-promise - a tiny implementation of Promises/A+.
+ * @copyright Copyright (c) 2014 Yehuda Katz, Tom Dale, Stefan Penner and contributors (Conversion to ES6 API by Jake Archibald)
+ * @license   Licensed under MIT license
+ *            See https://raw.githubusercontent.com/stefanpenner/es6-promise/master/LICENSE
+ * @version   3.3.0
+ */
+
+(function (global, factory) {
+     true ? module.exports = factory() :
+    typeof define === 'function' && define.amd ? define(factory) :
+    (global.ES6Promise = factory());
+}(this, (function () { 'use strict';
+
+function objectOrFunction(x) {
+  return typeof x === 'function' || typeof x === 'object' && x !== null;
+}
+
+function isFunction(x) {
+  return typeof x === 'function';
+}
+
+var _isArray = undefined;
+if (!Array.isArray) {
+  _isArray = function (x) {
+    return Object.prototype.toString.call(x) === '[object Array]';
+  };
+} else {
+  _isArray = Array.isArray;
+}
+
+var isArray = _isArray;
+
+var len = 0;
+var vertxNext = undefined;
+var customSchedulerFn = undefined;
+
+var asap = function asap(callback, arg) {
+  queue[len] = callback;
+  queue[len + 1] = arg;
+  len += 2;
+  if (len === 2) {
+    // If len is 2, that means that we need to schedule an async flush.
+    // If additional callbacks are queued before the queue is flushed, they
+    // will be processed by this flush that we are scheduling.
+    if (customSchedulerFn) {
+      customSchedulerFn(flush);
+    } else {
+      scheduleFlush();
+    }
+  }
+};
+
+function setScheduler(scheduleFn) {
+  customSchedulerFn = scheduleFn;
+}
+
+function setAsap(asapFn) {
+  asap = asapFn;
+}
+
+var browserWindow = typeof window !== 'undefined' ? window : undefined;
+var browserGlobal = browserWindow || {};
+var BrowserMutationObserver = browserGlobal.MutationObserver || browserGlobal.WebKitMutationObserver;
+var isNode = typeof self === 'undefined' && typeof process !== 'undefined' && ({}).toString.call(process) === '[object process]';
+
+// test for web worker but not in IE10
+var isWorker = typeof Uint8ClampedArray !== 'undefined' && typeof importScripts !== 'undefined' && typeof MessageChannel !== 'undefined';
+
+// node
+function useNextTick() {
+  // node version 0.10.x displays a deprecation warning when nextTick is used recursively
+  // see https://github.com/cujojs/when/issues/410 for details
+  return function () {
+    return process.nextTick(flush);
+  };
+}
+
+// vertx
+function useVertxTimer() {
+  return function () {
+    vertxNext(flush);
+  };
+}
+
+function useMutationObserver() {
+  var iterations = 0;
+  var observer = new BrowserMutationObserver(flush);
+  var node = document.createTextNode('');
+  observer.observe(node, { characterData: true });
+
+  return function () {
+    node.data = iterations = ++iterations % 2;
+  };
+}
+
+// web worker
+function useMessageChannel() {
+  var channel = new MessageChannel();
+  channel.port1.onmessage = flush;
+  return function () {
+    return channel.port2.postMessage(0);
+  };
+}
+
+function useSetTimeout() {
+  // Store setTimeout reference so es6-promise will be unaffected by
+  // other code modifying setTimeout (like sinon.useFakeTimers())
+  var globalSetTimeout = setTimeout;
+  return function () {
+    return globalSetTimeout(flush, 1);
+  };
+}
+
+var queue = new Array(1000);
+function flush() {
+  for (var i = 0; i < len; i += 2) {
+    var callback = queue[i];
+    var arg = queue[i + 1];
+
+    callback(arg);
+
+    queue[i] = undefined;
+    queue[i + 1] = undefined;
+  }
+
+  len = 0;
+}
+
+function attemptVertx() {
+  try {
+    var r = require;
+    var vertx = __webpack_require__(130);
+    vertxNext = vertx.runOnLoop || vertx.runOnContext;
+    return useVertxTimer();
+  } catch (e) {
+    return useSetTimeout();
+  }
+}
+
+var scheduleFlush = undefined;
+// Decide what async method to use to triggering processing of queued callbacks:
+if (isNode) {
+  scheduleFlush = useNextTick();
+} else if (BrowserMutationObserver) {
+  scheduleFlush = useMutationObserver();
+} else if (isWorker) {
+  scheduleFlush = useMessageChannel();
+} else if (browserWindow === undefined && "function" === 'function') {
+  scheduleFlush = attemptVertx();
+} else {
+  scheduleFlush = useSetTimeout();
+}
+
+function then(onFulfillment, onRejection) {
+  var _arguments = arguments;
+
+  var parent = this;
+
+  var child = new this.constructor(noop);
+
+  if (child[PROMISE_ID] === undefined) {
+    makePromise(child);
+  }
+
+  var _state = parent._state;
+
+  if (_state) {
+    (function () {
+      var callback = _arguments[_state - 1];
+      asap(function () {
+        return invokeCallback(_state, child, callback, parent._result);
+      });
+    })();
+  } else {
+    subscribe(parent, child, onFulfillment, onRejection);
+  }
+
+  return child;
+}
+
+/**
+  `Promise.resolve` returns a promise that will become resolved with the
+  passed `value`. It is shorthand for the following:
+
+  ```javascript
+  let promise = new Promise(function(resolve, reject){
+    resolve(1);
+  });
+
+  promise.then(function(value){
+    // value === 1
+  });
+  ```
+
+  Instead of writing the above, your code now simply becomes the following:
+
+  ```javascript
+  let promise = Promise.resolve(1);
+
+  promise.then(function(value){
+    // value === 1
+  });
+  ```
+
+  @method resolve
+  @static
+  @param {Any} value value that the returned promise will be resolved with
+  Useful for tooling.
+  @return {Promise} a promise that will become fulfilled with the given
+  `value`
+*/
+function resolve(object) {
+  /*jshint validthis:true */
+  var Constructor = this;
+
+  if (object && typeof object === 'object' && object.constructor === Constructor) {
+    return object;
+  }
+
+  var promise = new Constructor(noop);
+  _resolve(promise, object);
+  return promise;
+}
+
+var PROMISE_ID = Math.random().toString(36).substring(16);
+
+function noop() {}
+
+var PENDING = void 0;
+var FULFILLED = 1;
+var REJECTED = 2;
+
+var GET_THEN_ERROR = new ErrorObject();
+
+function selfFulfillment() {
+  return new TypeError("You cannot resolve a promise with itself");
+}
+
+function cannotReturnOwn() {
+  return new TypeError('A promises callback cannot return that same promise.');
+}
+
+function getThen(promise) {
+  try {
+    return promise.then;
+  } catch (error) {
+    GET_THEN_ERROR.error = error;
+    return GET_THEN_ERROR;
+  }
+}
+
+function tryThen(then, value, fulfillmentHandler, rejectionHandler) {
+  try {
+    then.call(value, fulfillmentHandler, rejectionHandler);
+  } catch (e) {
+    return e;
+  }
+}
+
+function handleForeignThenable(promise, thenable, then) {
+  asap(function (promise) {
+    var sealed = false;
+    var error = tryThen(then, thenable, function (value) {
+      if (sealed) {
+        return;
+      }
+      sealed = true;
+      if (thenable !== value) {
+        _resolve(promise, value);
+      } else {
+        fulfill(promise, value);
+      }
+    }, function (reason) {
+      if (sealed) {
+        return;
+      }
+      sealed = true;
+
+      _reject(promise, reason);
+    }, 'Settle: ' + (promise._label || ' unknown promise'));
+
+    if (!sealed && error) {
+      sealed = true;
+      _reject(promise, error);
+    }
+  }, promise);
+}
+
+function handleOwnThenable(promise, thenable) {
+  if (thenable._state === FULFILLED) {
+    fulfill(promise, thenable._result);
+  } else if (thenable._state === REJECTED) {
+    _reject(promise, thenable._result);
+  } else {
+    subscribe(thenable, undefined, function (value) {
+      return _resolve(promise, value);
+    }, function (reason) {
+      return _reject(promise, reason);
+    });
+  }
+}
+
+function handleMaybeThenable(promise, maybeThenable, then$$) {
+  if (maybeThenable.constructor === promise.constructor && then$$ === then && maybeThenable.constructor.resolve === resolve) {
+    handleOwnThenable(promise, maybeThenable);
+  } else {
+    if (then$$ === GET_THEN_ERROR) {
+      _reject(promise, GET_THEN_ERROR.error);
+    } else if (then$$ === undefined) {
+      fulfill(promise, maybeThenable);
+    } else if (isFunction(then$$)) {
+      handleForeignThenable(promise, maybeThenable, then$$);
+    } else {
+      fulfill(promise, maybeThenable);
+    }
+  }
+}
+
+function _resolve(promise, value) {
+  if (promise === value) {
+    _reject(promise, selfFulfillment());
+  } else if (objectOrFunction(value)) {
+    handleMaybeThenable(promise, value, getThen(value));
+  } else {
+    fulfill(promise, value);
+  }
+}
+
+function publishRejection(promise) {
+  if (promise._onerror) {
+    promise._onerror(promise._result);
+  }
+
+  publish(promise);
+}
+
+function fulfill(promise, value) {
+  if (promise._state !== PENDING) {
+    return;
+  }
+
+  promise._result = value;
+  promise._state = FULFILLED;
+
+  if (promise._subscribers.length !== 0) {
+    asap(publish, promise);
+  }
+}
+
+function _reject(promise, reason) {
+  if (promise._state !== PENDING) {
+    return;
+  }
+  promise._state = REJECTED;
+  promise._result = reason;
+
+  asap(publishRejection, promise);
+}
+
+function subscribe(parent, child, onFulfillment, onRejection) {
+  var _subscribers = parent._subscribers;
+  var length = _subscribers.length;
+
+  parent._onerror = null;
+
+  _subscribers[length] = child;
+  _subscribers[length + FULFILLED] = onFulfillment;
+  _subscribers[length + REJECTED] = onRejection;
+
+  if (length === 0 && parent._state) {
+    asap(publish, parent);
+  }
+}
+
+function publish(promise) {
+  var subscribers = promise._subscribers;
+  var settled = promise._state;
+
+  if (subscribers.length === 0) {
+    return;
+  }
+
+  var child = undefined,
+      callback = undefined,
+      detail = promise._result;
+
+  for (var i = 0; i < subscribers.length; i += 3) {
+    child = subscribers[i];
+    callback = subscribers[i + settled];
+
+    if (child) {
+      invokeCallback(settled, child, callback, detail);
+    } else {
+      callback(detail);
+    }
+  }
+
+  promise._subscribers.length = 0;
+}
+
+function ErrorObject() {
+  this.error = null;
+}
+
+var TRY_CATCH_ERROR = new ErrorObject();
+
+function tryCatch(callback, detail) {
+  try {
+    return callback(detail);
+  } catch (e) {
+    TRY_CATCH_ERROR.error = e;
+    return TRY_CATCH_ERROR;
+  }
+}
+
+function invokeCallback(settled, promise, callback, detail) {
+  var hasCallback = isFunction(callback),
+      value = undefined,
+      error = undefined,
+      succeeded = undefined,
+      failed = undefined;
+
+  if (hasCallback) {
+    value = tryCatch(callback, detail);
+
+    if (value === TRY_CATCH_ERROR) {
+      failed = true;
+      error = value.error;
+      value = null;
+    } else {
+      succeeded = true;
+    }
+
+    if (promise === value) {
+      _reject(promise, cannotReturnOwn());
+      return;
+    }
+  } else {
+    value = detail;
+    succeeded = true;
+  }
+
+  if (promise._state !== PENDING) {
+    // noop
+  } else if (hasCallback && succeeded) {
+      _resolve(promise, value);
+    } else if (failed) {
+      _reject(promise, error);
+    } else if (settled === FULFILLED) {
+      fulfill(promise, value);
+    } else if (settled === REJECTED) {
+      _reject(promise, value);
+    }
+}
+
+function initializePromise(promise, resolver) {
+  try {
+    resolver(function resolvePromise(value) {
+      _resolve(promise, value);
+    }, function rejectPromise(reason) {
+      _reject(promise, reason);
+    });
+  } catch (e) {
+    _reject(promise, e);
+  }
+}
+
+var id = 0;
+function nextId() {
+  return id++;
+}
+
+function makePromise(promise) {
+  promise[PROMISE_ID] = id++;
+  promise._state = undefined;
+  promise._result = undefined;
+  promise._subscribers = [];
+}
+
+function Enumerator(Constructor, input) {
+  this._instanceConstructor = Constructor;
+  this.promise = new Constructor(noop);
+
+  if (!this.promise[PROMISE_ID]) {
+    makePromise(this.promise);
+  }
+
+  if (isArray(input)) {
+    this._input = input;
+    this.length = input.length;
+    this._remaining = input.length;
+
+    this._result = new Array(this.length);
+
+    if (this.length === 0) {
+      fulfill(this.promise, this._result);
+    } else {
+      this.length = this.length || 0;
+      this._enumerate();
+      if (this._remaining === 0) {
+        fulfill(this.promise, this._result);
+      }
+    }
+  } else {
+    _reject(this.promise, validationError());
+  }
+}
+
+function validationError() {
+  return new Error('Array Methods must be provided an Array');
+};
+
+Enumerator.prototype._enumerate = function () {
+  var length = this.length;
+  var _input = this._input;
+
+  for (var i = 0; this._state === PENDING && i < length; i++) {
+    this._eachEntry(_input[i], i);
+  }
+};
+
+Enumerator.prototype._eachEntry = function (entry, i) {
+  var c = this._instanceConstructor;
+  var resolve$$ = c.resolve;
+
+  if (resolve$$ === resolve) {
+    var _then = getThen(entry);
+
+    if (_then === then && entry._state !== PENDING) {
+      this._settledAt(entry._state, i, entry._result);
+    } else if (typeof _then !== 'function') {
+      this._remaining--;
+      this._result[i] = entry;
+    } else if (c === Promise) {
+      var promise = new c(noop);
+      handleMaybeThenable(promise, entry, _then);
+      this._willSettleAt(promise, i);
+    } else {
+      this._willSettleAt(new c(function (resolve$$) {
+        return resolve$$(entry);
+      }), i);
+    }
+  } else {
+    this._willSettleAt(resolve$$(entry), i);
+  }
+};
+
+Enumerator.prototype._settledAt = function (state, i, value) {
+  var promise = this.promise;
+
+  if (promise._state === PENDING) {
+    this._remaining--;
+
+    if (state === REJECTED) {
+      _reject(promise, value);
+    } else {
+      this._result[i] = value;
+    }
+  }
+
+  if (this._remaining === 0) {
+    fulfill(promise, this._result);
+  }
+};
+
+Enumerator.prototype._willSettleAt = function (promise, i) {
+  var enumerator = this;
+
+  subscribe(promise, undefined, function (value) {
+    return enumerator._settledAt(FULFILLED, i, value);
+  }, function (reason) {
+    return enumerator._settledAt(REJECTED, i, reason);
+  });
+};
+
+/**
+  `Promise.all` accepts an array of promises, and returns a new promise which
+  is fulfilled with an array of fulfillment values for the passed promises, or
+  rejected with the reason of the first passed promise to be rejected. It casts all
+  elements of the passed iterable to promises as it runs this algorithm.
+
+  Example:
+
+  ```javascript
+  let promise1 = resolve(1);
+  let promise2 = resolve(2);
+  let promise3 = resolve(3);
+  let promises = [ promise1, promise2, promise3 ];
+
+  Promise.all(promises).then(function(array){
+    // The array here would be [ 1, 2, 3 ];
+  });
+  ```
+
+  If any of the `promises` given to `all` are rejected, the first promise
+  that is rejected will be given as an argument to the returned promises's
+  rejection handler. For example:
+
+  Example:
+
+  ```javascript
+  let promise1 = resolve(1);
+  let promise2 = reject(new Error("2"));
+  let promise3 = reject(new Error("3"));
+  let promises = [ promise1, promise2, promise3 ];
+
+  Promise.all(promises).then(function(array){
+    // Code here never runs because there are rejected promises!
+  }, function(error) {
+    // error.message === "2"
+  });
+  ```
+
+  @method all
+  @static
+  @param {Array} entries array of promises
+  @param {String} label optional string for labeling the promise.
+  Useful for tooling.
+  @return {Promise} promise that is fulfilled when all `promises` have been
+  fulfilled, or rejected if any of them become rejected.
+  @static
+*/
+function all(entries) {
+  return new Enumerator(this, entries).promise;
+}
+
+/**
+  `Promise.race` returns a new promise which is settled in the same way as the
+  first passed promise to settle.
+
+  Example:
+
+  ```javascript
+  let promise1 = new Promise(function(resolve, reject){
+    setTimeout(function(){
+      resolve('promise 1');
+    }, 200);
+  });
+
+  let promise2 = new Promise(function(resolve, reject){
+    setTimeout(function(){
+      resolve('promise 2');
+    }, 100);
+  });
+
+  Promise.race([promise1, promise2]).then(function(result){
+    // result === 'promise 2' because it was resolved before promise1
+    // was resolved.
+  });
+  ```
+
+  `Promise.race` is deterministic in that only the state of the first
+  settled promise matters. For example, even if other promises given to the
+  `promises` array argument are resolved, but the first settled promise has
+  become rejected before the other promises became fulfilled, the returned
+  promise will become rejected:
+
+  ```javascript
+  let promise1 = new Promise(function(resolve, reject){
+    setTimeout(function(){
+      resolve('promise 1');
+    }, 200);
+  });
+
+  let promise2 = new Promise(function(resolve, reject){
+    setTimeout(function(){
+      reject(new Error('promise 2'));
+    }, 100);
+  });
+
+  Promise.race([promise1, promise2]).then(function(result){
+    // Code here never runs
+  }, function(reason){
+    // reason.message === 'promise 2' because promise 2 became rejected before
+    // promise 1 became fulfilled
+  });
+  ```
+
+  An example real-world use case is implementing timeouts:
+
+  ```javascript
+  Promise.race([ajax('foo.json'), timeout(5000)])
+  ```
+
+  @method race
+  @static
+  @param {Array} promises array of promises to observe
+  Useful for tooling.
+  @return {Promise} a promise which settles in the same way as the first passed
+  promise to settle.
+*/
+function race(entries) {
+  /*jshint validthis:true */
+  var Constructor = this;
+
+  if (!isArray(entries)) {
+    return new Constructor(function (_, reject) {
+      return reject(new TypeError('You must pass an array to race.'));
+    });
+  } else {
+    return new Constructor(function (resolve, reject) {
+      var length = entries.length;
+      for (var i = 0; i < length; i++) {
+        Constructor.resolve(entries[i]).then(resolve, reject);
+      }
+    });
+  }
+}
+
+/**
+  `Promise.reject` returns a promise rejected with the passed `reason`.
+  It is shorthand for the following:
+
+  ```javascript
+  let promise = new Promise(function(resolve, reject){
+    reject(new Error('WHOOPS'));
+  });
+
+  promise.then(function(value){
+    // Code here doesn't run because the promise is rejected!
+  }, function(reason){
+    // reason.message === 'WHOOPS'
+  });
+  ```
+
+  Instead of writing the above, your code now simply becomes the following:
+
+  ```javascript
+  let promise = Promise.reject(new Error('WHOOPS'));
+
+  promise.then(function(value){
+    // Code here doesn't run because the promise is rejected!
+  }, function(reason){
+    // reason.message === 'WHOOPS'
+  });
+  ```
+
+  @method reject
+  @static
+  @param {Any} reason value that the returned promise will be rejected with.
+  Useful for tooling.
+  @return {Promise} a promise rejected with the given `reason`.
+*/
+function reject(reason) {
+  /*jshint validthis:true */
+  var Constructor = this;
+  var promise = new Constructor(noop);
+  _reject(promise, reason);
+  return promise;
+}
+
+function needsResolver() {
+  throw new TypeError('You must pass a resolver function as the first argument to the promise constructor');
+}
+
+function needsNew() {
+  throw new TypeError("Failed to construct 'Promise': Please use the 'new' operator, this object constructor cannot be called as a function.");
+}
+
+/**
+  Promise objects represent the eventual result of an asynchronous operation. The
+  primary way of interacting with a promise is through its `then` method, which
+  registers callbacks to receive either a promise's eventual value or the reason
+  why the promise cannot be fulfilled.
+
+  Terminology
+  -----------
+
+  - `promise` is an object or function with a `then` method whose behavior conforms to this specification.
+  - `thenable` is an object or function that defines a `then` method.
+  - `value` is any legal JavaScript value (including undefined, a thenable, or a promise).
+  - `exception` is a value that is thrown using the throw statement.
+  - `reason` is a value that indicates why a promise was rejected.
+  - `settled` the final resting state of a promise, fulfilled or rejected.
+
+  A promise can be in one of three states: pending, fulfilled, or rejected.
+
+  Promises that are fulfilled have a fulfillment value and are in the fulfilled
+  state.  Promises that are rejected have a rejection reason and are in the
+  rejected state.  A fulfillment value is never a thenable.
+
+  Promises can also be said to *resolve* a value.  If this value is also a
+  promise, then the original promise's settled state will match the value's
+  settled state.  So a promise that *resolves* a promise that rejects will
+  itself reject, and a promise that *resolves* a promise that fulfills will
+  itself fulfill.
+
+
+  Basic Usage:
+  ------------
+
+  ```js
+  let promise = new Promise(function(resolve, reject) {
+    // on success
+    resolve(value);
+
+    // on failure
+    reject(reason);
+  });
+
+  promise.then(function(value) {
+    // on fulfillment
+  }, function(reason) {
+    // on rejection
+  });
+  ```
+
+  Advanced Usage:
+  ---------------
+
+  Promises shine when abstracting away asynchronous interactions such as
+  `XMLHttpRequest`s.
+
+  ```js
+  function getJSON(url) {
+    return new Promise(function(resolve, reject){
+      let xhr = new XMLHttpRequest();
+
+      xhr.open('GET', url);
+      xhr.onreadystatechange = handler;
+      xhr.responseType = 'json';
+      xhr.setRequestHeader('Accept', 'application/json');
+      xhr.send();
+
+      function handler() {
+        if (this.readyState === this.DONE) {
+          if (this.status === 200) {
+            resolve(this.response);
+          } else {
+            reject(new Error('getJSON: `' + url + '` failed with status: [' + this.status + ']'));
+          }
+        }
+      };
+    });
+  }
+
+  getJSON('/posts.json').then(function(json) {
+    // on fulfillment
+  }, function(reason) {
+    // on rejection
+  });
+  ```
+
+  Unlike callbacks, promises are great composable primitives.
+
+  ```js
+  Promise.all([
+    getJSON('/posts'),
+    getJSON('/comments')
+  ]).then(function(values){
+    values[0] // => postsJSON
+    values[1] // => commentsJSON
+
+    return values;
+  });
+  ```
+
+  @class Promise
+  @param {function} resolver
+  Useful for tooling.
+  @constructor
+*/
+function Promise(resolver) {
+  this[PROMISE_ID] = nextId();
+  this._result = this._state = undefined;
+  this._subscribers = [];
+
+  if (noop !== resolver) {
+    typeof resolver !== 'function' && needsResolver();
+    this instanceof Promise ? initializePromise(this, resolver) : needsNew();
+  }
+}
+
+Promise.all = all;
+Promise.race = race;
+Promise.resolve = resolve;
+Promise.reject = reject;
+Promise._setScheduler = setScheduler;
+Promise._setAsap = setAsap;
+Promise._asap = asap;
+
+Promise.prototype = {
+  constructor: Promise,
+
+  /**
+    The primary way of interacting with a promise is through its `then` method,
+    which registers callbacks to receive either a promise's eventual value or the
+    reason why the promise cannot be fulfilled.
+  
+    ```js
+    findUser().then(function(user){
+      // user is available
+    }, function(reason){
+      // user is unavailable, and you are given the reason why
+    });
+    ```
+  
+    Chaining
+    --------
+  
+    The return value of `then` is itself a promise.  This second, 'downstream'
+    promise is resolved with the return value of the first promise's fulfillment
+    or rejection handler, or rejected if the handler throws an exception.
+  
+    ```js
+    findUser().then(function (user) {
+      return user.name;
+    }, function (reason) {
+      return 'default name';
+    }).then(function (userName) {
+      // If `findUser` fulfilled, `userName` will be the user's name, otherwise it
+      // will be `'default name'`
+    });
+  
+    findUser().then(function (user) {
+      throw new Error('Found user, but still unhappy');
+    }, function (reason) {
+      throw new Error('`findUser` rejected and we're unhappy');
+    }).then(function (value) {
+      // never reached
+    }, function (reason) {
+      // if `findUser` fulfilled, `reason` will be 'Found user, but still unhappy'.
+      // If `findUser` rejected, `reason` will be '`findUser` rejected and we're unhappy'.
+    });
+    ```
+    If the downstream promise does not specify a rejection handler, rejection reasons will be propagated further downstream.
+  
+    ```js
+    findUser().then(function (user) {
+      throw new PedagogicalException('Upstream error');
+    }).then(function (value) {
+      // never reached
+    }).then(function (value) {
+      // never reached
+    }, function (reason) {
+      // The `PedgagocialException` is propagated all the way down to here
+    });
+    ```
+  
+    Assimilation
+    ------------
+  
+    Sometimes the value you want to propagate to a downstream promise can only be
+    retrieved asynchronously. This can be achieved by returning a promise in the
+    fulfillment or rejection handler. The downstream promise will then be pending
+    until the returned promise is settled. This is called *assimilation*.
+  
+    ```js
+    findUser().then(function (user) {
+      return findCommentsByAuthor(user);
+    }).then(function (comments) {
+      // The user's comments are now available
+    });
+    ```
+  
+    If the assimliated promise rejects, then the downstream promise will also reject.
+  
+    ```js
+    findUser().then(function (user) {
+      return findCommentsByAuthor(user);
+    }).then(function (comments) {
+      // If `findCommentsByAuthor` fulfills, we'll have the value here
+    }, function (reason) {
+      // If `findCommentsByAuthor` rejects, we'll have the reason here
+    });
+    ```
+  
+    Simple Example
+    --------------
+  
+    Synchronous Example
+  
+    ```javascript
+    let result;
+  
+    try {
+      result = findResult();
+      // success
+    } catch(reason) {
+      // failure
+    }
+    ```
+  
+    Errback Example
+  
+    ```js
+    findResult(function(result, err){
+      if (err) {
+        // failure
+      } else {
+        // success
+      }
+    });
+    ```
+  
+    Promise Example;
+  
+    ```javascript
+    findResult().then(function(result){
+      // success
+    }, function(reason){
+      // failure
+    });
+    ```
+  
+    Advanced Example
+    --------------
+  
+    Synchronous Example
+  
+    ```javascript
+    let author, books;
+  
+    try {
+      author = findAuthor();
+      books  = findBooksByAuthor(author);
+      // success
+    } catch(reason) {
+      // failure
+    }
+    ```
+  
+    Errback Example
+  
+    ```js
+  
+    function foundBooks(books) {
+  
+    }
+  
+    function failure(reason) {
+  
+    }
+  
+    findAuthor(function(author, err){
+      if (err) {
+        failure(err);
+        // failure
+      } else {
+        try {
+          findBoooksByAuthor(author, function(books, err) {
+            if (err) {
+              failure(err);
+            } else {
+              try {
+                foundBooks(books);
+              } catch(reason) {
+                failure(reason);
+              }
+            }
+          });
+        } catch(error) {
+          failure(err);
+        }
+        // success
+      }
+    });
+    ```
+  
+    Promise Example;
+  
+    ```javascript
+    findAuthor().
+      then(findBooksByAuthor).
+      then(function(books){
+        // found books
+    }).catch(function(reason){
+      // something went wrong
+    });
+    ```
+  
+    @method then
+    @param {Function} onFulfilled
+    @param {Function} onRejected
+    Useful for tooling.
+    @return {Promise}
+  */
+  then: then,
+
+  /**
+    `catch` is simply sugar for `then(undefined, onRejection)` which makes it the same
+    as the catch block of a try/catch statement.
+  
+    ```js
+    function findAuthor(){
+      throw new Error('couldn't find that author');
+    }
+  
+    // synchronous
+    try {
+      findAuthor();
+    } catch(reason) {
+      // something went wrong
+    }
+  
+    // async with promises
+    findAuthor().catch(function(reason){
+      // something went wrong
+    });
+    ```
+  
+    @method catch
+    @param {Function} onRejection
+    Useful for tooling.
+    @return {Promise}
+  */
+  'catch': function _catch(onRejection) {
+    return this.then(null, onRejection);
+  }
+};
+
+function polyfill() {
+    var local = undefined;
+
+    if (typeof global !== 'undefined') {
+        local = global;
+    } else if (typeof self !== 'undefined') {
+        local = self;
+    } else {
+        try {
+            local = Function('return this')();
+        } catch (e) {
+            throw new Error('polyfill failed because global object is unavailable in this environment');
+        }
+    }
+
+    var P = local.Promise;
+
+    if (P) {
+        var promiseToString = null;
+        try {
+            promiseToString = Object.prototype.toString.call(P.resolve());
+        } catch (e) {
+            // silently ignored
+        }
+
+        if (promiseToString === '[object Promise]' && !P.cast) {
+            return;
+        }
+    }
+
+    local.Promise = Promise;
+}
+
+polyfill();
+// Strange compat..
+Promise.polyfill = polyfill;
+Promise.Promise = Promise;
+
+return Promise;
+
+})));
+//# sourceMappingURL=es6-promise.map
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(129), __webpack_require__(65), __webpack_require__(66)))
+
+/***/ },
+/* 66 */
+/***/ function(module, exports) {
+
+var g;
+
+// This works in non-strict mode
+g = (function() { return this; })();
+
+try {
+	// This works if eval is allowed (see CSP)
+	g = g || Function("return this")() || (1,eval)("this");
+} catch(e) {
+	// This works if the window reference is available
+	if(typeof window === "object")
+		g = window;
+}
+
+// g can still be undefined, but nothing to do about it...
+// We return undefined, instead of nothing here, so it's
+// easier to handle this case. if(!global) { ...}
+
+module.exports = g;
+
+
+/***/ },
+/* 67 */
+/***/ function(module, exports, __webpack_require__) {
+
 "use strict";
 "use strict";
 
-var Model = __webpack_require__(75);
+var Model = __webpack_require__(77);
 
 function falcor(opts) {
     return new Model(opts);
@@ -3000,7 +4186,7 @@ falcor.Model = Model;
 module.exports = falcor;
 
 /***/ },
-/* 66 */
+/* 68 */
 /***/ function(module, exports, __webpack_require__) {
 
 var toPaths = __webpack_require__(43);
@@ -3028,7 +4214,7 @@ module.exports = function collapse(paths) {
 
 
 /***/ },
-/* 67 */
+/* 69 */
 /***/ function(module, exports) {
 
 /*eslint-disable*/
@@ -3040,12 +4226,12 @@ module.exports = {
 
 
 /***/ },
-/* 68 */
+/* 70 */
 /***/ function(module, exports, __webpack_require__) {
 
 var cloneArray = __webpack_require__(41);
 var $ref = __webpack_require__(42).$ref;
-var errors = __webpack_require__(67);
+var errors = __webpack_require__(69);
 
 /**
  * performs the simplified cache reference follow.  This
@@ -3103,15 +4289,15 @@ module.exports = function followReference(cacheRoot, ref, maxRefFollow) {
 
 
 /***/ },
-/* 69 */
+/* 71 */
 /***/ function(module, exports, __webpack_require__) {
 
 var iterateKeySet = __webpack_require__(40);
 var cloneArray = __webpack_require__(41);
-var catAndSlice = __webpack_require__(73);
+var catAndSlice = __webpack_require__(75);
 var $types = __webpack_require__(42);
 var $ref = $types.$ref;
-var followReference = __webpack_require__(68);
+var followReference = __webpack_require__(70);
 
 /**
  * The fastest possible optimize of paths.
@@ -3199,7 +4385,7 @@ function optimizePathSet(cache, cacheRoot, pathSet,
 
 
 /***/ },
-/* 70 */
+/* 72 */
 /***/ function(module, exports) {
 
 "use strict";
@@ -3306,7 +4492,7 @@ module.exports = getPathCount;
 
 
 /***/ },
-/* 71 */
+/* 73 */
 /***/ function(module, exports, __webpack_require__) {
 
 var hasIntersection = __webpack_require__(26);
@@ -3340,7 +4526,7 @@ module.exports = function pathsComplementFromLengthTree(paths, tree) {
 
 
 /***/ },
-/* 72 */
+/* 74 */
 /***/ function(module, exports, __webpack_require__) {
 
 var hasIntersection = __webpack_require__(26);
@@ -3373,7 +4559,7 @@ module.exports = function pathsComplementFromTree(paths, tree) {
 
 
 /***/ },
-/* 73 */
+/* 75 */
 /***/ function(module, exports) {
 
 module.exports = function catAndSlice(a, b, slice) {
@@ -3392,25 +4578,25 @@ module.exports = function catAndSlice(a, b, slice) {
 
 
 /***/ },
-/* 74 */
+/* 76 */
 /***/ function(module, exports) {
 
 
 
 /***/ },
-/* 75 */
+/* 77 */
 /***/ function(module, exports, __webpack_require__) {
 
-var ModelRoot = __webpack_require__(77);
-var ModelDataSourceAdapter = __webpack_require__(76);
+var ModelRoot = __webpack_require__(79);
+var ModelDataSourceAdapter = __webpack_require__(78);
 
-var RequestQueue = __webpack_require__(100);
+var RequestQueue = __webpack_require__(102);
 var ModelResponse = __webpack_require__(4);
-var CallResponse = __webpack_require__(104);
-var InvalidateResponse = __webpack_require__(105);
+var CallResponse = __webpack_require__(106);
+var InvalidateResponse = __webpack_require__(107);
 
-var TimeoutScheduler = __webpack_require__(114);
-var ImmediateScheduler = __webpack_require__(113);
+var TimeoutScheduler = __webpack_require__(116);
+var ImmediateScheduler = __webpack_require__(115);
 
 var collectLru = __webpack_require__(30);
 
@@ -3425,7 +4611,7 @@ var setCache = __webpack_require__(31);
 var setJSONGraphs = __webpack_require__(21);
 var validateInput = __webpack_require__(37);
 var noOp = function () {};
-var getCache = __webpack_require__(84);
+var getCache = __webpack_require__(86);
 var get = __webpack_require__(28);
 var GET_VALID_INPUT = __webpack_require__(56);
 
@@ -3519,14 +4705,14 @@ Model.prototype._collectRatio = 0.75;
  * @param {...PathSet} path - the path(s) to retrieve
  * @return {ModelResponse.<JSONEnvelope>} - the requested data as JSON
  */
-Model.prototype.get = __webpack_require__(107);
+Model.prototype.get = __webpack_require__(109);
 
 /**
  * Sets the value at one or more places in the JSONGraph model. The set method accepts one or more {@link PathValue}s, each of which is a combination of a location in the document and the value to place there.  In addition to accepting  {@link PathValue}s, the set method also returns the values after the set operation is complete.
  * @function
  * @return {ModelResponse.<JSONEnvelope>} - an {@link Observable} stream containing the values in the JSONGraph model after the set was attempted
  */
-Model.prototype.set = __webpack_require__(109);
+Model.prototype.set = __webpack_require__(111);
 
 /**
  * The preload method retrieves several {@link Path}s or {@link PathSet}s from a {@link Model} and loads them into the Model cache.
@@ -3650,7 +4836,7 @@ model.
 // []
 // ["usersById", 32] - because userModel refers to target of reference at ["users", 0]
  */
-Model.prototype.deref = __webpack_require__(80);
+Model.prototype.deref = __webpack_require__(82);
 
 /**
  * A dereferenced model can become invalid when the reference from which it was
@@ -3663,7 +4849,7 @@ Model.prototype.deref = __webpack_require__(80);
  * @return {Boolean} - If the currently deref'd model is still considered a
  * valid deref.
  */
-Model.prototype._hasValidParentReference = __webpack_require__(79);
+Model.prototype._hasValidParentReference = __webpack_require__(81);
 
 /**
  * Get data for a single {@link Path}.
@@ -3680,7 +4866,7 @@ Model.prototype._hasValidParentReference = __webpack_require__(79);
 
  // The code above prints "Jim" to the console.
  */
-Model.prototype.getValue = __webpack_require__(85);
+Model.prototype.getValue = __webpack_require__(87);
 
 /**
  * Set value for a single {@link Path}.
@@ -3698,7 +4884,7 @@ Model.prototype.getValue = __webpack_require__(85);
 
  // The code above prints "Jim" to the console.
  */
-Model.prototype.setValue = __webpack_require__(115);
+Model.prototype.setValue = __webpack_require__(117);
 
 /**
  * Set the local cache to a {@link JSONGraph} fragment. This method can be a useful way of mocking a remote document, or restoring the local cache from a previously stored state.
@@ -3964,7 +5150,7 @@ Model.prototype._fromWhenceYouCame = function fromWhenceYouCame(allow) {
     });
 };
 
-Model.prototype._getVersion = __webpack_require__(86);
+Model.prototype._getVersion = __webpack_require__(88);
 Model.prototype._getPathValuesAsPathMap = get.getWithPathsAsPathMap;
 Model.prototype._getPathValuesAsJSONG = get.getWithPathsAsJSONGraph;
 
@@ -3973,11 +5159,11 @@ Model.prototype._setPathMaps = __webpack_require__(31);
 Model.prototype._setJSONGs = __webpack_require__(21);
 Model.prototype._setCache = __webpack_require__(31);
 
-Model.prototype._invalidatePathValues = __webpack_require__(98);
-Model.prototype._invalidatePathMaps = __webpack_require__(97);
+Model.prototype._invalidatePathValues = __webpack_require__(100);
+Model.prototype._invalidatePathMaps = __webpack_require__(99);
 
 /***/ },
-/* 76 */
+/* 78 */
 /***/ function(module, exports) {
 
 function ModelDataSourceAdapter(model) {
@@ -4000,12 +5186,12 @@ ModelDataSourceAdapter.prototype.call = function call(path, args, suffixes, path
 module.exports = ModelDataSourceAdapter;
 
 /***/ },
-/* 77 */
+/* 79 */
 /***/ function(module, exports, __webpack_require__) {
 
 var hasOwn = __webpack_require__(17);
 var isFunction = __webpack_require__(2);
-var toJSONWithHashCodes = __webpack_require__(96);
+var toJSONWithHashCodes = __webpack_require__(98);
 
 function ModelRoot(o, topLevelModel) {
 
@@ -4060,7 +5246,7 @@ ModelRoot.prototype.comparator = function comparator(cacheNode, messageNode) {
 module.exports = ModelRoot;
 
 /***/ },
-/* 78 */
+/* 80 */
 /***/ function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {var objectTypes = {
@@ -4124,10 +5310,10 @@ function polyfillSymbol(root) {
 }
 
 module.exports = polyfillSymbol(_root);
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(127)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(66)))
 
 /***/ },
-/* 79 */
+/* 81 */
 /***/ function(module, exports) {
 
 module.exports = hasValidParentReference;
@@ -4165,13 +5351,13 @@ function hasValidParentReference() {
 }
 
 /***/ },
-/* 80 */
+/* 82 */
 /***/ function(module, exports, __webpack_require__) {
 
 var CONTAINER_DOES_NOT_EXIST = "e";
 var $ref = __webpack_require__(1);
 var getCachePosition = __webpack_require__(48);
-var InvalidDerefInputError = __webpack_require__(82);
+var InvalidDerefInputError = __webpack_require__(84);
 
 module.exports = function deref(boundJSONArg) {
 
@@ -4251,7 +5437,7 @@ module.exports = function deref(boundJSONArg) {
 };
 
 /***/ },
-/* 81 */
+/* 83 */
 /***/ function(module, exports) {
 
 var NAME = "BoundJSONGraphModelError";
@@ -4279,7 +5465,7 @@ BoundJSONGraphModelError.message = MESSAGE;
 module.exports = BoundJSONGraphModelError;
 
 /***/ },
-/* 82 */
+/* 84 */
 /***/ function(module, exports) {
 
 var NAME = "InvalidDerefInputError";
@@ -4308,7 +5494,7 @@ InvalidDerefInputError.message = MESSAGE;
 module.exports = InvalidDerefInputError;
 
 /***/ },
-/* 83 */
+/* 85 */
 /***/ function(module, exports) {
 
 var NAME = "InvalidModelError";
@@ -4339,10 +5525,10 @@ InvalidModelError.message = MESSAGE;
 module.exports = InvalidModelError;
 
 /***/ },
-/* 84 */
+/* 86 */
 /***/ function(module, exports, __webpack_require__) {
 
-var isInternalKey = __webpack_require__(121);
+var isInternalKey = __webpack_require__(123);
 
 /**
  * decends and copies the cache.
@@ -4412,7 +5598,7 @@ function _copyCache(node, out, fromKey) {
 }
 
 /***/ },
-/* 85 */
+/* 87 */
 /***/ function(module, exports, __webpack_require__) {
 
 var ModelResponse = __webpack_require__(4);
@@ -4450,7 +5636,7 @@ module.exports = function getValue(path) {
 };
 
 /***/ },
-/* 86 */
+/* 88 */
 /***/ function(module, exports, __webpack_require__) {
 
 var getBoundCacheNode = __webpack_require__(11);
@@ -4462,12 +5648,12 @@ module.exports = function _getVersion(model, path) {
 };
 
 /***/ },
-/* 87 */
+/* 89 */
 /***/ function(module, exports, __webpack_require__) {
 
-var walkPathAndBuildOutput = __webpack_require__(91);
+var walkPathAndBuildOutput = __webpack_require__(93);
 var getBoundCacheNode = __webpack_require__(11);
-var InvalidModelError = __webpack_require__(83);
+var InvalidModelError = __webpack_require__(85);
 
 module.exports = getJSON;
 
@@ -4536,7 +5722,7 @@ function getJSON(model, paths, values) {
 }
 
 /***/ },
-/* 88 */
+/* 90 */
 /***/ function(module, exports, __webpack_require__) {
 
 var arr = new Array(3);
@@ -4651,7 +5837,7 @@ function getReferenceTarget(root, ref, modelRoot) {
 /* eslint-enable */
 
 /***/ },
-/* 89 */
+/* 91 */
 /***/ function(module, exports, __webpack_require__) {
 
 var clone = __webpack_require__(15);
@@ -4676,11 +5862,11 @@ function onError(node, depth, results, requestedPath, fromReference, boxValues) 
 }
 
 /***/ },
-/* 90 */
+/* 92 */
 /***/ function(module, exports, __webpack_require__) {
 
 var clone = __webpack_require__(15);
-var onError = __webpack_require__(89);
+var onError = __webpack_require__(91);
 var $atom = __webpack_require__(25);
 var $error = __webpack_require__(19);
 
@@ -4714,16 +5900,16 @@ function onJSONValue(node, type, depth, seed, results, requestedPath, optimizedP
 }
 
 /***/ },
-/* 91 */
+/* 93 */
 /***/ function(module, exports, __webpack_require__) {
 
 var isArray = Array.isArray;
 var $ref = __webpack_require__(1);
-var onValue = __webpack_require__(90);
+var onValue = __webpack_require__(92);
 var onMissing = __webpack_require__(49);
 var onValueType = __webpack_require__(50);
 var isExpired = __webpack_require__(3);
-var getReferenceTarget = __webpack_require__(88);
+var getReferenceTarget = __webpack_require__(90);
 var NullInPathError = __webpack_require__(14);
 var InvalidKeySetError = __webpack_require__(46);
 
@@ -4957,11 +6143,11 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
 /* eslint-enable */
 
 /***/ },
-/* 92 */
+/* 94 */
 /***/ function(module, exports, __webpack_require__) {
 
-var walkPathAndBuildOutput = __webpack_require__(95);
-var BoundJSONGraphModelError = __webpack_require__(81);
+var walkPathAndBuildOutput = __webpack_require__(97);
+var BoundJSONGraphModelError = __webpack_require__(83);
 
 module.exports = getJSONGraph;
 
@@ -5013,7 +6199,7 @@ function getJSONGraph(model, paths, values) {
 }
 
 /***/ },
-/* 93 */
+/* 95 */
 /***/ function(module, exports, __webpack_require__) {
 
 var arr = new Array(2);
@@ -5131,7 +6317,7 @@ function getReferenceTarget(root, ref, modelRoot, seed, boxValues, materialized)
 /* eslint-enable */
 
 /***/ },
-/* 94 */
+/* 96 */
 /***/ function(module, exports, __webpack_require__) {
 
 var clone = __webpack_require__(15);
@@ -5175,18 +6361,18 @@ function onJSONGraphValue(node, type, depth, seed, results, requestedPath, optim
 }
 
 /***/ },
-/* 95 */
+/* 97 */
 /***/ function(module, exports, __webpack_require__) {
 
 var isArray = Array.isArray;
 var clone = __webpack_require__(15);
 var $ref = __webpack_require__(1);
-var onValue = __webpack_require__(94);
+var onValue = __webpack_require__(96);
 var onMissing = __webpack_require__(49);
 var inlineValue = __webpack_require__(29);
 var onValueType = __webpack_require__(50);
 var isExpired = __webpack_require__(3);
-var getReferenceTarget = __webpack_require__(93);
+var getReferenceTarget = __webpack_require__(95);
 var NullInPathError = __webpack_require__(14);
 var InvalidKeySetError = __webpack_require__(46);
 
@@ -5360,7 +6546,7 @@ function walkPathAndBuildOutput(cacheRoot, node, path, depth, seed, results, req
 /* eslint-enable */
 
 /***/ },
-/* 96 */
+/* 98 */
 /***/ function(module, exports) {
 
 module.exports = toJSONWithHashCodes;
@@ -5520,7 +6706,7 @@ function getHashCode(str) {
 }
 
 /***/ },
-/* 97 */
+/* 99 */
 /***/ function(module, exports, __webpack_require__) {
 
 var createHardlink = __webpack_require__(13);
@@ -5683,7 +6869,7 @@ function invalidateNode(root, parent, node, key, value, branch, reference, versi
 }
 
 /***/ },
-/* 98 */
+/* 100 */
 /***/ function(module, exports, __webpack_require__) {
 
 var __ref = __webpack_require__(12);
@@ -5844,11 +7030,11 @@ function invalidateNode(root, parent, node, key, branch, reference, version, exp
 }
 
 /***/ },
-/* 99 */
+/* 101 */
 /***/ function(module, exports, __webpack_require__) {
 
-var complement = __webpack_require__(101);
-var flushGetRequest = __webpack_require__(102);
+var complement = __webpack_require__(103);
+var flushGetRequest = __webpack_require__(104);
 var REQUEST_ID = 0;
 var GetRequestType = __webpack_require__(52).GetRequest;
 var setJSONGraphs = __webpack_require__(21);
@@ -6110,12 +7296,12 @@ function interopDisposable(disposable) {
 module.exports = GetRequest;
 
 /***/ },
-/* 100 */
+/* 102 */
 /***/ function(module, exports, __webpack_require__) {
 
 var RequestTypes = __webpack_require__(52);
-var sendSetRequest = __webpack_require__(103);
-var GetRequest = __webpack_require__(99);
+var sendSetRequest = __webpack_require__(105);
+var GetRequest = __webpack_require__(101);
 var collapse = __webpack_require__(8).collapse;
 
 /**
@@ -6263,7 +7449,7 @@ RequestQueue.prototype = {
 module.exports = RequestQueue;
 
 /***/ },
-/* 101 */
+/* 103 */
 /***/ function(module, exports, __webpack_require__) {
 
 var hasIntersection = __webpack_require__(8).hasIntersection;
@@ -6319,7 +7505,7 @@ module.exports = function complement(requested, optimized, tree) {
 };
 
 /***/ },
-/* 102 */
+/* 104 */
 /***/ function(module, exports, __webpack_require__) {
 
 var pathUtils = __webpack_require__(8);
@@ -6412,7 +7598,7 @@ module.exports = function flushGetRequest(request, listOfPaths, callback) {
 };
 
 /***/ },
-/* 103 */
+/* 105 */
 /***/ function(module, exports, __webpack_require__) {
 
 var setJSONGraphs = __webpack_require__(21);
@@ -6495,7 +7681,7 @@ var sendSetRequest = function (originalJsonGraph, model, callback) {
 module.exports = sendSetRequest;
 
 /***/ },
-/* 104 */
+/* 106 */
 /***/ function(module, exports, __webpack_require__) {
 
 var SetResponse = __webpack_require__(57);
@@ -6590,7 +7776,7 @@ CallResponse.prototype._subscribe = function _subscribe(observer) {
 module.exports = CallResponse;
 
 /***/ },
-/* 105 */
+/* 107 */
 /***/ function(module, exports, __webpack_require__) {
 
 var isArray = Array.isArray;
@@ -6687,7 +7873,7 @@ InvalidateResponse.prototype._subscribe = function _subscribe(observer) {
 module.exports = InvalidateResponse;
 
 /***/ },
-/* 106 */
+/* 108 */
 /***/ function(module, exports, __webpack_require__) {
 
 var checkCacheAndReport = __webpack_require__(55);
@@ -6792,7 +7978,7 @@ function fastCat(arr1, arr2) {
 }
 
 /***/ },
-/* 107 */
+/* 109 */
 /***/ function(module, exports, __webpack_require__) {
 
 var ModelResponse = __webpack_require__(4);
@@ -6819,7 +8005,7 @@ module.exports = function get(...paths) {
 };
 
 /***/ },
-/* 108 */
+/* 110 */
 /***/ function(module, exports) {
 
 module.exports = mergeInto;
@@ -6870,10 +8056,10 @@ function mergeInto(dest, node) {
 /* eslint-enable */
 
 /***/ },
-/* 109 */
+/* 111 */
 /***/ function(module, exports, __webpack_require__) {
 
-var setValidInput = __webpack_require__(112);
+var setValidInput = __webpack_require__(114);
 var validateInput = __webpack_require__(37);
 var SetResponse = __webpack_require__(57);
 var ModelResponse = __webpack_require__(4);
@@ -6896,10 +8082,10 @@ module.exports = function set() {
 };
 
 /***/ },
-/* 110 */
+/* 112 */
 /***/ function(module, exports, __webpack_require__) {
 
-var arrayFlatMap = __webpack_require__(116);
+var arrayFlatMap = __webpack_require__(118);
 
 /**
  * Takes the groups that are created in the SetResponse constructor and sets
@@ -6954,13 +8140,13 @@ function pluckEnvelopePaths(jsonGraphEnvelope) {
 }
 
 /***/ },
-/* 111 */
+/* 113 */
 /***/ function(module, exports, __webpack_require__) {
 
 var emptyArray = [];
 var AssignableDisposable = __webpack_require__(53);
 var GetResponse = __webpack_require__(54);
-var setGroupsIntoCache = __webpack_require__(110);
+var setGroupsIntoCache = __webpack_require__(112);
 var getWithPathsAsPathMap = __webpack_require__(28).getWithPathsAsPathMap;
 var InvalidSourceError = __webpack_require__(10);
 var MaxRetryExceededError = __webpack_require__(47);
@@ -7062,7 +8248,7 @@ function subscribeToFollowupGet(model, observer, requestedPaths, isJSONGraph, is
 }
 
 /***/ },
-/* 112 */
+/* 114 */
 /***/ function(module, exports) {
 
 module.exports = {
@@ -7073,7 +8259,7 @@ module.exports = {
 };
 
 /***/ },
-/* 113 */
+/* 115 */
 /***/ function(module, exports) {
 
 var empty = { dispose: function () {} };
@@ -7088,7 +8274,7 @@ ImmediateScheduler.prototype.schedule = function schedule(action) {
 module.exports = ImmediateScheduler;
 
 /***/ },
-/* 114 */
+/* 116 */
 /***/ function(module, exports) {
 
 function TimeoutScheduler(delay) {
@@ -7117,7 +8303,7 @@ TimerDisposable.prototype.dispose = function () {
 module.exports = TimeoutScheduler;
 
 /***/ },
-/* 115 */
+/* 117 */
 /***/ function(module, exports, __webpack_require__) {
 
 var ModelResponse = __webpack_require__(4);
@@ -7157,7 +8343,7 @@ module.exports = function setValue(pathArg, valueArg) {
 };
 
 /***/ },
-/* 116 */
+/* 118 */
 /***/ function(module, exports) {
 
 module.exports = function arrayFlatMap(array, selector) {
@@ -7177,7 +8363,7 @@ module.exports = function arrayFlatMap(array, selector) {
 };
 
 /***/ },
-/* 117 */
+/* 119 */
 /***/ function(module, exports, __webpack_require__) {
 
 var unicodePrefix = __webpack_require__(5);
@@ -7201,7 +8387,7 @@ module.exports = function clone(value) {
 };
 
 /***/ },
-/* 118 */
+/* 120 */
 /***/ function(module, exports, __webpack_require__) {
 
 var isObject = __webpack_require__(0);
@@ -7210,7 +8396,7 @@ module.exports = function getSize(node) {
 };
 
 /***/ },
-/* 119 */
+/* 121 */
 /***/ function(module, exports, __webpack_require__) {
 
 var isObject = __webpack_require__(0);
@@ -7224,7 +8410,7 @@ module.exports = function getType(node, anyType) {
 };
 
 /***/ },
-/* 120 */
+/* 122 */
 /***/ function(module, exports, __webpack_require__) {
 
 var now = __webpack_require__(34);
@@ -7237,7 +8423,7 @@ module.exports = function isAlreadyExpired(node) {
 };
 
 /***/ },
-/* 121 */
+/* 123 */
 /***/ function(module, exports, __webpack_require__) {
 
 var unicodePrefix = __webpack_require__(5);
@@ -7254,7 +8440,7 @@ module.exports = function isInternalKey(x) {
 };
 
 /***/ },
-/* 122 */
+/* 124 */
 /***/ function(module, exports, __webpack_require__) {
 
 var $ref = __webpack_require__(1);
@@ -7448,7 +8634,7 @@ module.exports = function mergeJSONGraphNode(parent, node, message, key, request
 };
 
 /***/ },
-/* 123 */
+/* 125 */
 /***/ function(module, exports, __webpack_require__) {
 
 var __ref = __webpack_require__(12);
@@ -7471,7 +8657,7 @@ module.exports = function transferBackReferences(fromNode, destNode) {
 };
 
 /***/ },
-/* 124 */
+/* 126 */
 /***/ function(module, exports, __webpack_require__) {
 
 var __ref = __webpack_require__(12);
@@ -7490,7 +8676,7 @@ module.exports = function unlinkBackReferences(node) {
 };
 
 /***/ },
-/* 125 */
+/* 127 */
 /***/ function(module, exports, __webpack_require__) {
 
 var __ref = __webpack_require__(12);
@@ -7510,7 +8696,7 @@ module.exports = function unlinkForwardReference(reference) {
 };
 
 /***/ },
-/* 126 */
+/* 128 */
 /***/ function(module, exports) {
 
 /**
@@ -7562,35 +8748,202 @@ function toEsObservable(_self) {
 module.exports = toEsObservable;
 
 /***/ },
-/* 127 */
+/* 129 */
 /***/ function(module, exports) {
 
-var g;
+// shim for using process in browser
+var process = module.exports = {};
 
-// This works in non-strict mode
-g = (function() { return this; })();
+// cached from whatever global is present so that test runners that stub it
+// don't break things.  But we need to wrap it in a try catch in case it is
+// wrapped in strict mode code which doesn't define any globals.  It's inside a
+// function because try/catches deoptimize in certain engines.
 
-try {
-	// This works if eval is allowed (see CSP)
-	g = g || Function("return this")() || (1,eval)("this");
-} catch(e) {
-	// This works if the window reference is available
-	if(typeof window === "object")
-		g = window;
+var cachedSetTimeout;
+var cachedClearTimeout;
+
+function defaultSetTimout() {
+    throw new Error('setTimeout has not been defined');
+}
+function defaultClearTimeout () {
+    throw new Error('clearTimeout has not been defined');
+}
+(function () {
+    try {
+        if (typeof setTimeout === 'function') {
+            cachedSetTimeout = setTimeout;
+        } else {
+            cachedSetTimeout = defaultSetTimout;
+        }
+    } catch (e) {
+        cachedSetTimeout = defaultSetTimout;
+    }
+    try {
+        if (typeof clearTimeout === 'function') {
+            cachedClearTimeout = clearTimeout;
+        } else {
+            cachedClearTimeout = defaultClearTimeout;
+        }
+    } catch (e) {
+        cachedClearTimeout = defaultClearTimeout;
+    }
+} ())
+function runTimeout(fun) {
+    if (cachedSetTimeout === setTimeout) {
+        //normal enviroments in sane situations
+        return setTimeout(fun, 0);
+    }
+    // if setTimeout wasn't available but was latter defined
+    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+        cachedSetTimeout = setTimeout;
+        return setTimeout(fun, 0);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedSetTimeout(fun, 0);
+    } catch(e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+            return cachedSetTimeout.call(null, fun, 0);
+        } catch(e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+            return cachedSetTimeout.call(this, fun, 0);
+        }
+    }
+
+
+}
+function runClearTimeout(marker) {
+    if (cachedClearTimeout === clearTimeout) {
+        //normal enviroments in sane situations
+        return clearTimeout(marker);
+    }
+    // if clearTimeout wasn't available but was latter defined
+    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+        cachedClearTimeout = clearTimeout;
+        return clearTimeout(marker);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedClearTimeout(marker);
+    } catch (e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+            return cachedClearTimeout.call(null, marker);
+        } catch (e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+            return cachedClearTimeout.call(this, marker);
+        }
+    }
+
+
+
+}
+var queue = [];
+var draining = false;
+var currentQueue;
+var queueIndex = -1;
+
+function cleanUpNextTick() {
+    if (!draining || !currentQueue) {
+        return;
+    }
+    draining = false;
+    if (currentQueue.length) {
+        queue = currentQueue.concat(queue);
+    } else {
+        queueIndex = -1;
+    }
+    if (queue.length) {
+        drainQueue();
+    }
 }
 
-// g can still be undefined, but nothing to do about it...
-// We return undefined, instead of nothing here, so it's
-// easier to handle this case. if(!global) { ...}
+function drainQueue() {
+    if (draining) {
+        return;
+    }
+    var timeout = runTimeout(cleanUpNextTick);
+    draining = true;
 
-module.exports = g;
+    var len = queue.length;
+    while(len) {
+        currentQueue = queue;
+        queue = [];
+        while (++queueIndex < len) {
+            if (currentQueue) {
+                currentQueue[queueIndex].run();
+            }
+        }
+        queueIndex = -1;
+        len = queue.length;
+    }
+    currentQueue = null;
+    draining = false;
+    runClearTimeout(timeout);
+}
+
+process.nextTick = function (fun) {
+    var args = new Array(arguments.length - 1);
+    if (arguments.length > 1) {
+        for (var i = 1; i < arguments.length; i++) {
+            args[i - 1] = arguments[i];
+        }
+    }
+    queue.push(new Item(fun, args));
+    if (queue.length === 1 && !draining) {
+        runTimeout(drainQueue);
+    }
+};
+
+// v8 likes predictible objects
+function Item(fun, array) {
+    this.fun = fun;
+    this.array = array;
+}
+Item.prototype.run = function () {
+    this.fun.apply(null, this.array);
+};
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+process.version = ''; // empty string to avoid regexp issues
+process.versions = {};
+
+function noop() {}
+
+process.on = noop;
+process.addListener = noop;
+process.once = noop;
+process.off = noop;
+process.removeListener = noop;
+process.removeAllListeners = noop;
+process.emit = noop;
+
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+};
+
+process.cwd = function () { return '/' };
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+process.umask = function() { return 0; };
 
 
 /***/ },
-/* 128 */
+/* 130 */
+/***/ function(module, exports) {
+
+/* (ignored) */
+
+/***/ },
+/* 131 */
 /***/ function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(65);
+module.exports = __webpack_require__(67);
 
 
 /***/ }

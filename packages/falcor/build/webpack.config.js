@@ -58,10 +58,8 @@ function plugins(isDev) {
     var plugins = [
         license(),
         new webpack.NoErrorsPlugin(),
-        new webpack.DefinePlugin({
-            DEBUG: isDev,
-            Promise: '(typeof Promise === "function" ? Promise : require("promise"))'
-        }),
+        new webpack.DefinePlugin({ DEBUG: isDev }),
+        new webpack.ProvidePlugin({ 'Promise': 'es6-promise' }),
         new webpack.optimize.AggressiveMergingPlugin(),
         new webpack.optimize.OccurrenceOrderPlugin(true),
         new webpack.LoaderOptionsPlugin({ debug: isDev, minimize: !isDev }),
