@@ -1,6 +1,6 @@
 {
   "name": "@graphistry/falcor",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "description": "A JavaScript library for efficient data fetching.",
   "main": "./dist/falcor.min.js",
   "homepage": "https://github.com/graphistry/falcor/blob/master/packages/falcor/README.md",
