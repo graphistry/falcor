@@ -9,7 +9,10 @@ function getBoundCacheNode(model, path = model._path) {
         if (path.length === 0) {
             node = model._root.cache;
         } else {
-            model._node = node = getCachePosition(model._root.cache, path);
+            node = getCachePosition(model._root.cache, path);
+            if (path === model._path) {
+                model._node = node;
+            }
         }
     }
     return node;
