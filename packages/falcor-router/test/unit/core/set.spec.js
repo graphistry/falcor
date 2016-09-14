@@ -9,22 +9,24 @@ var sinon = require("sinon");
 
 describe('Set', function() {
 
-    xit('should not transform set values before passing them to route. (undefined)', function(done) {
+    it('should not transform set values before passing them to route. (undefined)', function(done) {
+        var called = false
         var router = new R([{
             route: 'titlesById[{integers:titleIds}].userRating',
             set: function(json) {
-                var exception = false
+                called = true;
+                var exception = false;
                 try {
-                    expect("userRating" in json.titlesById[1]).to.equals(true)
-                    expect(json.titlesById[1]).to.equals(undefined)
+                    expect("userRating" in json.titlesById[1]).to.equals(true);
+                    expect(json.titlesById[1].userRating).to.equals(undefined);
                 } catch (e) {
-                    exception = true
+                    exception = true;
                     done(e);
                 }
                 if (!exception) {
                     done()
                 }
-
+                return [];
             }
         }]);
 
@@ -45,10 +47,14 @@ describe('Set', function() {
                     ]
                 ]
             }).
-            subscribe(noOp, noOp, noOp);
+            subscribe(noOp, done, function() {
+                if (called === false) {
+                    done('Set handler wansn\'t called');
+                }
+            });
     });
 
-    xit('should call the route when setting a value to null', function(done) {
+    it('should call the route when setting a value to null', function(done) {
         var called = false
         var router = new R([{
             route: 'titlesById[{integers:titleIds}].userRating',
@@ -68,9 +74,9 @@ describe('Set', function() {
                     done(e);
                 }
                 if (!exception) {
-                    done()
+                    done();
                 }
-
+                return [];
             }
         }]);
 
@@ -91,22 +97,22 @@ describe('Set', function() {
                     ]
                 ]
             }).
-            subscribe(noOp, function() {
-                expect(called).to.equals(true)
-                done()
-            }, noOp);
+            subscribe(noOp, done, function() {
+                if (called === false) {
+                    done('Set handler wansn\'t called');
+                }
+            });
     });
 
 
-    xit('should call get() with the same type of arguments when no route for set() found.', function(done) {
+    it('should call get() with the same type of arguments when no route for set() found.', function(done) {
         var router = new R([
             {
-                route: "titlesById[{integers:titleIds}].rating",
-                get: function(json) {
-
+                route: "titlesById[{integers}].rating",
+                get: function(path) {
                     var exception = false
                     try {
-                        expect(json).to.deep.equals(
+                        expect(path).to.deep.equals(
                             [
                                "titlesById",
                                [
@@ -143,10 +149,12 @@ describe('Set', function() {
 
 
 
-    xit('should not transform set values before passing them to route. (0)', function(done) {
+    it('should not transform set values before passing them to route. (0)', function(done) {
+        var called = false
         var router = new R([{
             route: 'titlesById[{integers:titleIds}].userRating',
             set: function(json) {
+                called = true;
                 var exception = false
                 try {
                     expect(json).to.deep.equals({
@@ -163,7 +171,7 @@ describe('Set', function() {
                 if (!exception) {
                     done()
                 }
-
+                return [];
             }
         }]);
 
@@ -184,14 +192,19 @@ describe('Set', function() {
                     ]
                 ]
             }).
-            subscribe(noOp, noOp, noOp);
+            subscribe(noOp, done, function() {
+                if (called === false) {
+                    done('Set handler wansn\'t called');
+                }
+            });
     });
 
-
-    xit('should not transform set values before passing them to route.  ("")', function(done) {
+    it('should not transform set values before passing them to route.  ("")', function(done) {
+        var called = false
         var router = new R([{
             route: 'titlesById[{integers:titleIds}].userRating',
             set: function(json) {
+                called = true;
                 var exception = false
                 try {
                     expect(json).to.deep.equals({
@@ -208,7 +221,7 @@ describe('Set', function() {
                 if (!exception) {
                     done()
                 }
-
+                return [];
             }
         }]);
 
@@ -229,7 +242,11 @@ describe('Set', function() {
                     ]
                 ]
             }).
-            subscribe(noOp, noOp, noOp);
+            subscribe(noOp, done, function() {
+                if (called === false) {
+                    done('Set handler wansn\'t called');
+                }
+            });
     });
 
     it('should correctly collapse and pluck paths with jsonGraph and set.', function(done) {

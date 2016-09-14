@@ -91,48 +91,43 @@ function merge(config, cache, message, depth, path, fromParent, fromKey) {
         var cacheRes = cache[key];
         var messageRes = message[key];
 
-        // We no longer materialize inside of jsonGraph merge.  Either the
-        // client should specify all of the paths
-        if (messageRes !== undefined) {
-
-            var nextPath = path;
-            var nextDepth = depth + 1;
-            if (updateRequestedPath) {
-                requestedPath[requestIdx] = key;
-            }
-
-            // We do not continue with this branch since the cache
-            if (cacheRes === undefined) {
-                cacheRes = cache[key] = {};
-            }
-
-            var nextIgnoreCount = ignoreCount;
-
-            // TODO: Potential performance gain since we know that
-            // references are always pathSets of 1, they can be evaluated
-            // iteratively.
-
-            messageType = messageRes && messageRes.$type;
-            // There is only a need to consider message references since the
-            // merge is only for the path that is provided.
-            if (isBranchKey && messageType === $ref) {
-
-                nextDepth = 0;
-                nextPath = catAndSlice(messageRes.value, path, depth + 1);
-                cache[key] = clone(messageRes);
-
-                // Reset position in message and cache.
-                nextIgnoreCount = messageRes.value.length;
-                messageRes = messageRoot;
-                cacheRes = cacheRoot;
-            }
-
-            // move forward down the path progression.
-            config.ignoreCount = nextIgnoreCount;
-            merge(config, cacheRes, messageRes,
-                  nextDepth, nextPath, cache, key);
-            config.ignoreCount = ignoreCount;
+        var nextPath = path;
+        var nextDepth = depth + 1;
+        if (updateRequestedPath) {
+            requestedPath[requestIdx] = key;
         }
+
+        // We do not continue with this branch since the cache
+        if (cacheRes === undefined) {
+            cacheRes = cache[key] = {};
+        }
+
+        var nextIgnoreCount = ignoreCount;
+
+        // TODO: Potential performance gain since we know that
+        // references are always pathSets of 1, they can be evaluated
+        // iteratively.
+
+        messageType = messageRes && messageRes.$type;
+        // There is only a need to consider message references since the
+        // merge is only for the path that is provided.
+        if (isBranchKey && messageType === $ref) {
+
+            nextDepth = 0;
+            nextPath = catAndSlice(messageRes.value, path, depth + 1);
+            cache[key] = clone(messageRes);
+
+            // Reset position in message and cache.
+            nextIgnoreCount = messageRes.value.length;
+            messageRes = messageRoot;
+            cacheRes = cacheRoot;
+        }
+
+        // move forward down the path progression.
+        config.ignoreCount = nextIgnoreCount;
+        merge(config, cacheRes, messageRes,
+              nextDepth, nextPath, cache, key);
+        config.ignoreCount = ignoreCount;
 
         if (updateRequestedPath) {
             requestedPath.length = requestIdx;

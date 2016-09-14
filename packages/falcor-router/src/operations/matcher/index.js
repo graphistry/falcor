@@ -170,8 +170,8 @@ function match(
             virtual: cloneArray(virtual),
             precedence: +(precedence.join('')),
             suffix: path.slice(depth),
-            isSet: atEndOfPath && isSet,
-            isCall: atEndOfPath && isCall
+            isSet: atEndOfPath && isSet && methodToUse === set,
+            isCall: atEndOfPath && isCall  && methodToUse === call
         };
     }
 
