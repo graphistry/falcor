@@ -10,6 +10,7 @@ function webpackConfig(isDev = process.env.NODE_ENV === 'development') {
         amd: false,
         queit: true,
         progress: false,
+        devtool: isDev && /*'cheap-module-eval-*/'source-map' || 'source-map',
         resolve: {
             unsafeCache: true
         },
@@ -48,7 +49,7 @@ function loaders(isDev) {
             exclude: /(node_modules(?!\/rxjs))/,
             loader: 'babel-loader',
             query: {
-                presets: ['es2016']
+                presets: [isDev ? 'es2015' : 'es2016']
             }
         };
     }
@@ -72,7 +73,9 @@ function plugins(isDev) {
             compiler: {
                 language_in: 'ECMASCRIPT6_STRICT',
                 language_out: 'ECMASCRIPT5_STRICT',
-                compilation_level: 'SIMPLE'
+                compilation_level: 'SIMPLE',
+                create_source_map: path.resolve('./dist') + '/falcor.min.js.map'
+                // output_wrapper: '(function(){\n%output%\n}).call(this)\n//# sourceMappingURL=falcor.min.js.map'
             },
             concurrency: 3,
         }));
