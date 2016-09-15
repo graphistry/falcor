@@ -411,9 +411,8 @@ var getCachePosition = __webpack_require__(48);
 
 module.exports = getBoundCacheNode;
 
-function getBoundCacheNode(model) {
-    var path = arguments.length <= 1 || arguments[1] === undefined ? model._path : arguments[1];
-
+function getBoundCacheNode(model, path) {
+    path = path || model._path;
     var node = model._node;
     if (!node || node.ツparent === undefined || node.ツinvalidated) {
         model._node = null;
