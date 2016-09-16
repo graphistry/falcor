@@ -1,6 +1,6 @@
 {
   "name": "@graphistry/falcor-path-utils",
-  "version": "2.0.4",
+  "version": "2.0.10",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
