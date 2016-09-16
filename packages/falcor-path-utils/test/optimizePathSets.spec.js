@@ -1,5 +1,5 @@
 var optimizePathSets = require('./../lib/optimizePathSets');
-var falcorJsonGraph = require('falcor-json-graph');
+var falcorJsonGraph = require('@graphistry/falcor-json-graph');
 var $ref = falcorJsonGraph.ref;
 var $atom = falcorJsonGraph.atom;
 var expect = require('chai').expect;
