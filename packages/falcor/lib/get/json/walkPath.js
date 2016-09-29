@@ -220,8 +220,7 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path,
                             json[ƒ_meta] = f_meta;
                         }
                     } else {
-                        jsonProto = new JSONProto(f_meta);
-                        json = Object.create(jsonProto);
+                        json = new JSONProto(f_meta);
                     }
                 }
 

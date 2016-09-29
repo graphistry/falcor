@@ -5917,8 +5917,7 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
                             json["\u001eƒalcor_metadata"] = f_meta;
                         }
                     } else {
-                        jsonProto = new JSONProto(f_meta);
-                        json = Object.create(jsonProto);
+                        json = new JSONProto(f_meta);
                     }
                 }
 
