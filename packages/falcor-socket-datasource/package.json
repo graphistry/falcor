@@ -1,5 +1,5 @@
 {
-  "version": "2.1.0",
+  "version": "2.1.1",
   "name": "@graphistry/falcor-socket-datasource",
   "scripts": {
     "coverage": "babel-node node_modules/isparta/bin/isparta cover node_modules/mocha/bin/_mocha --report lcovonly -- --compilers js:babel-register --recursive && cat coverage/lcov.info | node node_modules/coveralls/bin/coveralls.js && rimraf coverage",
@@ -28,8 +28,8 @@
     "babel-preset-react": "~6.11.1",
     "chai": "^3.5.0",
     "coveralls": "^2.11.9",
-    "@graphistry/falcor": "^2.1.0",
-    "@graphistry/falcor-router": "^2.1.0",
+    "@graphistry/falcor": "^2.1.1",
+    "@graphistry/falcor-router": "^2.1.1",
     "isparta": "^4.0.0",
     "mocha": "^2.4.5",
     "posix-cat": "^1.1.1",
