@@ -1,5 +1,3 @@
-var unicodePrefix = require("./../internal/unicodePrefix");
-
 module.exports = clone;
 
 function clone(node) {
@@ -9,7 +7,7 @@ function clone(node) {
 
     while (++index < length) {
         key = keys[index];
-        if (key.charAt(0) === unicodePrefix) {
+        if (key.charAt(0) === ƒ_) {
             continue;
         }
         json[key] = node[key];

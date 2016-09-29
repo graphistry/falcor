@@ -20,7 +20,8 @@ var isFunction = require("./../../support/isFunction");
  * @private
  */
 module.exports = function getRequestCycle(getResponse, model, results, observer,
-                                          errors, count, initialCacheVersion) {
+                                          errors, count, initialCacheVersion,
+                                          originalRequestedPaths, recycleJSON) {
     // we have exceeded the maximum retry limit.
     if (count === 10) {
         throw new MaxRetryExceededError();
@@ -47,6 +48,9 @@ module.exports = function getRequestCycle(getResponse, model, results, observer,
         boundRequestedMissingPaths = requestedMissingPaths;
     }
 
+    var followupGetPaths = getResponse.isProgressive || !recycleJSON ?
+        requestedMissingPaths : originalRequestedPaths;
+
     var currentRequestDisposable = requestQueue.
         get(boundRequestedMissingPaths, optimizedMissingPaths, function(err) {
 
@@ -57,11 +61,12 @@ module.exports = function getRequestCycle(getResponse, model, results, observer,
 
             // Once the request queue finishes, check the cache and bail if
             // we can.
-            var nextResults = checkCacheAndReport(model, requestedMissingPaths,
+            var nextResults = checkCacheAndReport(model, followupGetPaths,
                                                   observer,
                                                   getResponse.isProgressive,
                                                   getResponse.isJSONGraph,
-                                                  results.values, errors);
+                                                  results.values, errors,
+                                                  recycleJSON);
 
             // If there are missing paths coming back form checkCacheAndReport
             // the its reported from the core cache check method.
@@ -70,7 +75,8 @@ module.exports = function getRequestCycle(getResponse, model, results, observer,
                 // update the which disposable to use.
                 disposable.currentDisposable =
                     getRequestCycle(getResponse, model, nextResults, observer,
-                                    errors, count + 1, initialCacheVersion);
+                                    errors, count + 1, initialCacheVersion,
+                                    originalRequestedPaths, recycleJSON);
             }
 
             // We have finished.  Since we went to the dataSource, we must
@@ -79,7 +85,7 @@ module.exports = function getRequestCycle(getResponse, model, results, observer,
 
                 var modelRoot = model._root;
                 var modelCache = modelRoot.cache;
-                var currentVersion = modelCache.ツversion;
+                var currentVersion = modelCache[ƒ_version];
 
                 collectLru(modelRoot, modelRoot.expired, getSize(modelCache),
                         model._maxSize, model._collectRatio, currentVersion);

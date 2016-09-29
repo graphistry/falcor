@@ -4,7 +4,6 @@ var isPathValue = require("./../support/isPathValue");
 var isJSONEnvelope = require("./../support/isJSONEnvelope");
 var noop = require("./../support/noop");
 var empty = { dispose: noop, unsubscribe: noop };
-var __version = require("./../internal/version");
 var isFunction = require("./../support/isFunction");
 
 function InvalidateResponse(model, args, initialCacheVersion) {
@@ -17,7 +16,7 @@ function InvalidateResponse(model, args, initialCacheVersion) {
     var argIndex = -1;
     var argCount = args.length;
 
-    var currentVersion = model._root.cache[__version];
+    var currentVersion = model._root.cache[ƒ_version];
 
     if (typeof initialCacheVersion === "number") {
         this.initialCacheVersion = initialCacheVersion;
@@ -78,7 +77,7 @@ InvalidateResponse.prototype._subscribe = function _subscribe(observer) {
 
     var modelRoot = model._root;
     var modelCache = modelRoot.cache;
-    var currentVersion = modelCache[__version];
+    var currentVersion = modelCache[ƒ_version];
     var initialCacheVersion = this.initialCacheVersion;
     var rootOnChangesCompletedHandler = modelRoot.onChangesCompleted;
 

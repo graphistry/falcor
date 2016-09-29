@@ -1,9 +1,8 @@
 var arr = new Array(3);
 var isArray = Array.isArray;
 var $ref = require("./../types/ref");
-var __prefix = require("./../internal/unicodePrefix");
 var createHardlink = require("./../support/createHardlink");
-var getBoundCacheNode = require("./../get/getBoundCacheNode");
+var getCachePosition = require("./../get/getCachePosition");
 var hasOwn = require("./../support/hasOwn");
 var isObject = require("./../support/isObject");
 var isExpired = require("./../support/isExpired");
@@ -29,9 +28,9 @@ module.exports = function setPathMaps(model, pathMapEnvelopes, errorSelector, co
     var version = modelRoot.version++;
     var bound = model._path;
     var cache = modelRoot.cache;
-    var node = getBoundCacheNode(model);
-    var parent = node.ツparent || cache;
-    var initialVersion = cache.ツversion;
+    var node = getCachePosition(cache, bound);
+    var parent = node[ƒ_parent] || cache;
+    var initialVersion = cache[ƒ_version];
 
     var requestedPath = [];
     var requestedPaths = [];
@@ -57,7 +56,7 @@ module.exports = function setPathMaps(model, pathMapEnvelopes, errorSelector, co
     arr[1] = undefined;
     arr[2] = undefined;
 
-    var newVersion = cache.ツversion;
+    var newVersion = cache[ƒ_version];
     var rootChangeHandler = modelRoot.onChange;
 
     if (isFunction(rootChangeHandler) && initialVersion !== newVersion) {
@@ -141,10 +140,10 @@ function setReference(
         var container = node;
         parent = root;
 
-        node = node.ツcontext;
+        node = node[ƒ_context];
 
         if (node != null) {
-            parent = node.ツparent || root;
+            parent = node[ƒ_parent] || root;
             optimizedPath.index = reference.length;
         } else {
 
@@ -173,7 +172,7 @@ function setReference(
 
             optimizedPath.index = index;
 
-            if (container.ツcontext !== node) {
+            if (container[ƒ_context] !== node) {
                 createHardlink(container, node);
             }
         }
@@ -215,7 +214,7 @@ function setNode(
             if (branch) {
                 throw new NullInPathError();
             } else if (node) {
-                key = node.ツkey;
+                key = node[ƒ_key];
             }
         } else {
             parent = node;
@@ -245,7 +244,7 @@ function getKeys(pathMap) {
             keys[itr++] = "length";
         }
         for (var key in pathMap) {
-            if (key[0] === __prefix || key[0] === "$" || !hasOwn(pathMap, key)) {
+            if (key[0] === ƒ_ || key[0] === "$" || !hasOwn(pathMap, key)) {
                 continue;
             }
             keys[itr++] = key;

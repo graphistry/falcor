@@ -1,3 +1,4 @@
+var JSONProto = require("./JSONProto");
 var isArray = Array.isArray;
 var $ref = require("./../../types/ref");
 var onValue = require("./onValue");
@@ -40,6 +41,8 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path,
                            treatErrorsAsValues, onValue, onMissing);
     }
 
+    var jsonProto, f_meta;
+
     var next, nextKey,
         keyset, keyIsRange,
         nextDepth = depth + 1,
@@ -47,7 +50,8 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path,
         nextJSON, nextReferenceContainer,
         keysetIndex = -1, keysetLength = 0,
         nextOptimizedLength, nextOptimizedPath,
-        optimizedLengthNext = optimizedLength + 1;
+        optimizedLengthNext = optimizedLength + 1,
+        refContainerAbsPath, refContainerRefPath;
 
     keyset = path[depth];
 
@@ -64,6 +68,11 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path,
             throw new NullInPathError();
         }
         return json;
+    }
+
+    if (allowFromWhenceYouCame && referenceContainer) {
+        refContainerRefPath = referenceContainer.value;
+        refContainerAbsPath = referenceContainer[ƒ_abs_path];
     }
 
     // Iterate over every key in the keyset. This loop is perhaps a bit clever,
@@ -197,49 +206,28 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path,
                 // then at least one leaf value was encountered, so create a
                 // branch to contain it.
                 if (undefined === json) {
+                    f_meta = {};
+                    f_meta[ƒm_version] = node[ƒ_version];
+                    f_meta[ƒm_abs_path] = node[ƒ_abs_path];
+                    f_meta[ƒm_deref_to] = refContainerRefPath;
+                    f_meta[ƒm_deref_from] = refContainerAbsPath;
                     // Enable developers to instrument branch node creation by
                     // providing a custom function. If they do, delegate branch
                     // node creation to them.
                     if (branchSelector) {
-
-                        // branchSelector = (
-                        //     nodeKey: String|Number|null,
-                        //     nodePath: Array|null,
-                        //     nodeVersion: Number,
-                        //     requestedPath: Array,
-                        //     requestedDepth: Number,
-                        //     referencePath: Array|null,
-                        //     pathToReference: Array|null
-                        // ) => Object { $__path?, $__refPath?, $__toReference? }
-
-                        json = branchSelector(node.ツkey,
-                                              node.ツabsolutePath,
-                                              node.ツversion, path, depth,
-                                              allowFromWhenceYouCame && referenceContainer &&
-                                                  referenceContainer.value || undefined,
-                                              allowFromWhenceYouCame && referenceContainer &&
-                                                  referenceContainer.ツabsolutePath || undefined);
-
-                    }
-                    // Otherwise, create a branch ourselves and assign the required metadata
-                    else {
-                        json = {};
-                        // Only assign the $__path if this isn't the top-level
-                        // branch (e.g. { json: {} <-- this one }).
-                        if (depth > 0) {
-                            json.$__path = node.ツabsolutePath;
+                        json = branchSelector(f_meta);
+                        if (!json[ƒ_meta]) {
+                            json[ƒ_meta] = f_meta;
                         }
-                        if (allowFromWhenceYouCame && referenceContainer) {
-                            json.$__refPath = referenceContainer.value;
-                            json.$__toReference = referenceContainer.ツabsolutePath;
-                        }
+                    } else {
+                        jsonProto = new JSONProto(f_meta);
+                        json = Object.create(jsonProto);
                     }
                 }
 
                 // Set the reported branch or leaf into this branch.
                 json[nextKey] = nextJSON;
             }
-
         }
         // Re-enter the inner loop and continue iterating the Range, or exit
         // here if we encountered a Key.

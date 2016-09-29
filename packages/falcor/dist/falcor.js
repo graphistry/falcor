@@ -87,7 +87,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 131);
+/******/ 	return __webpack_require__(__webpack_require__.s = 130);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -97,12 +97,7 @@ return /******/ (function(modules) { // webpackBootstrap
 "use strict";
 "use strict";
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
-
-var objTypeof = "object";
-module.exports = function isObject(value) {
-    return value !== null && (typeof value === "undefined" ? "undefined" : _typeof(value)) === objTypeof;
-};
+module.exports = "ref";
 
 /***/ },
 /* 1 */
@@ -111,16 +106,37 @@ module.exports = function isObject(value) {
 "use strict";
 "use strict";
 
-module.exports = "ref";
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+var objTypeof = "object";
+module.exports = function isObject(value) {
+    return value !== null && (typeof value === "undefined" ? "undefined" : _typeof(value)) === objTypeof;
+};
 
 /***/ },
 /* 2 */
+/***/ function(module, exports, __webpack_require__) {
+
+"use strict";
+"use strict";
+
+var now = __webpack_require__(36);
+var $now = __webpack_require__(41);
+var $never = __webpack_require__(40);
+
+module.exports = function isExpired(node) {
+    var exp = node.$expires;
+    return exp != null && exp !== $never && (exp === $now || exp < now());
+};
+
+/***/ },
+/* 3 */
 /***/ function(module, exports) {
 
 "use strict";
 "use strict";
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var functionTypeof = "function";
 
@@ -129,39 +145,31 @@ module.exports = function isFunction(func) {
 };
 
 /***/ },
-/* 3 */
-/***/ function(module, exports, __webpack_require__) {
-
-"use strict";
-"use strict";
-
-var now = __webpack_require__(34);
-var $now = __webpack_require__(39);
-var $never = __webpack_require__(38);
-
-module.exports = function isExpired(node) {
-    var exp = node.$expires;
-    return exp != null && exp !== $never && (exp === $now || exp < now());
-};
-
-/***/ },
 /* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
+module.exports = __webpack_require__(73);
+
+
+/***/ },
+/* 5 */
+/***/ function(module, exports, __webpack_require__) {
+
 "use strict";
-/* WEBPACK VAR INJECTION */(function(Promise) {"use strict";
+/* WEBPACK VAR INJECTION */(function(global) {"use strict";
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var noop = __webpack_require__(24);
-var _Symbol = __webpack_require__(80);
-var toEsObservable = __webpack_require__(128);
+var noop = __webpack_require__(23);
+var _Symbol = __webpack_require__(83);
+var toEsObservable = __webpack_require__(129);
 
 /**
  * A ModelResponse is a container for the results of a get, set, or call operation performed on a Model. The ModelResponse provides methods which can be used to specify the output format of the data retrieved from a Model, as well as how that data is delivered.
  * @constructor ModelResponse
  * @augments Observable
 */
+/** @constructor @implements IThenable */
 function ModelResponse(subscribe) {
     this._subscribe = subscribe;
 }
@@ -267,7 +275,8 @@ ModelResponse.prototype.then = function then(onNext, onError) {
     /* global Promise */
     var self = this;
     if (!self._promise) {
-        self._promise = new Promise(function (resolve, reject) {
+
+        self._promise = new global['Promise'](function (resolve, reject) {
             var rejected = false;
             var values = [];
             self.subscribe(function (value) {
@@ -291,16 +300,7 @@ ModelResponse.prototype.then = function then(onNext, onError) {
 };
 
 module.exports = ModelResponse;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(65)))
-
-/***/ },
-/* 5 */
-/***/ function(module, exports) {
-
-"use strict";
-"use strict";
-
-module.exports = "ツ";
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(66)))
 
 /***/ },
 /* 6 */
@@ -309,11 +309,11 @@ module.exports = "ツ";
 "use strict";
 "use strict";
 
-var splice = __webpack_require__(51);
+var splice = __webpack_require__(53);
 
 module.exports = function expireNode(node, expired, lru) {
-    if (!node.ツinvalidated) {
-        node.ツinvalidated = true;
+    if (!node["\u001eƒalcor_invalidated"]) {
+        node["\u001eƒalcor_invalidated"] = true;
         expired.push(node);
         splice(lru, node);
     }
@@ -327,37 +327,19 @@ module.exports = function expireNode(node, expired, lru) {
 "use strict";
 "use strict";
 
-var isObject = __webpack_require__(0);
+var isObject = __webpack_require__(1);
 module.exports = function getSize(node) {
     return isObject(node) && node.$size || 0;
 };
 
 /***/ },
 /* 8 */
-/***/ function(module, exports, __webpack_require__) {
-
-module.exports = {
-    iterateKeySet: __webpack_require__(40),
-    toTree: __webpack_require__(44),
-    toTreeWithUnion: __webpack_require__(76),
-    pathsComplementFromTree: __webpack_require__(74),
-    pathsComplementFromLengthTree: __webpack_require__(73),
-    hasIntersection: __webpack_require__(26),
-    toPaths: __webpack_require__(43),
-    collapse: __webpack_require__(68),
-    optimizePathSets: __webpack_require__(71),
-    pathCount: __webpack_require__(72)
-};
-
-
-/***/ },
-/* 9 */
 /***/ function(module, exports) {
 
 "use strict";
 "use strict";
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var objTypeof = "object";
 module.exports = function isPrimitive(value) {
@@ -365,7 +347,7 @@ module.exports = function isPrimitive(value) {
 };
 
 /***/ },
-/* 10 */
+/* 9 */
 /***/ function(module, exports) {
 
 "use strict";
@@ -401,65 +383,7 @@ InvalidSourceError.is = function (e) {
 module.exports = InvalidSourceError;
 
 /***/ },
-/* 11 */
-/***/ function(module, exports, __webpack_require__) {
-
-"use strict";
-"use strict";
-
-var getCachePosition = __webpack_require__(48);
-
-module.exports = getBoundCacheNode;
-
-function getBoundCacheNode(model, path) {
-    path = path || model._path;
-    var node = model._node;
-    if (!node || node.ツparent === undefined || node.ツinvalidated) {
-        model._node = null;
-        if (path.length === 0) {
-            node = model._root.cache;
-        } else {
-            node = getCachePosition(model._root.cache, path);
-            if (path === model._path) {
-                model._node = node;
-            }
-        }
-    }
-    return node;
-}
-
-/***/ },
-/* 12 */
-/***/ function(module, exports, __webpack_require__) {
-
-"use strict";
-"use strict";
-
-module.exports = __webpack_require__(5) + "ref";
-
-/***/ },
-/* 13 */
-/***/ function(module, exports, __webpack_require__) {
-
-"use strict";
-"use strict";
-
-var __ref = __webpack_require__(12);
-
-module.exports = function createHardlink(from, to) {
-
-    // create a back reference
-    var backRefs = to.ツrefsLength || 0;
-    to[__ref + backRefs] = from;
-    to.ツrefsLength = backRefs + 1;
-
-    // create a hard reference
-    from.ツrefIndex = backRefs;
-    from.ツcontext = to;
-};
-
-/***/ },
-/* 14 */
+/* 10 */
 /***/ function(module, exports) {
 
 "use strict";
@@ -487,13 +411,82 @@ NullInPathError.message = MESSAGE;
 module.exports = NullInPathError;
 
 /***/ },
-/* 15 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
 "use strict";
 
-var unicodePrefix = __webpack_require__(5);
+var EXPIRES_NEVER = __webpack_require__(40);
+
+// [H] -> Next -> ... -> [T]
+// [T] -> Prev -> ... -> [H]
+module.exports = function lruPromote(root, object) {
+    // Never promote node.$expires === 1.  They cannot expire.
+    if (object.$expires === EXPIRES_NEVER) {
+        return;
+    }
+
+    var head = root["\u001eƒalcor_head"];
+
+    // Nothing is in the cache.
+    if (!head) {
+        root["\u001eƒalcor_head"] = root["\u001eƒalcor_tail"] = object;
+        return;
+    }
+
+    if (head === object) {
+        return;
+    }
+
+    // The item always exist in the cache since to get anything in the
+    // cache it first must go through set.
+    var prev = object["\u001eƒalcor_prev"];
+    var next = object["\u001eƒalcor_next"];
+    if (next) {
+        next["\u001eƒalcor_prev"] = prev;
+    }
+    if (prev) {
+        prev["\u001eƒalcor_next"] = next;
+    }
+    object["\u001eƒalcor_prev"] = undefined;
+
+    // Insert into head position
+    root["\u001eƒalcor_head"] = object;
+    object["\u001eƒalcor_next"] = head;
+    head["\u001eƒalcor_prev"] = object;
+
+    // If the item we promoted was the tail, then set prev to tail.
+    if (object === root["\u001eƒalcor_tail"]) {
+        root["\u001eƒalcor_tail"] = prev;
+    }
+};
+
+/***/ },
+/* 12 */
+/***/ function(module, exports, __webpack_require__) {
+
+"use strict";
+"use strict";
+
+module.exports = function createHardlink(from, to) {
+
+    // create a back reference
+    var backRefs = to["\u001eƒalcor_refs_length"] || 0;
+    to["\u001eƒalcor_ref" + backRefs] = from;
+    to["\u001eƒalcor_refs_length"] = backRefs + 1;
+
+    // create a hard reference
+    from["\u001eƒalcor_ref_index"] = backRefs;
+    from["\u001eƒalcor_context"] = to;
+};
+
+/***/ },
+/* 13 */
+/***/ function(module, exports, __webpack_require__) {
+
+"use strict";
+"use strict";
 
 module.exports = clone;
 
@@ -507,7 +500,7 @@ function clone(node) {
 
     while (++index < length) {
         key = keys[index];
-        if (key.charAt(0) === unicodePrefix) {
+        if (key.charAt(0) === "\u001e") {
             continue;
         }
         json[key] = node[key];
@@ -517,65 +510,13 @@ function clone(node) {
 }
 
 /***/ },
-/* 16 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
 "use strict";
 
-var EXPIRES_NEVER = __webpack_require__(38);
-
-// [H] -> Next -> ... -> [T]
-// [T] -> Prev -> ... -> [H]
-module.exports = function lruPromote(root, object) {
-    // Never promote node.$expires === 1.  They cannot expire.
-    if (object.$expires === EXPIRES_NEVER) {
-        return;
-    }
-
-    var head = root.ツhead;
-
-    // Nothing is in the cache.
-    if (!head) {
-        root.ツhead = root.ツtail = object;
-        return;
-    }
-
-    if (head === object) {
-        return;
-    }
-
-    // The item always exist in the cache since to get anything in the
-    // cache it first must go through set.
-    var prev = object.ツprev;
-    var next = object.ツnext;
-    if (next) {
-        next.ツprev = prev;
-    }
-    if (prev) {
-        prev.ツnext = next;
-    }
-    object.ツprev = undefined;
-
-    // Insert into head position
-    root.ツhead = object;
-    object.ツnext = head;
-    head.ツprev = object;
-
-    // If the item we promoted was the tail, then set prev to tail.
-    if (object === root.ツtail) {
-        root.ツtail = prev;
-    }
-};
-
-/***/ },
-/* 17 */
-/***/ function(module, exports, __webpack_require__) {
-
-"use strict";
-"use strict";
-
-var isObject = __webpack_require__(0);
+var isObject = __webpack_require__(1);
 var hasOwn = Object.prototype.hasOwnProperty;
 
 module.exports = function (obj, prop) {
@@ -583,23 +524,23 @@ module.exports = function (obj, prop) {
 };
 
 /***/ },
-/* 18 */
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
 "use strict";
 
-var removeNode = __webpack_require__(35);
-var updateBackReferenceVersions = __webpack_require__(63);
+var removeNode = __webpack_require__(37);
+var updateBackReferenceVersions = __webpack_require__(64);
 
 module.exports = function updateNodeAncestors(nodeArg, offset, lru, version) {
     var child = nodeArg;
     do {
-        var node = child.ツparent;
+        var node = child["\u001eƒalcor_parent"];
         var size = child.$size = (child.$size || 0) - offset;
         if (size <= 0 && node != null) {
-            removeNode(child, node, child.ツkey, lru);
-        } else if (child.ツversion !== version) {
+            removeNode(child, node, child["\u001eƒalcor_key"], lru);
+        } else if (child["\u001eƒalcor_version"] !== version) {
             updateBackReferenceVersions(child, version);
         }
         child = node;
@@ -608,7 +549,16 @@ module.exports = function updateNodeAncestors(nodeArg, offset, lru, version) {
 };
 
 /***/ },
-/* 19 */
+/* 16 */
+/***/ function(module, exports) {
+
+"use strict";
+"use strict";
+
+module.exports = "atom";
+
+/***/ },
+/* 17 */
 /***/ function(module, exports) {
 
 "use strict";
@@ -617,31 +567,90 @@ module.exports = function updateNodeAncestors(nodeArg, offset, lru, version) {
 module.exports = "error";
 
 /***/ },
+/* 18 */
+/***/ function(module, exports, __webpack_require__) {
+
+"use strict";
+"use strict";
+
+var getCachePosition = __webpack_require__(19);
+
+module.exports = getBoundCacheNode;
+
+function getBoundCacheNode(model, path) {
+    path = path || model._path;
+    var node = model._node;
+    if (!node || node["\u001eƒalcor_parent"] === undefined || node["\u001eƒalcor_invalidated"]) {
+        model._node = null;
+        if (path.length === 0) {
+            node = model._root.cache;
+        } else {
+            node = getCachePosition(model._root.cache, path);
+            if (path === model._path) {
+                model._node = node;
+            }
+        }
+    }
+    return node;
+}
+
+/***/ },
+/* 19 */
+/***/ function(module, exports, __webpack_require__) {
+
+"use strict";
+"use strict";
+
+var $ref = __webpack_require__(0);
+
+/**
+ * getCachePosition makes a fast walk to the bound value since all bound
+ * paths are the most possible optimized path.
+ *
+ * @param {Model} model -
+ * @param {Array} path -
+ * @returns {Mixed} - undefined if there is nothing in this position.
+ * @private
+ */
+module.exports = getCachePosition;
+
+function getCachePosition(cache, path) {
+
+    var node = cache;
+    var type,
+        depth = 0;
+    var maxDepth = path.length;
+
+    if (maxDepth > 0) {
+        do {
+            node = node[path[depth]];
+
+            while (node && (type = node.$type) === $ref) {
+                node = getCachePosition(cache, node.value);
+            }
+        } while (++depth < maxDepth && node && !type);
+    }
+
+    return node;
+};
+
+/***/ },
 /* 20 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
 "use strict";
 
-module.exports = __webpack_require__(5) + "version";
-
-/***/ },
-/* 21 */
-/***/ function(module, exports, __webpack_require__) {
-
-"use strict";
-"use strict";
-
 var arr = new Array(5);
-var $ref = __webpack_require__(1);
-var createHardlink = __webpack_require__(13);
-var isExpired = __webpack_require__(122);
-var isFunction = __webpack_require__(2);
-var isPrimitive = __webpack_require__(9);
+var $ref = __webpack_require__(0);
+var createHardlink = __webpack_require__(12);
+var isExpired = __webpack_require__(123);
+var isFunction = __webpack_require__(3);
+var isPrimitive = __webpack_require__(8);
 var expireNode = __webpack_require__(6);
-var iterateKeySet = __webpack_require__(8).iterateKeySet;
-var mergeJSONGraphNode = __webpack_require__(124);
-var NullInPathError = __webpack_require__(14);
+var iterateKeySet = __webpack_require__(4).iterateKeySet;
+var mergeJSONGraphNode = __webpack_require__(125);
+var NullInPathError = __webpack_require__(10);
 
 /**
  * Merges a list of {@link JSONGraphEnvelope}s into a {@link JSONGraph}.
@@ -658,7 +667,7 @@ module.exports = function setJSONGraphs(model, jsonGraphEnvelopes, errorSelector
     var expired = modelRoot.expired;
     var version = modelRoot.version++;
     var cache = modelRoot.cache;
-    var initialVersion = cache.ツversion;
+    var initialVersion = cache["\u001eƒalcor_version"];
 
     var requestedPath = [];
     var optimizedPath = [];
@@ -691,7 +700,7 @@ module.exports = function setJSONGraphs(model, jsonGraphEnvelopes, errorSelector
     arr[3] = undefined;
     arr[4] = undefined;
 
-    var newVersion = cache.ツversion;
+    var newVersion = cache["\u001eƒalcor_version"];
     var rootChangeHandler = modelRoot.onChange;
 
     if (isFunction(rootChangeHandler) && initialVersion !== newVersion) {
@@ -781,7 +790,7 @@ function setReference(root, node, messageRoot, message, requestedPath, optimized
 
         optimizedPath.index = index;
 
-        if (container.ツcontext !== node) {
+        if (container["\u001eƒalcor_context"] !== node) {
             createHardlink(container, node);
         }
     }
@@ -821,7 +830,7 @@ function setNode(root, parent, node, messageRoot, messageParent, message, key, b
             if (branch) {
                 throw new NullInPathError();
             } else if (node) {
-                key = node.ツkey;
+                key = node["\u001eƒalcor_key"];
             }
         } else {
             parent = node;
@@ -843,34 +852,34 @@ function setNode(root, parent, node, messageRoot, messageParent, message, key, b
 }
 
 /***/ },
-/* 22 */
+/* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
 "use strict";
 
-var isObject = __webpack_require__(0);
+var isObject = __webpack_require__(1);
 
 module.exports = function isJSONEnvelope(envelope) {
     return isObject(envelope) && "json" in envelope;
 };
 
 /***/ },
-/* 23 */
+/* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
 "use strict";
 
 var isArray = Array.isArray;
-var isObject = __webpack_require__(0);
+var isObject = __webpack_require__(1);
 
 module.exports = function isPathValue(pathValue) {
     return isObject(pathValue) && (isArray(pathValue.path) || typeof pathValue.path === "string");
 };
 
 /***/ },
-/* 24 */
+/* 23 */
 /***/ function(module, exports) {
 
 "use strict";
@@ -879,22 +888,18 @@ module.exports = function isPathValue(pathValue) {
 module.exports = function noop() {};
 
 /***/ },
-/* 25 */
-/***/ function(module, exports) {
-
-"use strict";
-"use strict";
-
-module.exports = "atom";
-
-/***/ },
-/* 26 */
+/* 24 */
 /***/ function(module, exports, __webpack_require__) {
 
-var isArray = Array.isArray;
-var nullTerminator = __webpack_require__(27);
+"use strict";
+'use strict';
 
-module.exports = hasIntersection
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+var isArray = Array.isArray;
+var nullTerminator = __webpack_require__(25);
+
+module.exports = hasIntersection;
 
 /**
  * Tests to see if the intersection should be stripped from the
@@ -910,9 +915,15 @@ function hasIntersection(tree, path, depth, length) {
     }
 
     var intersects = true;
-    var keyset, keysetIndex = -1, keysetLength = 0;
-    var next, nextKey, nextDepth = depth + 1,
-        keyIsRange, rangeEnd, keysOrRanges;
+    var keyset,
+        keysetIndex = -1,
+        keysetLength = 0;
+    var next,
+        nextKey,
+        nextDepth = depth + 1,
+        keyIsRange,
+        rangeEnd,
+        keysOrRanges;
 
     keyset = path[depth];
 
@@ -922,7 +933,7 @@ function hasIntersection(tree, path, depth, length) {
 
     iteratingKeyset: do {
         // If the keyset is a primitive value, we've found our `nextKey`.
-        if ('object' !== typeof keyset) {
+        if ('object' !== (typeof keyset === 'undefined' ? 'undefined' : _typeof(keyset))) {
             nextKey = keyset;
             rangeEnd = undefined;
             keyIsRange = false;
@@ -931,37 +942,37 @@ function hasIntersection(tree, path, depth, length) {
         // or throw an error if we're already iterating a Keyset. Keysets cannot
         // contain other Keysets.
         else if (isArray(keyset)) {
-            // If we've already encountered an Array keyset, throw an error.
-            if (keysOrRanges !== undefined) {
-                break iteratingKeyset;
+                // If we've already encountered an Array keyset, throw an error.
+                if (keysOrRanges !== undefined) {
+                    break iteratingKeyset;
+                }
+                keysetIndex = 0;
+                keysOrRanges = keyset;
+                keysetLength = keyset.length;
+                // If an Array of keys or ranges is empty, terminate the graph walk
+                // and return the json constructed so far. An example of an empty
+                // Keyset is: ['lolomo', [], 'summary']. This should short circuit
+                // without building missing paths.
+                if (0 === keysetLength) {
+                    break iteratingKeyset;
+                }
+                // Assign `keyset` to the first value in the Keyset. Re-entering the
+                // outer loop mimics a singly-recursive function call.
+                keyset = keysOrRanges[keysetIndex];
+                continue iteratingKeyset;
             }
-            keysetIndex = 0;
-            keysOrRanges = keyset;
-            keysetLength = keyset.length;
-            // If an Array of keys or ranges is empty, terminate the graph walk
-            // and return the json constructed so far. An example of an empty
-            // Keyset is: ['lolomo', [], 'summary']. This should short circuit
-            // without building missing paths.
-            if (0 === keysetLength) {
-                break iteratingKeyset;
-            }
-            // Assign `keyset` to the first value in the Keyset. Re-entering the
-            // outer loop mimics a singly-recursive function call.
-            keyset = keysOrRanges[keysetIndex];
-            continue iteratingKeyset;
-        }
-        // If the Keyset isn't a primitive or Array, then it must be a Range.
-        else {
-            rangeEnd = keyset.to;
-            nextKey = keyset.from || 0;
-            if ("number" !== typeof rangeEnd) {
-                rangeEnd = nextKey + (keyset.length || 0) - 1;
-            }
-            if ((rangeEnd - nextKey) < 0) {
-                break iteratingKeyset;
-            }
-            keyIsRange = true;
-        }
+            // If the Keyset isn't a primitive or Array, then it must be a Range.
+            else {
+                    rangeEnd = keyset.to;
+                    nextKey = keyset.from || 0;
+                    if ("number" !== typeof rangeEnd) {
+                        rangeEnd = nextKey + (keyset.length || 0) - 1;
+                    }
+                    if (rangeEnd - nextKey < 0) {
+                        break iteratingKeyset;
+                    }
+                    keyIsRange = true;
+                }
 
         do {
             if (nextDepth === length) {
@@ -995,25 +1006,149 @@ function hasIntersection(tree, path, depth, length) {
     return true;
 }
 
-
 /***/ },
-/* 27 */
+/* 25 */
 /***/ function(module, exports) {
+
+"use strict";
+"use strict";
 
 module.exports = { $__null__$: null };
 
+/***/ },
+/* 26 */
+/***/ function(module, exports) {
+
+"use strict";
+"use strict";
+
+var NAME = "InvalidKeySetError";
+var MESSAGE = "Keysets can only contain Keys or Ranges";
+
+/**
+ * InvalidKeySetError happens when a dataSource syncronously throws
+ * an exception during a get/set/call operation.
+ *
+ * @param {Error} error - The error that was thrown.
+ * @private
+ */
+function InvalidKeySetError(path, keysOrRanges) {
+    var err = Error.call(this, "The KeySet " + JSON.stringify(keysOrRanges) + " in path " + JSON.stringify(path) + " contains a KeySet. " + MESSAGE);
+    err.name = NAME;
+    this.stack = err.stack;
+    this.message = err.message;
+    return this;
+}
+
+// instanceof will be an error, but stack will be correct because its defined
+// in the constructor.
+InvalidKeySetError.prototype = Object.create(Error.prototype);
+InvalidKeySetError.prototype.name = NAME;
+InvalidKeySetError.is = function (e) {
+    return e && e.name === NAME;
+};
+
+module.exports = InvalidKeySetError;
 
 /***/ },
-/* 28 */
+/* 27 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
 "use strict";
 
 module.exports = {
-    getWithPathsAsPathMap: __webpack_require__(89),
-    getWithPathsAsJSONGraph: __webpack_require__(94)
+    getWithPathsAsPathMap: __webpack_require__(92),
+    getWithPathsAsJSONGraph: __webpack_require__(96)
 };
+
+/***/ },
+/* 28 */
+/***/ function(module, exports, __webpack_require__) {
+
+"use strict";
+'use strict';
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+function JSONProto(f_meta) {
+    this["\u001eƒalcor_metadata"] = f_meta || {};
+}
+
+JSONProto.prototype = Object.create(Object.prototype, Object.assign({
+    toJSON: { value: toJSON },
+    $__hash: {
+        enumerable: false,
+        get: function get() {
+            var f_meta = this["\u001eƒalcor_metadata"];
+            return f_meta && f_meta["$code"] || '';
+        }
+    },
+    $__version: {
+        enumerable: false,
+        get: function get() {
+            var f_meta = this["\u001eƒalcor_metadata"];
+            return f_meta && f_meta["version"] || 0;
+        }
+    }
+}, arrayProtoMethods().reduce(function (jsonProto, methodName) {
+    var method = Array.prototype[methodName];
+    jsonProto[methodName] = {
+        writable: true, enumerable: false, value: function value() {
+            return method.apply(this, arguments);
+        }
+    };
+    return jsonProto;
+}, {})));
+
+function arrayProtoMethods() {
+    return ['concat', 'copyWithin', 'entries', 'every', 'fill', 'filter', 'find', 'findIndex', 'forEach', 'includes', 'indexOf', 'join', 'keys', 'lastIndexOf', 'map', 'pop', 'push', 'reduce', 'reduceRight', 'reverse', 'shift', 'slice', 'some', 'sort', 'splice', 'unshift', 'values'];
+}
+
+var isArray = Array.isArray;
+var typeofObject = 'object';
+
+function toJSON() {
+
+    var count, total, value, f_meta, keys, key, xs;
+
+    if (isArray(this)) {
+        count = -1;
+        total = this.length;
+        xs = new Array(total);
+        while (++count < total) {
+            xs[count] = this[count];
+        }
+    } else {
+        xs = {};
+        count = -1;
+        f_meta = this["\u001eƒalcor_metadata"];
+        keys = Object.keys(this);
+        total = keys.length;
+        if (f_meta) {
+            var $code = f_meta["$code"],
+                fm_abs_path = f_meta["abs_path"],
+                fm_deref_to = f_meta["deref_to"],
+                fm_deref_from = f_meta["deref_from"];
+            xs["\u001eƒalcor_metadata"] = f_meta = {};
+            $code && (f_meta["$code"] = $code);
+            fm_abs_path && (f_meta["abs_path"] = fm_abs_path);
+            fm_deref_to && (f_meta["deref_to"] = fm_deref_to);
+            fm_deref_from && (f_meta["deref_from"] = fm_deref_from);
+        }
+        while (++count < total) {
+            key = keys[count];
+            if (key !== "\u001eƒalcor_metadata") {
+                value = this[key];
+                xs[key] = !(!value || (typeof value === 'undefined' ? 'undefined' : _typeof(value)) !== typeofObject) && toJSON.call(value) || value;
+            }
+        }
+    }
+
+    return xs;
+}
+
+module.exports = JSONProto;
 
 /***/ },
 /* 29 */
@@ -1053,1291 +1188,12 @@ function inlineJSONGraphValue(node, path, length, seed) {
 
 /***/ },
 /* 30 */
-/***/ function(module, exports, __webpack_require__) {
-
-"use strict";
-"use strict";
-
-var removeNode = __webpack_require__(35);
-var updateNodeAncestors = __webpack_require__(18);
-
-module.exports = function collect(lru, expired, totalArg, max, ratioArg, version) {
-
-    var total = totalArg;
-    var ratio = ratioArg;
-
-    if (typeof ratio !== "number") {
-        ratio = 0.75;
-    }
-
-    var shouldUpdate = typeof version === "number";
-    var targetSize = max * ratio;
-    var parent, node, size;
-
-    node = expired.pop();
-
-    while (node) {
-        size = node.$size || 0;
-        total -= size;
-        if (shouldUpdate === true) {
-            updateNodeAncestors(node, size, lru, version);
-        } else if (parent = node.ツparent) {
-            // eslint-disable-line no-cond-assign
-            removeNode(node, parent, node.ツkey, lru);
-        }
-        node = expired.pop();
-    }
-
-    if (total >= max) {
-        var prev = lru.ツtail;
-        node = prev;
-        while (total >= targetSize && node) {
-            prev = prev.ツprev;
-            size = node.$size || 0;
-            total -= size;
-            if (shouldUpdate === true) {
-                updateNodeAncestors(node, size, lru, version);
-            }
-            node = prev;
-        }
-
-        lru.ツtail = lru.ツprev = node;
-        if (node == null) {
-            lru.ツhead = lru.ツnext = undefined;
-        } else {
-            node.ツnext = undefined;
-        }
-    }
-};
-
-/***/ },
-/* 31 */
-/***/ function(module, exports, __webpack_require__) {
-
-"use strict";
-"use strict";
-
-var arr = new Array(3);
-var isArray = Array.isArray;
-var $ref = __webpack_require__(1);
-var __prefix = __webpack_require__(5);
-var createHardlink = __webpack_require__(13);
-var getBoundCacheNode = __webpack_require__(11);
-var hasOwn = __webpack_require__(17);
-var isObject = __webpack_require__(0);
-var isExpired = __webpack_require__(3);
-var isFunction = __webpack_require__(2);
-var isPrimitive = __webpack_require__(9);
-var expireNode = __webpack_require__(6);
-var mergeValueOrInsertBranch = __webpack_require__(60);
-var NullInPathError = __webpack_require__(14);
-
-/**
- * Sets a list of {@link PathMapEnvelope}s into a {@link JSONGraph}.
- * @function
- * @param {Object} model - the Model for which to insert the PathMaps.
- * @param {Array.<PathMapEnvelope>} pathMapEnvelopes - the a list of {@link PathMapEnvelope}s to set.
- * @return {Array.<Array.<Path>>} - an Array of Arrays where each inner Array is a list of requested and optimized paths (respectively) for the successfully set values.
- */
-
-module.exports = function setPathMaps(model, pathMapEnvelopes, errorSelector, comparator) {
-
-    var modelRoot = model._root;
-    var lru = modelRoot;
-    var expired = modelRoot.expired;
-    var version = modelRoot.version++;
-    var bound = model._path;
-    var cache = modelRoot.cache;
-    var node = getBoundCacheNode(model);
-    var parent = node.ツparent || cache;
-    var initialVersion = cache.ツversion;
-
-    var requestedPath = [];
-    var requestedPaths = [];
-    var optimizedPaths = [];
-    var optimizedIndex = bound.length;
-    var pathMapIndex = -1;
-    var pathMapCount = pathMapEnvelopes.length;
-
-    while (++pathMapIndex < pathMapCount) {
-
-        var pathMapEnvelope = pathMapEnvelopes[pathMapIndex];
-        var optimizedPath = bound.slice(0);
-        optimizedPath.index = optimizedIndex;
-
-        setPathMap(pathMapEnvelope.json, 0, cache, parent, node, requestedPaths, optimizedPaths, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector);
-    }
-
-    arr[0] = undefined;
-    arr[1] = undefined;
-    arr[2] = undefined;
-
-    var newVersion = cache.ツversion;
-    var rootChangeHandler = modelRoot.onChange;
-
-    if (isFunction(rootChangeHandler) && initialVersion !== newVersion) {
-        rootChangeHandler();
-    }
-
-    return [requestedPaths, optimizedPaths];
-};
-
-/* eslint-disable no-constant-condition */
-function setPathMap(pathMap, depth, root, parent, node, requestedPaths, optimizedPaths, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector) {
-
-    var keys = getKeys(pathMap);
-
-    if (keys && keys.length) {
-
-        var keyIndex = 0;
-        var keyCount = keys.length;
-        var optimizedIndex = optimizedPath.index;
-
-        do {
-            var key = keys[keyIndex];
-            var child = pathMap[key];
-            var branch = isObject(child) && !child.$type;
-
-            requestedPath.depth = depth;
-
-            var results = setNode(root, parent, node, key, child, branch, false, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector);
-
-            requestedPath[depth] = key;
-            requestedPath.index = depth;
-
-            var nextNode = results[0];
-            var nextParent = results[1];
-            var nextOptimizedPath = results[2];
-            nextOptimizedPath[nextOptimizedPath.index++] = key;
-
-            if (nextNode) {
-                if (branch) {
-                    setPathMap(child, depth + 1, root, nextParent, nextNode, requestedPaths, optimizedPaths, requestedPath, nextOptimizedPath, version, expired, lru, comparator, errorSelector);
-                } else {
-                    requestedPaths.push(requestedPath.slice(0, requestedPath.index + 1));
-                    optimizedPaths.push(nextOptimizedPath.slice(0, nextOptimizedPath.index));
-                }
-            }
-            if (++keyIndex >= keyCount) {
-                break;
-            }
-            optimizedPath.index = optimizedIndex;
-        } while (true);
-    }
-}
-/* eslint-enable */
-
-function setReference(value, root, node, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector) {
-
-    var parent;
-    var reference = node.value;
-    optimizedPath = reference.slice(0);
-
-    if (isExpired(node)) {
-        expireNode(node, expired, lru);
-        node = undefined;
-        parent = root;
-        optimizedPath.index = reference.length;
-    } else {
-        var container = node;
-        parent = root;
-
-        node = node.ツcontext;
-
-        if (node != null) {
-            parent = node.ツparent || root;
-            optimizedPath.index = reference.length;
-        } else {
-
-            var index = 0;
-            var count = reference.length - 1;
-            optimizedPath.index = index;
-
-            parent = node = root;
-
-            do {
-                var key = reference[index];
-                var branch = index < count;
-                var results = setNode(root, parent, node, key, value, branch, true, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector);
-                node = results[0];
-                optimizedPath = results[2];
-                if (isPrimitive(node)) {
-                    optimizedPath.index = index;
-                    return results;
-                }
-                parent = results[1];
-            } while (index++ < count);
-
-            optimizedPath.index = index;
-
-            if (container.ツcontext !== node) {
-                createHardlink(container, node);
-            }
-        }
-    }
-
-    arr[0] = node;
-    arr[1] = parent;
-    arr[2] = optimizedPath;
-
-    return arr;
-}
-
-function setNode(root, parent, node, key, value, branch, reference, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector) {
-
-    var type = node.$type;
-
-    while (type === $ref) {
-
-        var results = setReference(value, root, node, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector);
-
-        node = results[0];
-
-        if (isPrimitive(node)) {
-            return results;
-        }
-
-        parent = results[1];
-        optimizedPath = results[2];
-        type = node && node.$type;
-    }
-
-    if (type === void 0) {
-        if (key == null) {
-            if (branch) {
-                throw new NullInPathError();
-            } else if (node) {
-                key = node.ツkey;
-            }
-        } else {
-            parent = node;
-            node = parent[key];
-        }
-
-        node = mergeValueOrInsertBranch(parent, node, key, value, branch, reference, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector);
-    }
-
-    arr[0] = node;
-    arr[1] = parent;
-    arr[2] = optimizedPath;
-
-    return arr;
-}
-
-function getKeys(pathMap) {
-
-    if (isObject(pathMap) && !pathMap.$type) {
-        var keys = [];
-        var itr = 0;
-        if (isArray(pathMap)) {
-            keys[itr++] = "length";
-        }
-        for (var key in pathMap) {
-            if (key[0] === __prefix || key[0] === "$" || !hasOwn(pathMap, key)) {
-                continue;
-            }
-            keys[itr++] = key;
-        }
-        return keys;
-    }
-
-    return void 0;
-}
-
-/***/ },
-/* 32 */
-/***/ function(module, exports, __webpack_require__) {
-
-"use strict";
-"use strict";
-
-var arr = new Array(3);
-var $ref = __webpack_require__(1);
-var createHardlink = __webpack_require__(13);
-var getBoundCacheNode = __webpack_require__(11);
-var isExpired = __webpack_require__(3);
-var isFunction = __webpack_require__(2);
-var isPrimitive = __webpack_require__(9);
-var expireNode = __webpack_require__(6);
-var iterateKeySet = __webpack_require__(8).iterateKeySet;
-var mergeValueOrInsertBranch = __webpack_require__(60);
-var NullInPathError = __webpack_require__(14);
-
-/**
- * Sets a list of {@link PathValue}s into a {@link JSONGraph}.
- * @function
- * @param {Object} model - the Model for which to insert the {@link PathValue}s.
- * @param {Array.<PathValue>} pathValues - the list of {@link PathValue}s to set.
- * @return {Array.<Array.<Path>>} - an Array of Arrays where each inner Array is a list of requested and optimized paths (respectively) for the successfully set values.
- */
-
-module.exports = function setPathValues(model, pathValues, errorSelector, comparator) {
-
-    var modelRoot = model._root;
-    var lru = modelRoot;
-    var expired = modelRoot.expired;
-    var version = modelRoot.version++;
-    var bound = model._path;
-    var cache = modelRoot.cache;
-    var node = getBoundCacheNode(model);
-    var parent = node.ツparent || cache;
-    var initialVersion = cache.ツversion;
-
-    var requestedPath = [];
-    var requestedPaths = [];
-    var optimizedPaths = [];
-    var optimizedIndex = bound.length;
-    var pathValueIndex = -1;
-    var pathValueCount = pathValues.length;
-
-    while (++pathValueIndex < pathValueCount) {
-
-        var pathValue = pathValues[pathValueIndex];
-        var path = pathValue.path;
-        var value = pathValue.value;
-        var optimizedPath = bound.slice(0);
-        optimizedPath.index = optimizedIndex;
-
-        setPathSet(value, path, 0, cache, parent, node, requestedPaths, optimizedPaths, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector);
-    }
-
-    arr[0] = undefined;
-    arr[1] = undefined;
-    arr[2] = undefined;
-
-    var newVersion = cache.ツversion;
-    var rootChangeHandler = modelRoot.onChange;
-
-    if (isFunction(rootChangeHandler) && initialVersion !== newVersion) {
-        rootChangeHandler();
-    }
-
-    return [requestedPaths, optimizedPaths];
-};
-
-/* eslint-disable no-constant-condition */
-function setPathSet(value, path, depth, root, parent, node, requestedPaths, optimizedPaths, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector) {
-
-    var note = {};
-    var branch = depth < path.length - 1;
-    var keySet = path[depth];
-    var key = iterateKeySet(keySet, note);
-    var optimizedIndex = optimizedPath.index;
-
-    do {
-
-        requestedPath.depth = depth;
-        requestedPath[depth] = key;
-        requestedPath.index = depth;
-
-        var results = setNode(root, parent, node, key, value, branch, false, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector);
-
-        requestedPath[depth] = key;
-        requestedPath.index = depth;
-
-        var nextNode = results[0];
-        var nextParent = results[1];
-        var nextOptimizedPath = results[2];
-        nextOptimizedPath[nextOptimizedPath.index++] = key;
-
-        if (nextNode) {
-            if (branch) {
-                setPathSet(value, path, depth + 1, root, nextParent, nextNode, requestedPaths, optimizedPaths, requestedPath, nextOptimizedPath, version, expired, lru, comparator, errorSelector);
-            } else {
-                requestedPaths.push(requestedPath.slice(0, requestedPath.index + 1));
-                optimizedPaths.push(nextOptimizedPath.slice(0, nextOptimizedPath.index));
-            }
-        }
-        key = iterateKeySet(keySet, note);
-        if (note.done) {
-            break;
-        }
-        optimizedPath.index = optimizedIndex;
-    } while (true);
-}
-/* eslint-enable */
-
-function setReference(value, root, node, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector) {
-
-    var parent;
-    var reference = node.value;
-    optimizedPath = reference.slice(0);
-
-    if (isExpired(node)) {
-        expireNode(node, expired, lru);
-        node = undefined;
-        parent = root;
-        optimizedPath.index = reference.length;
-    } else {
-
-        var container = node;
-        parent = root;
-
-        node = node.ツcontext;
-
-        if (node != null) {
-            parent = node.ツparent || root;
-            optimizedPath.index = reference.length;
-        } else {
-
-            var index = 0;
-            var count = reference.length - 1;
-
-            parent = node = root;
-
-            do {
-                var key = reference[index];
-                var branch = index < count;
-                optimizedPath.index = index;
-
-                var results = setNode(root, parent, node, key, value, branch, true, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector);
-                node = results[0];
-                optimizedPath = results[2];
-                if (isPrimitive(node)) {
-                    optimizedPath.index = index;
-                    return results;
-                }
-                parent = results[1];
-            } while (index++ < count);
-
-            optimizedPath.index = index;
-
-            if (container.ツcontext !== node) {
-                createHardlink(container, node);
-            }
-        }
-    }
-
-    arr[0] = node;
-    arr[1] = parent;
-    arr[2] = optimizedPath;
-
-    return arr;
-}
-
-function setNode(root, parent, node, key, value, branch, reference, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector) {
-
-    var type = node.$type;
-
-    while (type === $ref) {
-
-        var results = setReference(value, root, node, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector);
-
-        node = results[0];
-
-        if (isPrimitive(node)) {
-            return results;
-        }
-
-        parent = results[1];
-        optimizedPath = results[2];
-        type = node.$type;
-    }
-
-    if (!branch || type === undefined) {
-        if (key == null) {
-            if (branch) {
-                throw new NullInPathError();
-            } else if (node) {
-                key = node.ツkey;
-            }
-        } else {
-            parent = node;
-            node = parent[key];
-        }
-
-        node = mergeValueOrInsertBranch(parent, node, key, value, branch, reference, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector);
-    }
-
-    arr[0] = node;
-    arr[1] = parent;
-    arr[2] = optimizedPath;
-
-    return arr;
-}
-
-/***/ },
-/* 33 */
-/***/ function(module, exports, __webpack_require__) {
-
-"use strict";
-"use strict";
-
-var isArray = Array.isArray;
-var isObject = __webpack_require__(0);
-
-module.exports = function isJSONGraphEnvelope(envelope) {
-    return isObject(envelope) && isArray(envelope.paths) && (isObject(envelope.jsonGraph) || isObject(envelope.jsong) || isObject(envelope.json) || isObject(envelope.values) || isObject(envelope.value));
-};
-
-/***/ },
-/* 34 */
 /***/ function(module, exports) {
 
 "use strict";
 "use strict";
 
-module.exports = Date.now;
-
-/***/ },
-/* 35 */
-/***/ function(module, exports, __webpack_require__) {
-
-"use strict";
-"use strict";
-
-var $ref = __webpack_require__(1);
-var splice = __webpack_require__(51);
-var isObject = __webpack_require__(0);
-var unlinkBackReferences = __webpack_require__(126);
-var unlinkForwardReference = __webpack_require__(127);
-
-module.exports = function removeNode(node, parent, key, lru) {
-    if (isObject(node)) {
-        var type = node.$type;
-        if (type) {
-            if (type === $ref) {
-                unlinkForwardReference(node);
-            }
-            splice(lru, node);
-        }
-        unlinkBackReferences(node);
-        parent[key] = node.ツparent = void 0;
-        return true;
-    }
-    return false;
-};
-
-/***/ },
-/* 36 */
-/***/ function(module, exports, __webpack_require__) {
-
-"use strict";
-"use strict";
-
-var hasOwn = __webpack_require__(17);
-var prefix = __webpack_require__(5);
-var removeNode = __webpack_require__(35);
-
-module.exports = function removeNodeAndDescendants(node, parent, key, lru) {
-    if (removeNode(node, parent, key, lru)) {
-        if (node.$type == null) {
-            for (var key2 in node) {
-                if (key2[0] !== prefix && key2[0] !== "$" && hasOwn(node, key2)) {
-                    removeNodeAndDescendants(node[key2], node, key2, lru);
-                }
-            }
-        }
-        return true;
-    }
-    return false;
-};
-
-/***/ },
-/* 37 */
-/***/ function(module, exports, __webpack_require__) {
-
-"use strict";
-"use strict";
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
-
-var isArray = Array.isArray;
-var isPathValue = __webpack_require__(23);
-var isJSONGraphEnvelope = __webpack_require__(33);
-var isJSONEnvelope = __webpack_require__(22);
-
-/**
- *
- * @param {Object} allowedInput - allowedInput is a map of input styles
- * that are allowed
- * @private
- */
-module.exports = function validateInput(args, allowedInput, method) {
-    for (var i = 0, len = args.length; i < len; ++i) {
-        var arg = args[i];
-        var valid = false;
-
-        // Path
-        if (isArray(arg) && allowedInput.path) {
-            valid = true;
-        }
-
-        // Path Syntax
-        // else if (typeof arg === "string" && allowedInput.pathSyntax) {
-        //     valid = true;
-        // }
-
-        // Path Value
-        else if (isPathValue(arg) && allowedInput.pathValue) {
-                valid = true;
-            }
-
-            // jsonGraph {jsonGraph: { ... }, paths: [ ... ]}
-            else if (isJSONGraphEnvelope(arg) && allowedInput.jsonGraph) {
-                    valid = true;
-                }
-
-                // json env {json: {...}}
-                else if (isJSONEnvelope(arg) && allowedInput.json) {
-                        valid = true;
-                    }
-
-                    // selector functions
-                    else if (typeof arg === "function" && i + 1 === len && allowedInput.selector) {
-                            valid = true;
-                        }
-
-        if (!valid) {
-            return new Error("Unrecognized argument " + (typeof arg === "undefined" ? "undefined" : _typeof(arg)) + " [" + String(arg) + "] " + "to Model#" + method + "");
-        }
-    }
-    return true;
-};
-
-/***/ },
-/* 38 */
-/***/ function(module, exports) {
-
-"use strict";
-"use strict";
-
-module.exports = 1;
-
-/***/ },
-/* 39 */
-/***/ function(module, exports) {
-
-"use strict";
-"use strict";
-
-module.exports = 0;
-
-/***/ },
-/* 40 */
-/***/ function(module, exports) {
-
-var isArray = Array.isArray;
-
-/**
- * Takes in a keySet and a note attempts to iterate over it.
- * If the value is a primitive, the key will be returned and the note will
- * be marked done
- * If the value is an object, then each value of the range will be returned
- * and when finished the note will be marked done.
- * If the value is an array, each value will be iterated over, if any of the
- * inner values are ranges, those will be iterated over.  When fully done,
- * the note will be marked done.
- *
- * @param {Object|Array|String|Number} keySet -
- * @param {Object} note - The non filled note
- * @returns {String|Number|undefined} - The current iteration value.
- * If undefined, then the keySet is empty
- * @public
- */
-module.exports = function iterateKeySet(keySet, note) {
-    if (note.isArray === undefined) {
-        initializeNote(keySet, note);
-    }
-
-    // Array iteration
-    if (note.isArray) {
-        var nextValue;
-
-        // Cycle through the array and pluck out the next value.
-        do {
-            if (note.loaded && note.rangeOffset > note.to) {
-                ++note.arrayOffset;
-                note.loaded = false;
-            }
-
-            var idx = note.arrayOffset, length = keySet.length;
-            if (idx >= length) {
-                note.done = true;
-                break;
-            }
-
-            var el = keySet[note.arrayOffset];
-            var type = typeof el;
-
-            // Inner range iteration.
-            if (type === 'object') {
-                if (!note.loaded) {
-                    initializeRange(el, note);
-                }
-
-                // Empty to/from
-                if (note.empty) {
-                    continue;
-                }
-
-                nextValue = note.rangeOffset++;
-            }
-
-            // Primitive iteration in array.
-            else {
-                ++note.arrayOffset;
-                nextValue = el;
-            }
-        } while (nextValue === undefined);
-
-        return nextValue;
-    }
-
-    // Range iteration
-    else if (note.isObject) {
-        if (!note.loaded) {
-            initializeRange(keySet, note);
-        }
-        if (note.rangeOffset > note.to) {
-            note.done = true;
-            return undefined;
-        }
-
-        return note.rangeOffset++;
-    }
-
-    // Primitive value
-    else {
-        note.done = true;
-        return keySet;
-    }
-};
-
-function initializeRange(key, memo) {
-    var from = memo.from = key.from || 0;
-    var to = memo.to = key.to ||
-        (typeof key.length === 'number' &&
-        memo.from + key.length - 1 || 0);
-    memo.rangeOffset = memo.from;
-    memo.loaded = true;
-    if (from > to) {
-        memo.empty = true;
-    }
-}
-
-function initializeNote(key, note) {
-    note.done = false;
-    var isObject = note.isObject = !!(key && typeof key === 'object');
-    note.isArray = isObject && isArray(key);
-    note.arrayOffset = 0;
-}
-
-
-/***/ },
-/* 41 */
-/***/ function(module, exports) {
-
-function cloneArray(arr, index) {
-    var a = [];
-    var len = arr.length;
-    for (var i = index || 0; i < len; i++) {
-        a[i] = arr[i];
-    }
-    return a;
-}
-
-module.exports = cloneArray;
-
-
-
-/***/ },
-/* 42 */
-/***/ function(module, exports) {
-
-module.exports = {
-    $ref: 'ref',
-    $atom: 'atom',
-    $error: 'error'
-};
-
-
-
-/***/ },
-/* 43 */
-/***/ function(module, exports, __webpack_require__) {
-
-var isArray = Array.isArray;
-var typeOfObject = "object";
-var nullTerminator = __webpack_require__(27);
-
-/* jshint forin: false */
-module.exports = function toPaths(lengths) {
-    var pathmap;
-    var allPaths = [];
-    var allPathsLength = 0;
-    for (var length in lengths) {
-        if (isNumber(length) && isObject(pathmap = lengths[length])) {
-            var paths = collapsePathMap(pathmap, 0, parseInt(length, 10)).sets;
-            var pathsIndex = -1;
-            var pathsCount = paths.length;
-            while (++pathsIndex < pathsCount) {
-                allPaths[allPathsLength++] = collapsePathSetIndexes(paths[pathsIndex]);
-            }
-        }
-    }
-    return allPaths;
-};
-
-function isObject(value) {
-    return value !== null && typeof value === typeOfObject;
-}
-
-function collapsePathMap(pathmap, depth, length) {
-
-    var key;
-    var code = getHashCode(String(depth));
-    var subs = Object.create(null);
-
-    var codes = [];
-    var codesIndex = -1;
-    var codesCount = 0;
-
-    var pathsets = [];
-    var pathsetsCount = 0;
-
-    var subPath, subCode,
-        subKeys, subKeysIndex, subKeysCount,
-        subSets, subSetsIndex, subSetsCount,
-        pathset, pathsetIndex, pathsetCount,
-        firstSubKey, pathsetClone;
-
-    subKeys = [];
-    subKeysIndex = -1;
-
-    if (depth < length - 1) {
-
-        subKeysCount = getSortedKeys(pathmap, subKeys);
-
-        while (++subKeysIndex < subKeysCount) {
-            key = subKeys[subKeysIndex];
-            subPath = collapsePathMap(pathmap[key], depth + 1, length);
-            subCode = subPath.code;
-            if(subs[subCode]) {
-                subPath = subs[subCode];
-            } else {
-                codes[codesCount++] = subCode;
-                subPath = subs[subCode] = {
-                    keys: [],
-                    sets: subPath.sets
-                };
-            }
-            code = getHashCode(code + key + subCode);
-
-            isNumber(key) &&
-                subPath.keys.push(parseInt(key, 10)) ||
-                subPath.keys.push(key);
-        }
-
-        while(++codesIndex < codesCount) {
-
-            key = codes[codesIndex];
-            subPath = subs[key];
-            subKeys = subPath.keys;
-            subKeysCount = subKeys.length;
-
-            if (subKeysCount > 0) {
-
-                subSets = subPath.sets;
-                subSetsIndex = -1;
-                subSetsCount = subSets.length;
-                firstSubKey = subKeys[0];
-
-                while (++subSetsIndex < subSetsCount) {
-
-                    pathset = subSets[subSetsIndex];
-                    pathsetIndex = -1;
-                    pathsetCount = pathset.length;
-                    pathsetClone = new Array(pathsetCount + 1);
-                    pathsetClone[0] = subKeysCount > 1 && subKeys || firstSubKey;
-
-                    while (++pathsetIndex < pathsetCount) {
-                        pathsetClone[pathsetIndex + 1] = pathset[pathsetIndex];
-                    }
-
-                    pathsets[pathsetsCount++] = pathsetClone;
-                }
-            }
-        }
-    } else {
-        subKeysCount = getSortedKeys(pathmap, subKeys);
-        if (subKeysCount > 1) {
-            pathsets[pathsetsCount++] = [subKeys];
-        } else {
-            pathsets[pathsetsCount++] = subKeys;
-        }
-        while (++subKeysIndex < subKeysCount) {
-            code = getHashCode(code + subKeys[subKeysIndex]);
-        }
-    }
-
-    return {
-        code: code,
-        sets: pathsets
-    };
-}
-
-function collapsePathSetIndexes(pathset) {
-
-    var keysetIndex = -1;
-    var keysetCount = pathset.length;
-
-    while (++keysetIndex < keysetCount) {
-        var keyset = pathset[keysetIndex];
-        if (isArray(keyset)) {
-            pathset[keysetIndex] = collapseIndex(keyset);
-        }
-    }
-
-    return pathset;
-}
-
-/**
- * Collapse range indexers, e.g. when there is a continuous
- * range in an array, turn it into an object instead:
- *
- * [1,2,3,4,5,6] => {"from":1, "to":6}
- *
- * @private
- */
-function collapseIndex(keyset) {
-
-    // Do we need to dedupe an indexer keyset if they're duplicate consecutive integers?
-    // var hash = {};
-    var keyIndex = -1;
-    var keyCount = keyset.length - 1;
-    var isSparseRange = keyCount > 0;
-
-    while (++keyIndex <= keyCount) {
-
-        var key = keyset[keyIndex];
-
-        if (!isNumber(key) /* || hash[key] === true*/ ) {
-            isSparseRange = false;
-            break;
-        }
-        // hash[key] = true;
-        // Cast number indexes to integers.
-        keyset[keyIndex] = parseInt(key, 10);
-    }
-
-    if (isSparseRange === true) {
-
-        keyset.sort(sortListAscending);
-
-        var from = keyset[0];
-        var to = keyset[keyCount];
-
-        // If we re-introduce deduped integer indexers, change this comparson to "===".
-        if (to - from <= keyCount) {
-            return {
-                from: from,
-                to: to
-            };
-        }
-    }
-
-    return keyset;
-}
-
-function sortListAscending(a, b) {
-    return a - b;
-}
-
-/* jshint forin: false */
-function getSortedKeys(map, keys, sort) {
-    var len = 0;
-    if (map === nullTerminator) {
-        keys[len++] = null;
-    } else {
-        for (var key in map) {
-            // if (key === '$__null__$') {
-            //     key = null;
-            // }
-            keys[len++] = key;
-        }
-        if (len > 1) {
-            keys.sort(sort);
-        }
-    }
-    return len;
-}
-
-function getHashCode(key) {
-    var code = 5381;
-    var index = -1;
-    var count = key.length;
-    while (++index < count) {
-        code = (code << 5) + code + key.charCodeAt(index);
-    }
-    return String(code);
-}
-
-/**
- * Return true if argument is a number or can be cast to a number
- * @private
- */
-function isNumber(val) {
-    // parseFloat NaNs numeric-cast false positives (null|true|false|"")
-    // ...but misinterprets leading-number strings, particularly hex literals ("0x...")
-    // subtraction forces infinities to NaN
-    // adding 1 corrects loss of precision from parseFloat (#15100)
-    return !isArray(val) && (val - parseFloat(val) + 1) >= 0;
-}
-
-
-
-/***/ },
-/* 44 */
-/***/ function(module, exports, __webpack_require__) {
-
-var isArray = Array.isArray;
-var nullTerminator = __webpack_require__(27);
-
-/**
- * @param {Array} paths -
- * @returns {Object} -
- */
-module.exports = function toTree(paths) {
-    return paths.reduce(function(acc, path) {
-        return innerToTree(acc, path, 0, path.length);
-    }, {});
-};
-
-function innerToTree(seed, path, depth, length) {
-
-    if (depth === length) {
-        return true;
-    }
-
-    var keyset, keysetIndex = -1, keysetLength = 0;
-    var node, next, nextKey, nextDepth = depth + 1,
-        keyIsRange, rangeEnd, keysOrRanges;
-
-    keyset = path[depth];
-
-    if (keyset === null) {
-        return nullTerminator;
-    }
-
-    seed = seed || {};
-
-    iteratingKeyset: do {
-        // If the keyset is a primitive value, we've found our `nextKey`.
-        if ('object' !== typeof keyset) {
-            nextKey = keyset;
-            rangeEnd = undefined;
-            keyIsRange = false;
-        }
-        // If we encounter a Keyset, either iterate through the Keys and Ranges,
-        // or throw an error if we're already iterating a Keyset. Keysets cannot
-        // contain other Keysets.
-        else if (isArray(keyset)) {
-            // If we've already encountered an Array keyset, throw an error.
-            if (keysOrRanges !== undefined) {
-                break iteratingKeyset;
-            }
-            keysetIndex = 0;
-            keysOrRanges = keyset;
-            keysetLength = keyset.length;
-            // If an Array of keys or ranges is empty, terminate the graph walk
-            // and return the json constructed so far. An example of an empty
-            // Keyset is: ['lolomo', [], 'summary']. This should short circuit
-            // without building missing paths.
-            if (0 === keysetLength) {
-                break iteratingKeyset;
-            }
-            // Assign `keyset` to the first value in the Keyset. Re-entering the
-            // outer loop mimics a singly-recursive function call.
-            keyset = keysOrRanges[keysetIndex];
-            continue iteratingKeyset;
-        }
-        // If the Keyset isn't a primitive or Array, then it must be a Range.
-        else {
-            rangeEnd = keyset.to;
-            nextKey = keyset.from || 0;
-            if ("number" !== typeof rangeEnd) {
-                rangeEnd = nextKey + (keyset.length || 0) - 1;
-            }
-            if ((rangeEnd - nextKey) < 0) {
-                break iteratingKeyset;
-            }
-            keyIsRange = true;
-        }
-
-        do {
-            if (nextDepth === length) {
-                seed[nextKey] = null;
-            } else {
-                node = seed[nextKey];
-                next = innerToTree(node, path, nextDepth, length);
-                if (!next) {
-                    seed[nextKey] = null;
-                } else if (!node) {
-                    seed[nextKey] = next;
-                }
-            }
-        }
-        // Re-enter the inner loop and continue iterating the Range, or exit
-        // here if we encountered a Key.
-        while (keyIsRange && ++nextKey <= rangeEnd);
-
-        // If we've exhausted the Keyset (or never encountered one at all),
-        // exit the outer loop.
-        if (++keysetIndex === keysetLength) {
-            break iteratingKeyset;
-        }
-
-        // Otherwise get the next Key or Range from the Keyset and re-enter the
-        // outer loop from the top.
-        keyset = keysOrRanges[keysetIndex];
-    } while (true);
-
-    return seed;
-}
-
-
-/***/ },
-/* 45 */
-/***/ function(module, exports) {
-
-"use strict";
-"use strict";
-
-var NAME = "CircularReferenceError";
-
-/**
- * Does not allow null in path
- */
-function CircularReferenceError(referencePath) {
-    var err = Error.call(this, "Encountered circular reference " + JSON.stringify(referencePath));
-    err.name = NAME;
-    this.stack = err.stack;
-    this.message = err.message;
-    return this;
-}
-
-// instanceof will be an error, but stack will be correct because its defined in the constructor.
-CircularReferenceError.prototype = Object.create(Error.prototype);
-CircularReferenceError.prototype.name = NAME;
-
-module.exports = CircularReferenceError;
-
-/***/ },
-/* 46 */
-/***/ function(module, exports) {
-
-"use strict";
-"use strict";
-
-var NAME = "InvalidKeySetError";
-var MESSAGE = "Keysets can only contain Keys or Ranges";
-
-/**
- * InvalidKeySetError happens when a dataSource syncronously throws
- * an exception during a get/set/call operation.
- *
- * @param {Error} error - The error that was thrown.
- * @private
- */
-function InvalidKeySetError(path, keysOrRanges) {
-    var err = Error.call(this, "The KeySet " + JSON.stringify(keysOrRanges) + " in path " + JSON.stringify(path) + " contains a KeySet. " + MESSAGE);
-    err.name = NAME;
-    this.stack = err.stack;
-    this.message = err.message;
-    return this;
-}
-
-// instanceof will be an error, but stack will be correct because its defined
-// in the constructor.
-InvalidKeySetError.prototype = Object.create(Error.prototype);
-InvalidKeySetError.prototype.name = NAME;
-InvalidKeySetError.is = function (e) {
-    return e && e.name === NAME;
-};
-
-module.exports = InvalidKeySetError;
-
-/***/ },
-/* 47 */
-/***/ function(module, exports) {
-
-"use strict";
-"use strict";
-
-var NAME = "MaxRetryExceededError";
-var MESSAGE = "The allowed number of retries have been exceeded.";
-
-/**
- * A request can only be retried up to a specified limit.  Once that
- * limit is exceeded, then an error will be thrown.
- *
- * @private
- */
-function MaxRetryExceededError() {
-    var err = Error.call(this, MESSAGE);
-    err.name = NAME;
-    this.stack = err.stack;
-    this.message = err.message;
-    return this;
-}
-
-// instanceof will be an error, but stack will be correct because its defined
-// in the constructor.
-MaxRetryExceededError.prototype = Object.create(Error.prototype);
-MaxRetryExceededError.prototype.name = NAME;
-MaxRetryExceededError.is = function (e) {
-    return e && e.name === NAME;
-};
-
-module.exports = MaxRetryExceededError;
-
-/***/ },
-/* 48 */
-/***/ function(module, exports, __webpack_require__) {
-
-"use strict";
-"use strict";
-
-var $ref = __webpack_require__(1);
-
-/**
- * getCachePosition makes a fast walk to the bound value since all bound
- * paths are the most possible optimized path.
- *
- * @param {Model} model -
- * @param {Array} path -
- * @returns {Mixed} - undefined if there is nothing in this position.
- * @private
- */
-module.exports = getCachePosition;
-
-function getCachePosition(cache, path) {
-
-    var node = cache;
-    var type,
-        depth = 0;
-    var maxDepth = path.length;
-
-    do {
-        node = node[path[depth]];
-
-        while (node && (type = node.$type) === $ref) {
-            node = getCachePosition(cache, node.value);
-        }
-    } while (++depth < maxDepth && node && !type);
-
-    return node;
-};
-
-/***/ },
-/* 49 */
-/***/ function(module, exports) {
-
-"use strict";
-"use strict";
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var isArray = Array.isArray;
 
@@ -2427,15 +1283,1555 @@ function isEmptyKeySet(keyset) {
 }
 
 /***/ },
+/* 31 */
+/***/ function(module, exports, __webpack_require__) {
+
+"use strict";
+"use strict";
+
+var removeNode = __webpack_require__(37);
+var updateNodeAncestors = __webpack_require__(15);
+
+module.exports = function collect(lru, expired, totalArg, max, ratioArg, version) {
+
+    var total = totalArg;
+    var ratio = ratioArg;
+
+    if (typeof ratio !== "number") {
+        ratio = 0.75;
+    }
+
+    var shouldUpdate = typeof version === "number";
+    var targetSize = max * ratio;
+    var parent, node, size;
+
+    node = expired.pop();
+
+    while (node) {
+        size = node.$size || 0;
+        total -= size;
+        if (shouldUpdate === true) {
+            updateNodeAncestors(node, size, lru, version);
+        } else if (parent = node["\u001eƒalcor_parent"]) {
+            // eslint-disable-line no-cond-assign
+            removeNode(node, parent, node["\u001eƒalcor_key"], lru);
+        }
+        node = expired.pop();
+    }
+
+    if (total >= max) {
+        var prev = lru["\u001eƒalcor_tail"];
+        node = prev;
+        while (total >= targetSize && node) {
+            prev = prev["\u001eƒalcor_prev"];
+            size = node.$size || 0;
+            total -= size;
+            if (shouldUpdate === true) {
+                updateNodeAncestors(node, size, lru, version);
+            }
+            node = prev;
+        }
+
+        lru["\u001eƒalcor_tail"] = lru["\u001eƒalcor_prev"] = node;
+        if (node == null) {
+            lru["\u001eƒalcor_head"] = lru["\u001eƒalcor_next"] = undefined;
+        } else {
+            node["\u001eƒalcor_next"] = undefined;
+        }
+    }
+};
+
+/***/ },
+/* 32 */
+/***/ function(module, exports, __webpack_require__) {
+
+"use strict";
+"use strict";
+
+var ModelResponse = __webpack_require__(5);
+var checkCacheAndReport = __webpack_require__(56);
+var getRequestCycle = __webpack_require__(109);
+var noop = __webpack_require__(23);
+var empty = { dispose: noop, unsubscribe: noop };
+var collectLru = __webpack_require__(31);
+var getSize = __webpack_require__(7);
+var isFunction = __webpack_require__(3);
+
+/**
+ * The get response.  It takes in a model and paths and starts
+ * the request cycle.  It has been optimized for cache first requests
+ * and closures.
+ * @param {Model} model -
+ * @param {Array} paths -
+ * @augments ModelResponse
+ * @private
+ */
+var GetResponse = module.exports = function GetResponse(model, paths, isJSONGraph, isProgressive, forceCollect, initialCacheVersion, recycleJSON) {
+
+    if (paths && paths[0] && Array.isArray(paths[0].$keys)) {
+        paths = paths[0];
+    }
+
+    this.model = model;
+    this.currentRemainingPaths = paths;
+    this.isJSONGraph = isJSONGraph || false;
+    this.isProgressive = isProgressive || false;
+    this.forceCollect = forceCollect || false;
+    this.recycleJSON = undefined !== recycleJSON ? recycleJSON : model._recycleJSON;
+
+    var currentVersion = model._root.cache["\u001eƒalcor_version"];
+
+    if (typeof initialCacheVersion === "number") {
+        this.initialCacheVersion = initialCacheVersion;
+    } else if (typeof currentVersion === "number") {
+        this.initialCacheVersion = currentVersion;
+    } else {
+        this.initialCacheVersion = model._root.version;
+    }
+};
+
+GetResponse.prototype = Object.create(ModelResponse.prototype);
+
+/**
+ * Makes the output of a get response JSONGraph instead of json.
+ * @private
+ */
+GetResponse.prototype._toJSONG = function _toJSONGraph() {
+    return new GetResponse(this.model, this.currentRemainingPaths, true, this.isProgressive, this.forceCollect, this.initialCacheVersion, this.recycleJSON);
+};
+
+/**
+ * Progressively responding to data in the cache instead of once the whole
+ * operation is complete.
+ * @public
+ */
+GetResponse.prototype.progressively = function progressively() {
+    return new GetResponse(this.model, this.currentRemainingPaths, this.isJSONGraph, true, this.forceCollect, this.initialCacheVersion, this.recycleJSON);
+};
+
+/**
+ * purely for the purposes of closure creation other than the initial
+ * prototype created closure.
+ *
+ * @private
+ */
+GetResponse.prototype._subscribe = function _subscribe(observer) {
+
+    var errors = [];
+    var model = this.model;
+    var modelRoot = model._root;
+    var recycleJSON = this.recycleJSON;
+    var isProgressive = this.isProgressive;
+    var requestedPaths = this.currentRemainingPaths;
+    var isJSONG = observer.isJSONG = this.isJSONGraph;
+    var shouldRecycleJSONSeed = !isJSONG && !isProgressive && recycleJSON;
+    var seed = [!shouldRecycleJSONSeed ? {} : model._seed || (model._seed = {})];
+
+    var results = checkCacheAndReport(model, requestedPaths, observer, isProgressive, isJSONG, seed, errors, recycleJSON);
+
+    // If there are no results, finish.
+    if (!results) {
+
+        var modelRoot = model._root;
+        var modelCache = modelRoot.cache;
+        var currentVersion = modelCache["\u001eƒalcor_version"];
+
+        if (this.forceCollect) {
+            collectLru(modelRoot, modelRoot.expired, getSize(modelCache), model._maxSize, model._collectRatio, currentVersion);
+        }
+
+        var initialCacheVersion = this.initialCacheVersion;
+        var rootOnChangesCompletedHandler = modelRoot.onChangesCompleted;
+
+        if (initialCacheVersion !== currentVersion && modelRoot.syncRefCount <= 0 && isFunction(rootOnChangesCompletedHandler)) {
+            rootOnChangesCompletedHandler.call(modelRoot.topLevelModel);
+        }
+        return empty;
+    }
+
+    // Starts the async request cycle.
+    return getRequestCycle(this, model, results, observer, errors, 1, this.initialCacheVersion, requestedPaths, recycleJSON);
+};
+
+/***/ },
+/* 33 */
+/***/ function(module, exports, __webpack_require__) {
+
+"use strict";
+"use strict";
+
+var arr = new Array(3);
+var isArray = Array.isArray;
+var $ref = __webpack_require__(0);
+var createHardlink = __webpack_require__(12);
+var getCachePosition = __webpack_require__(19);
+var hasOwn = __webpack_require__(14);
+var isObject = __webpack_require__(1);
+var isExpired = __webpack_require__(2);
+var isFunction = __webpack_require__(3);
+var isPrimitive = __webpack_require__(8);
+var expireNode = __webpack_require__(6);
+var mergeValueOrInsertBranch = __webpack_require__(61);
+var NullInPathError = __webpack_require__(10);
+
+/**
+ * Sets a list of {@link PathMapEnvelope}s into a {@link JSONGraph}.
+ * @function
+ * @param {Object} model - the Model for which to insert the PathMaps.
+ * @param {Array.<PathMapEnvelope>} pathMapEnvelopes - the a list of {@link PathMapEnvelope}s to set.
+ * @return {Array.<Array.<Path>>} - an Array of Arrays where each inner Array is a list of requested and optimized paths (respectively) for the successfully set values.
+ */
+
+module.exports = function setPathMaps(model, pathMapEnvelopes, errorSelector, comparator) {
+
+    var modelRoot = model._root;
+    var lru = modelRoot;
+    var expired = modelRoot.expired;
+    var version = modelRoot.version++;
+    var bound = model._path;
+    var cache = modelRoot.cache;
+    var node = getCachePosition(cache, bound);
+    var parent = node["\u001eƒalcor_parent"] || cache;
+    var initialVersion = cache["\u001eƒalcor_version"];
+
+    var requestedPath = [];
+    var requestedPaths = [];
+    var optimizedPaths = [];
+    var optimizedIndex = bound.length;
+    var pathMapIndex = -1;
+    var pathMapCount = pathMapEnvelopes.length;
+
+    while (++pathMapIndex < pathMapCount) {
+
+        var pathMapEnvelope = pathMapEnvelopes[pathMapIndex];
+        var optimizedPath = bound.slice(0);
+        optimizedPath.index = optimizedIndex;
+
+        setPathMap(pathMapEnvelope.json, 0, cache, parent, node, requestedPaths, optimizedPaths, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector);
+    }
+
+    arr[0] = undefined;
+    arr[1] = undefined;
+    arr[2] = undefined;
+
+    var newVersion = cache["\u001eƒalcor_version"];
+    var rootChangeHandler = modelRoot.onChange;
+
+    if (isFunction(rootChangeHandler) && initialVersion !== newVersion) {
+        rootChangeHandler();
+    }
+
+    return [requestedPaths, optimizedPaths];
+};
+
+/* eslint-disable no-constant-condition */
+function setPathMap(pathMap, depth, root, parent, node, requestedPaths, optimizedPaths, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector) {
+
+    var keys = getKeys(pathMap);
+
+    if (keys && keys.length) {
+
+        var keyIndex = 0;
+        var keyCount = keys.length;
+        var optimizedIndex = optimizedPath.index;
+
+        do {
+            var key = keys[keyIndex];
+            var child = pathMap[key];
+            var branch = isObject(child) && !child.$type;
+
+            requestedPath.depth = depth;
+
+            var results = setNode(root, parent, node, key, child, branch, false, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector);
+
+            requestedPath[depth] = key;
+            requestedPath.index = depth;
+
+            var nextNode = results[0];
+            var nextParent = results[1];
+            var nextOptimizedPath = results[2];
+            nextOptimizedPath[nextOptimizedPath.index++] = key;
+
+            if (nextNode) {
+                if (branch) {
+                    setPathMap(child, depth + 1, root, nextParent, nextNode, requestedPaths, optimizedPaths, requestedPath, nextOptimizedPath, version, expired, lru, comparator, errorSelector);
+                } else {
+                    requestedPaths.push(requestedPath.slice(0, requestedPath.index + 1));
+                    optimizedPaths.push(nextOptimizedPath.slice(0, nextOptimizedPath.index));
+                }
+            }
+            if (++keyIndex >= keyCount) {
+                break;
+            }
+            optimizedPath.index = optimizedIndex;
+        } while (true);
+    }
+}
+/* eslint-enable */
+
+function setReference(value, root, node, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector) {
+
+    var parent;
+    var reference = node.value;
+    optimizedPath = reference.slice(0);
+
+    if (isExpired(node)) {
+        expireNode(node, expired, lru);
+        node = undefined;
+        parent = root;
+        optimizedPath.index = reference.length;
+    } else {
+        var container = node;
+        parent = root;
+
+        node = node["\u001eƒalcor_context"];
+
+        if (node != null) {
+            parent = node["\u001eƒalcor_parent"] || root;
+            optimizedPath.index = reference.length;
+        } else {
+
+            var index = 0;
+            var count = reference.length - 1;
+            optimizedPath.index = index;
+
+            parent = node = root;
+
+            do {
+                var key = reference[index];
+                var branch = index < count;
+                var results = setNode(root, parent, node, key, value, branch, true, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector);
+                node = results[0];
+                optimizedPath = results[2];
+                if (isPrimitive(node)) {
+                    optimizedPath.index = index;
+                    return results;
+                }
+                parent = results[1];
+            } while (index++ < count);
+
+            optimizedPath.index = index;
+
+            if (container["\u001eƒalcor_context"] !== node) {
+                createHardlink(container, node);
+            }
+        }
+    }
+
+    arr[0] = node;
+    arr[1] = parent;
+    arr[2] = optimizedPath;
+
+    return arr;
+}
+
+function setNode(root, parent, node, key, value, branch, reference, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector) {
+
+    var type = node.$type;
+
+    while (type === $ref) {
+
+        var results = setReference(value, root, node, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector);
+
+        node = results[0];
+
+        if (isPrimitive(node)) {
+            return results;
+        }
+
+        parent = results[1];
+        optimizedPath = results[2];
+        type = node && node.$type;
+    }
+
+    if (type === void 0) {
+        if (key == null) {
+            if (branch) {
+                throw new NullInPathError();
+            } else if (node) {
+                key = node["\u001eƒalcor_key"];
+            }
+        } else {
+            parent = node;
+            node = parent[key];
+        }
+
+        node = mergeValueOrInsertBranch(parent, node, key, value, branch, reference, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector);
+    }
+
+    arr[0] = node;
+    arr[1] = parent;
+    arr[2] = optimizedPath;
+
+    return arr;
+}
+
+function getKeys(pathMap) {
+
+    if (isObject(pathMap) && !pathMap.$type) {
+        var keys = [];
+        var itr = 0;
+        if (isArray(pathMap)) {
+            keys[itr++] = "length";
+        }
+        for (var key in pathMap) {
+            if (key[0] === "\u001e" || key[0] === "$" || !hasOwn(pathMap, key)) {
+                continue;
+            }
+            keys[itr++] = key;
+        }
+        return keys;
+    }
+
+    return void 0;
+}
+
+/***/ },
+/* 34 */
+/***/ function(module, exports, __webpack_require__) {
+
+"use strict";
+"use strict";
+
+var arr = new Array(3);
+var $ref = __webpack_require__(0);
+var createHardlink = __webpack_require__(12);
+var getCachePosition = __webpack_require__(19);
+var isExpired = __webpack_require__(2);
+var isFunction = __webpack_require__(3);
+var isPrimitive = __webpack_require__(8);
+var expireNode = __webpack_require__(6);
+var iterateKeySet = __webpack_require__(4).iterateKeySet;
+var mergeValueOrInsertBranch = __webpack_require__(61);
+var NullInPathError = __webpack_require__(10);
+
+/**
+ * Sets a list of {@link PathValue}s into a {@link JSONGraph}.
+ * @function
+ * @param {Object} model - the Model for which to insert the {@link PathValue}s.
+ * @param {Array.<PathValue>} pathValues - the list of {@link PathValue}s to set.
+ * @return {Array.<Array.<Path>>} - an Array of Arrays where each inner Array is a list of requested and optimized paths (respectively) for the successfully set values.
+ */
+
+module.exports = function setPathValues(model, pathValues, errorSelector, comparator) {
+
+    var modelRoot = model._root;
+    var lru = modelRoot;
+    var expired = modelRoot.expired;
+    var version = modelRoot.version++;
+    var bound = model._path;
+    var cache = modelRoot.cache;
+    var node = getCachePosition(cache, bound);
+    var parent = node["\u001eƒalcor_parent"] || cache;
+    var initialVersion = cache["\u001eƒalcor_version"];
+
+    var requestedPath = [];
+    var requestedPaths = [];
+    var optimizedPaths = [];
+    var optimizedIndex = bound.length;
+    var pathValueIndex = -1;
+    var pathValueCount = pathValues.length;
+
+    while (++pathValueIndex < pathValueCount) {
+
+        var pathValue = pathValues[pathValueIndex];
+        var path = pathValue.path;
+        var value = pathValue.value;
+        var optimizedPath = bound.slice(0);
+        optimizedPath.index = optimizedIndex;
+
+        setPathSet(value, path, 0, cache, parent, node, requestedPaths, optimizedPaths, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector);
+    }
+
+    arr[0] = undefined;
+    arr[1] = undefined;
+    arr[2] = undefined;
+
+    var newVersion = cache["\u001eƒalcor_version"];
+    var rootChangeHandler = modelRoot.onChange;
+
+    if (isFunction(rootChangeHandler) && initialVersion !== newVersion) {
+        rootChangeHandler();
+    }
+
+    return [requestedPaths, optimizedPaths];
+};
+
+/* eslint-disable no-constant-condition */
+function setPathSet(value, path, depth, root, parent, node, requestedPaths, optimizedPaths, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector) {
+
+    var note = {};
+    var branch = depth < path.length - 1;
+    var keySet = path[depth];
+    var key = iterateKeySet(keySet, note);
+    var optimizedIndex = optimizedPath.index;
+
+    do {
+
+        requestedPath.depth = depth;
+        requestedPath[depth] = key;
+        requestedPath.index = depth;
+
+        var results = setNode(root, parent, node, key, value, branch, false, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector);
+
+        requestedPath[depth] = key;
+        requestedPath.index = depth;
+
+        var nextNode = results[0];
+        var nextParent = results[1];
+        var nextOptimizedPath = results[2];
+        nextOptimizedPath[nextOptimizedPath.index++] = key;
+
+        if (nextNode) {
+            if (branch) {
+                setPathSet(value, path, depth + 1, root, nextParent, nextNode, requestedPaths, optimizedPaths, requestedPath, nextOptimizedPath, version, expired, lru, comparator, errorSelector);
+            } else {
+                requestedPaths.push(requestedPath.slice(0, requestedPath.index + 1));
+                optimizedPaths.push(nextOptimizedPath.slice(0, nextOptimizedPath.index));
+            }
+        }
+        key = iterateKeySet(keySet, note);
+        if (note.done) {
+            break;
+        }
+        optimizedPath.index = optimizedIndex;
+    } while (true);
+}
+/* eslint-enable */
+
+function setReference(value, root, node, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector) {
+
+    var parent;
+    var reference = node.value;
+    optimizedPath = reference.slice(0);
+
+    if (isExpired(node)) {
+        expireNode(node, expired, lru);
+        node = undefined;
+        parent = root;
+        optimizedPath.index = reference.length;
+    } else {
+
+        var container = node;
+        parent = root;
+
+        node = node["\u001eƒalcor_context"];
+
+        if (node != null) {
+            parent = node["\u001eƒalcor_parent"] || root;
+            optimizedPath.index = reference.length;
+        } else {
+
+            var index = 0;
+            var count = reference.length - 1;
+
+            parent = node = root;
+
+            do {
+                var key = reference[index];
+                var branch = index < count;
+                optimizedPath.index = index;
+
+                var results = setNode(root, parent, node, key, value, branch, true, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector);
+                node = results[0];
+                optimizedPath = results[2];
+                if (isPrimitive(node)) {
+                    optimizedPath.index = index;
+                    return results;
+                }
+                parent = results[1];
+            } while (index++ < count);
+
+            optimizedPath.index = index;
+
+            if (container["\u001eƒalcor_context"] !== node) {
+                createHardlink(container, node);
+            }
+        }
+    }
+
+    arr[0] = node;
+    arr[1] = parent;
+    arr[2] = optimizedPath;
+
+    return arr;
+}
+
+function setNode(root, parent, node, key, value, branch, reference, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector) {
+
+    var type = node.$type;
+
+    while (type === $ref) {
+
+        var results = setReference(value, root, node, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector);
+
+        node = results[0];
+
+        if (isPrimitive(node)) {
+            return results;
+        }
+
+        parent = results[1];
+        optimizedPath = results[2];
+        type = node.$type;
+    }
+
+    if (!branch || type === undefined) {
+        if (key == null) {
+            if (branch) {
+                throw new NullInPathError();
+            } else if (node) {
+                key = node["\u001eƒalcor_key"];
+            }
+        } else {
+            parent = node;
+            node = parent[key];
+        }
+
+        node = mergeValueOrInsertBranch(parent, node, key, value, branch, reference, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector);
+    }
+
+    arr[0] = node;
+    arr[1] = parent;
+    arr[2] = optimizedPath;
+
+    return arr;
+}
+
+/***/ },
+/* 35 */
+/***/ function(module, exports, __webpack_require__) {
+
+"use strict";
+"use strict";
+
+var isArray = Array.isArray;
+var isObject = __webpack_require__(1);
+
+module.exports = function isJSONGraphEnvelope(envelope) {
+    return isObject(envelope) && isArray(envelope.paths) && (isObject(envelope.jsonGraph) || isObject(envelope.jsong) || isObject(envelope.json) || isObject(envelope.values) || isObject(envelope.value));
+};
+
+/***/ },
+/* 36 */
+/***/ function(module, exports) {
+
+"use strict";
+"use strict";
+
+module.exports = Date.now;
+
+/***/ },
+/* 37 */
+/***/ function(module, exports, __webpack_require__) {
+
+"use strict";
+"use strict";
+
+var $ref = __webpack_require__(0);
+var splice = __webpack_require__(53);
+var isObject = __webpack_require__(1);
+var unlinkBackReferences = __webpack_require__(127);
+var unlinkForwardReference = __webpack_require__(128);
+
+module.exports = function removeNode(node, parent, key, lru) {
+    if (isObject(node)) {
+        var type = node.$type;
+        if (type) {
+            if (type === $ref) {
+                unlinkForwardReference(node);
+            }
+            splice(lru, node);
+        }
+        unlinkBackReferences(node);
+        parent[key] = node["\u001eƒalcor_parent"] = void 0;
+        return true;
+    }
+    return false;
+};
+
+/***/ },
+/* 38 */
+/***/ function(module, exports, __webpack_require__) {
+
+"use strict";
+"use strict";
+
+var hasOwn = __webpack_require__(14);
+var removeNode = __webpack_require__(37);
+
+module.exports = function removeNodeAndDescendants(node, parent, key, lru) {
+    if (removeNode(node, parent, key, lru)) {
+        if (node.$type == null) {
+            for (var key2 in node) {
+                if (key2[0] !== "\u001e" && key2[0] !== "$" && hasOwn(node, key2)) {
+                    removeNodeAndDescendants(node[key2], node, key2, lru);
+                }
+            }
+        }
+        return true;
+    }
+    return false;
+};
+
+/***/ },
+/* 39 */
+/***/ function(module, exports, __webpack_require__) {
+
+"use strict";
+"use strict";
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+var isArray = Array.isArray;
+var isPathValue = __webpack_require__(22);
+var isJSONGraphEnvelope = __webpack_require__(35);
+var isJSONEnvelope = __webpack_require__(21);
+
+/**
+ *
+ * @param {Object} allowedInput - allowedInput is a map of input styles
+ * that are allowed
+ * @private
+ */
+module.exports = function validateInput(args, allowedInput, method) {
+    for (var i = 0, len = args.length; i < len; ++i) {
+        var arg = args[i];
+        var valid = false;
+
+        // Path
+        if (isArray(arg) && allowedInput.path) {
+            valid = true;
+        }
+
+        // Flat Buffer
+        else if (isArray(arg["$keys"]) && allowedInput.flatBuffer) {
+                valid = true;
+            }
+
+            // Path Syntax
+            // else if (typeof arg === "string" && allowedInput.pathSyntax) {
+            //     valid = true;
+            // }
+
+            // Path Value
+            else if (isPathValue(arg) && allowedInput.pathValue) {
+                    valid = true;
+                }
+
+                // jsonGraph {jsonGraph: { ... }, paths: [ ... ]}
+                else if (isJSONGraphEnvelope(arg) && allowedInput.jsonGraph) {
+                        valid = true;
+                    }
+
+                    // json env {json: {...}}
+                    else if (isJSONEnvelope(arg) && allowedInput.json) {
+                            valid = true;
+                        }
+
+                        // selector functions
+                        else if (typeof arg === "function" && i + 1 === len && allowedInput.selector) {
+                                valid = true;
+                            }
+
+        if (!valid) {
+            return new Error("Unrecognized argument " + (typeof arg === "undefined" ? "undefined" : _typeof(arg)) + " [" + String(arg) + "] " + "to Model#" + method + "");
+        }
+    }
+    return true;
+};
+
+/***/ },
+/* 40 */
+/***/ function(module, exports) {
+
+"use strict";
+"use strict";
+
+module.exports = 1;
+
+/***/ },
+/* 41 */
+/***/ function(module, exports) {
+
+"use strict";
+"use strict";
+
+module.exports = 0;
+
+/***/ },
+/* 42 */
+/***/ function(module, exports) {
+
+"use strict";
+"use strict";
+
+module.exports = getHashCode;
+
+function getHashCode(str) {
+    var hash = 5381,
+        i = str.length;
+    while (i) {
+        hash = hash * 33 ^ str.charCodeAt(--i);
+    }
+    // JavaScript does bitwise operations (like XOR, above) on 32-bit signed
+    // integers. Since we want the results to be always positive, convert the
+    // signed int to an unsigned by doing an unsigned bitshift.
+    return hash >>> 0;
+}
+
+/***/ },
+/* 43 */
+/***/ function(module, exports) {
+
+"use strict";
+'use strict';
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+var isArray = Array.isArray;
+
+/**
+ * Takes in a keySet and a note attempts to iterate over it.
+ * If the value is a primitive, the key will be returned and the note will
+ * be marked done
+ * If the value is an object, then each value of the range will be returned
+ * and when finished the note will be marked done.
+ * If the value is an array, each value will be iterated over, if any of the
+ * inner values are ranges, those will be iterated over.  When fully done,
+ * the note will be marked done.
+ *
+ * @param {Object|Array|String|Number} keySet -
+ * @param {Object} note - The non filled note
+ * @returns {String|Number|undefined} - The current iteration value.
+ * If undefined, then the keySet is empty
+ * @public
+ */
+module.exports = function iterateKeySet(keySet, note) {
+    if (note.isArray === undefined) {
+        initializeNote(keySet, note);
+    }
+
+    // Array iteration
+    if (note.isArray) {
+        var nextValue;
+
+        // Cycle through the array and pluck out the next value.
+        do {
+            if (note.loaded && note.rangeOffset > note.to) {
+                ++note.arrayOffset;
+                note.loaded = false;
+            }
+
+            var idx = note.arrayOffset,
+                length = keySet.length;
+            if (idx >= length) {
+                note.done = true;
+                break;
+            }
+
+            var el = keySet[note.arrayOffset];
+            var type = typeof el === 'undefined' ? 'undefined' : _typeof(el);
+
+            // Inner range iteration.
+            if (type === 'object') {
+                if (!note.loaded) {
+                    initializeRange(el, note);
+                }
+
+                // Empty to/from
+                if (note.empty) {
+                    continue;
+                }
+
+                nextValue = note.rangeOffset++;
+            }
+
+            // Primitive iteration in array.
+            else {
+                    ++note.arrayOffset;
+                    nextValue = el;
+                }
+        } while (nextValue === undefined);
+
+        return nextValue;
+    }
+
+    // Range iteration
+    else if (note.isObject) {
+            if (!note.loaded) {
+                initializeRange(keySet, note);
+            }
+            if (note.rangeOffset > note.to) {
+                note.done = true;
+                return undefined;
+            }
+
+            return note.rangeOffset++;
+        }
+
+        // Primitive value
+        else {
+                note.done = true;
+                return keySet;
+            }
+};
+
+function initializeRange(key, memo) {
+    var from = memo.from = key.from || 0;
+    var to = memo.to = key.to || typeof key.length === 'number' && memo.from + key.length - 1 || 0;
+    memo.rangeOffset = memo.from;
+    memo.loaded = true;
+    if (from > to) {
+        memo.empty = true;
+    }
+}
+
+function initializeNote(key, note) {
+    note.done = false;
+    var isObject = note.isObject = !!(key && (typeof key === 'undefined' ? 'undefined' : _typeof(key)) === 'object');
+    note.isArray = isObject && isArray(key);
+    note.arrayOffset = 0;
+}
+
+/***/ },
+/* 44 */
+/***/ function(module, exports) {
+
+"use strict";
+"use strict";
+
+function cloneArray(arr, index) {
+    var a = [];
+    var len = arr.length;
+    for (var i = index || 0; i < len; i++) {
+        a[i] = arr[i];
+    }
+    return a;
+}
+
+module.exports = cloneArray;
+
+/***/ },
+/* 45 */
+/***/ function(module, exports) {
+
+"use strict";
+'use strict';
+
+module.exports = {
+    $ref: 'ref',
+    $atom: 'atom',
+    $error: 'error'
+};
+
+/***/ },
+/* 46 */
+/***/ function(module, exports, __webpack_require__) {
+
+"use strict";
+"use strict";
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+var isArray = Array.isArray;
+var typeOfObject = "object";
+var typeOfString = "string";
+var typeOfNumber = "number";
+var MAX_SAFE_INTEGER = 9007199254740991; // Number.MAX_SAFE_INTEGER in es6
+var MAX_SAFE_INTEGER_DIGITS = 16; // String(Number.MAX_SAFE_INTEGER).length
+var MIN_SAFE_INTEGER_DIGITS = 17; // String(Number.MIN_SAFE_INTEGER).length (including sign)
+var abs = Math.abs;
+var safeNumberRegEx = /^(0|(\-?[1-9][0-9]*))$/;
+var nullTerminator = __webpack_require__(25);
+
+/* jshint forin: false */
+module.exports = function toPaths(lengths) {
+    var pathmap;
+    var allPaths = [];
+    var allPathsLength = 0;
+    for (var length in lengths) {
+        if (isSafeNumber(length) && isObject(pathmap = lengths[length])) {
+            var paths = collapsePathMap(pathmap, 0, parseInt(length, 10)).sets;
+            var pathsIndex = -1;
+            var pathsCount = paths.length;
+            while (++pathsIndex < pathsCount) {
+                allPaths[allPathsLength++] = collapsePathSetIndexes(paths[pathsIndex]);
+            }
+        }
+    }
+    return allPaths;
+};
+
+function isObject(value) {
+    return value !== null && (typeof value === "undefined" ? "undefined" : _typeof(value)) === typeOfObject;
+}
+
+function collapsePathMap(pathmap, depth, length) {
+
+    var key;
+    var code = getHashCode(String(depth));
+    var subs = Object.create(null);
+
+    var codes = [];
+    var codesIndex = -1;
+    var codesCount = 0;
+
+    var pathsets = [];
+    var pathsetsCount = 0;
+
+    var subPath, subCode, subKeys, subKeysIndex, subKeysCount, subSets, subSetsIndex, subSetsCount, pathset, pathsetIndex, pathsetCount, firstSubKey, pathsetClone;
+
+    subKeys = [];
+    subKeysIndex = -1;
+
+    if (depth < length - 1) {
+
+        subKeysCount = getSortedKeys(pathmap, subKeys);
+
+        while (++subKeysIndex < subKeysCount) {
+            key = subKeys[subKeysIndex];
+            subPath = collapsePathMap(pathmap[key], depth + 1, length);
+            subCode = subPath.code;
+            if (subs[subCode]) {
+                subPath = subs[subCode];
+            } else {
+                codes[codesCount++] = subCode;
+                subPath = subs[subCode] = {
+                    keys: [],
+                    sets: subPath.sets
+                };
+            }
+            code = getHashCode(code + key + subCode);
+
+            isSafeNumber(key) && subPath.keys.push(parseInt(key, 10)) || subPath.keys.push(key);
+        }
+
+        while (++codesIndex < codesCount) {
+
+            key = codes[codesIndex];
+            subPath = subs[key];
+            subKeys = subPath.keys;
+            subKeysCount = subKeys.length;
+
+            if (subKeysCount > 0) {
+
+                subSets = subPath.sets;
+                subSetsIndex = -1;
+                subSetsCount = subSets.length;
+                firstSubKey = subKeys[0];
+
+                while (++subSetsIndex < subSetsCount) {
+
+                    pathset = subSets[subSetsIndex];
+                    pathsetIndex = -1;
+                    pathsetCount = pathset.length;
+                    pathsetClone = new Array(pathsetCount + 1);
+                    pathsetClone[0] = subKeysCount > 1 && subKeys || firstSubKey;
+
+                    while (++pathsetIndex < pathsetCount) {
+                        pathsetClone[pathsetIndex + 1] = pathset[pathsetIndex];
+                    }
+
+                    pathsets[pathsetsCount++] = pathsetClone;
+                }
+            }
+        }
+    } else {
+        subKeysCount = getSortedKeys(pathmap, subKeys);
+        if (subKeysCount > 1) {
+            pathsets[pathsetsCount++] = [subKeys];
+        } else {
+            pathsets[pathsetsCount++] = subKeys;
+        }
+        while (++subKeysIndex < subKeysCount) {
+            code = getHashCode(code + subKeys[subKeysIndex]);
+        }
+    }
+
+    return {
+        code: code,
+        sets: pathsets
+    };
+}
+
+function collapsePathSetIndexes(pathset) {
+
+    var keysetIndex = -1;
+    var keysetCount = pathset.length;
+
+    while (++keysetIndex < keysetCount) {
+        var keyset = pathset[keysetIndex];
+        if (isArray(keyset)) {
+            pathset[keysetIndex] = collapseIndex(keyset);
+        }
+    }
+
+    return pathset;
+}
+
+/**
+ * Collapse range indexers, e.g. when there is a continuous
+ * range in an array, turn it into an object instead:
+ *
+ * [1,2,3,4,5,6] => {"from":1, "to":6}
+ *
+ * @private
+ */
+function collapseIndex(keyset) {
+
+    // Do we need to dedupe an indexer keyset if they're duplicate consecutive integers?
+    // var hash = {};
+    var keyIndex = -1;
+    var keyCount = keyset.length - 1;
+    var isSparseRange = keyCount > 0;
+
+    while (++keyIndex <= keyCount) {
+
+        var key = keyset[keyIndex];
+
+        if (!isSafeNumber(key) /* || hash[key] === true*/) {
+                isSparseRange = false;
+                break;
+            }
+        // hash[key] = true;
+        // Cast number indexes to integers.
+        keyset[keyIndex] = parseInt(key, 10);
+    }
+
+    if (isSparseRange === true) {
+
+        keyset.sort(sortListAscending);
+
+        var from = keyset[0];
+        var to = keyset[keyCount];
+
+        // If we re-introduce deduped integer indexers, change this comparson to "===".
+        if (to - from <= keyCount) {
+            return {
+                from: from,
+                to: to
+            };
+        }
+    }
+
+    return keyset;
+}
+
+function sortListAscending(a, b) {
+    return a - b;
+}
+
+/* jshint forin: false */
+function getSortedKeys(map, keys, sort) {
+    var len = 0;
+    if (map === nullTerminator) {
+        keys[len++] = null;
+    } else {
+        for (var key in map) {
+            keys[len++] = key;
+        }
+        if (len > 1) {
+            keys.sort(sort);
+        }
+    }
+    return len;
+}
+
+function getHashCode(key) {
+    var code = 5381;
+    var index = -1;
+    var count = key.length;
+    while (++index < count) {
+        code = (code << 5) + code + key.charCodeAt(index);
+    }
+    return String(code);
+}
+
+/**
+ * Return true if argument is a number or can be cast to a number which
+ * roundtrips to the same string.
+ * @private
+ */
+function isSafeNumber(val) {
+    var num = val;
+    var type = typeof val === "undefined" ? "undefined" : _typeof(val);
+    if (type === typeOfString) {
+        var length = val.length;
+        // Number.MIN_SAFE_INTEGER is 17 digits including the sign.
+        // Anything longer cannot be safe.
+        if (length === 0 || length > MIN_SAFE_INTEGER_DIGITS) {
+            return false;
+        }
+        if (!safeNumberRegEx.test(val)) {
+            return false;
+        }
+        // Number.MAX_SAFE_INTEGER is 16 digits.
+        // Anything shorter must be safe.
+        if (length < MAX_SAFE_INTEGER_DIGITS) {
+            return true;
+        }
+        num = +val;
+    } else if (type !== typeOfNumber) {
+        return false;
+    }
+    // Number.isSafeInteger(num) in es6.
+    return num % 1 === 0 && abs(num) <= MAX_SAFE_INTEGER;
+}
+
+// export for testing
+module.exports._isSafeNumber = isSafeNumber;
+
+/***/ },
+/* 47 */
+/***/ function(module, exports, __webpack_require__) {
+
+"use strict";
+'use strict';
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+var isArray = Array.isArray;
+var nullTerminator = __webpack_require__(25);
+
+/**
+ * @param {Array} paths -
+ * @returns {Object} -
+ */
+module.exports = function toTree(paths) {
+    return paths.reduce(function (acc, path) {
+        return innerToTree(acc, path, 0, path.length);
+    }, {});
+};
+
+function innerToTree(seed, path, depth, length) {
+
+    if (depth === length) {
+        return true;
+    }
+
+    var keyset,
+        keysetIndex = -1,
+        keysetLength = 0;
+    var node,
+        next,
+        nextKey,
+        nextDepth = depth + 1,
+        keyIsRange,
+        rangeEnd,
+        keysOrRanges;
+
+    keyset = path[depth];
+
+    if (keyset === null) {
+        return nullTerminator;
+    }
+
+    seed = seed || {};
+
+    iteratingKeyset: do {
+        // If the keyset is a primitive value, we've found our `nextKey`.
+        if ('object' !== (typeof keyset === 'undefined' ? 'undefined' : _typeof(keyset))) {
+            nextKey = keyset;
+            rangeEnd = undefined;
+            keyIsRange = false;
+        }
+        // If we encounter a Keyset, either iterate through the Keys and Ranges,
+        // or throw an error if we're already iterating a Keyset. Keysets cannot
+        // contain other Keysets.
+        else if (isArray(keyset)) {
+                // If we've already encountered an Array keyset, throw an error.
+                if (keysOrRanges !== undefined) {
+                    break iteratingKeyset;
+                }
+                keysetIndex = 0;
+                keysOrRanges = keyset;
+                keysetLength = keyset.length;
+                // If an Array of keys or ranges is empty, terminate the graph walk
+                // and return the json constructed so far. An example of an empty
+                // Keyset is: ['lolomo', [], 'summary']. This should short circuit
+                // without building missing paths.
+                if (0 === keysetLength) {
+                    break iteratingKeyset;
+                }
+                // Assign `keyset` to the first value in the Keyset. Re-entering the
+                // outer loop mimics a singly-recursive function call.
+                keyset = keysOrRanges[keysetIndex];
+                continue iteratingKeyset;
+            }
+            // If the Keyset isn't a primitive or Array, then it must be a Range.
+            else {
+                    rangeEnd = keyset.to;
+                    nextKey = keyset.from || 0;
+                    if ("number" !== typeof rangeEnd) {
+                        rangeEnd = nextKey + (keyset.length || 0) - 1;
+                    }
+                    if (rangeEnd - nextKey < 0) {
+                        break iteratingKeyset;
+                    }
+                    keyIsRange = true;
+                }
+
+        do {
+            if (nextDepth === length) {
+                seed[nextKey] = null;
+            } else {
+                node = seed[nextKey];
+                next = innerToTree(node, path, nextDepth, length);
+                if (!next) {
+                    seed[nextKey] = null;
+                } else if (!node) {
+                    seed[nextKey] = next;
+                }
+            }
+        }
+        // Re-enter the inner loop and continue iterating the Range, or exit
+        // here if we encountered a Key.
+        while (keyIsRange && ++nextKey <= rangeEnd);
+
+        // If we've exhausted the Keyset (or never encountered one at all),
+        // exit the outer loop.
+        if (++keysetIndex === keysetLength) {
+            break iteratingKeyset;
+        }
+
+        // Otherwise get the next Key or Range from the Keyset and re-enter the
+        // outer loop from the top.
+        keyset = keysOrRanges[keysetIndex];
+    } while (true);
+
+    return seed;
+}
+
+/***/ },
+/* 48 */
+/***/ function(module, exports) {
+
+"use strict";
+"use strict";
+
+var NAME = "CircularReferenceError";
+
+/**
+ * Does not allow null in path
+ */
+function CircularReferenceError(referencePath) {
+    var err = Error.call(this, "Encountered circular reference " + JSON.stringify(referencePath));
+    err.name = NAME;
+    this.stack = err.stack;
+    this.message = err.message;
+    return this;
+}
+
+// instanceof will be an error, but stack will be correct because its defined in the constructor.
+CircularReferenceError.prototype = Object.create(Error.prototype);
+CircularReferenceError.prototype.name = NAME;
+
+module.exports = CircularReferenceError;
+
+/***/ },
+/* 49 */
+/***/ function(module, exports) {
+
+"use strict";
+"use strict";
+
+var NAME = "MaxRetryExceededError";
+var MESSAGE = "The allowed number of retries have been exceeded.";
+
+/**
+ * A request can only be retried up to a specified limit.  Once that
+ * limit is exceeded, then an error will be thrown.
+ *
+ * @private
+ */
+function MaxRetryExceededError() {
+    var err = Error.call(this, MESSAGE);
+    err.name = NAME;
+    this.stack = err.stack;
+    this.message = err.message;
+    return this;
+}
+
+// instanceof will be an error, but stack will be correct because its defined
+// in the constructor.
+MaxRetryExceededError.prototype = Object.create(Error.prototype);
+MaxRetryExceededError.prototype.name = NAME;
+MaxRetryExceededError.is = function (e) {
+    return e && e.name === NAME;
+};
+
+module.exports = MaxRetryExceededError;
+
+/***/ },
 /* 50 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
 "use strict";
 
-var $atom = __webpack_require__(25);
-var promote = __webpack_require__(16);
-var isExpired = __webpack_require__(3);
+var arr = new Array(3);
+var $ref = __webpack_require__(0);
+var promote = __webpack_require__(11);
+var isExpired = __webpack_require__(2);
+var createHardlink = __webpack_require__(12);
+var CircularReferenceError = __webpack_require__(48);
+
+module.exports = getReferenceTarget;
+
+/* eslint-disable no-undef */
+/* eslint-disable no-console */
+/* eslint-disable no-cond-assign */
+/* eslint-disable no-constant-condition */
+function getReferenceTarget(root, ref, modelRoot) {
+
+    promote(modelRoot, ref);
+
+    var context,
+        key,
+        type,
+        depth = 0,
+        followedRefsCount = 0,
+        node = root,
+        path = ref.value,
+        copy = path,
+        length = path.length;
+
+    do {
+        if (depth === 0 && undefined !== (context = ref["\u001eƒalcor_context"])) {
+            node = context;
+            depth = length;
+        } else {
+            key = path[depth++];
+            if (undefined === (node = node[key])) {
+                break;
+            }
+        }
+
+        if (depth === length) {
+            type = node.$type;
+            // If the reference points to an expired
+            // value node, don't create a hard-link.
+            if (undefined !== type && isExpired(node)) {
+                break;
+            }
+            // If a reference points to itself, throw an error.
+            else if (node === ref) {
+                    throw new CircularReferenceError(path);
+                }
+                // If the node we land on isn't the existing ref context,
+                // create a hard-link between the reference and the node
+                // it points to.
+                else if (node !== context) {
+                        createHardlink(ref, node);
+                    }
+
+            // If the reference points to another ref, follow the new ref
+            // by resetting the relevant state and continuing from the top.
+            if (type === $ref) {
+
+                promote(modelRoot, node);
+
+                depth = 0;
+                ref = node;
+                node = root;
+                path = copy = ref.value;
+                length = path.length;
+
+                if (true) {
+                    // If we follow too many references, we might have an indirect
+                    // circular reference chain. Warn about this (but don't throw).
+                    if (++followedRefsCount % 50 === 0) {
+                        try {
+                            throw new Error("Followed " + followedRefsCount + " references. " + "This might indicate the presence of an indirect " + "circular reference chain.");
+                        } catch (e) {
+                            if (console) {
+                                var reportFn = typeof console.warn === "function" && console.warn || typeof console.log === "function" && console.log;
+                                if (reportFn) {
+                                    reportFn.call(console, e.toString());
+                                }
+                            }
+                        }
+                    }
+                }
+
+                continue;
+            }
+            break;
+        } else if (undefined !== node.$type) {
+            break;
+        }
+    } while (true);
+
+    if (depth < length && undefined !== node) {
+        length = depth;
+    }
+
+    depth = -1;
+    path = new Array(length);
+    while (++depth < length) {
+        path[depth] = copy[depth];
+    }
+
+    arr[0] = node;
+    arr[1] = path;
+    arr[2] = ref;
+
+    return arr;
+}
+/* eslint-enable */
+
+/***/ },
+/* 51 */
+/***/ function(module, exports, __webpack_require__) {
+
+"use strict";
+"use strict";
+
+var clone = __webpack_require__(13);
+var onError = __webpack_require__(93);
+var $atom = __webpack_require__(16);
+var $error = __webpack_require__(17);
+
+module.exports = onJSONValue;
+
+function onJSONValue(node, type, depth, seed, results, requestedPath, optimizedPath, optimizedLength, fromReference, boxValues, materialized, treatErrorsAsValues) {
+
+    if ($error === type && !treatErrorsAsValues) {
+        return onError(node, depth, results, requestedPath, fromReference, boxValues);
+    }
+
+    var value = node && node.value;
+    var requiresMaterializedToReport = type && value === undefined;
+
+    if (requiresMaterializedToReport) {
+        if (materialized) {
+            results.hasValue = true;
+            return { $type: $atom };
+        }
+        return undefined;
+    }
+
+    results.hasValue = true;
+
+    // boxValues always clones the node
+    if (boxValues) {
+        return clone(node);
+    }
+
+    return value;
+}
+
+/***/ },
+/* 52 */
+/***/ function(module, exports, __webpack_require__) {
+
+"use strict";
+"use strict";
+
+var $atom = __webpack_require__(16);
+var promote = __webpack_require__(11);
+var isExpired = __webpack_require__(2);
 var expireNode = __webpack_require__(6);
 
 module.exports = onValueType;
@@ -2453,7 +2849,7 @@ function onValueType(node, type, path, depth, seed, results, requestedPath, requ
             return onMissing(path, depth, results, requestedPath, requestedLength, optimizedPath, optimizedLength);
         }
     } else if (isExpired(node)) {
-        if (!node.ツinvalidated) {
+        if (!node["\u001eƒalcor_invalidated"]) {
             expireNode(node, expired, modelRoot);
         }
         return onMissing(path, depth, results, requestedPath, requestedLength, optimizedPath, optimizedLength);
@@ -2472,8 +2868,8 @@ function onValueType(node, type, path, depth, seed, results, requestedPath, requ
 }
 
 /***/ },
-/* 51 */
-/***/ function(module, exports) {
+/* 53 */
+/***/ function(module, exports, __webpack_require__) {
 
 "use strict";
 "use strict";
@@ -2481,26 +2877,26 @@ function onValueType(node, type, path, depth, seed, results, requestedPath, requ
 module.exports = function lruSplice(root, object) {
 
     // Its in the cache.  Splice out.
-    var prev = object.ツprev;
-    var next = object.ツnext;
+    var prev = object["\u001eƒalcor_prev"];
+    var next = object["\u001eƒalcor_next"];
     if (next) {
-        next.ツprev = prev;
+        next["\u001eƒalcor_prev"] = prev;
     }
     if (prev) {
-        prev.ツnext = next;
+        prev["\u001eƒalcor_next"] = next;
     }
-    object.ツprev = object.ツnext = undefined;
+    object["\u001eƒalcor_prev"] = object["\u001eƒalcor_next"] = undefined;
 
-    if (object === root.ツhead) {
-        root.ツhead = next;
+    if (object === root["\u001eƒalcor_head"]) {
+        root["\u001eƒalcor_head"] = next;
     }
-    if (object === root.ツtail) {
-        root.ツtail = prev;
+    if (object === root["\u001eƒalcor_tail"]) {
+        root["\u001eƒalcor_tail"] = prev;
     }
 };
 
 /***/ },
-/* 52 */
+/* 54 */
 /***/ function(module, exports) {
 
 "use strict";
@@ -2511,7 +2907,7 @@ module.exports = {
 };
 
 /***/ },
-/* 53 */
+/* 55 */
 /***/ function(module, exports) {
 
 "use strict";
@@ -2562,117 +2958,15 @@ AssignableDisposable.prototype = {
 module.exports = AssignableDisposable;
 
 /***/ },
-/* 54 */
+/* 56 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
 "use strict";
 
-var ModelResponse = __webpack_require__(4);
-var checkCacheAndReport = __webpack_require__(55);
-var getRequestCycle = __webpack_require__(108);
-var noop = __webpack_require__(24);
-var empty = { dispose: noop, unsubscribe: noop };
-var collectLru = __webpack_require__(30);
-var getSize = __webpack_require__(7);
-var __version = __webpack_require__(20);
-var isFunction = __webpack_require__(2);
-
-/**
- * The get response.  It takes in a model and paths and starts
- * the request cycle.  It has been optimized for cache first requests
- * and closures.
- * @param {Model} model -
- * @param {Array} paths -
- * @augments ModelResponse
- * @private
- */
-var GetResponse = module.exports = function GetResponse(model, paths, isJSONGraph, isProgressive, forceCollect, initialCacheVersion) {
-    this.model = model;
-    this.currentRemainingPaths = paths;
-    this.isJSONGraph = isJSONGraph || false;
-    this.isProgressive = isProgressive || false;
-    this.forceCollect = forceCollect || false;
-
-    var currentVersion = model._root.cache[__version];
-
-    if (typeof initialCacheVersion === "number") {
-        this.initialCacheVersion = initialCacheVersion;
-    } else if (typeof currentVersion === "number") {
-        this.initialCacheVersion = currentVersion;
-    } else {
-        this.initialCacheVersion = model._root.version;
-    }
-};
-
-GetResponse.prototype = Object.create(ModelResponse.prototype);
-
-/**
- * Makes the output of a get response JSONGraph instead of json.
- * @private
- */
-GetResponse.prototype._toJSONG = function _toJSONGraph() {
-    return new GetResponse(this.model, this.currentRemainingPaths, true, this.isProgressive, this.forceCollect, this.initialCacheVersion);
-};
-
-/**
- * Progressively responding to data in the cache instead of once the whole
- * operation is complete.
- * @public
- */
-GetResponse.prototype.progressively = function progressively() {
-    return new GetResponse(this.model, this.currentRemainingPaths, this.isJSONGraph, true, this.forceCollect, this.initialCacheVersion);
-};
-
-/**
- * purely for the purposes of closure creation other than the initial
- * prototype created closure.
- *
- * @private
- */
-GetResponse.prototype._subscribe = function _subscribe(observer) {
-
-    var seed = [{}];
-    var errors = [];
-    var model = this.model;
-    var isJSONG = observer.isJSONG = this.isJSONGraph;
-    var isProgressive = this.isProgressive;
-    var results = checkCacheAndReport(model, this.currentRemainingPaths, observer, isProgressive, isJSONG, seed, errors);
-
-    // If there are no results, finish.
-    if (!results) {
-
-        var modelRoot = model._root;
-        var modelCache = modelRoot.cache;
-        var currentVersion = modelCache[__version];
-
-        if (this.forceCollect) {
-            collectLru(modelRoot, modelRoot.expired, getSize(modelCache), model._maxSize, model._collectRatio, currentVersion);
-        }
-
-        var initialCacheVersion = this.initialCacheVersion;
-        var rootOnChangesCompletedHandler = modelRoot.onChangesCompleted;
-
-        if (initialCacheVersion !== currentVersion && modelRoot.syncRefCount <= 0 && isFunction(rootOnChangesCompletedHandler)) {
-            rootOnChangesCompletedHandler.call(modelRoot.topLevelModel);
-        }
-        return empty;
-    }
-
-    // Starts the async request cycle.
-    return getRequestCycle(this, model, results, observer, errors, 1, this.initialCacheVersion);
-};
-
-/***/ },
-/* 55 */
-/***/ function(module, exports, __webpack_require__) {
-
-"use strict";
-"use strict";
-
-var gets = __webpack_require__(28);
-var mergeInto = __webpack_require__(110);
-var collapse = __webpack_require__(8).collapse;
+var gets = __webpack_require__(27);
+var mergeInto = __webpack_require__(111);
+var collapse = __webpack_require__(4).collapse;
 var getWithPathsAsPathMap = gets.getWithPathsAsPathMap;
 var getWithPathsAsJSONGraph = gets.getWithPathsAsJSONGraph;
 
@@ -2690,10 +2984,12 @@ var getWithPathsAsJSONGraph = gets.getWithPathsAsJSONGraph;
  * @param {Object} seed - The state of the output
  * @private
  */
-module.exports = function checkCacheAndReport(model, requestedPaths, observer, progressive, isJSONG, seed, errors) {
+module.exports = function checkCacheAndReport(model, requestedPaths, observer, progressive, isJSONG, seed, errors, recycleJSON) {
 
+    var recycledJSONSeed, f_meta, originalHashCode;
     var originalSeed,
         isSeedImmutable = progressive && !isJSONG && seed;
+    var shouldRecycleJSONSeed = !isJSONG && !progressive && recycleJSON;
 
     // If we request paths as JSON in progressive mode, ensure each progressive
     // valueNode is immutable. If not in progressive mode, we can write into the
@@ -2701,6 +2997,8 @@ module.exports = function checkCacheAndReport(model, requestedPaths, observer, p
     if (isSeedImmutable) {
         originalSeed = seed[0];
         seed[0] = {};
+    } else if (shouldRecycleJSONSeed && seed[0] && (recycledJSONSeed = seed[0].json) && (f_meta = recycledJSONSeed["\u001eƒalcor_metadata"])) {
+        originalHashCode = f_meta["$code"];
     }
 
     // checks the cache for the data.
@@ -2708,7 +3006,7 @@ module.exports = function checkCacheAndReport(model, requestedPaths, observer, p
     if (isJSONG) {
         results = getWithPathsAsJSONGraph(model, requestedPaths, seed);
     } else {
-        results = getWithPathsAsPathMap(model, requestedPaths, seed);
+        results = getWithPathsAsPathMap(model, requestedPaths, seed, !recycleJSON);
     }
 
     // We must communicate critical errors from get that are critical
@@ -2721,7 +3019,7 @@ module.exports = function checkCacheAndReport(model, requestedPaths, observer, p
 
     var hasValues = results.hasValue;
     var valueNode = results.values[0];
-    var hasValueOverall = Boolean(valueNode.json || valueNode.jsonGraph);
+    var hasValueOverall = Boolean(valueNode && valueNode.json || valueNode.jsonGraph);
 
     // We are done when there are no missing paths or the model does not
     // have a dataSource to continue on fetching from.
@@ -2777,12 +3075,16 @@ module.exports = function checkCacheAndReport(model, requestedPaths, observer, p
         return null;
     }
 
+    if (shouldRecycleJSONSeed && seed[0] && (recycledJSONSeed = seed[0].json) && (f_meta = recycledJSONSeed["\u001eƒalcor_metadata"])) {
+        f_meta["$code"] = originalHashCode;
+    }
+
     // Return the results object.
     return results;
 };
 
 /***/ },
-/* 56 */
+/* 57 */
 /***/ function(module, exports) {
 
 "use strict";
@@ -2790,23 +3092,23 @@ module.exports = function checkCacheAndReport(model, requestedPaths, observer, p
 
 module.exports = {
     path: true,
-    pathSyntax: true
+    pathSyntax: true,
+    flatBuffer: true
 };
 
 /***/ },
-/* 57 */
+/* 58 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
 "use strict";
 
-var ModelResponse = __webpack_require__(4);
+var ModelResponse = __webpack_require__(5);
 var isArray = Array.isArray;
-var isPathValue = __webpack_require__(23);
-var isJSONGraphEnvelope = __webpack_require__(33);
-var isJSONEnvelope = __webpack_require__(22);
-var setRequestCycle = __webpack_require__(113);
-var __version = __webpack_require__(20);
+var isPathValue = __webpack_require__(22);
+var isJSONGraphEnvelope = __webpack_require__(35);
+var isJSONEnvelope = __webpack_require__(21);
+var setRequestCycle = __webpack_require__(114);
 
 /**
  *  The set response is responsible for doing the request loop for the set
@@ -2833,7 +3135,7 @@ var SetResponse = module.exports = function SetResponse(model, args, isJSONGraph
     this._initialArgs = args;
     this._value = [{}];
 
-    var currentVersion = model._root.cache[__version];
+    var currentVersion = model._root.cache["\u001eƒalcor_version"];
 
     if (typeof initialCacheVersion === "number") {
         this.initialCacheVersion = initialCacheVersion;
@@ -2913,38 +3215,15 @@ SetResponse.prototype.progressively = function progressively() {
 };
 
 /***/ },
-/* 58 */
+/* 59 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
 "use strict";
 
-var isObject = __webpack_require__(0);
+var isObject = __webpack_require__(1);
 module.exports = function getTimestamp(node) {
     return isObject(node) && node.$timestamp || undefined;
-};
-
-/***/ },
-/* 59 */
-/***/ function(module, exports) {
-
-"use strict";
-"use strict";
-
-module.exports = function insertNode(node, parent, key, version, optimizedPath) {
-    node.ツkey = key;
-    node.ツparent = parent;
-
-    if (version !== undefined) {
-        node.ツversion = version;
-    }
-    if (!node.ツabsolutePath) {
-        node.ツabsolutePath = optimizedPath.slice(0, optimizedPath.index).concat(key);
-    }
-
-    parent[key] = node;
-
-    return node;
 };
 
 /***/ },
@@ -2954,22 +3233,45 @@ module.exports = function insertNode(node, parent, key, version, optimizedPath) 
 "use strict";
 "use strict";
 
-var $ref = __webpack_require__(1);
-var $error = __webpack_require__(19);
-var getType = __webpack_require__(121);
+module.exports = function insertNode(node, parent, key, version, optimizedPath) {
+    node["\u001eƒalcor_key"] = key;
+    node["\u001eƒalcor_parent"] = parent;
+
+    if (version !== undefined) {
+        node["\u001eƒalcor_version"] = version;
+    }
+    if (!node["\u001eƒalcor_abs_path"]) {
+        node["\u001eƒalcor_abs_path"] = optimizedPath.slice(0, optimizedPath.index).concat(key);
+    }
+
+    parent[key] = node;
+
+    return node;
+};
+
+/***/ },
+/* 61 */
+/***/ function(module, exports, __webpack_require__) {
+
+"use strict";
+"use strict";
+
+var $ref = __webpack_require__(0);
+var $error = __webpack_require__(17);
+var getType = __webpack_require__(122);
 var getSize = __webpack_require__(7);
-var getTimestamp = __webpack_require__(58);
+var getTimestamp = __webpack_require__(59);
 
-var isExpired = __webpack_require__(3);
-var isPrimitive = __webpack_require__(9);
-var isFunction = __webpack_require__(2);
+var isExpired = __webpack_require__(2);
+var isPrimitive = __webpack_require__(8);
+var isFunction = __webpack_require__(3);
 
-var wrapNode = __webpack_require__(64);
+var wrapNode = __webpack_require__(65);
 var expireNode = __webpack_require__(6);
-var insertNode = __webpack_require__(59);
-var replaceNode = __webpack_require__(62);
-var updateNodeAncestors = __webpack_require__(18);
-var reconstructPath = __webpack_require__(61);
+var insertNode = __webpack_require__(60);
+var replaceNode = __webpack_require__(63);
+var updateNodeAncestors = __webpack_require__(15);
+var reconstructPath = __webpack_require__(62);
 
 module.exports = function mergeValueOrInsertBranch(parent, node, key, value, branch, reference, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector) {
 
@@ -3018,7 +3320,7 @@ module.exports = function mergeValueOrInsertBranch(parent, node, key, value, bra
 };
 
 /***/ },
-/* 61 */
+/* 62 */
 /***/ function(module, exports) {
 
 "use strict";
@@ -3046,16 +3348,16 @@ module.exports = function reconstructPath(currentPath, key) {
 };
 
 /***/ },
-/* 62 */
+/* 63 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
 "use strict";
 
-var isObject = __webpack_require__(0);
-var transferBackReferences = __webpack_require__(125);
-var removeNodeAndDescendants = __webpack_require__(36);
-var updateBackReferenceVersions = __webpack_require__(63);
+var isObject = __webpack_require__(1);
+var transferBackReferences = __webpack_require__(126);
+var removeNodeAndDescendants = __webpack_require__(38);
+var updateBackReferenceVersions = __webpack_require__(64);
 
 module.exports = function replaceNode(node, replacement, parent, key, lru, version) {
     if (node === replacement) {
@@ -3071,26 +3373,24 @@ module.exports = function replaceNode(node, replacement, parent, key, lru, versi
 };
 
 /***/ },
-/* 63 */
+/* 64 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
 "use strict";
-
-var __ref = __webpack_require__(12);
 
 module.exports = function updateBackReferenceVersions(nodeArg, version) {
     var stack = [nodeArg];
     var count = 0;
     do {
         var node = stack[count];
-        if (node && node.ツversion !== version) {
-            node.ツversion = version;
-            stack[count++] = node.ツparent;
+        if (node && node["\u001eƒalcor_version"] !== version) {
+            node["\u001eƒalcor_version"] = version;
+            stack[count++] = node["\u001eƒalcor_parent"];
             var i = -1;
-            var n = node.ツrefsLength || 0;
+            var n = node["\u001eƒalcor_refs_length"] || 0;
             while (++i < n) {
-                stack[count++] = node[__ref + i];
+                stack[count++] = node["\u001eƒalcor_ref" + i];
             }
         }
     } while (--count > -1);
@@ -3098,24 +3398,24 @@ module.exports = function updateBackReferenceVersions(nodeArg, version) {
 };
 
 /***/ },
-/* 64 */
+/* 65 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
 "use strict";
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var now = __webpack_require__(34);
-var expiresNow = __webpack_require__(39);
+var now = __webpack_require__(36);
+var expiresNow = __webpack_require__(41);
 
 var atomSize = 50;
 
-var clone = __webpack_require__(119);
+var clone = __webpack_require__(120);
 var isArray = Array.isArray;
 var getSize = __webpack_require__(7);
-var getExpires = __webpack_require__(120);
-var atomType = __webpack_require__(25);
+var getExpires = __webpack_require__(121);
+var atomType = __webpack_require__(16);
 
 module.exports = function wrapNode(nodeArg, typeArg, value) {
 
@@ -3124,21 +3424,18 @@ module.exports = function wrapNode(nodeArg, typeArg, value) {
     var type = typeArg;
 
     if (type) {
-        var modelCreated = node.ツmodelCreated;
+        var modelCreated = node["\u001eƒalcor_wrapped_value"];
         node = clone(node);
         size = getSize(node);
         node.$type = type;
-        node.ツprev = undefined;
-        node.ツnext = undefined;
-        node.ツmodelCreated = modelCreated || false;
+        node["\u001eƒalcor_prev"] = undefined;
+        node["\u001eƒalcor_next"] = undefined;
+        node["\u001eƒalcor_wrapped_value"] = modelCreated || false;
     } else {
-        node = {
-            $type: atomType,
-            value: value,
-            ツprev: undefined,
-            ツnext: undefined,
-            ツmodelCreated: true
-        };
+        node = { $type: atomType, value: value };
+        node["\u001eƒalcor_prev"] = undefined;
+        node["\u001eƒalcor_next"] = undefined;
+        node["\u001eƒalcor_wrapped_value"] = true;
     }
 
     if (value == null) {
@@ -3173,1166 +3470,6 @@ module.exports = function wrapNode(nodeArg, typeArg, value) {
 };
 
 /***/ },
-/* 65 */
-/***/ function(module, exports, __webpack_require__) {
-
-/* WEBPACK VAR INJECTION */(function(process, Promise, global) {var require;/*!
- * @overview es6-promise - a tiny implementation of Promises/A+.
- * @copyright Copyright (c) 2014 Yehuda Katz, Tom Dale, Stefan Penner and contributors (Conversion to ES6 API by Jake Archibald)
- * @license   Licensed under MIT license
- *            See https://raw.githubusercontent.com/stefanpenner/es6-promise/master/LICENSE
- * @version   3.3.0
- */
-
-(function (global, factory) {
-     true ? module.exports = factory() :
-    typeof define === 'function' && define.amd ? define(factory) :
-    (global.ES6Promise = factory());
-}(this, (function () { 'use strict';
-
-function objectOrFunction(x) {
-  return typeof x === 'function' || typeof x === 'object' && x !== null;
-}
-
-function isFunction(x) {
-  return typeof x === 'function';
-}
-
-var _isArray = undefined;
-if (!Array.isArray) {
-  _isArray = function (x) {
-    return Object.prototype.toString.call(x) === '[object Array]';
-  };
-} else {
-  _isArray = Array.isArray;
-}
-
-var isArray = _isArray;
-
-var len = 0;
-var vertxNext = undefined;
-var customSchedulerFn = undefined;
-
-var asap = function asap(callback, arg) {
-  queue[len] = callback;
-  queue[len + 1] = arg;
-  len += 2;
-  if (len === 2) {
-    // If len is 2, that means that we need to schedule an async flush.
-    // If additional callbacks are queued before the queue is flushed, they
-    // will be processed by this flush that we are scheduling.
-    if (customSchedulerFn) {
-      customSchedulerFn(flush);
-    } else {
-      scheduleFlush();
-    }
-  }
-};
-
-function setScheduler(scheduleFn) {
-  customSchedulerFn = scheduleFn;
-}
-
-function setAsap(asapFn) {
-  asap = asapFn;
-}
-
-var browserWindow = typeof window !== 'undefined' ? window : undefined;
-var browserGlobal = browserWindow || {};
-var BrowserMutationObserver = browserGlobal.MutationObserver || browserGlobal.WebKitMutationObserver;
-var isNode = typeof self === 'undefined' && typeof process !== 'undefined' && ({}).toString.call(process) === '[object process]';
-
-// test for web worker but not in IE10
-var isWorker = typeof Uint8ClampedArray !== 'undefined' && typeof importScripts !== 'undefined' && typeof MessageChannel !== 'undefined';
-
-// node
-function useNextTick() {
-  // node version 0.10.x displays a deprecation warning when nextTick is used recursively
-  // see https://github.com/cujojs/when/issues/410 for details
-  return function () {
-    return process.nextTick(flush);
-  };
-}
-
-// vertx
-function useVertxTimer() {
-  return function () {
-    vertxNext(flush);
-  };
-}
-
-function useMutationObserver() {
-  var iterations = 0;
-  var observer = new BrowserMutationObserver(flush);
-  var node = document.createTextNode('');
-  observer.observe(node, { characterData: true });
-
-  return function () {
-    node.data = iterations = ++iterations % 2;
-  };
-}
-
-// web worker
-function useMessageChannel() {
-  var channel = new MessageChannel();
-  channel.port1.onmessage = flush;
-  return function () {
-    return channel.port2.postMessage(0);
-  };
-}
-
-function useSetTimeout() {
-  // Store setTimeout reference so es6-promise will be unaffected by
-  // other code modifying setTimeout (like sinon.useFakeTimers())
-  var globalSetTimeout = setTimeout;
-  return function () {
-    return globalSetTimeout(flush, 1);
-  };
-}
-
-var queue = new Array(1000);
-function flush() {
-  for (var i = 0; i < len; i += 2) {
-    var callback = queue[i];
-    var arg = queue[i + 1];
-
-    callback(arg);
-
-    queue[i] = undefined;
-    queue[i + 1] = undefined;
-  }
-
-  len = 0;
-}
-
-function attemptVertx() {
-  try {
-    var r = require;
-    var vertx = __webpack_require__(130);
-    vertxNext = vertx.runOnLoop || vertx.runOnContext;
-    return useVertxTimer();
-  } catch (e) {
-    return useSetTimeout();
-  }
-}
-
-var scheduleFlush = undefined;
-// Decide what async method to use to triggering processing of queued callbacks:
-if (isNode) {
-  scheduleFlush = useNextTick();
-} else if (BrowserMutationObserver) {
-  scheduleFlush = useMutationObserver();
-} else if (isWorker) {
-  scheduleFlush = useMessageChannel();
-} else if (browserWindow === undefined && "function" === 'function') {
-  scheduleFlush = attemptVertx();
-} else {
-  scheduleFlush = useSetTimeout();
-}
-
-function then(onFulfillment, onRejection) {
-  var _arguments = arguments;
-
-  var parent = this;
-
-  var child = new this.constructor(noop);
-
-  if (child[PROMISE_ID] === undefined) {
-    makePromise(child);
-  }
-
-  var _state = parent._state;
-
-  if (_state) {
-    (function () {
-      var callback = _arguments[_state - 1];
-      asap(function () {
-        return invokeCallback(_state, child, callback, parent._result);
-      });
-    })();
-  } else {
-    subscribe(parent, child, onFulfillment, onRejection);
-  }
-
-  return child;
-}
-
-/**
-  `Promise.resolve` returns a promise that will become resolved with the
-  passed `value`. It is shorthand for the following:
-
-  ```javascript
-  let promise = new Promise(function(resolve, reject){
-    resolve(1);
-  });
-
-  promise.then(function(value){
-    // value === 1
-  });
-  ```
-
-  Instead of writing the above, your code now simply becomes the following:
-
-  ```javascript
-  let promise = Promise.resolve(1);
-
-  promise.then(function(value){
-    // value === 1
-  });
-  ```
-
-  @method resolve
-  @static
-  @param {Any} value value that the returned promise will be resolved with
-  Useful for tooling.
-  @return {Promise} a promise that will become fulfilled with the given
-  `value`
-*/
-function resolve(object) {
-  /*jshint validthis:true */
-  var Constructor = this;
-
-  if (object && typeof object === 'object' && object.constructor === Constructor) {
-    return object;
-  }
-
-  var promise = new Constructor(noop);
-  _resolve(promise, object);
-  return promise;
-}
-
-var PROMISE_ID = Math.random().toString(36).substring(16);
-
-function noop() {}
-
-var PENDING = void 0;
-var FULFILLED = 1;
-var REJECTED = 2;
-
-var GET_THEN_ERROR = new ErrorObject();
-
-function selfFulfillment() {
-  return new TypeError("You cannot resolve a promise with itself");
-}
-
-function cannotReturnOwn() {
-  return new TypeError('A promises callback cannot return that same promise.');
-}
-
-function getThen(promise) {
-  try {
-    return promise.then;
-  } catch (error) {
-    GET_THEN_ERROR.error = error;
-    return GET_THEN_ERROR;
-  }
-}
-
-function tryThen(then, value, fulfillmentHandler, rejectionHandler) {
-  try {
-    then.call(value, fulfillmentHandler, rejectionHandler);
-  } catch (e) {
-    return e;
-  }
-}
-
-function handleForeignThenable(promise, thenable, then) {
-  asap(function (promise) {
-    var sealed = false;
-    var error = tryThen(then, thenable, function (value) {
-      if (sealed) {
-        return;
-      }
-      sealed = true;
-      if (thenable !== value) {
-        _resolve(promise, value);
-      } else {
-        fulfill(promise, value);
-      }
-    }, function (reason) {
-      if (sealed) {
-        return;
-      }
-      sealed = true;
-
-      _reject(promise, reason);
-    }, 'Settle: ' + (promise._label || ' unknown promise'));
-
-    if (!sealed && error) {
-      sealed = true;
-      _reject(promise, error);
-    }
-  }, promise);
-}
-
-function handleOwnThenable(promise, thenable) {
-  if (thenable._state === FULFILLED) {
-    fulfill(promise, thenable._result);
-  } else if (thenable._state === REJECTED) {
-    _reject(promise, thenable._result);
-  } else {
-    subscribe(thenable, undefined, function (value) {
-      return _resolve(promise, value);
-    }, function (reason) {
-      return _reject(promise, reason);
-    });
-  }
-}
-
-function handleMaybeThenable(promise, maybeThenable, then$$) {
-  if (maybeThenable.constructor === promise.constructor && then$$ === then && maybeThenable.constructor.resolve === resolve) {
-    handleOwnThenable(promise, maybeThenable);
-  } else {
-    if (then$$ === GET_THEN_ERROR) {
-      _reject(promise, GET_THEN_ERROR.error);
-    } else if (then$$ === undefined) {
-      fulfill(promise, maybeThenable);
-    } else if (isFunction(then$$)) {
-      handleForeignThenable(promise, maybeThenable, then$$);
-    } else {
-      fulfill(promise, maybeThenable);
-    }
-  }
-}
-
-function _resolve(promise, value) {
-  if (promise === value) {
-    _reject(promise, selfFulfillment());
-  } else if (objectOrFunction(value)) {
-    handleMaybeThenable(promise, value, getThen(value));
-  } else {
-    fulfill(promise, value);
-  }
-}
-
-function publishRejection(promise) {
-  if (promise._onerror) {
-    promise._onerror(promise._result);
-  }
-
-  publish(promise);
-}
-
-function fulfill(promise, value) {
-  if (promise._state !== PENDING) {
-    return;
-  }
-
-  promise._result = value;
-  promise._state = FULFILLED;
-
-  if (promise._subscribers.length !== 0) {
-    asap(publish, promise);
-  }
-}
-
-function _reject(promise, reason) {
-  if (promise._state !== PENDING) {
-    return;
-  }
-  promise._state = REJECTED;
-  promise._result = reason;
-
-  asap(publishRejection, promise);
-}
-
-function subscribe(parent, child, onFulfillment, onRejection) {
-  var _subscribers = parent._subscribers;
-  var length = _subscribers.length;
-
-  parent._onerror = null;
-
-  _subscribers[length] = child;
-  _subscribers[length + FULFILLED] = onFulfillment;
-  _subscribers[length + REJECTED] = onRejection;
-
-  if (length === 0 && parent._state) {
-    asap(publish, parent);
-  }
-}
-
-function publish(promise) {
-  var subscribers = promise._subscribers;
-  var settled = promise._state;
-
-  if (subscribers.length === 0) {
-    return;
-  }
-
-  var child = undefined,
-      callback = undefined,
-      detail = promise._result;
-
-  for (var i = 0; i < subscribers.length; i += 3) {
-    child = subscribers[i];
-    callback = subscribers[i + settled];
-
-    if (child) {
-      invokeCallback(settled, child, callback, detail);
-    } else {
-      callback(detail);
-    }
-  }
-
-  promise._subscribers.length = 0;
-}
-
-function ErrorObject() {
-  this.error = null;
-}
-
-var TRY_CATCH_ERROR = new ErrorObject();
-
-function tryCatch(callback, detail) {
-  try {
-    return callback(detail);
-  } catch (e) {
-    TRY_CATCH_ERROR.error = e;
-    return TRY_CATCH_ERROR;
-  }
-}
-
-function invokeCallback(settled, promise, callback, detail) {
-  var hasCallback = isFunction(callback),
-      value = undefined,
-      error = undefined,
-      succeeded = undefined,
-      failed = undefined;
-
-  if (hasCallback) {
-    value = tryCatch(callback, detail);
-
-    if (value === TRY_CATCH_ERROR) {
-      failed = true;
-      error = value.error;
-      value = null;
-    } else {
-      succeeded = true;
-    }
-
-    if (promise === value) {
-      _reject(promise, cannotReturnOwn());
-      return;
-    }
-  } else {
-    value = detail;
-    succeeded = true;
-  }
-
-  if (promise._state !== PENDING) {
-    // noop
-  } else if (hasCallback && succeeded) {
-      _resolve(promise, value);
-    } else if (failed) {
-      _reject(promise, error);
-    } else if (settled === FULFILLED) {
-      fulfill(promise, value);
-    } else if (settled === REJECTED) {
-      _reject(promise, value);
-    }
-}
-
-function initializePromise(promise, resolver) {
-  try {
-    resolver(function resolvePromise(value) {
-      _resolve(promise, value);
-    }, function rejectPromise(reason) {
-      _reject(promise, reason);
-    });
-  } catch (e) {
-    _reject(promise, e);
-  }
-}
-
-var id = 0;
-function nextId() {
-  return id++;
-}
-
-function makePromise(promise) {
-  promise[PROMISE_ID] = id++;
-  promise._state = undefined;
-  promise._result = undefined;
-  promise._subscribers = [];
-}
-
-function Enumerator(Constructor, input) {
-  this._instanceConstructor = Constructor;
-  this.promise = new Constructor(noop);
-
-  if (!this.promise[PROMISE_ID]) {
-    makePromise(this.promise);
-  }
-
-  if (isArray(input)) {
-    this._input = input;
-    this.length = input.length;
-    this._remaining = input.length;
-
-    this._result = new Array(this.length);
-
-    if (this.length === 0) {
-      fulfill(this.promise, this._result);
-    } else {
-      this.length = this.length || 0;
-      this._enumerate();
-      if (this._remaining === 0) {
-        fulfill(this.promise, this._result);
-      }
-    }
-  } else {
-    _reject(this.promise, validationError());
-  }
-}
-
-function validationError() {
-  return new Error('Array Methods must be provided an Array');
-};
-
-Enumerator.prototype._enumerate = function () {
-  var length = this.length;
-  var _input = this._input;
-
-  for (var i = 0; this._state === PENDING && i < length; i++) {
-    this._eachEntry(_input[i], i);
-  }
-};
-
-Enumerator.prototype._eachEntry = function (entry, i) {
-  var c = this._instanceConstructor;
-  var resolve$$ = c.resolve;
-
-  if (resolve$$ === resolve) {
-    var _then = getThen(entry);
-
-    if (_then === then && entry._state !== PENDING) {
-      this._settledAt(entry._state, i, entry._result);
-    } else if (typeof _then !== 'function') {
-      this._remaining--;
-      this._result[i] = entry;
-    } else if (c === Promise) {
-      var promise = new c(noop);
-      handleMaybeThenable(promise, entry, _then);
-      this._willSettleAt(promise, i);
-    } else {
-      this._willSettleAt(new c(function (resolve$$) {
-        return resolve$$(entry);
-      }), i);
-    }
-  } else {
-    this._willSettleAt(resolve$$(entry), i);
-  }
-};
-
-Enumerator.prototype._settledAt = function (state, i, value) {
-  var promise = this.promise;
-
-  if (promise._state === PENDING) {
-    this._remaining--;
-
-    if (state === REJECTED) {
-      _reject(promise, value);
-    } else {
-      this._result[i] = value;
-    }
-  }
-
-  if (this._remaining === 0) {
-    fulfill(promise, this._result);
-  }
-};
-
-Enumerator.prototype._willSettleAt = function (promise, i) {
-  var enumerator = this;
-
-  subscribe(promise, undefined, function (value) {
-    return enumerator._settledAt(FULFILLED, i, value);
-  }, function (reason) {
-    return enumerator._settledAt(REJECTED, i, reason);
-  });
-};
-
-/**
-  `Promise.all` accepts an array of promises, and returns a new promise which
-  is fulfilled with an array of fulfillment values for the passed promises, or
-  rejected with the reason of the first passed promise to be rejected. It casts all
-  elements of the passed iterable to promises as it runs this algorithm.
-
-  Example:
-
-  ```javascript
-  let promise1 = resolve(1);
-  let promise2 = resolve(2);
-  let promise3 = resolve(3);
-  let promises = [ promise1, promise2, promise3 ];
-
-  Promise.all(promises).then(function(array){
-    // The array here would be [ 1, 2, 3 ];
-  });
-  ```
-
-  If any of the `promises` given to `all` are rejected, the first promise
-  that is rejected will be given as an argument to the returned promises's
-  rejection handler. For example:
-
-  Example:
-
-  ```javascript
-  let promise1 = resolve(1);
-  let promise2 = reject(new Error("2"));
-  let promise3 = reject(new Error("3"));
-  let promises = [ promise1, promise2, promise3 ];
-
-  Promise.all(promises).then(function(array){
-    // Code here never runs because there are rejected promises!
-  }, function(error) {
-    // error.message === "2"
-  });
-  ```
-
-  @method all
-  @static
-  @param {Array} entries array of promises
-  @param {String} label optional string for labeling the promise.
-  Useful for tooling.
-  @return {Promise} promise that is fulfilled when all `promises` have been
-  fulfilled, or rejected if any of them become rejected.
-  @static
-*/
-function all(entries) {
-  return new Enumerator(this, entries).promise;
-}
-
-/**
-  `Promise.race` returns a new promise which is settled in the same way as the
-  first passed promise to settle.
-
-  Example:
-
-  ```javascript
-  let promise1 = new Promise(function(resolve, reject){
-    setTimeout(function(){
-      resolve('promise 1');
-    }, 200);
-  });
-
-  let promise2 = new Promise(function(resolve, reject){
-    setTimeout(function(){
-      resolve('promise 2');
-    }, 100);
-  });
-
-  Promise.race([promise1, promise2]).then(function(result){
-    // result === 'promise 2' because it was resolved before promise1
-    // was resolved.
-  });
-  ```
-
-  `Promise.race` is deterministic in that only the state of the first
-  settled promise matters. For example, even if other promises given to the
-  `promises` array argument are resolved, but the first settled promise has
-  become rejected before the other promises became fulfilled, the returned
-  promise will become rejected:
-
-  ```javascript
-  let promise1 = new Promise(function(resolve, reject){
-    setTimeout(function(){
-      resolve('promise 1');
-    }, 200);
-  });
-
-  let promise2 = new Promise(function(resolve, reject){
-    setTimeout(function(){
-      reject(new Error('promise 2'));
-    }, 100);
-  });
-
-  Promise.race([promise1, promise2]).then(function(result){
-    // Code here never runs
-  }, function(reason){
-    // reason.message === 'promise 2' because promise 2 became rejected before
-    // promise 1 became fulfilled
-  });
-  ```
-
-  An example real-world use case is implementing timeouts:
-
-  ```javascript
-  Promise.race([ajax('foo.json'), timeout(5000)])
-  ```
-
-  @method race
-  @static
-  @param {Array} promises array of promises to observe
-  Useful for tooling.
-  @return {Promise} a promise which settles in the same way as the first passed
-  promise to settle.
-*/
-function race(entries) {
-  /*jshint validthis:true */
-  var Constructor = this;
-
-  if (!isArray(entries)) {
-    return new Constructor(function (_, reject) {
-      return reject(new TypeError('You must pass an array to race.'));
-    });
-  } else {
-    return new Constructor(function (resolve, reject) {
-      var length = entries.length;
-      for (var i = 0; i < length; i++) {
-        Constructor.resolve(entries[i]).then(resolve, reject);
-      }
-    });
-  }
-}
-
-/**
-  `Promise.reject` returns a promise rejected with the passed `reason`.
-  It is shorthand for the following:
-
-  ```javascript
-  let promise = new Promise(function(resolve, reject){
-    reject(new Error('WHOOPS'));
-  });
-
-  promise.then(function(value){
-    // Code here doesn't run because the promise is rejected!
-  }, function(reason){
-    // reason.message === 'WHOOPS'
-  });
-  ```
-
-  Instead of writing the above, your code now simply becomes the following:
-
-  ```javascript
-  let promise = Promise.reject(new Error('WHOOPS'));
-
-  promise.then(function(value){
-    // Code here doesn't run because the promise is rejected!
-  }, function(reason){
-    // reason.message === 'WHOOPS'
-  });
-  ```
-
-  @method reject
-  @static
-  @param {Any} reason value that the returned promise will be rejected with.
-  Useful for tooling.
-  @return {Promise} a promise rejected with the given `reason`.
-*/
-function reject(reason) {
-  /*jshint validthis:true */
-  var Constructor = this;
-  var promise = new Constructor(noop);
-  _reject(promise, reason);
-  return promise;
-}
-
-function needsResolver() {
-  throw new TypeError('You must pass a resolver function as the first argument to the promise constructor');
-}
-
-function needsNew() {
-  throw new TypeError("Failed to construct 'Promise': Please use the 'new' operator, this object constructor cannot be called as a function.");
-}
-
-/**
-  Promise objects represent the eventual result of an asynchronous operation. The
-  primary way of interacting with a promise is through its `then` method, which
-  registers callbacks to receive either a promise's eventual value or the reason
-  why the promise cannot be fulfilled.
-
-  Terminology
-  -----------
-
-  - `promise` is an object or function with a `then` method whose behavior conforms to this specification.
-  - `thenable` is an object or function that defines a `then` method.
-  - `value` is any legal JavaScript value (including undefined, a thenable, or a promise).
-  - `exception` is a value that is thrown using the throw statement.
-  - `reason` is a value that indicates why a promise was rejected.
-  - `settled` the final resting state of a promise, fulfilled or rejected.
-
-  A promise can be in one of three states: pending, fulfilled, or rejected.
-
-  Promises that are fulfilled have a fulfillment value and are in the fulfilled
-  state.  Promises that are rejected have a rejection reason and are in the
-  rejected state.  A fulfillment value is never a thenable.
-
-  Promises can also be said to *resolve* a value.  If this value is also a
-  promise, then the original promise's settled state will match the value's
-  settled state.  So a promise that *resolves* a promise that rejects will
-  itself reject, and a promise that *resolves* a promise that fulfills will
-  itself fulfill.
-
-
-  Basic Usage:
-  ------------
-
-  ```js
-  let promise = new Promise(function(resolve, reject) {
-    // on success
-    resolve(value);
-
-    // on failure
-    reject(reason);
-  });
-
-  promise.then(function(value) {
-    // on fulfillment
-  }, function(reason) {
-    // on rejection
-  });
-  ```
-
-  Advanced Usage:
-  ---------------
-
-  Promises shine when abstracting away asynchronous interactions such as
-  `XMLHttpRequest`s.
-
-  ```js
-  function getJSON(url) {
-    return new Promise(function(resolve, reject){
-      let xhr = new XMLHttpRequest();
-
-      xhr.open('GET', url);
-      xhr.onreadystatechange = handler;
-      xhr.responseType = 'json';
-      xhr.setRequestHeader('Accept', 'application/json');
-      xhr.send();
-
-      function handler() {
-        if (this.readyState === this.DONE) {
-          if (this.status === 200) {
-            resolve(this.response);
-          } else {
-            reject(new Error('getJSON: `' + url + '` failed with status: [' + this.status + ']'));
-          }
-        }
-      };
-    });
-  }
-
-  getJSON('/posts.json').then(function(json) {
-    // on fulfillment
-  }, function(reason) {
-    // on rejection
-  });
-  ```
-
-  Unlike callbacks, promises are great composable primitives.
-
-  ```js
-  Promise.all([
-    getJSON('/posts'),
-    getJSON('/comments')
-  ]).then(function(values){
-    values[0] // => postsJSON
-    values[1] // => commentsJSON
-
-    return values;
-  });
-  ```
-
-  @class Promise
-  @param {function} resolver
-  Useful for tooling.
-  @constructor
-*/
-function Promise(resolver) {
-  this[PROMISE_ID] = nextId();
-  this._result = this._state = undefined;
-  this._subscribers = [];
-
-  if (noop !== resolver) {
-    typeof resolver !== 'function' && needsResolver();
-    this instanceof Promise ? initializePromise(this, resolver) : needsNew();
-  }
-}
-
-Promise.all = all;
-Promise.race = race;
-Promise.resolve = resolve;
-Promise.reject = reject;
-Promise._setScheduler = setScheduler;
-Promise._setAsap = setAsap;
-Promise._asap = asap;
-
-Promise.prototype = {
-  constructor: Promise,
-
-  /**
-    The primary way of interacting with a promise is through its `then` method,
-    which registers callbacks to receive either a promise's eventual value or the
-    reason why the promise cannot be fulfilled.
-  
-    ```js
-    findUser().then(function(user){
-      // user is available
-    }, function(reason){
-      // user is unavailable, and you are given the reason why
-    });
-    ```
-  
-    Chaining
-    --------
-  
-    The return value of `then` is itself a promise.  This second, 'downstream'
-    promise is resolved with the return value of the first promise's fulfillment
-    or rejection handler, or rejected if the handler throws an exception.
-  
-    ```js
-    findUser().then(function (user) {
-      return user.name;
-    }, function (reason) {
-      return 'default name';
-    }).then(function (userName) {
-      // If `findUser` fulfilled, `userName` will be the user's name, otherwise it
-      // will be `'default name'`
-    });
-  
-    findUser().then(function (user) {
-      throw new Error('Found user, but still unhappy');
-    }, function (reason) {
-      throw new Error('`findUser` rejected and we're unhappy');
-    }).then(function (value) {
-      // never reached
-    }, function (reason) {
-      // if `findUser` fulfilled, `reason` will be 'Found user, but still unhappy'.
-      // If `findUser` rejected, `reason` will be '`findUser` rejected and we're unhappy'.
-    });
-    ```
-    If the downstream promise does not specify a rejection handler, rejection reasons will be propagated further downstream.
-  
-    ```js
-    findUser().then(function (user) {
-      throw new PedagogicalException('Upstream error');
-    }).then(function (value) {
-      // never reached
-    }).then(function (value) {
-      // never reached
-    }, function (reason) {
-      // The `PedgagocialException` is propagated all the way down to here
-    });
-    ```
-  
-    Assimilation
-    ------------
-  
-    Sometimes the value you want to propagate to a downstream promise can only be
-    retrieved asynchronously. This can be achieved by returning a promise in the
-    fulfillment or rejection handler. The downstream promise will then be pending
-    until the returned promise is settled. This is called *assimilation*.
-  
-    ```js
-    findUser().then(function (user) {
-      return findCommentsByAuthor(user);
-    }).then(function (comments) {
-      // The user's comments are now available
-    });
-    ```
-  
-    If the assimliated promise rejects, then the downstream promise will also reject.
-  
-    ```js
-    findUser().then(function (user) {
-      return findCommentsByAuthor(user);
-    }).then(function (comments) {
-      // If `findCommentsByAuthor` fulfills, we'll have the value here
-    }, function (reason) {
-      // If `findCommentsByAuthor` rejects, we'll have the reason here
-    });
-    ```
-  
-    Simple Example
-    --------------
-  
-    Synchronous Example
-  
-    ```javascript
-    let result;
-  
-    try {
-      result = findResult();
-      // success
-    } catch(reason) {
-      // failure
-    }
-    ```
-  
-    Errback Example
-  
-    ```js
-    findResult(function(result, err){
-      if (err) {
-        // failure
-      } else {
-        // success
-      }
-    });
-    ```
-  
-    Promise Example;
-  
-    ```javascript
-    findResult().then(function(result){
-      // success
-    }, function(reason){
-      // failure
-    });
-    ```
-  
-    Advanced Example
-    --------------
-  
-    Synchronous Example
-  
-    ```javascript
-    let author, books;
-  
-    try {
-      author = findAuthor();
-      books  = findBooksByAuthor(author);
-      // success
-    } catch(reason) {
-      // failure
-    }
-    ```
-  
-    Errback Example
-  
-    ```js
-  
-    function foundBooks(books) {
-  
-    }
-  
-    function failure(reason) {
-  
-    }
-  
-    findAuthor(function(author, err){
-      if (err) {
-        failure(err);
-        // failure
-      } else {
-        try {
-          findBoooksByAuthor(author, function(books, err) {
-            if (err) {
-              failure(err);
-            } else {
-              try {
-                foundBooks(books);
-              } catch(reason) {
-                failure(reason);
-              }
-            }
-          });
-        } catch(error) {
-          failure(err);
-        }
-        // success
-      }
-    });
-    ```
-  
-    Promise Example;
-  
-    ```javascript
-    findAuthor().
-      then(findBooksByAuthor).
-      then(function(books){
-        // found books
-    }).catch(function(reason){
-      // something went wrong
-    });
-    ```
-  
-    @method then
-    @param {Function} onFulfilled
-    @param {Function} onRejected
-    Useful for tooling.
-    @return {Promise}
-  */
-  then: then,
-
-  /**
-    `catch` is simply sugar for `then(undefined, onRejection)` which makes it the same
-    as the catch block of a try/catch statement.
-  
-    ```js
-    function findAuthor(){
-      throw new Error('couldn't find that author');
-    }
-  
-    // synchronous
-    try {
-      findAuthor();
-    } catch(reason) {
-      // something went wrong
-    }
-  
-    // async with promises
-    findAuthor().catch(function(reason){
-      // something went wrong
-    });
-    ```
-  
-    @method catch
-    @param {Function} onRejection
-    Useful for tooling.
-    @return {Promise}
-  */
-  'catch': function _catch(onRejection) {
-    return this.then(null, onRejection);
-  }
-};
-
-function polyfill() {
-    var local = undefined;
-
-    if (typeof global !== 'undefined') {
-        local = global;
-    } else if (typeof self !== 'undefined') {
-        local = self;
-    } else {
-        try {
-            local = Function('return this')();
-        } catch (e) {
-            throw new Error('polyfill failed because global object is unavailable in this environment');
-        }
-    }
-
-    var P = local.Promise;
-
-    if (P) {
-        var promiseToString = null;
-        try {
-            promiseToString = Object.prototype.toString.call(P.resolve());
-        } catch (e) {
-            // silently ignored
-        }
-
-        if (promiseToString === '[object Promise]' && !P.cast) {
-            return;
-        }
-    }
-
-    local.Promise = Promise;
-}
-
-polyfill();
-// Strange compat..
-Promise.polyfill = polyfill;
-Promise.Promise = Promise;
-
-return Promise;
-
-})));
-//# sourceMappingURL=es6-promise.map
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(129), __webpack_require__(65), __webpack_require__(66)))
-
-/***/ },
 /* 66 */
 /***/ function(module, exports) {
 
@@ -4364,13 +3501,15 @@ module.exports = g;
 "use strict";
 "use strict";
 
-var Model = __webpack_require__(77);
+var Model = __webpack_require__(80);
+var JSONProto = __webpack_require__(28);
 
 function falcor(opts) {
     return new Model(opts);
 }
 
-falcor.Model = Model;
+falcor["Model"] = Model;
+falcor["JSONProto"] = JSONProto;
 
 module.exports = falcor;
 
@@ -4378,33 +3517,84 @@ module.exports = falcor;
 /* 68 */
 /***/ function(module, exports, __webpack_require__) {
 
-var toPaths = __webpack_require__(43);
-var toTree = __webpack_require__(44);
+"use strict";
+'use strict';
+
+var toPaths = __webpack_require__(46);
+var toTree = __webpack_require__(47);
 
 module.exports = function collapse(paths) {
-    var collapseMap = paths.
-        reduce(function(acc, path) {
-            var len = path.length;
-            if (!acc[len]) {
-                acc[len] = [];
-            }
-            acc[len].push(path);
-            return acc;
-        }, {});
+    var collapseMap = paths.reduce(function (acc, path) {
+        var len = path.length;
+        if (!acc[len]) {
+            acc[len] = [];
+        }
+        acc[len].push(path);
+        return acc;
+    }, {});
 
-    Object.
-        keys(collapseMap).
-        forEach(function(collapseKey) {
-            collapseMap[collapseKey] = toTree(collapseMap[collapseKey]);
-        });
+    Object.keys(collapseMap).forEach(function (collapseKey) {
+        collapseMap[collapseKey] = toTree(collapseMap[collapseKey]);
+    });
 
     return toPaths(collapseMap);
 };
 
-
 /***/ },
 /* 69 */
+/***/ function(module, exports, __webpack_require__) {
+
+"use strict";
+'use strict';
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+var isArray = Array.isArray;
+var getHashCode = __webpack_require__(42);
+
+module.exports = computeFlatBufferHash;
+
+function computeFlatBufferHash(seed) {
+
+    if (seed === undefined) {
+        return undefined;
+    }
+
+    var code = '';
+    var keys = seed['$keys'];
+    var keysIndex = -1;
+    var keysLength = keys.length;
+
+    while (++keysIndex < keysLength) {
+
+        var key = keys[keysIndex];
+
+        if (key === null) {
+            code = '' + getHashCode('' + code + 'null');
+            continue;
+        } else if ((typeof key === 'undefined' ? 'undefined' : _typeof(key)) === 'object') {
+            key = '{from:' + key.from + ',length:' + key.length + '}';
+        }
+
+        var next = computeFlatBufferHash(seed[keysIndex]);
+        if (next === undefined) {
+            code = '' + getHashCode('' + code + key);
+        } else {
+            code = '' + getHashCode('' + code + key + next['$code']);
+        }
+    }
+
+    seed['$code'] = code;
+
+    return seed;
+}
+
+/***/ },
+/* 70 */
 /***/ function(module, exports) {
+
+"use strict";
+'use strict';
 
 /*eslint-disable*/
 module.exports = {
@@ -4412,15 +3602,58 @@ module.exports = {
     circularReference: 'There appears to be a circular reference, maximum reference following exceeded.'
 };
 
+/***/ },
+/* 71 */
+/***/ function(module, exports) {
 
+"use strict";
+"use strict";
+
+module.exports = flatBufferToPaths;
+
+function flatBufferToPaths(flatBuf, paths, path) {
+
+    path = path || [];
+    paths = paths || [];
+
+    var leaf = [];
+    var keys = flatBuf.$keys;
+    var keysLen = keys.length;
+    var keysIndex = -1,
+        key,
+        len;
+
+    while (++keysIndex < keysLen) {
+
+        var rest = flatBuf[keysIndex];
+        var keyset = keys[keysIndex];
+
+        if (!rest) {
+            leaf.push(keyset);
+        } else {
+            flatBufferToPaths(rest, paths, path.concat([keyset]));
+        }
+    }
+
+    if (leaf.length === 1) {
+        paths.push(path.concat(leaf));
+    } else if (leaf.length > 1) {
+        paths.push(path.concat([leaf]));
+    }
+
+    return paths;
+}
 
 /***/ },
-/* 70 */
+/* 72 */
 /***/ function(module, exports, __webpack_require__) {
 
-var cloneArray = __webpack_require__(41);
-var $ref = __webpack_require__(42).$ref;
-var errors = __webpack_require__(69);
+"use strict";
+'use strict';
+
+var cloneArray = __webpack_require__(44);
+var $ref = __webpack_require__(45).$ref;
+var errors = __webpack_require__(70);
 
 /**
  * performs the simplified cache reference follow.  This
@@ -4475,18 +3708,44 @@ module.exports = function followReference(cacheRoot, ref, maxRefFollow) {
     return [current, cloneArray(refPath)];
 };
 
-
-
 /***/ },
-/* 71 */
+/* 73 */
 /***/ function(module, exports, __webpack_require__) {
 
-var iterateKeySet = __webpack_require__(40);
-var cloneArray = __webpack_require__(41);
-var catAndSlice = __webpack_require__(75);
-var $types = __webpack_require__(42);
+"use strict";
+'use strict';
+
+module.exports = {
+    toTree: __webpack_require__(47),
+    toPaths: __webpack_require__(46),
+    collapse: __webpack_require__(68),
+    pathCount: __webpack_require__(75),
+    getHashCode: __webpack_require__(42),
+    toFlatBuffer: __webpack_require__(79),
+    iterateKeySet: __webpack_require__(43),
+    hasIntersection: __webpack_require__(24),
+    optimizePathSets: __webpack_require__(74),
+    flatBufferToPaths: __webpack_require__(71),
+    computeFlatBufferHash: __webpack_require__(69),
+    pathsComplementFromTree: __webpack_require__(77),
+    pathsComplementFromLengthTree: __webpack_require__(76)
+};
+
+/***/ },
+/* 74 */
+/***/ function(module, exports, __webpack_require__) {
+
+"use strict";
+'use strict';
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+var iterateKeySet = __webpack_require__(43);
+var cloneArray = __webpack_require__(44);
+var catAndSlice = __webpack_require__(78);
+var $types = __webpack_require__(45);
 var $ref = $types.$ref;
-var followReference = __webpack_require__(70);
+var followReference = __webpack_require__(72);
 
 /**
  * The fastest possible optimize of paths.
@@ -4499,19 +3758,17 @@ var followReference = __webpack_require__(70);
  */
 module.exports = function optimizePathSets(cache, paths, maxRefFollow) {
     var optimized = [];
-    paths.forEach(function(p) {
+    paths.forEach(function (p) {
         optimizePathSet(cache, cache, p, 0, optimized, [], maxRefFollow);
     });
 
     return optimized;
 };
 
-
 /**
  * optimizes one pathSet at a time.
  */
-function optimizePathSet(cache, cacheRoot, pathSet,
-                         depth, out, optimizedPath, maxRefFollow) {
+function optimizePathSet(cache, cacheRoot, pathSet, depth, out, optimizedPath, maxRefFollow) {
 
     // at missing, report optimized path.
     if (cache === undefined) {
@@ -4521,8 +3778,7 @@ function optimizePathSet(cache, cacheRoot, pathSet,
 
     // all other sentinels are short circuited.
     // Or we found a primitive (which includes null)
-    if (cache === null || (cache.$type && cache.$type !== $ref) ||
-            (typeof cache !== 'object')) {
+    if (cache === null || cache.$type && cache.$type !== $ref || (typeof cache === 'undefined' ? 'undefined' : _typeof(cache)) !== 'object') {
         return;
     }
 
@@ -4533,7 +3789,7 @@ function optimizePathSet(cache, cacheRoot, pathSet,
     }
 
     var keySet = pathSet[depth];
-    var isKeySet = typeof keySet === 'object';
+    var isKeySet = (typeof keySet === 'undefined' ? 'undefined' : _typeof(keySet)) === 'object';
     var nextDepth = depth + 1;
     var iteratorNote = false;
     var key = keySet;
@@ -4550,8 +3806,7 @@ function optimizePathSet(cache, cacheRoot, pathSet,
         }
 
         if (next && next.$type === $ref && nextDepth < pathSet.length) {
-            var refResults =
-                followReference(cacheRoot, next.value, maxRefFollow);
+            var refResults = followReference(cacheRoot, next.value, maxRefFollow);
             next = refResults[0];
 
             // must clone to avoid the mutation from above destroying the cache.
@@ -4560,8 +3815,7 @@ function optimizePathSet(cache, cacheRoot, pathSet,
             nextOptimized = optimizedPath;
         }
 
-        optimizePathSet(next, cacheRoot, pathSet, nextDepth,
-                        out, nextOptimized, maxRefFollow);
+        optimizePathSet(next, cacheRoot, pathSet, nextDepth, out, nextOptimized, maxRefFollow);
         optimizedPath.length = optimizedPathLength;
 
         if (iteratorNote && !iteratorNote.done) {
@@ -4570,11 +3824,8 @@ function optimizePathSet(cache, cacheRoot, pathSet,
     } while (iteratorNote && !iteratorNote.done);
 }
 
-
-
-
 /***/ },
-/* 72 */
+/* 75 */
 /***/ function(module, exports) {
 
 "use strict";
@@ -4586,12 +3837,15 @@ function optimizePathSet(cache, cacheRoot, pathSet,
  * @param {Object} rangeOrKey
  * @return The size of the key or range passed in.
  */
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 function getRangeOrKeySize(rangeOrKey) {
     if (rangeOrKey == null) {
         return 1;
     } else if (Array.isArray(rangeOrKey)) {
         throw new Error("Unexpected Array found in keySet: " + JSON.stringify(rangeOrKey));
-    } else if (typeof rangeOrKey === "object") {
+    } else if ((typeof rangeOrKey === "undefined" ? "undefined" : _typeof(rangeOrKey)) === "object") {
         return getRangeSize(rangeOrKey);
     } else {
         return 1;
@@ -4618,7 +3872,7 @@ function getRangeSize(range) {
             throw new Error("Invalid range, 'from' is not an integer: " + JSON.stringify(range));
         }
         if (from <= to) {
-            return (to - from) + 1;
+            return to - from + 1;
         } else {
             return 0;
         }
@@ -4667,7 +3921,6 @@ function getPathCount(pathSet) {
             }
 
             numPaths *= numKeys;
-
         } else {
             numPaths *= getRangeOrKeySize(segment);
         }
@@ -4676,15 +3929,16 @@ function getPathCount(pathSet) {
     return numPaths;
 }
 
-
 module.exports = getPathCount;
 
-
 /***/ },
-/* 73 */
+/* 76 */
 /***/ function(module, exports, __webpack_require__) {
 
-var hasIntersection = __webpack_require__(26);
+"use strict";
+'use strict';
+
+var hasIntersection = __webpack_require__(24);
 
 /**
  * Compares the paths passed in with the tree.  Any of the paths that are in
@@ -4712,13 +3966,14 @@ module.exports = function pathsComplementFromLengthTree(paths, tree) {
     return out;
 };
 
-
-
 /***/ },
-/* 74 */
+/* 77 */
 /***/ function(module, exports, __webpack_require__) {
 
-var hasIntersection = __webpack_require__(26);
+"use strict";
+'use strict';
+
+var hasIntersection = __webpack_require__(24);
 
 /**
  * Compares the paths passed in with the tree.  Any of the paths that are in
@@ -4745,14 +4000,18 @@ module.exports = function pathsComplementFromTree(paths, tree) {
     return out;
 };
 
-
-
 /***/ },
-/* 75 */
+/* 78 */
 /***/ function(module, exports) {
 
+"use strict";
+"use strict";
+
 module.exports = function catAndSlice(a, b, slice) {
-    var next = [], i, j, len;
+    var next = [],
+        i,
+        j,
+        len;
     for (i = 0, len = a.length; i < len; ++i) {
         next[i] = a[i];
     }
@@ -4764,50 +4023,177 @@ module.exports = function catAndSlice(a, b, slice) {
     return next;
 };
 
-
-
 /***/ },
-/* 76 */
+/* 79 */
 /***/ function(module, exports) {
 
+"use strict";
+'use strict';
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+var isArray = Array.isArray;
+var nullBuffer = { '$keys': [null], '$keysMap': { 'null': 0 } };
+
+module.exports = toFlatBuffer;
+
+/*
+var inspect = require('util').inspect;
+var computeFlatBufferHash = require('./computeFlatBufferHash');
+var flatBuf = computeFlatBufferHash(toFlatBuffer([
+    ['genreLists', 'length'],
+    ['genreLists', { from: 1, length: 9 }, ['name', 'rating']],
+    ['genreLists', { from: 1, length: 9 }, 'color', null],
+    ['genreLists', { from: 1, length: 9 }, 'titles', 'length'],
+    ['genreLists', { from: 1, length: 9 }, 'titles', { from: 9, length: 2 }, ['name', 'rating', 'box-shot']],
+]));
+
+console.log(inspect(flatBuf, { depth: null }));
+*/
+
+function toFlatBuffer(paths) {
+    return paths.reduce(function (seed, path) {
+        return _toFlatBuffer(seed, path, 0, path.length);
+    }, {});
+}
+
+function _toFlatBuffer(seed, path, depth, length) {
+
+    if (depth === length) {
+        return undefined;
+    }
+
+    seed = seed || {};
+    var keys = seed['$keys'] || (seed['$keys'] = []);
+    var keysMap = seed['$keysMap'] || (seed['$keysMap'] = {});
+    var keysIndex = -1;
+
+    var keyset,
+        keysetIndex = -1,
+        keysetLength = 0;
+    var node,
+        next,
+        nextKey,
+        nextDepth = depth + 1,
+        rangeEnd,
+        keysOrRanges;
+
+    keyset = path[depth];
+
+    if (keyset === null) {
+        return nullBuffer;
+    }
+
+    iteratingKeyset: do {
+        // If the keyset is a primitive value, we've found our `nextKey`.
+        if ('object' !== (typeof keyset === 'undefined' ? 'undefined' : _typeof(keyset))) {
+            nextKey = keyset;
+            if ('undefined' === typeof (keysIndex = keysMap[nextKey])) {
+                keysIndex = keys.length;
+            }
+            keys[keysIndex] = nextKey;
+            keysMap[nextKey] = keysIndex;
+            next = _toFlatBuffer(seed[keysIndex], path, nextDepth, length);
+            if (next !== undefined) {
+                seed[keysIndex] = next;
+            }
+        }
+        // If we encounter a Keyset, either iterate through the Keys and Ranges,
+        // or throw an error if we're already iterating a Keyset. Keysets cannot
+        // contain other Keysets.
+        else if (isArray(keyset)) {
+                // If we've already encountered an Array keyset, throw an error.
+                if (keysOrRanges !== undefined) {
+                    break iteratingKeyset;
+                }
+                keysetIndex = 0;
+                keysOrRanges = keyset;
+                keysetLength = keyset.length;
+                // If an Array of keys or ranges is empty, terminate the graph walk
+                // and return the json constructed so far. An example of an empty
+                // Keyset is: ['lolomo', [], 'summary']. This should short circuit
+                // without building missing paths.
+                if (0 === keysetLength) {
+                    break iteratingKeyset;
+                }
+                // Assign `keyset` to the first value in the Keyset. Re-entering the
+                // outer loop mimics a singly-recursive function call.
+                keyset = keysOrRanges[keysetIndex];
+                continue iteratingKeyset;
+            }
+            // If the Keyset isn't a primitive or Array, then it must be a Range.
+            else {
+                    rangeEnd = keyset.to;
+                    nextKey = keyset.from || 0;
+                    if ('number' !== typeof rangeEnd) {
+                        rangeEnd = nextKey + (keyset.length || 0) - 1;
+                    }
+                    if (rangeEnd - nextKey < 0) {
+                        break iteratingKeyset;
+                    }
+                    keyset = { from: nextKey, length: rangeEnd - nextKey + 1 };
+                    nextKey = '{from:' + nextKey + ',length:' + (rangeEnd - nextKey + 1) + '}';
+                    if ('undefined' === typeof (keysIndex = keysMap[nextKey])) {
+                        keysIndex = keys.length;
+                    }
+                    keys[keysIndex] = keyset;
+                    keysMap[nextKey] = keysIndex;
+                    next = _toFlatBuffer(seed[keysIndex], path, nextDepth, length);
+                    if (next !== undefined) {
+                        seed[keysIndex] = next;
+                    }
+                }
+
+        // If we've exhausted the Keyset (or never encountered one at all),
+        // exit the outer loop.
+        if (++keysetIndex === keysetLength) {
+            break iteratingKeyset;
+        }
+
+        // Otherwise get the next Key or Range from the Keyset and re-enter the
+        // outer loop from the top.
+        keyset = keysOrRanges[keysetIndex];
+    } while (true);
+
+    return seed;
+}
 
 /***/ },
-/* 77 */
+/* 80 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
 "use strict";
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var ModelRoot = __webpack_require__(79);
-var ModelDataSourceAdapter = __webpack_require__(78);
+var ModelRoot = __webpack_require__(82);
+var ModelDataSourceAdapter = __webpack_require__(81);
 
-var RequestQueue = __webpack_require__(102);
-var ModelResponse = __webpack_require__(4);
-var CallResponse = __webpack_require__(106);
-var InvalidateResponse = __webpack_require__(107);
+var RequestQueue = __webpack_require__(103);
+var ModelResponse = __webpack_require__(5);
+var CallResponse = __webpack_require__(107);
+var InvalidateResponse = __webpack_require__(108);
 
-var TimeoutScheduler = __webpack_require__(116);
-var ImmediateScheduler = __webpack_require__(115);
+var TimeoutScheduler = __webpack_require__(117);
+var ImmediateScheduler = __webpack_require__(116);
 
-var collectLru = __webpack_require__(30);
+var collectLru = __webpack_require__(31);
 
 var getSize = __webpack_require__(7);
-var isObject = __webpack_require__(0);
-var isFunction = __webpack_require__(2);
-var isPrimitive = __webpack_require__(9);
-var isJSONEnvelope = __webpack_require__(22);
-var isJSONGraphEnvelope = __webpack_require__(33);
+var isObject = __webpack_require__(1);
+var isFunction = __webpack_require__(3);
+var isPrimitive = __webpack_require__(8);
+var isJSONEnvelope = __webpack_require__(21);
+var isJSONGraphEnvelope = __webpack_require__(35);
 
-var setCache = __webpack_require__(31);
-var setJSONGraphs = __webpack_require__(21);
-var validateInput = __webpack_require__(37);
+var setCache = __webpack_require__(33);
+var setJSONGraphs = __webpack_require__(20);
+var validateInput = __webpack_require__(39);
 var noOp = function noOp() {};
-var getCache = __webpack_require__(86);
-var get = __webpack_require__(28);
-var GET_VALID_INPUT = __webpack_require__(56);
+var getCache = __webpack_require__(89);
+var get = __webpack_require__(27);
+var GET_VALID_INPUT = __webpack_require__(57);
 
 module.exports = Model;
 
@@ -4848,13 +4234,20 @@ function Model(o) {
     var options = o || {};
     this._root = options._root || new ModelRoot(options, this);
     this._path = options.path || options._path || [];
+    this._node = options._node || this._root.cache;
     this._source = options.source || options._source;
+    this._recycleJSON = options.recycleJSON || options._recycleJSON;
     this._request = options.request || options._request || new RequestQueue(this, options.scheduler || new ImmediateScheduler());
 
     if (typeof options.maxSize === "number") {
         this._maxSize = options.maxSize;
     } else {
         this._maxSize = options._maxSize || Model.prototype._maxSize;
+    }
+
+    if (options._seed) {
+        this._seed = options._seed;
+        this._recycleJSON = true;
     }
 
     if (typeof options.collectRatio === "number") {
@@ -4875,6 +4268,8 @@ function Model(o) {
         this._treatErrorsAsValues = options.treatErrorsAsValues;
     } else if (options.hasOwnProperty("_treatErrorsAsValues")) {
         this._treatErrorsAsValues = options._treatErrorsAsValues;
+    } else if (this._recycleJSON) {
+        this._treatErrorsAsValues = true;
     }
 
     this._allowFromWhenceYouCame = options.allowFromWhenceYouCame || options._allowFromWhenceYouCame || false;
@@ -4899,14 +4294,14 @@ Model.prototype._collectRatio = 0.75;
  * @param {...PathSet} path - the path(s) to retrieve
  * @return {ModelResponse.<JSONEnvelope>} - the requested data as JSON
  */
-Model.prototype.get = __webpack_require__(109);
+Model.prototype.get = __webpack_require__(110);
 
 /**
  * Sets the value at one or more places in the JSONGraph model. The set method accepts one or more {@link PathValue}s, each of which is a combination of a location in the document and the value to place there.  In addition to accepting  {@link PathValue}s, the set method also returns the values after the set operation is complete.
  * @function
  * @return {ModelResponse.<JSONEnvelope>} - an {@link Observable} stream containing the values in the JSONGraph model after the set was attempted
  */
-Model.prototype.set = __webpack_require__(111);
+Model.prototype.set = __webpack_require__(112);
 
 /**
  * The preload method retrieves several {@link Path}s or {@link PathSet}s from a {@link Model} and loads them into the Model cache.
@@ -5030,7 +4425,7 @@ model.
 // []
 // ["usersById", 32] - because userModel refers to target of reference at ["users", 0]
  */
-Model.prototype.deref = __webpack_require__(82);
+Model.prototype.deref = __webpack_require__(85);
 
 /**
  * A dereferenced model can become invalid when the reference from which it was
@@ -5043,7 +4438,7 @@ Model.prototype.deref = __webpack_require__(82);
  * @return {Boolean} - If the currently deref'd model is still considered a
  * valid deref.
  */
-Model.prototype._hasValidParentReference = __webpack_require__(81);
+Model.prototype._hasValidParentReference = __webpack_require__(84);
 
 /**
  * Get data for a single {@link Path}.
@@ -5060,7 +4455,7 @@ Model.prototype._hasValidParentReference = __webpack_require__(81);
 
  // The code above prints "Jim" to the console.
  */
-Model.prototype.getValue = __webpack_require__(87);
+Model.prototype.getValue = __webpack_require__(90);
 
 /**
  * Set value for a single {@link Path}.
@@ -5078,7 +4473,7 @@ Model.prototype.getValue = __webpack_require__(87);
 
  // The code above prints "Jim" to the console.
  */
-Model.prototype.setValue = __webpack_require__(117);
+Model.prototype.setValue = __webpack_require__(118);
 
 /**
  * Set the local cache to a {@link JSONGraph} fragment. This method can be a useful way of mocking a remote document, or restoring the local cache from a previously stored state.
@@ -5105,7 +4500,7 @@ Model.prototype.setCache = function modelSetCache(cacheOrJSONGraphEnvelope) {
 
         // performs promotion without producing output.
         if (out) {
-            get.getWithPathsAsPathMap(this, out, []);
+            get.getWithPathsAsPathMap(this, out, [], true);
         }
         this._path = boundPath;
     } else if (typeof cache === "undefined") {
@@ -5144,7 +4539,7 @@ Model.prototype.getCache = function _getCache() {
  * @return {Number} a version number which changes whenever a value is changed underneath the Model or provided Path
  */
 Model.prototype.getVersion = function getVersion() {
-    var path = arguments.length <= 0 || arguments[0] === undefined ? [] : arguments[0];
+    var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
 
     if (Array.isArray(path) === false) {
         throw new Error("Model#getVersion must be called with an Array path.");
@@ -5165,12 +4560,19 @@ Model.prototype._syncCheck = function syncCheck(name) {
 /* eslint-disable guard-for-in */
 Model.prototype._clone = function cloneModel(opts) {
     var clone = new Model(this);
-    for (var key in opts) {
-        var value = opts[key];
-        if (value === "delete") {
-            delete clone[key];
-        } else {
-            clone[key] = value;
+    if (opts) {
+        for (var key in opts) {
+            var value = opts[key];
+            if (value === "delete") {
+                delete clone[key];
+            } else if (key === "_path") {
+                clone[key] = value;
+                if (false === opts.hasOwnProperty("_node")) {
+                    delete clone["_node"];
+                }
+            } else {
+                clone[key] = value;
+            }
         }
     }
     if (clone._path.length > 0) {
@@ -5349,20 +4751,20 @@ Model.prototype._fromWhenceYouCame = function fromWhenceYouCame(allow) {
     });
 };
 
-Model.prototype._getVersion = __webpack_require__(88);
+Model.prototype._getVersion = __webpack_require__(91);
 Model.prototype._getPathValuesAsPathMap = get.getWithPathsAsPathMap;
 Model.prototype._getPathValuesAsJSONG = get.getWithPathsAsJSONGraph;
 
-Model.prototype._setPathValues = __webpack_require__(32);
-Model.prototype._setPathMaps = __webpack_require__(31);
-Model.prototype._setJSONGs = __webpack_require__(21);
-Model.prototype._setCache = __webpack_require__(31);
+Model.prototype._setPathValues = __webpack_require__(34);
+Model.prototype._setPathMaps = __webpack_require__(33);
+Model.prototype._setJSONGs = __webpack_require__(20);
+Model.prototype._setCache = __webpack_require__(33);
 
-Model.prototype._invalidatePathValues = __webpack_require__(100);
-Model.prototype._invalidatePathMaps = __webpack_require__(99);
+Model.prototype._invalidatePathValues = __webpack_require__(101);
+Model.prototype._invalidatePathMaps = __webpack_require__(100);
 
 /***/ },
-/* 78 */
+/* 81 */
 /***/ function(module, exports) {
 
 "use strict";
@@ -5388,15 +4790,14 @@ ModelDataSourceAdapter.prototype.call = function call(path, args, suffixes, path
 module.exports = ModelDataSourceAdapter;
 
 /***/ },
-/* 79 */
+/* 82 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
 "use strict";
 
-var hasOwn = __webpack_require__(17);
-var isFunction = __webpack_require__(2);
-var toJSONWithHashCodes = __webpack_require__(98);
+var hasOwn = __webpack_require__(14);
+var isFunction = __webpack_require__(3);
 
 function ModelRoot(o, topLevelModel) {
 
@@ -5413,9 +4814,7 @@ function ModelRoot(o, topLevelModel) {
         this.comparator = options.comparator;
     }
 
-    if (options.JSONWithHashCodes === true) {
-        this.branchSelector = toJSONWithHashCodes;
-    } else if (isFunction(options.branchSelector)) {
+    if (isFunction(options.branchSelector)) {
         this.branchSelector = options.branchSelector;
     }
 
@@ -5451,13 +4850,13 @@ ModelRoot.prototype.comparator = function comparator(cacheNode, messageNode) {
 module.exports = ModelRoot;
 
 /***/ },
-/* 80 */
+/* 83 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(global) {"use strict";
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var objectTypes = {
     "boolean": false,
@@ -5523,8 +4922,8 @@ module.exports = polyfillSymbol(_root);
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(66)))
 
 /***/ },
-/* 81 */
-/***/ function(module, exports) {
+/* 84 */
+/***/ function(module, exports, __webpack_require__) {
 
 "use strict";
 "use strict";
@@ -5551,12 +4950,12 @@ function hasValidParentReference() {
     }
 
     // Its been disconnected (set over or collected) from the graph.
-    if (reference && reference.ツparent === undefined) {
+    if (reference && reference["\u001eƒalcor_parent"] === undefined) {
         return false;
     }
 
     // The reference has expired but has not been collected from the graph.
-    if (reference && reference.ツinvalidated) {
+    if (reference && reference["\u001eƒalcor_invalidated"]) {
         return false;
     }
 
@@ -5564,96 +4963,116 @@ function hasValidParentReference() {
 }
 
 /***/ },
-/* 82 */
+/* 85 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
 "use strict";
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 var CONTAINER_DOES_NOT_EXIST = "e";
-var $ref = __webpack_require__(1);
-var getCachePosition = __webpack_require__(48);
-var InvalidDerefInputError = __webpack_require__(84);
+var $ref = __webpack_require__(0);
+var getCachePosition = __webpack_require__(19);
+var InvalidDerefInputError = __webpack_require__(87);
 
 module.exports = function deref(boundJSONArg) {
 
+    if (!boundJSONArg || (typeof boundJSONArg === "undefined" ? "undefined" : _typeof(boundJSONArg)) !== 'object') {
+        throw new InvalidDerefInputError();
+    }
+
     var referenceContainer, currentRefPath, i, len;
-    var absolutePath = boundJSONArg && boundJSONArg.$__path;
-    var originalRefPath = boundJSONArg && boundJSONArg.$__refPath;
-    var toReference = boundJSONArg && boundJSONArg.$__toReference;
+    var jsonMetadata = boundJSONArg && boundJSONArg["\u001eƒalcor_metadata"];
 
-    // We deref and then ensure that the reference container is attached to
-    // the model.
-    if (absolutePath) {
-        var cacheRoot = this._root.cache;
-        var cacheNode = getCachePosition(cacheRoot, absolutePath);
-        var validContainer = CONTAINER_DOES_NOT_EXIST;
-
-        if (absolutePath.length === 0) {
-            return this._clone({
-                _path: absolutePath,
-                _referenceContainer: true
-            });
-        }
-
-        if (toReference) {
-
-            validContainer = false;
-
-            i = -1;
-            len = toReference.length;
-            referenceContainer = cacheRoot;
-            while (++i < len) {
-                referenceContainer = referenceContainer[toReference[i]];
-                if (!referenceContainer || referenceContainer.$type) {
-                    break;
-                }
-            }
-
-            // If the reference container is still a sentinel value then compare
-            // the reference value with refPath.  If they are the same, then the
-            // model is still valid.
-            if (originalRefPath && referenceContainer && referenceContainer.$type === $ref) {
-                i = 0;
-                len = originalRefPath.length;
-                currentRefPath = referenceContainer.value;
-
-                validContainer = true;
-                for (; validContainer && i < len; ++i) {
-                    if (currentRefPath[i] !== originalRefPath[i]) {
-                        validContainer = false;
-                    }
-                }
-                if (validContainer === false) {
-                    cacheNode = undefined;
-                }
-            }
-        }
-
-        // Signal to the deref'd model that it has been disconnected from the
-        // graph or there is no _fromWhenceYouCame
-        if (!validContainer) {
-            referenceContainer = false;
-        }
-
-        // The container did not exist, therefore there is no reference
-        // container and fromWhenceYouCame should always return true.
-        else if (validContainer === CONTAINER_DOES_NOT_EXIST) {
-                referenceContainer = true;
-            }
-
+    if (!jsonMetadata || (typeof jsonMetadata === "undefined" ? "undefined" : _typeof(jsonMetadata)) !== 'object') {
         return this._clone({
-            _node: cacheNode,
-            _path: absolutePath,
-            _referenceContainer: referenceContainer
+            _node: undefined
         });
     }
 
-    throw new InvalidDerefInputError();
+    var recycleJSON = this._recycleJSON;
+    var absolutePath = jsonMetadata["abs_path"];
+
+    if (!absolutePath) {
+        return this._clone({
+            _node: undefined,
+            _seed: recycleJSON && { json: boundJSONArg } || undefined
+        });
+    } else if (absolutePath.length === 0) {
+        return this._clone({
+            _path: absolutePath,
+            _node: this._root.cache,
+            _referenceContainer: true,
+            _seed: recycleJSON && { json: boundJSONArg } || undefined
+        });
+    }
+
+    var originalRefPath = jsonMetadata["deref_to"];
+    var originalAbsPath = jsonMetadata["deref_from"];
+
+    // We deref and then ensure that the reference container is attached to
+    // the model.
+    var cacheRoot = this._root.cache;
+    var cacheNode = getCachePosition(cacheRoot, absolutePath);
+    var validContainer = CONTAINER_DOES_NOT_EXIST;
+
+    if (originalAbsPath) {
+
+        validContainer = false;
+
+        i = -1;
+        len = originalAbsPath.length;
+        referenceContainer = cacheRoot;
+        while (++i < len) {
+            referenceContainer = referenceContainer[originalAbsPath[i]];
+            if (!referenceContainer || referenceContainer.$type) {
+                break;
+            }
+        }
+
+        // If the reference container is still a sentinel value then compare
+        // the reference value with refPath.  If they are the same, then the
+        // model is still valid.
+        if (originalRefPath && referenceContainer && referenceContainer.$type === $ref) {
+            i = 0;
+            len = originalRefPath.length;
+            currentRefPath = referenceContainer.value;
+
+            validContainer = true;
+            for (; validContainer && i < len; ++i) {
+                if (currentRefPath[i] !== originalRefPath[i]) {
+                    validContainer = false;
+                }
+            }
+            if (validContainer === false) {
+                cacheNode = undefined;
+            }
+        }
+    }
+
+    // Signal to the deref'd model that it has been disconnected from the
+    // graph or there is no _fromWhenceYouCame
+    if (!validContainer) {
+        referenceContainer = false;
+    }
+
+    // The container did not exist, therefore there is no reference
+    // container and fromWhenceYouCame should always return true.
+    else if (validContainer === CONTAINER_DOES_NOT_EXIST) {
+            referenceContainer = true;
+        }
+
+    return this._clone({
+        _node: cacheNode,
+        _path: absolutePath,
+        _referenceContainer: referenceContainer,
+        _seed: recycleJSON && { json: boundJSONArg } || undefined
+    });
 };
 
 /***/ },
-/* 83 */
+/* 86 */
 /***/ function(module, exports) {
 
 "use strict";
@@ -5684,7 +5103,7 @@ BoundJSONGraphModelError.message = MESSAGE;
 module.exports = BoundJSONGraphModelError;
 
 /***/ },
-/* 84 */
+/* 87 */
 /***/ function(module, exports) {
 
 "use strict";
@@ -5716,7 +5135,7 @@ InvalidDerefInputError.message = MESSAGE;
 module.exports = InvalidDerefInputError;
 
 /***/ },
-/* 85 */
+/* 88 */
 /***/ function(module, exports) {
 
 "use strict";
@@ -5750,15 +5169,15 @@ InvalidModelError.message = MESSAGE;
 module.exports = InvalidModelError;
 
 /***/ },
-/* 86 */
+/* 89 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
 "use strict";
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var isInternalKey = __webpack_require__(123);
+var isInternalKey = __webpack_require__(124);
 
 /**
  * decends and copies the cache.
@@ -5811,7 +5230,7 @@ function _copyCache(node, out, fromKey) {
         // Paste the node into the out cache.
         if (cacheNext.$type) {
             var isObject = cacheNext.value && _typeof(cacheNext.value) === "object";
-            var isUserCreatedcacheNext = !cacheNext.ツmodelCreated;
+            var isUserCreatedcacheNext = !cacheNext["\u001eƒalcor_wrapped_value"];
             var value;
             if (isObject || isUserCreatedcacheNext) {
                 value = cloneBoxedValue(cacheNext);
@@ -5828,15 +5247,16 @@ function _copyCache(node, out, fromKey) {
 }
 
 /***/ },
-/* 87 */
+/* 90 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
 "use strict";
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var ModelResponse = __webpack_require__(4);
+var GetResponse = __webpack_require__(32);
+var ModelResponse = __webpack_require__(5);
 
 module.exports = function getValue(path) {
     var pathIdx = 0;
@@ -5853,7 +5273,7 @@ module.exports = function getValue(path) {
 
     var self = this;
     return new ModelResponse(function (obs) {
-        return self.get(path).subscribe(function (data) {
+        return new GetResponse(self, [path], false, false, false, undefined, false).subscribe(function (data) {
             var curr = data.json;
             var depth = -1;
             var length = path.length;
@@ -5871,34 +5291,38 @@ module.exports = function getValue(path) {
 };
 
 /***/ },
-/* 88 */
+/* 91 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
 "use strict";
 
-var getBoundCacheNode = __webpack_require__(11);
+var getBoundCacheNode = __webpack_require__(18);
 
 module.exports = function _getVersion(model, path) {
     var node = getBoundCacheNode(model, path);
-    var version = node && node.ツversion;
+    var version = node && node["\u001eƒalcor_version"];
     return version == null ? -1 : version;
 };
 
 /***/ },
-/* 89 */
+/* 92 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
 "use strict";
 
-var walkPathAndBuildOutput = __webpack_require__(93);
-var getBoundCacheNode = __webpack_require__(11);
-var InvalidModelError = __webpack_require__(85);
+var isArray = Array.isArray;
+var walkPathAndBuildOutput = __webpack_require__(95);
+var walkFlatBufferAndBuildOutput = __webpack_require__(94);
+var getBoundCacheNode = __webpack_require__(18);
+var InvalidModelError = __webpack_require__(88);
+var toFlatBuffer = __webpack_require__(4).toFlatBuffer;
+var computeFlatBufferHash = __webpack_require__(4).computeFlatBufferHash;
 
 module.exports = getJSON;
 
-function getJSON(model, paths, values) {
+function getJSON(model, paths, values, forceUsePathWalk) {
 
     var node,
         referenceContainer,
@@ -5935,24 +5359,33 @@ function getJSON(model, paths, values) {
 
     var boxValues = model._boxed,
         expired = modelRoot.expired,
+        recycleJSON = model._recycleJSON,
         materialized = model._materialized,
         hasDataSource = Boolean(model._source),
         branchSelector = modelRoot.branchSelector,
         treatErrorsAsValues = model._treatErrorsAsValues,
         allowFromWhenceYouCame = model._allowFromWhenceYouCame,
+        path,
         seed = values[0],
         json = seed && seed.json,
-        results = { values: values },
-        path,
-        pathsIndex = -1,
-        pathsCount = paths.length;
+        results = { values: values };
 
-    while (++pathsIndex < pathsCount) {
-        path = paths[pathsIndex];
-        requestedLength = path.length;
-        json = walkPathAndBuildOutput(cache, node, json, path,
-        /* depth = */0, seed, results, requestedPath, requestedLength, optimizedPath, optimizedLength,
+    if (recycleJSON && forceUsePathWalk !== true) {
+        if (isArray(path = paths)) {
+            path = computeFlatBufferHash(toFlatBuffer(paths));
+        }
+        json = walkFlatBufferAndBuildOutput(cache, node, json, path, 0, seed, results, requestedPath, optimizedPath, optimizedLength,
         /* fromReference = */false, referenceContainer, modelRoot, expired, branchSelector, boxValues, materialized, hasDataSource, treatErrorsAsValues, allowFromWhenceYouCame);
+    } else {
+        var pathsIndex = -1,
+            pathsCount = paths.length;
+        while (++pathsIndex < pathsCount) {
+            path = paths[pathsIndex];
+            requestedLength = path.length;
+            json = walkPathAndBuildOutput(cache, node, json, path,
+            /* depth = */0, seed, results, requestedPath, requestedLength, optimizedPath, optimizedLength,
+            /* fromReference = */false, referenceContainer, modelRoot, expired, branchSelector, boxValues, materialized, hasDataSource, treatErrorsAsValues, allowFromWhenceYouCame);
+        }
     }
 
     if (results.hasValue) {
@@ -5963,131 +5396,13 @@ function getJSON(model, paths, values) {
 }
 
 /***/ },
-/* 90 */
+/* 93 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
 "use strict";
 
-var arr = new Array(3);
-var $ref = __webpack_require__(1);
-var promote = __webpack_require__(16);
-var isExpired = __webpack_require__(3);
-var createHardlink = __webpack_require__(13);
-var CircularReferenceError = __webpack_require__(45);
-
-module.exports = getReferenceTarget;
-
-/* eslint-disable no-undef */
-/* eslint-disable no-console */
-/* eslint-disable no-cond-assign */
-/* eslint-disable no-constant-condition */
-function getReferenceTarget(root, ref, modelRoot) {
-
-    promote(modelRoot, ref);
-
-    var context,
-        key,
-        type,
-        depth = 0,
-        followedRefsCount = 0,
-        node = root,
-        path = ref.value,
-        copy = path,
-        length = path.length;
-
-    do {
-        if (depth === 0 && undefined !== (context = ref.ツcontext)) {
-            node = context;
-            depth = length;
-        } else {
-            key = path[depth++];
-            if (undefined === (node = node[key])) {
-                break;
-            }
-        }
-
-        if (depth === length) {
-            type = node.$type;
-            // If the reference points to an expired
-            // value node, don't create a hard-link.
-            if (undefined !== type && isExpired(node)) {
-                break;
-            }
-            // If a reference points to itself, throw an error.
-            else if (node === ref) {
-                    throw new CircularReferenceError(path);
-                }
-                // If the node we land on isn't the existing ref context,
-                // create a hard-link between the reference and the node
-                // it points to.
-                else if (node !== context) {
-                        createHardlink(ref, node);
-                    }
-
-            // If the reference points to another ref, follow the new ref
-            // by resetting the relevant state and continuing from the top.
-            if (type === $ref) {
-
-                promote(modelRoot, node);
-
-                depth = 0;
-                ref = node;
-                node = root;
-                path = copy = ref.value;
-                length = path.length;
-
-                if (true) {
-                    // If we follow too many references, we might have an indirect
-                    // circular reference chain. Warn about this (but don't throw).
-                    if (++followedRefsCount % 50 === 0) {
-                        try {
-                            throw new Error("Followed " + followedRefsCount + " references. " + "This might indicate the presence of an indirect " + "circular reference chain.");
-                        } catch (e) {
-                            if (console) {
-                                var reportFn = typeof console.warn === "function" && console.warn || typeof console.log === "function" && console.log;
-                                if (reportFn) {
-                                    reportFn.call(console, e.toString());
-                                }
-                            }
-                        }
-                    }
-                }
-
-                continue;
-            }
-            break;
-        } else if (undefined !== node.$type) {
-            break;
-        }
-    } while (true);
-
-    if (depth < length && undefined !== node) {
-        length = depth;
-    }
-
-    depth = -1;
-    path = new Array(length);
-    while (++depth < length) {
-        path[depth] = copy[depth];
-    }
-
-    arr[0] = node;
-    arr[1] = path;
-    arr[2] = ref;
-
-    return arr;
-}
-/* eslint-enable */
-
-/***/ },
-/* 91 */
-/***/ function(module, exports, __webpack_require__) {
-
-"use strict";
-"use strict";
-
-var clone = __webpack_require__(15);
+var clone = __webpack_require__(13);
 
 module.exports = onError;
 
@@ -6109,64 +5424,302 @@ function onError(node, depth, results, requestedPath, fromReference, boxValues) 
 }
 
 /***/ },
-/* 92 */
+/* 94 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
 "use strict";
 
-var clone = __webpack_require__(15);
-var onError = __webpack_require__(91);
-var $atom = __webpack_require__(25);
-var $error = __webpack_require__(19);
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-module.exports = onJSONValue;
+var JSONProto = __webpack_require__(28);
+var $ref = __webpack_require__(0);
+var onValue = __webpack_require__(51);
+var originalOnMissing = __webpack_require__(30);
+var isExpired = __webpack_require__(2);
+var getReferenceTarget = __webpack_require__(50);
+var NullInPathError = __webpack_require__(10);
+var InvalidKeySetError = __webpack_require__(26);
+var getHashCode = __webpack_require__(4).getHashCode;
+var flatBufferToPaths = __webpack_require__(4).flatBufferToPaths;
 
-function onJSONValue(node, type, depth, seed, results, requestedPath, optimizedPath, optimizedLength, fromReference, boxValues, materialized, treatErrorsAsValues) {
+module.exports = walkPathAndBuildOutput;
 
-    if ($error === type && !treatErrorsAsValues) {
-        return onError(node, depth, results, requestedPath, fromReference, boxValues);
+/* eslint-disable camelcase */
+/* eslint-disable no-cond-assign */
+/* eslint-disable no-constant-condition */
+function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, results, requestedPath, optimizedPath, optimizedLength, fromReference, referenceContainer, modelRoot, expired, branchSelector, boxValues, materialized, hasDataSource, treatErrorsAsValues, allowFromWhenceYouCame) {
+
+    var type, refTarget;
+
+    // ============ Check for base cases ================
+
+    // If there's nowhere to go, we've reached a terminal node, or hit
+    // the end of the path, stop now. Either build missing paths or report the value.
+    if (undefined === node || undefined !== (type = node.$type) || undefined === path) {
+        return onValueType(node, type, path, depth, seed, results, requestedPath, optimizedPath, optimizedLength, fromReference, modelRoot, expired, boxValues, materialized, hasDataSource, treatErrorsAsValues, onValue, onMissing);
     }
 
-    var value = node && node.value;
-    var requiresMaterializedToReport = type && value === undefined;
+    var jsonProto,
+        f_meta,
+        f_code = "";
 
-    if (requiresMaterializedToReport) {
-        if (materialized) {
+    var next,
+        nextKey,
+        keyset,
+        keyIsRange,
+        keys = path["$keys"],
+        nextDepth = depth + 1,
+        rangeEnd,
+        nextJSON,
+        nextReferenceContainer,
+        nextOptimizedLength,
+        nextOptimizedPath,
+        optimizedLengthNext = optimizedLength + 1,
+        refContainerAbsPath,
+        refContainerRefPath;
+
+    if (allowFromWhenceYouCame && referenceContainer) {
+        refContainerRefPath = referenceContainer.value;
+        refContainerAbsPath = referenceContainer["\u001eƒalcor_abs_path"];
+    }
+
+    if (json && (f_meta = json["\u001eƒalcor_metadata"])) {
+        if (f_meta["version"] === node["\u001eƒalcor_version"] && f_meta["$code"] === path["$code"]) {
             results.hasValue = true;
-            return { $type: $atom };
+            return json;
         }
-        return undefined;
+        f_meta["version"] = node["\u001eƒalcor_version"];
+        f_meta["abs_path"] = node["\u001eƒalcor_abs_path"];
+        f_meta["deref_to"] = refContainerRefPath;
+        f_meta["deref_from"] = refContainerAbsPath;
     }
 
-    results.hasValue = true;
+    var keysIndex = -1;
+    var keysLength = keys.length;
+    var nextPath, nextPathKey, hasNextMissingPath, nextMeta, nextMetaPath;
 
-    // boxValues always clones the node
-    if (boxValues) {
-        return clone(node);
+    iteratingKeyset: while (++keysIndex < keysLength) {
+
+        keyset = keys[keysIndex];
+        nextPath = path[keysIndex];
+        hasNextMissingPath = false;
+        nextMeta = undefined;
+        nextMetaPath = undefined;
+
+        // If `null` appears before the end of the path, throw an error.
+        // If `null` is at the end of the path, but the reference doesn't
+        // point to a sentinel value, throw an error.
+        //
+        // Inserting `null` at the end of the path indicates the target of a ref
+        // should be returned, rather than the ref itself. When `null` is the last
+        // key, the path is lengthened by one, ensuring that if a ref is encountered
+        // just before the `null` key, the reference is followed before terminating.
+        if (null === keyset) {
+            if (nextPath !== undefined) {
+                throw new NullInPathError();
+            }
+            f_code = "" + getHashCode("" + f_code + "null");
+            continue;
+        }
+        // If the keyset is a primitive value, we've found our `nextKey`.
+        else if ("object" !== (typeof keyset === "undefined" ? "undefined" : _typeof(keyset))) {
+                nextKey = keyset;
+                rangeEnd = undefined;
+                keyIsRange = false;
+                nextPathKey = nextKey;
+            }
+            // If the Keyset isn't null or primitive, then it must be a Range.
+            else {
+                    rangeEnd = keyset.to;
+                    nextKey = keyset.from || 0;
+                    if ("number" !== typeof rangeEnd) {
+                        rangeEnd = nextKey + (keyset.length || 0) - 1;
+                    }
+                    if (rangeEnd - nextKey < 0) {
+                        break iteratingKeyset;
+                    }
+                    keyIsRange = true;
+                    nextPathKey = "{from:" + nextKey + ",length:" + (rangeEnd - nextKey + 1) + "}";
+                }
+
+        // Now that we have the next key, step down one level in the cache.
+        do {
+            fromReference = false;
+            nextJSON = json && json[nextKey];
+            nextOptimizedPath = optimizedPath;
+            nextOptimizedLength = optimizedLengthNext;
+            nextReferenceContainer = referenceContainer;
+
+            next = node[nextKey];
+            requestedPath[depth] = nextKey;
+            optimizedPath[optimizedLength] = nextKey;
+
+            // If we encounter a ref, inline the reference target and continue
+            // evaluating the path.
+            if (next && nextPath !== undefined &&
+            // If the reference is expired, it will be invalidated and
+            // reported as missing in the next call to walkPath below.
+            next.$type === $ref && !isExpired(next)) {
+
+                // Retrieve the reference target and next referenceContainer (if
+                // this reference points to other references) and continue
+                // following the path. If the reference resolves to a missing
+                // path or leaf node, it will be handled in the next call to
+                // walkPath.
+                refTarget = getReferenceTarget(cacheRoot, next, modelRoot);
+
+                next = refTarget[0];
+                fromReference = true;
+                nextOptimizedPath = refTarget[1];
+                nextReferenceContainer = refTarget[2];
+                nextOptimizedLength = nextOptimizedPath.length;
+                refTarget[0] = refTarget[1] = refTarget[2] = undefined;
+            }
+
+            // Continue following the path
+
+            nextJSON = walkPathAndBuildOutput(cacheRoot, next, nextJSON, nextPath, nextDepth, seed, results, requestedPath, nextOptimizedPath, nextOptimizedLength, fromReference, nextReferenceContainer, modelRoot, expired, branchSelector, boxValues, materialized, hasDataSource, treatErrorsAsValues, allowFromWhenceYouCame);
+
+            // Inspect the return value from the step and determine whether to
+            // create or write into the JSON branch at this level.
+            //
+            // 1. If the next node was a leaf value, nextJSON is the value.
+            // 2. If the next node was a missing path, nextJSON is undefined.
+            // 3. If the next node was a branch, then nextJSON will either be an
+            //    Object or undefined. If nextJSON is undefined, all paths under
+            //    this step resolved to missing paths. If it's an Object, then
+            //    at least one path resolved to a successful leaf value.
+            //
+            // This check defers creating branches until we see at least one
+            // cache hit. Otherwise, don't waste the cycles creating a branch
+            // if everything underneath is a cache miss.
+
+            if (undefined !== nextJSON) {
+                // The json value will initially be undefined. If we're here,
+                // then at least one leaf value was encountered, so create a
+                // branch to contain it.
+                if (f_meta === undefined) {
+                    f_meta = {};
+                    f_meta["version"] = node["\u001eƒalcor_version"];
+                    f_meta["abs_path"] = node["\u001eƒalcor_abs_path"];
+                    f_meta["deref_to"] = refContainerRefPath;
+                    f_meta["deref_from"] = refContainerAbsPath;
+                }
+
+                if (undefined === json) {
+                    // Enable developers to instrument branch node creation by
+                    // providing a custom function. If they do, delegate branch
+                    // node creation to them.
+                    if (branchSelector) {
+                        json = branchSelector(f_meta);
+                        if (!json["\u001eƒalcor_metadata"]) {
+                            json["\u001eƒalcor_metadata"] = f_meta;
+                        }
+                    } else {
+                        jsonProto = new JSONProto(f_meta);
+                        json = Object.create(jsonProto);
+                    }
+                }
+
+                // Set the reported branch or leaf into this branch.
+                json[nextKey] = nextJSON;
+            } else if (json && json.hasOwnProperty(nextKey)) {
+                delete json[nextKey];
+                hasNextMissingPath = true;
+            } else {
+                hasNextMissingPath = true;
+            }
+        }
+        // Re-enter the inner loop and continue iterating the Range, or exit
+        // here if we encountered a Key.
+        while (keyIsRange && ++nextKey <= rangeEnd);
+
+        if (hasNextMissingPath === true || undefined === nextPath) {
+            f_code = "" + getHashCode("" + f_code + nextPathKey);
+        } else {
+            f_code = "" + getHashCode("" + f_code + nextPathKey + nextPath["$code"]);
+        }
     }
 
-    return value;
+    if (f_meta) {
+        f_meta["$code"] = f_code;
+    }
+
+    // `json` will either be a branch, or undefined if all paths were cache misses
+    return json;
 }
 
+var $atom = __webpack_require__(16);
+var promote = __webpack_require__(11);
+var isExpired = __webpack_require__(2);
+var expireNode = __webpack_require__(6);
+
+function onValueType(node, type, path, depth, seed, results, requestedPath, optimizedPath, optimizedLength, fromReference, modelRoot, expired, boxValues, materialized, hasDataSource, treatErrorsAsValues, onValue, onMissing) {
+
+    if (!node || !type) {
+        if (materialized && !hasDataSource) {
+            if (seed) {
+                results.hasValue = true;
+                return { $type: $atom };
+            }
+            return undefined;
+        } else {
+            return onMissing(path, depth, results, requestedPath, depth, optimizedPath, optimizedLength);
+        }
+    } else if (isExpired(node)) {
+        if (!node["\u001eƒalcor_invalidated"]) {
+            expireNode(node, expired, modelRoot);
+        }
+        return onMissing(path, depth, results, requestedPath, depth, optimizedPath, optimizedLength);
+    }
+
+    promote(modelRoot, node);
+
+    if (seed) {
+        if (fromReference) {
+            requestedPath[depth] = null;
+        }
+        return onValue(node, type, depth, seed, results, requestedPath, optimizedPath, optimizedLength, fromReference, boxValues, materialized, treatErrorsAsValues);
+    }
+
+    return undefined;
+}
+
+function onMissing(path, depth, results, requestedPath, requestedLength, optimizedPath, optimizedLength) {
+
+    var paths = path ? flatBufferToPaths(path) : [[]];
+    var rPath = requestedPath.slice(0, requestedLength);
+
+    paths.forEach(function (restPath) {
+        requestedLength = depth + restPath.length;
+        originalOnMissing(rPath.concat(restPath), depth, results, requestedPath, requestedLength, optimizedPath, optimizedLength);
+    });
+
+    return undefined;
+}
+
+/* eslint-enable */
+
 /***/ },
-/* 93 */
+/* 95 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
 "use strict";
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
+var JSONProto = __webpack_require__(28);
 var isArray = Array.isArray;
-var $ref = __webpack_require__(1);
-var onValue = __webpack_require__(92);
-var onMissing = __webpack_require__(49);
-var onValueType = __webpack_require__(50);
-var isExpired = __webpack_require__(3);
-var getReferenceTarget = __webpack_require__(90);
-var NullInPathError = __webpack_require__(14);
-var InvalidKeySetError = __webpack_require__(46);
+var $ref = __webpack_require__(0);
+var onValue = __webpack_require__(51);
+var onMissing = __webpack_require__(30);
+var onValueType = __webpack_require__(52);
+var isExpired = __webpack_require__(2);
+var getReferenceTarget = __webpack_require__(50);
+var NullInPathError = __webpack_require__(10);
+var InvalidKeySetError = __webpack_require__(26);
 
 module.exports = walkPathAndBuildOutput;
 
@@ -6185,6 +5738,8 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
         return onValueType(node, type, path, depth, seed, results, requestedPath, requestedLength, optimizedPath, optimizedLength, fromReference, modelRoot, expired, boxValues, materialized, hasDataSource, treatErrorsAsValues, onValue, onMissing);
     }
 
+    var jsonProto, f_meta;
+
     var next,
         nextKey,
         keyset,
@@ -6198,7 +5753,9 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
         keysetLength = 0,
         nextOptimizedLength,
         nextOptimizedPath,
-        optimizedLengthNext = optimizedLength + 1;
+        optimizedLengthNext = optimizedLength + 1,
+        refContainerAbsPath,
+        refContainerRefPath;
 
     keyset = path[depth];
 
@@ -6215,6 +5772,11 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
             throw new NullInPathError();
         }
         return json;
+    }
+
+    if (allowFromWhenceYouCame && referenceContainer) {
+        refContainerRefPath = referenceContainer.value;
+        refContainerAbsPath = referenceContainer["\u001eƒalcor_abs_path"];
     }
 
     // Iterate over every key in the keyset. This loop is perhaps a bit clever,
@@ -6341,36 +5903,23 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
                 // then at least one leaf value was encountered, so create a
                 // branch to contain it.
                 if (undefined === json) {
+                    f_meta = {};
+                    f_meta["version"] = node["\u001eƒalcor_version"];
+                    f_meta["abs_path"] = node["\u001eƒalcor_abs_path"];
+                    f_meta["deref_to"] = refContainerRefPath;
+                    f_meta["deref_from"] = refContainerAbsPath;
                     // Enable developers to instrument branch node creation by
                     // providing a custom function. If they do, delegate branch
                     // node creation to them.
                     if (branchSelector) {
-
-                        // branchSelector = (
-                        //     nodeKey: String|Number|null,
-                        //     nodePath: Array|null,
-                        //     nodeVersion: Number,
-                        //     requestedPath: Array,
-                        //     requestedDepth: Number,
-                        //     referencePath: Array|null,
-                        //     pathToReference: Array|null
-                        // ) => Object { $__path?, $__refPath?, $__toReference? }
-
-                        json = branchSelector(node.ツkey, node.ツabsolutePath, node.ツversion, path, depth, allowFromWhenceYouCame && referenceContainer && referenceContainer.value || undefined, allowFromWhenceYouCame && referenceContainer && referenceContainer.ツabsolutePath || undefined);
-                    }
-                    // Otherwise, create a branch ourselves and assign the required metadata
-                    else {
-                            json = {};
-                            // Only assign the $__path if this isn't the top-level
-                            // branch (e.g. { json: {} <-- this one }).
-                            if (depth > 0) {
-                                json.$__path = node.ツabsolutePath;
-                            }
-                            if (allowFromWhenceYouCame && referenceContainer) {
-                                json.$__refPath = referenceContainer.value;
-                                json.$__toReference = referenceContainer.ツabsolutePath;
-                            }
+                        json = branchSelector(f_meta);
+                        if (!json["\u001eƒalcor_metadata"]) {
+                            json["\u001eƒalcor_metadata"] = f_meta;
                         }
+                    } else {
+                        jsonProto = new JSONProto(f_meta);
+                        json = Object.create(jsonProto);
+                    }
                 }
 
                 // Set the reported branch or leaf into this branch.
@@ -6398,14 +5947,14 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
 /* eslint-enable */
 
 /***/ },
-/* 94 */
+/* 96 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
 "use strict";
 
-var walkPathAndBuildOutput = __webpack_require__(97);
-var BoundJSONGraphModelError = __webpack_require__(83);
+var walkPathAndBuildOutput = __webpack_require__(99);
+var BoundJSONGraphModelError = __webpack_require__(86);
 
 module.exports = getJSONGraph;
 
@@ -6457,20 +6006,20 @@ function getJSONGraph(model, paths, values) {
 }
 
 /***/ },
-/* 95 */
+/* 97 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
 "use strict";
 
 var arr = new Array(2);
-var clone = __webpack_require__(15);
-var $ref = __webpack_require__(1);
+var clone = __webpack_require__(13);
+var $ref = __webpack_require__(0);
 var inlineValue = __webpack_require__(29);
-var promote = __webpack_require__(16);
-var isExpired = __webpack_require__(3);
-var createHardlink = __webpack_require__(13);
-var CircularReferenceError = __webpack_require__(45);
+var promote = __webpack_require__(11);
+var isExpired = __webpack_require__(2);
+var createHardlink = __webpack_require__(12);
+var CircularReferenceError = __webpack_require__(48);
 
 module.exports = getReferenceTarget;
 
@@ -6493,7 +6042,7 @@ function getReferenceTarget(root, ref, modelRoot, seed, boxValues, materialized)
         length = path.length;
 
     do {
-        if (depth === 0 && undefined !== (context = ref.ツcontext)) {
+        if (depth === 0 && undefined !== (context = ref["\u001eƒalcor_context"])) {
             node = context;
             depth = length;
         } else {
@@ -6578,18 +6127,18 @@ function getReferenceTarget(root, ref, modelRoot, seed, boxValues, materialized)
 /* eslint-enable */
 
 /***/ },
-/* 96 */
+/* 98 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
 "use strict";
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var clone = __webpack_require__(15);
-var $ref = __webpack_require__(1);
-var $atom = __webpack_require__(25);
-var $error = __webpack_require__(19);
+var clone = __webpack_require__(13);
+var $ref = __webpack_require__(0);
+var $atom = __webpack_require__(16);
+var $error = __webpack_require__(17);
 var inlineValue = __webpack_require__(29);
 
 module.exports = onJSONGraphValue;
@@ -6612,7 +6161,7 @@ function onJSONGraphValue(node, type, depth, seed, results, requestedPath, optim
          * JSON Graph should always clone errors, refs, atoms we didn't
          * create, and atoms we created to wrap Object values.
          */
-        $ref === type || $error === type || !node.ツmodelCreated || "object" === (typeof value === "undefined" ? "undefined" : _typeof(value))) {
+        $ref === type || $error === type || !node["\u001eƒalcor_wrapped_value"] || "object" === (typeof value === "undefined" ? "undefined" : _typeof(value))) {
             value = clone(node);
         }
 
@@ -6627,25 +6176,25 @@ function onJSONGraphValue(node, type, depth, seed, results, requestedPath, optim
 }
 
 /***/ },
-/* 97 */
+/* 99 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
 "use strict";
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var isArray = Array.isArray;
-var clone = __webpack_require__(15);
-var $ref = __webpack_require__(1);
-var onValue = __webpack_require__(96);
-var onMissing = __webpack_require__(49);
+var clone = __webpack_require__(13);
+var $ref = __webpack_require__(0);
+var onValue = __webpack_require__(98);
+var onMissing = __webpack_require__(30);
 var inlineValue = __webpack_require__(29);
-var onValueType = __webpack_require__(50);
-var isExpired = __webpack_require__(3);
-var getReferenceTarget = __webpack_require__(95);
-var NullInPathError = __webpack_require__(14);
-var InvalidKeySetError = __webpack_require__(46);
+var onValueType = __webpack_require__(52);
+var isExpired = __webpack_require__(2);
+var getReferenceTarget = __webpack_require__(97);
+var NullInPathError = __webpack_require__(10);
+var InvalidKeySetError = __webpack_require__(26);
 
 module.exports = walkPathAndBuildOutput;
 
@@ -6817,202 +6366,28 @@ function walkPathAndBuildOutput(cacheRoot, node, path, depth, seed, results, req
 /* eslint-enable */
 
 /***/ },
-/* 98 */
-/***/ function(module, exports) {
-
-"use strict";
-'use strict';
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
-
-module.exports = toJSONWithHashCodes;
-
-/**
- * branchSelector = (
- *     nodeKey: String|Number|null,
- *     nodePath: Array|null,
- *     nodeVersion: Number,
- *     requestedPath: Array,
- *     requestedDepth: Number,
- *     referencePath: Array|null,
- *     pathToReference: Array|null
- * ) => Object { $__path?, $__refPath?, $__toReference? }
- */
-
-function toJSONWithHashCodes() {
-    var nodeKey = arguments.length <= 0 || arguments[0] === undefined ? '$__cache__$' : arguments[0];
-    var nodePath = arguments.length <= 1 || arguments[1] === undefined ? [] : arguments[1];
-    var nodeVersion = arguments.length <= 2 || arguments[2] === undefined ? 0 : arguments[2];
-    var requestedPath = arguments.length <= 3 || arguments[3] === undefined ? [] : arguments[3];
-    var requestedDepth = arguments.length <= 4 || arguments[4] === undefined ? 0 : arguments[4];
-    var referencePath = arguments[5];
-    var pathToReference = arguments[6];
-
-
-    var json = {
-        __proto__: JSONProto,
-        $__key: nodeKey,
-        $__path: nodePath,
-        $__version: nodeVersion,
-        $__keysPath: requestedPath,
-        $__keyDepth: requestedDepth
-    };
-
-    if (referencePath && pathToReference) {
-        json.$__refPath = referencePath;
-        json.$__toReference = pathToReference;
-    }
-
-    return json;
-}
-
-var isArray = Array.isArray;
-var JSONProto = Object.create(Object.prototype, Object.assign({
-    $__name: { value: 'falcor-node' },
-    $__hash: {
-        enumerable: false,
-        get: function get() {
-            var $__hash__$ = this.$__hash__$;
-            if ($__hash__$ === undefined) {
-                $__hash__$ = this.$__hash__$ = '' + getHashCode('' + computeHashCodeForKeys('$__cache__$', this.$__path, 0) + computeHashCodeForKeys(this.$__key, this.$__keysPath, this.$__keyDepth));
-            }
-            return $__hash__$;
-        }
-    }
-}, arrayProtoMethods().reduce(function (jsonProto, methodName) {
-    var method = Array.prototype[methodName];
-    jsonProto[methodName] = {
-        writable: true, enumerable: false, value: function value() {
-            return method.apply(this, arguments);
-        }
-    };
-    return jsonProto;
-}, {})));
-
-function arrayProtoMethods() {
-    return ['concat', 'copyWithin', 'entries', 'every', 'fill', 'filter', 'find', 'findIndex', 'forEach', 'includes', 'indexOf', 'join', 'keys', 'lastIndexOf', 'map', 'pop', 'push', 'reduce', 'reduceRight', 'reverse', 'shift', 'slice', 'some', 'sort', 'splice', 'unshift', 'values'];
-}
-
-function computeHashCodeForKeys(key, path, depth) {
-
-    var code = '' + getHashCode('' + key);
-
-    if (depth === path.length) {
-        return code;
-    }
-
-    var nextDepth = depth + 1;
-    var keyset,
-        keysetIndex = -1,
-        keysetLength = 0;
-    var nextKey, keyIsRange, rangeEnd, keysOrRanges;
-
-    keyset = path[depth];
-
-    if (keyset === null) {
-        return code;
-    }
-
-    iteratingKeyset: do {
-        // If the keyset is a primitive value, we've found our `nextKey`.
-        if ('object' !== (typeof keyset === 'undefined' ? 'undefined' : _typeof(keyset))) {
-            nextKey = keyset;
-            rangeEnd = undefined;
-            keyIsRange = false;
-        }
-        // If we encounter a Keyset, either iterate through the Keys and Ranges,
-        // or throw an error if we're already iterating a Keyset. Keysets cannot
-        // contain other Keysets.
-        else if (isArray(keyset)) {
-                // If we've already encountered an Array keyset, throw an error.
-                if (keysOrRanges !== undefined) {
-                    break iteratingKeyset;
-                }
-                keysetIndex = 0;
-                keysOrRanges = keyset;
-                keysetLength = keyset.length;
-                // If an Array of keys or ranges is empty, terminate the graph walk
-                // and return the json constructed so far. An example of an empty
-                // Keyset is: ['lolomo', [], 'summary']. This should short circuit
-                // without building missing paths.
-                if (0 === keysetLength) {
-                    break iteratingKeyset;
-                }
-                // Assign `keyset` to the first value in the Keyset. Re-entering the
-                // outer loop mimics a singly-recursive function call.
-                keyset = keysOrRanges[keysetIndex];
-                continue iteratingKeyset;
-            }
-            // If the Keyset isn't a primitive or Array, then it must be a Range.
-            else {
-                    rangeEnd = keyset.to;
-                    nextKey = keyset.from || 0;
-                    if ("number" !== typeof rangeEnd) {
-                        rangeEnd = nextKey + (keyset.length || 0) - 1;
-                    }
-                    if (rangeEnd - nextKey < 0) {
-                        break iteratingKeyset;
-                    }
-                    keyIsRange = true;
-                }
-
-        do {
-            code = '' + getHashCode('' + code + computeHashCodeForKeys(nextKey, path, nextDepth));
-        }
-        // Re-enter the inner loop and continue iterating the Range, or exit
-        // here if we encountered a Key.
-        while (keyIsRange && ++nextKey <= rangeEnd);
-
-        // If we've exhausted the Keyset (or never encountered one at all),
-        // exit the outer loop.
-        if (++keysetIndex === keysetLength) {
-            break iteratingKeyset;
-        }
-
-        // Otherwise get the next Key or Range from the Keyset and re-enter the
-        // outer loop from the top.
-        keyset = keysOrRanges[keysetIndex];
-    } while (true);
-
-    return code;
-}
-
-function getHashCode(str) {
-    var hash = 5381,
-        i = str.length;
-    while (i) {
-        hash = hash * 33 ^ str.charCodeAt(--i);
-    }
-    // JavaScript does bitwise operations (like XOR, above) on 32-bit signed
-    // integers. Since we want the results to be always positive, convert the
-    // signed int to an unsigned by doing an unsigned bitshift.
-    return hash >>> 0;
-}
-
-/***/ },
-/* 99 */
+/* 100 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
 "use strict";
 
-var createHardlink = __webpack_require__(13);
-var __prefix = __webpack_require__(5);
+var createHardlink = __webpack_require__(12);
 
-var $ref = __webpack_require__(1);
+var $ref = __webpack_require__(0);
 
-var getBoundCacheNode = __webpack_require__(11);
+var getBoundCacheNode = __webpack_require__(18);
 
-var promote = __webpack_require__(16);
+var promote = __webpack_require__(11);
 var getSize = __webpack_require__(7);
-var hasOwn = __webpack_require__(17);
-var isObject = __webpack_require__(0);
-var isExpired = __webpack_require__(3);
-var isFunction = __webpack_require__(2);
-var isPrimitive = __webpack_require__(9);
+var hasOwn = __webpack_require__(14);
+var isObject = __webpack_require__(1);
+var isExpired = __webpack_require__(2);
+var isFunction = __webpack_require__(3);
+var isPrimitive = __webpack_require__(8);
 var expireNode = __webpack_require__(6);
-var updateNodeAncestors = __webpack_require__(18);
-var removeNodeAndDescendants = __webpack_require__(36);
+var updateNodeAncestors = __webpack_require__(15);
+var removeNodeAndDescendants = __webpack_require__(38);
 
 /**
  * Sets a list of PathMaps into a JSON Graph.
@@ -7031,8 +6406,8 @@ module.exports = function invalidatePathMaps(model, pathMapEnvelopes) {
     var errorSelector = modelRoot._errorSelector;
     var cache = modelRoot.cache;
     var node = getBoundCacheNode(model);
-    var parent = node.ツparent || cache;
-    var initialVersion = cache.ツversion;
+    var parent = node["\u001eƒalcor_parent"] || cache;
+    var initialVersion = cache["\u001eƒalcor_version"];
 
     var pathMapIndex = -1;
     var pathMapCount = pathMapEnvelopes.length;
@@ -7044,7 +6419,7 @@ module.exports = function invalidatePathMaps(model, pathMapEnvelopes) {
         invalidatePathMap(pathMapEnvelope.json, 0, cache, parent, node, version, expired, lru, comparator, errorSelector);
     }
 
-    var newVersion = cache.ツversion;
+    var newVersion = cache["\u001eƒalcor_version"];
     var rootChangeHandler = modelRoot.onChange;
 
     if (isFunction(rootChangeHandler) && initialVersion !== newVersion) {
@@ -7059,7 +6434,7 @@ function invalidatePathMap(pathMap, depth, root, parent, node, version, expired,
     }
 
     for (var key in pathMap) {
-        if (key[0] !== __prefix && key[0] !== "$" && hasOwn(pathMap, key)) {
+        if (key[0] !== "\u001e" && key[0] !== "$" && hasOwn(pathMap, key)) {
             var child = pathMap[key];
             var branch = isObject(child) && !child.$type;
             var results = invalidateNode(root, parent, node, key, child, branch, false, version, expired, lru, comparator, errorSelector);
@@ -7089,10 +6464,10 @@ function invalidateReference(value, root, node, version, expired, lru, comparato
     var reference = node.value;
     var parent = root;
 
-    node = node.ツcontext;
+    node = node["\u001eƒalcor_context"];
 
     if (node != null) {
-        parent = node.ツparent || root;
+        parent = node["\u001eƒalcor_parent"] || root;
     } else {
 
         var index = 0;
@@ -7111,7 +6486,7 @@ function invalidateReference(value, root, node, version, expired, lru, comparato
             parent = results[1];
         } while (index++ < count);
 
-        if (container.ツcontext !== node) {
+        if (container["\u001eƒalcor_context"] !== node) {
             createHardlink(container, node);
         }
     }
@@ -7145,7 +6520,7 @@ function invalidateNode(root, parent, node, key, value, branch, reference, versi
         if (branch) {
             throw new Error("`null` is not allowed in branch key positions.");
         } else if (node) {
-            key = node.ツkey;
+            key = node["\u001eƒalcor_key"];
         }
     } else {
         parent = node;
@@ -7156,27 +6531,25 @@ function invalidateNode(root, parent, node, key, value, branch, reference, versi
 }
 
 /***/ },
-/* 100 */
+/* 101 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
 "use strict";
 
-var __ref = __webpack_require__(12);
+var $ref = __webpack_require__(0);
 
-var $ref = __webpack_require__(1);
+var getBoundCacheNode = __webpack_require__(18);
 
-var getBoundCacheNode = __webpack_require__(11);
-
-var promote = __webpack_require__(16);
+var promote = __webpack_require__(11);
 var getSize = __webpack_require__(7);
-var isExpired = __webpack_require__(3);
-var isFunction = __webpack_require__(2);
-var isPrimitive = __webpack_require__(9);
+var isExpired = __webpack_require__(2);
+var isFunction = __webpack_require__(3);
+var isPrimitive = __webpack_require__(8);
 var expireNode = __webpack_require__(6);
-var iterateKeySet = __webpack_require__(8).iterateKeySet;
-var updateNodeAncestors = __webpack_require__(18);
-var removeNodeAndDescendants = __webpack_require__(36);
+var iterateKeySet = __webpack_require__(4).iterateKeySet;
+var updateNodeAncestors = __webpack_require__(15);
+var removeNodeAndDescendants = __webpack_require__(38);
 
 /**
  * Invalidates a list of Paths in a JSON Graph.
@@ -7193,8 +6566,8 @@ module.exports = function invalidatePathSets(model, paths) {
     var version = modelRoot.version++;
     var cache = modelRoot.cache;
     var node = getBoundCacheNode(model);
-    var parent = node.ツparent || cache;
-    var initialVersion = cache.ツversion;
+    var parent = node["\u001eƒalcor_parent"] || cache;
+    var initialVersion = cache["\u001eƒalcor_version"];
 
     var pathIndex = -1;
     var pathCount = paths.length;
@@ -7206,7 +6579,7 @@ module.exports = function invalidatePathSets(model, paths) {
         invalidatePathSet(path, 0, cache, parent, node, version, expired, lru);
     }
 
-    var newVersion = cache.ツversion;
+    var newVersion = cache["\u001eƒalcor_version"];
     var rootChangeHandler = modelRoot.onChange;
 
     if (isFunction(rootChangeHandler) && initialVersion !== newVersion) {
@@ -7249,10 +6622,10 @@ function invalidateReference(root, node, version, expired, lru) {
     var reference = node.value;
     var parent = root;
 
-    node = node.ツcontext;
+    node = node["\u001eƒalcor_context"];
 
     if (node != null) {
-        parent = node.ツparent || root;
+        parent = node["\u001eƒalcor_parent"] || root;
     } else {
 
         var index = 0;
@@ -7271,12 +6644,12 @@ function invalidateReference(root, node, version, expired, lru) {
             parent = results[1];
         } while (index++ < count);
 
-        if (container.ツcontext !== node) {
-            var backRefs = node.ツrefsLength || 0;
-            node.ツrefsLength = backRefs + 1;
-            node[__ref + backRefs] = container;
-            container.ツcontext = node;
-            container.ツrefIndex = backRefs;
+        if (container["\u001eƒalcor_context"] !== node) {
+            var backRefs = node["\u001eƒalcor_refs_length"] || 0;
+            node["\u001eƒalcor_refs_length"] = backRefs + 1;
+            node["\u001eƒalcor_ref" + backRefs] = container;
+            container["\u001eƒalcor_context"] = node;
+            container["\u001eƒalcor_ref_index"] = backRefs;
         }
     }
 
@@ -7309,7 +6682,7 @@ function invalidateNode(root, parent, node, key, branch, reference, version, exp
         if (branch) {
             throw new Error("`null` is not allowed in branch key positions.");
         } else if (node) {
-            key = node.ツkey;
+            key = node["\u001eƒalcor_key"];
         }
     } else {
         parent = node;
@@ -7320,22 +6693,22 @@ function invalidateNode(root, parent, node, key, branch, reference, version, exp
 }
 
 /***/ },
-/* 101 */
+/* 102 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
 "use strict";
 
-var complement = __webpack_require__(103);
-var flushGetRequest = __webpack_require__(104);
+var complement = __webpack_require__(104);
+var flushGetRequest = __webpack_require__(105);
 var REQUEST_ID = 0;
-var GetRequestType = __webpack_require__(52).GetRequest;
-var setJSONGraphs = __webpack_require__(21);
-var setPathValues = __webpack_require__(32);
-var noop = __webpack_require__(24);
-var $error = __webpack_require__(19);
+var GetRequestType = __webpack_require__(54).GetRequest;
+var setJSONGraphs = __webpack_require__(20);
+var setPathValues = __webpack_require__(34);
+var noop = __webpack_require__(23);
+var $error = __webpack_require__(17);
 var emptyArray = [];
-var InvalidSourceError = __webpack_require__(10);
+var InvalidSourceError = __webpack_require__(9);
 
 /**
  * Creates a new GetRequest.  This GetRequest takes a scheduler and
@@ -7589,16 +6962,16 @@ function interopDisposable(disposable) {
 module.exports = GetRequest;
 
 /***/ },
-/* 102 */
+/* 103 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
 "use strict";
 
-var RequestTypes = __webpack_require__(52);
-var sendSetRequest = __webpack_require__(105);
-var GetRequest = __webpack_require__(101);
-var collapse = __webpack_require__(8).collapse;
+var RequestTypes = __webpack_require__(54);
+var sendSetRequest = __webpack_require__(106);
+var GetRequest = __webpack_require__(102);
+var collapse = __webpack_require__(4).collapse;
 
 /**
  * The request queue is responsible for queuing the operations to
@@ -7745,13 +7118,13 @@ RequestQueue.prototype = {
 module.exports = RequestQueue;
 
 /***/ },
-/* 103 */
+/* 104 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
 "use strict";
 
-var hasIntersection = __webpack_require__(8).hasIntersection;
+var hasIntersection = __webpack_require__(4).hasIntersection;
 
 /**
  * creates the complement of the requested and optimized paths
@@ -7804,16 +7177,16 @@ module.exports = function complement(requested, optimized, tree) {
 };
 
 /***/ },
-/* 104 */
+/* 105 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
 "use strict";
 
-var pathUtils = __webpack_require__(8);
+var pathUtils = __webpack_require__(4);
 var toTree = pathUtils.toTree;
 var toPaths = pathUtils.toPaths;
-var InvalidSourceError = __webpack_require__(10);
+var InvalidSourceError = __webpack_require__(9);
 
 /**
  * Flushes the current set of requests.  This will send the paths to the
@@ -7900,15 +7273,15 @@ module.exports = function flushGetRequest(request, listOfPaths, callback) {
 };
 
 /***/ },
-/* 105 */
+/* 106 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
 "use strict";
 
-var setJSONGraphs = __webpack_require__(21);
-var setPathValues = __webpack_require__(32);
-var InvalidSourceError = __webpack_require__(10);
+var setJSONGraphs = __webpack_require__(20);
+var setPathValues = __webpack_require__(34);
+var InvalidSourceError = __webpack_require__(9);
 
 var emptyArray = [];
 var emptyDisposable = { dispose: function dispose() {} };
@@ -7986,16 +7359,15 @@ var sendSetRequest = function sendSetRequest(originalJsonGraph, model, callback)
 module.exports = sendSetRequest;
 
 /***/ },
-/* 106 */
+/* 107 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
 "use strict";
 
-var SetResponse = __webpack_require__(57);
-var ModelResponse = __webpack_require__(4);
-var InvalidSourceError = __webpack_require__(10);
-var __version = __webpack_require__(20);
+var SetResponse = __webpack_require__(58);
+var ModelResponse = __webpack_require__(5);
+var InvalidSourceError = __webpack_require__(9);
 
 /**
  * @private
@@ -8013,7 +7385,7 @@ function CallResponse(model, callPath, args, suffix, paths) {
     }
     this.model = model;
 
-    var currentVersion = model._root.cache[__version];
+    var currentVersion = model._root.cache["\u001eƒalcor_version"];
 
     if (typeof currentVersion === "number") {
         this.initialCacheVersion = currentVersion;
@@ -8084,20 +7456,19 @@ CallResponse.prototype._subscribe = function _subscribe(observer) {
 module.exports = CallResponse;
 
 /***/ },
-/* 107 */
+/* 108 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
 "use strict";
 
 var isArray = Array.isArray;
-var ModelResponse = __webpack_require__(4);
-var isPathValue = __webpack_require__(23);
-var isJSONEnvelope = __webpack_require__(22);
-var noop = __webpack_require__(24);
+var ModelResponse = __webpack_require__(5);
+var isPathValue = __webpack_require__(22);
+var isJSONEnvelope = __webpack_require__(21);
+var noop = __webpack_require__(23);
 var empty = { dispose: noop, unsubscribe: noop };
-var __version = __webpack_require__(20);
-var isFunction = __webpack_require__(2);
+var isFunction = __webpack_require__(3);
 
 function InvalidateResponse(model, args, initialCacheVersion) {
     // TODO: This should be removed.  There should only be 1 type of arguments
@@ -8109,7 +7480,7 @@ function InvalidateResponse(model, args, initialCacheVersion) {
     var argIndex = -1;
     var argCount = args.length;
 
-    var currentVersion = model._root.cache[__version];
+    var currentVersion = model._root.cache["\u001eƒalcor_version"];
 
     if (typeof initialCacheVersion === "number") {
         this.initialCacheVersion = initialCacheVersion;
@@ -8170,7 +7541,7 @@ InvalidateResponse.prototype._subscribe = function _subscribe(observer) {
 
     var modelRoot = model._root;
     var modelCache = modelRoot.cache;
-    var currentVersion = modelCache[__version];
+    var currentVersion = modelCache["\u001eƒalcor_version"];
     var initialCacheVersion = this.initialCacheVersion;
     var rootOnChangesCompletedHandler = modelRoot.onChangesCompleted;
 
@@ -8184,19 +7555,19 @@ InvalidateResponse.prototype._subscribe = function _subscribe(observer) {
 module.exports = InvalidateResponse;
 
 /***/ },
-/* 108 */
+/* 109 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
 "use strict";
 
-var checkCacheAndReport = __webpack_require__(55);
-var MaxRetryExceededError = __webpack_require__(47);
-var collectLru = __webpack_require__(30);
+var checkCacheAndReport = __webpack_require__(56);
+var MaxRetryExceededError = __webpack_require__(49);
+var collectLru = __webpack_require__(31);
 var getSize = __webpack_require__(7);
-var AssignableDisposable = __webpack_require__(53);
-var InvalidSourceError = __webpack_require__(10);
-var isFunction = __webpack_require__(2);
+var AssignableDisposable = __webpack_require__(55);
+var InvalidSourceError = __webpack_require__(9);
+var isFunction = __webpack_require__(3);
 
 /**
  * The get request cycle for checking the cache and reporting
@@ -8211,7 +7582,7 @@ var isFunction = __webpack_require__(2);
  * @param {Function} onCompleted -
  * @private
  */
-module.exports = function getRequestCycle(getResponse, model, results, observer, errors, count, initialCacheVersion) {
+module.exports = function getRequestCycle(getResponse, model, results, observer, errors, count, initialCacheVersion, originalRequestedPaths, recycleJSON) {
     // we have exceeded the maximum retry limit.
     if (count === 10) {
         throw new MaxRetryExceededError();
@@ -8237,6 +7608,8 @@ module.exports = function getRequestCycle(getResponse, model, results, observer,
             boundRequestedMissingPaths = requestedMissingPaths;
         }
 
+    var followupGetPaths = getResponse.isProgressive || !recycleJSON ? requestedMissingPaths : originalRequestedPaths;
+
     var currentRequestDisposable = requestQueue.get(boundRequestedMissingPaths, optimizedMissingPaths, function (err) {
 
         if (err instanceof InvalidSourceError) {
@@ -8246,14 +7619,14 @@ module.exports = function getRequestCycle(getResponse, model, results, observer,
 
         // Once the request queue finishes, check the cache and bail if
         // we can.
-        var nextResults = checkCacheAndReport(model, requestedMissingPaths, observer, getResponse.isProgressive, getResponse.isJSONGraph, results.values, errors);
+        var nextResults = checkCacheAndReport(model, followupGetPaths, observer, getResponse.isProgressive, getResponse.isJSONGraph, results.values, errors, recycleJSON);
 
         // If there are missing paths coming back form checkCacheAndReport
         // the its reported from the core cache check method.
         if (nextResults) {
 
             // update the which disposable to use.
-            disposable.currentDisposable = getRequestCycle(getResponse, model, nextResults, observer, errors, count + 1, initialCacheVersion);
+            disposable.currentDisposable = getRequestCycle(getResponse, model, nextResults, observer, errors, count + 1, initialCacheVersion, originalRequestedPaths, recycleJSON);
         }
 
         // We have finished.  Since we went to the dataSource, we must
@@ -8262,7 +7635,7 @@ module.exports = function getRequestCycle(getResponse, model, results, observer,
 
                 var modelRoot = model._root;
                 var modelCache = modelRoot.cache;
-                var currentVersion = modelCache.ツversion;
+                var currentVersion = modelCache["\u001eƒalcor_version"];
 
                 collectLru(modelRoot, modelRoot.expired, getSize(modelCache), model._maxSize, model._collectRatio, currentVersion);
 
@@ -8292,16 +7665,16 @@ function fastCat(arr1, arr2) {
 }
 
 /***/ },
-/* 109 */
+/* 110 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
 "use strict";
 
-var ModelResponse = __webpack_require__(4);
-var GET_VALID_INPUT = __webpack_require__(56);
-var validateInput = __webpack_require__(37);
-var GetResponse = __webpack_require__(54);
+var ModelResponse = __webpack_require__(5);
+var GET_VALID_INPUT = __webpack_require__(57);
+var validateInput = __webpack_require__(39);
+var GetResponse = __webpack_require__(32);
 
 /**
  * Performs a get on the cache and if there are missing paths
@@ -8326,13 +7699,13 @@ module.exports = function get() {
 };
 
 /***/ },
-/* 110 */
-/***/ function(module, exports) {
+/* 111 */
+/***/ function(module, exports, __webpack_require__) {
 
 "use strict";
 "use strict";
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 module.exports = mergeInto;
 
@@ -8350,7 +7723,7 @@ function mergeInto(dest, node) {
 
         key = keys[index];
 
-        if (key !== "$__path" && key !== "$__refPath" && key !== "$__toReference") {
+        if (key !== "\u001eƒalcor_metadata") {
 
             nodeValue = node[key];
             destValue = dest[key];
@@ -8365,33 +7738,23 @@ function mergeInto(dest, node) {
         }
     }
 
-    var $__path = node.$__path;
-
-    if ($__path) {
-        dest.$__path = $__path;
-        var $__refPath = node.$__refPath;
-        var $__toReference = node.$__toReference;
-        if ($__refPath && $__toReference) {
-            dest.$__refPath = $__refPath;
-            dest.$__toReference = $__toReference;
-        }
-    }
+    dest["\u001eƒalcor_metadata"] = node["\u001eƒalcor_metadata"];
 
     return dest;
 }
 /* eslint-enable */
 
 /***/ },
-/* 111 */
+/* 112 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
 "use strict";
 
-var setValidInput = __webpack_require__(114);
-var validateInput = __webpack_require__(37);
-var SetResponse = __webpack_require__(57);
-var ModelResponse = __webpack_require__(4);
+var setValidInput = __webpack_require__(115);
+var validateInput = __webpack_require__(39);
+var SetResponse = __webpack_require__(58);
+var ModelResponse = __webpack_require__(5);
 
 module.exports = function set() {
     var out = validateInput(arguments, setValidInput, "set");
@@ -8411,13 +7774,13 @@ module.exports = function set() {
 };
 
 /***/ },
-/* 112 */
+/* 113 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
 "use strict";
 
-var arrayFlatMap = __webpack_require__(118);
+var arrayFlatMap = __webpack_require__(119);
 
 /**
  * Takes the groups that are created in the SetResponse constructor and sets
@@ -8472,21 +7835,21 @@ function pluckEnvelopePaths(jsonGraphEnvelope) {
 }
 
 /***/ },
-/* 113 */
+/* 114 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
 "use strict";
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var emptyArray = [];
-var AssignableDisposable = __webpack_require__(53);
-var GetResponse = __webpack_require__(54);
-var setGroupsIntoCache = __webpack_require__(112);
-var getWithPathsAsPathMap = __webpack_require__(28).getWithPathsAsPathMap;
-var InvalidSourceError = __webpack_require__(10);
-var MaxRetryExceededError = __webpack_require__(47);
+var AssignableDisposable = __webpack_require__(55);
+var GetResponse = __webpack_require__(32);
+var setGroupsIntoCache = __webpack_require__(113);
+var getWithPathsAsPathMap = __webpack_require__(27).getWithPathsAsPathMap;
+var InvalidSourceError = __webpack_require__(9);
+var MaxRetryExceededError = __webpack_require__(49);
 
 /**
  * The request cycle for set.  This is responsible for requesting to dataSource
@@ -8512,7 +7875,7 @@ module.exports = function setRequestCycle(model, observer, groups, isJSONGraph, 
 
     // Progressively output the data from the first set.
     if (isProgressive) {
-        var results = getWithPathsAsPathMap(model, requestedPaths, [{}]);
+        var results = getWithPathsAsPathMap(model, requestedPaths, [{}], true);
         if (results.criticalError) {
             observer.onError(results.criticalError);
             return null;
@@ -8578,14 +7941,14 @@ function getJSONGraph(model, optimizedPaths) {
 function subscribeToFollowupGet(model, observer, requestedPaths, isJSONGraph, isProgressive, initialCacheVersion) {
 
     // Creates a new response and subscribes to it with the original observer.
-    // Also sets forceCollect to true, incase the operation is synchronous and
+    // Also sets forceCollect to true, in case the operation is synchronous and
     // exceeds the cache limit size
-    var response = new GetResponse(model, requestedPaths, isJSONGraph, isProgressive, true, initialCacheVersion);
+    var response = new GetResponse(model, requestedPaths, isJSONGraph, isProgressive, true, initialCacheVersion, false);
     return response.subscribe(observer);
 }
 
 /***/ },
-/* 114 */
+/* 115 */
 /***/ function(module, exports) {
 
 "use strict";
@@ -8599,7 +7962,7 @@ module.exports = {
 };
 
 /***/ },
-/* 115 */
+/* 116 */
 /***/ function(module, exports) {
 
 "use strict";
@@ -8617,7 +7980,7 @@ ImmediateScheduler.prototype.schedule = function schedule(action) {
 module.exports = ImmediateScheduler;
 
 /***/ },
-/* 116 */
+/* 117 */
 /***/ function(module, exports) {
 
 "use strict";
@@ -8649,16 +8012,16 @@ TimerDisposable.prototype.dispose = function () {
 module.exports = TimeoutScheduler;
 
 /***/ },
-/* 117 */
+/* 118 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
 "use strict";
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var ModelResponse = __webpack_require__(4);
-var isPathValue = __webpack_require__(23);
+var ModelResponse = __webpack_require__(5);
+var isPathValue = __webpack_require__(22);
 
 module.exports = function setValue(pathArg, valueArg) {
     var value = isPathValue(pathArg) ? pathArg : { path: pathArg, value: valueArg };
@@ -8694,7 +8057,7 @@ module.exports = function setValue(pathArg, valueArg) {
 };
 
 /***/ },
-/* 118 */
+/* 119 */
 /***/ function(module, exports) {
 
 "use strict";
@@ -8717,16 +8080,15 @@ module.exports = function arrayFlatMap(array, selector) {
 };
 
 /***/ },
-/* 119 */
+/* 120 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
 "use strict";
 
-var unicodePrefix = __webpack_require__(5);
-var hasOwn = __webpack_require__(17);
+var hasOwn = __webpack_require__(14);
 var isArray = Array.isArray;
-var isObject = __webpack_require__(0);
+var isObject = __webpack_require__(1);
 
 module.exports = function clone(value) {
     var dest = value;
@@ -8734,7 +8096,7 @@ module.exports = function clone(value) {
         dest = isArray(value) ? [] : {};
         var src = value;
         for (var key in src) {
-            if (key.charAt(0) === unicodePrefix || !hasOwn(src, key)) {
+            if (key.charAt(0) === "\u001e" || !hasOwn(src, key)) {
                 continue;
             }
             dest[key] = src[key];
@@ -8744,25 +8106,25 @@ module.exports = function clone(value) {
 };
 
 /***/ },
-/* 120 */
-/***/ function(module, exports, __webpack_require__) {
-
-"use strict";
-"use strict";
-
-var isObject = __webpack_require__(0);
-module.exports = function getSize(node) {
-    return isObject(node) && node.$expires || undefined;
-};
-
-/***/ },
 /* 121 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
 "use strict";
 
-var isObject = __webpack_require__(0);
+var isObject = __webpack_require__(1);
+module.exports = function getSize(node) {
+    return isObject(node) && node.$expires || undefined;
+};
+
+/***/ },
+/* 122 */
+/***/ function(module, exports, __webpack_require__) {
+
+"use strict";
+"use strict";
+
+var isObject = __webpack_require__(1);
 
 module.exports = function getType(node, anyType) {
     var type = isObject(node) && node.$type || void 0;
@@ -8773,39 +8135,19 @@ module.exports = function getType(node, anyType) {
 };
 
 /***/ },
-/* 122 */
-/***/ function(module, exports, __webpack_require__) {
-
-"use strict";
-"use strict";
-
-var now = __webpack_require__(34);
-var $now = __webpack_require__(39);
-var $never = __webpack_require__(38);
-
-module.exports = function isAlreadyExpired(node) {
-    var exp = node.$expires;
-    return exp != null && exp !== $never && exp !== $now && exp < now();
-};
-
-/***/ },
 /* 123 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
 "use strict";
 
-var unicodePrefix = __webpack_require__(5);
+var now = __webpack_require__(36);
+var $now = __webpack_require__(41);
+var $never = __webpack_require__(40);
 
-/**
- * Determined if the key passed in is an internal key.
- *
- * @param {String} x The key
- * @private
- * @returns {Boolean}
- */
-module.exports = function isInternalKey(x) {
-  return x === "$size" || x === "$modelCreated" || x.charAt(0) === unicodePrefix;
+module.exports = function isAlreadyExpired(node) {
+    var exp = node.$expires;
+    return exp != null && exp !== $never && exp !== $now && exp < now();
 };
 
 /***/ },
@@ -8815,20 +8157,38 @@ module.exports = function isInternalKey(x) {
 "use strict";
 "use strict";
 
-var $ref = __webpack_require__(1);
-var $error = __webpack_require__(19);
-var getSize = __webpack_require__(7);
-var getTimestamp = __webpack_require__(58);
-var isObject = __webpack_require__(0);
-var isExpired = __webpack_require__(3);
-var isFunction = __webpack_require__(2);
+/**
+ * Determined if the key passed in is an internal key.
+ *
+ * @param {String} x The key
+ * @private
+ * @returns {Boolean}
+ */
+module.exports = function isInternalKey(x) {
+  return x === "$size" || x === "\u001eƒalcor_wrapped_value" || x.charAt(0) === "\u001e";
+};
 
-var wrapNode = __webpack_require__(64);
-var insertNode = __webpack_require__(59);
+/***/ },
+/* 125 */
+/***/ function(module, exports, __webpack_require__) {
+
+"use strict";
+"use strict";
+
+var $ref = __webpack_require__(0);
+var $error = __webpack_require__(17);
+var getSize = __webpack_require__(7);
+var getTimestamp = __webpack_require__(59);
+var isObject = __webpack_require__(1);
+var isExpired = __webpack_require__(2);
+var isFunction = __webpack_require__(3);
+
+var wrapNode = __webpack_require__(65);
+var insertNode = __webpack_require__(60);
 var expireNode = __webpack_require__(6);
-var replaceNode = __webpack_require__(62);
-var updateNodeAncestors = __webpack_require__(18);
-var reconstructPath = __webpack_require__(61);
+var replaceNode = __webpack_require__(63);
+var updateNodeAncestors = __webpack_require__(15);
+var reconstructPath = __webpack_require__(62);
 
 module.exports = function mergeJSONGraphNode(parent, node, message, key, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector) {
 
@@ -8866,7 +8226,7 @@ module.exports = function mergeJSONGraphNode(parent, node, message, key, request
                     if (cType == null) {
                         // Has the branch been introduced to the cache yet? If not,
                         // give it a parent, key, and absolute path.
-                        if (node.ツparent == null) {
+                        if (node["\u001eƒalcor_parent"] == null) {
                             insertNode(node, parent, key, version, optimizedPath);
                         }
                         return node;
@@ -8918,7 +8278,7 @@ module.exports = function mergeJSONGraphNode(parent, node, message, key, request
                         // grandparents. If we've previously graphed this
                         // reference, break early. Otherwise, continue to
                         // leaf insertion below.
-                        if (node.ツparent != null) {
+                        if (node["\u001eƒalcor_parent"] != null) {
                             return node;
                         }
                     } else {
@@ -8958,7 +8318,7 @@ module.exports = function mergeJSONGraphNode(parent, node, message, key, request
             }
 
             if (mType && node === message) {
-                if (node.ツparent == null) {
+                if (node["\u001eƒalcor_parent"] == null) {
                     node = wrapNode(node, cType, node.value);
                     parent = updateNodeAncestors(parent, -node.$size, lru, version);
                     node = insertNode(node, parent, key, version, optimizedPath);
@@ -9006,51 +8366,27 @@ module.exports = function mergeJSONGraphNode(parent, node, message, key, request
 };
 
 /***/ },
-/* 125 */
-/***/ function(module, exports, __webpack_require__) {
-
-"use strict";
-"use strict";
-
-var __ref = __webpack_require__(12);
-
-module.exports = function transferBackReferences(fromNode, destNode) {
-    var fromNodeRefsLength = fromNode.ツrefsLength || 0,
-        destNodeRefsLength = destNode.ツrefsLength || 0,
-        i = -1;
-    while (++i < fromNodeRefsLength) {
-        var ref = fromNode[__ref + i];
-        if (ref !== void 0) {
-            ref.ツcontext = destNode;
-            destNode[__ref + (destNodeRefsLength + i)] = ref;
-            fromNode[__ref + i] = void 0;
-        }
-    }
-    destNode.ツrefsLength = fromNodeRefsLength + destNodeRefsLength;
-    fromNode.ツrefsLength = void 0;
-    return destNode;
-};
-
-/***/ },
 /* 126 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
 "use strict";
 
-var __ref = __webpack_require__(12);
-
-module.exports = function unlinkBackReferences(node) {
-    var i = -1,
-        n = node.ツrefsLength || 0;
-    while (++i < n) {
-        var ref = node[__ref + i];
-        if (ref != null) {
-            ref.ツcontext = ref.ツrefIndex = node[__ref + i] = void 0;
+module.exports = function transferBackReferences(fromNode, destNode) {
+    var fromNodeRefsLength = fromNode["\u001eƒalcor_refs_length"] || 0,
+        destNodeRefsLength = destNode["\u001eƒalcor_refs_length"] || 0,
+        i = -1;
+    while (++i < fromNodeRefsLength) {
+        var ref = fromNode["\u001eƒalcor_ref" + i];
+        if (ref !== void 0) {
+            ref["\u001eƒalcor_context"] = destNode;
+            destNode["\u001eƒalcor_ref" + (destNodeRefsLength + i)] = ref;
+            fromNode["\u001eƒalcor_ref" + i] = void 0;
         }
     }
-    node.ツrefsLength = void 0;
-    return node;
+    destNode["\u001eƒalcor_refs_length"] = fromNodeRefsLength + destNodeRefsLength;
+    fromNode["\u001eƒalcor_refs_length"] = void 0;
+    return destNode;
 };
 
 /***/ },
@@ -9060,24 +8396,42 @@ module.exports = function unlinkBackReferences(node) {
 "use strict";
 "use strict";
 
-var __ref = __webpack_require__(12);
+module.exports = function unlinkBackReferences(node) {
+    var i = -1,
+        n = node["\u001eƒalcor_refs_length"] || 0;
+    while (++i < n) {
+        var ref = node["\u001eƒalcor_ref" + i];
+        if (ref != null) {
+            ref["\u001eƒalcor_context"] = ref["\u001eƒalcor_ref_index"] = node["\u001eƒalcor_ref" + i] = void 0;
+        }
+    }
+    node["\u001eƒalcor_refs_length"] = void 0;
+    return node;
+};
+
+/***/ },
+/* 128 */
+/***/ function(module, exports, __webpack_require__) {
+
+"use strict";
+"use strict";
 
 module.exports = function unlinkForwardReference(reference) {
-    var destination = reference.ツcontext;
+    var destination = reference["\u001eƒalcor_context"];
     if (destination) {
-        var i = (reference.ツrefIndex || 0) - 1,
-            n = (destination.ツrefsLength || 0) - 1;
+        var i = (reference["\u001eƒalcor_ref_index"] || 0) - 1,
+            n = (destination["\u001eƒalcor_refs_length"] || 0) - 1;
         while (++i <= n) {
-            destination[__ref + i] = destination[__ref + (i + 1)];
+            destination["\u001eƒalcor_ref" + i] = destination["\u001eƒalcor_ref" + (i + 1)];
         }
-        destination.ツrefsLength = n;
-        reference.ツrefIndex = reference.ツcontext = destination = void 0;
+        destination["\u001eƒalcor_refs_length"] = n;
+        reference["\u001eƒalcor_ref_index"] = reference["\u001eƒalcor_context"] = destination = void 0;
     }
     return reference;
 };
 
 /***/ },
-/* 128 */
+/* 129 */
 /***/ function(module, exports) {
 
 "use strict";
@@ -9132,199 +8486,7 @@ function toEsObservable(_self) {
 module.exports = toEsObservable;
 
 /***/ },
-/* 129 */
-/***/ function(module, exports) {
-
-// shim for using process in browser
-var process = module.exports = {};
-
-// cached from whatever global is present so that test runners that stub it
-// don't break things.  But we need to wrap it in a try catch in case it is
-// wrapped in strict mode code which doesn't define any globals.  It's inside a
-// function because try/catches deoptimize in certain engines.
-
-var cachedSetTimeout;
-var cachedClearTimeout;
-
-function defaultSetTimout() {
-    throw new Error('setTimeout has not been defined');
-}
-function defaultClearTimeout () {
-    throw new Error('clearTimeout has not been defined');
-}
-(function () {
-    try {
-        if (typeof setTimeout === 'function') {
-            cachedSetTimeout = setTimeout;
-        } else {
-            cachedSetTimeout = defaultSetTimout;
-        }
-    } catch (e) {
-        cachedSetTimeout = defaultSetTimout;
-    }
-    try {
-        if (typeof clearTimeout === 'function') {
-            cachedClearTimeout = clearTimeout;
-        } else {
-            cachedClearTimeout = defaultClearTimeout;
-        }
-    } catch (e) {
-        cachedClearTimeout = defaultClearTimeout;
-    }
-} ())
-function runTimeout(fun) {
-    if (cachedSetTimeout === setTimeout) {
-        //normal enviroments in sane situations
-        return setTimeout(fun, 0);
-    }
-    // if setTimeout wasn't available but was latter defined
-    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
-        cachedSetTimeout = setTimeout;
-        return setTimeout(fun, 0);
-    }
-    try {
-        // when when somebody has screwed with setTimeout but no I.E. maddness
-        return cachedSetTimeout(fun, 0);
-    } catch(e){
-        try {
-            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
-            return cachedSetTimeout.call(null, fun, 0);
-        } catch(e){
-            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
-            return cachedSetTimeout.call(this, fun, 0);
-        }
-    }
-
-
-}
-function runClearTimeout(marker) {
-    if (cachedClearTimeout === clearTimeout) {
-        //normal enviroments in sane situations
-        return clearTimeout(marker);
-    }
-    // if clearTimeout wasn't available but was latter defined
-    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
-        cachedClearTimeout = clearTimeout;
-        return clearTimeout(marker);
-    }
-    try {
-        // when when somebody has screwed with setTimeout but no I.E. maddness
-        return cachedClearTimeout(marker);
-    } catch (e){
-        try {
-            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
-            return cachedClearTimeout.call(null, marker);
-        } catch (e){
-            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
-            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
-            return cachedClearTimeout.call(this, marker);
-        }
-    }
-
-
-
-}
-var queue = [];
-var draining = false;
-var currentQueue;
-var queueIndex = -1;
-
-function cleanUpNextTick() {
-    if (!draining || !currentQueue) {
-        return;
-    }
-    draining = false;
-    if (currentQueue.length) {
-        queue = currentQueue.concat(queue);
-    } else {
-        queueIndex = -1;
-    }
-    if (queue.length) {
-        drainQueue();
-    }
-}
-
-function drainQueue() {
-    if (draining) {
-        return;
-    }
-    var timeout = runTimeout(cleanUpNextTick);
-    draining = true;
-
-    var len = queue.length;
-    while(len) {
-        currentQueue = queue;
-        queue = [];
-        while (++queueIndex < len) {
-            if (currentQueue) {
-                currentQueue[queueIndex].run();
-            }
-        }
-        queueIndex = -1;
-        len = queue.length;
-    }
-    currentQueue = null;
-    draining = false;
-    runClearTimeout(timeout);
-}
-
-process.nextTick = function (fun) {
-    var args = new Array(arguments.length - 1);
-    if (arguments.length > 1) {
-        for (var i = 1; i < arguments.length; i++) {
-            args[i - 1] = arguments[i];
-        }
-    }
-    queue.push(new Item(fun, args));
-    if (queue.length === 1 && !draining) {
-        runTimeout(drainQueue);
-    }
-};
-
-// v8 likes predictible objects
-function Item(fun, array) {
-    this.fun = fun;
-    this.array = array;
-}
-Item.prototype.run = function () {
-    this.fun.apply(null, this.array);
-};
-process.title = 'browser';
-process.browser = true;
-process.env = {};
-process.argv = [];
-process.version = ''; // empty string to avoid regexp issues
-process.versions = {};
-
-function noop() {}
-
-process.on = noop;
-process.addListener = noop;
-process.once = noop;
-process.off = noop;
-process.removeListener = noop;
-process.removeAllListeners = noop;
-process.emit = noop;
-
-process.binding = function (name) {
-    throw new Error('process.binding is not supported');
-};
-
-process.cwd = function () { return '/' };
-process.chdir = function (dir) {
-    throw new Error('process.chdir is not supported');
-};
-process.umask = function() { return 0; };
-
-
-/***/ },
 /* 130 */
-/***/ function(module, exports) {
-
-/* (ignored) */
-
-/***/ },
-/* 131 */
 /***/ function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__(67);

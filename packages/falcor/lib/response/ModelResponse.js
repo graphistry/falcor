@@ -7,6 +7,7 @@ var toEsObservable = require("../toEsObservable");
  * @constructor ModelResponse
  * @augments Observable
 */
+/** @constructor @implements IThenable */
 function ModelResponse(subscribe) {
     this._subscribe = subscribe;
 }
@@ -113,7 +114,8 @@ ModelResponse.prototype.then = function then(onNext, onError) {
     /* global Promise */
     var self = this;
     if (!self._promise) {
-        self._promise = new Promise(function(resolve, reject) {
+
+        self._promise = new global['Promise'](function(resolve, reject) {
             var rejected = false;
             var values = [];
             self.subscribe(

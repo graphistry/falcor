@@ -1,3 +1,4 @@
+var GetResponse = require("./../response/get/GetResponse");
 var ModelResponse = require("./../response/ModelResponse");
 
 module.exports = function getValue(path) {
@@ -15,7 +16,9 @@ module.exports = function getValue(path) {
 
     var self = this;
     return new ModelResponse(function(obs) {
-        return self.get(path).subscribe(function(data) {
+        return new GetResponse(
+            self, [path], false, false, false, undefined, false
+        ).subscribe(function(data) {
             var curr = data.json;
             var depth = -1;
             var length = path.length;

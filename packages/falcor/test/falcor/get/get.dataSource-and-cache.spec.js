@@ -11,6 +11,8 @@ var expect = require('chai').expect;
 var strip = require('./../../cleanData').stripDerefAndVersionKeys;
 var cacheGenerator = require('./../../CacheGenerator');
 var jsonGraph = require('@graphistry/falcor-json-graph');
+var toFlatBuffer = require('@graphistry/falcor-path-utils').toFlatBuffer;
+var computeFlatBufferHash = require('@graphistry/falcor-path-utils').computeFlatBufferHash;
 
 var M = function(m) {
     return cacheGenerator(0, 1);
@@ -21,7 +23,7 @@ var Cache = function(c) {
 
 describe('DataSource and Partial Cache', function() {
     describe('Preload Functions', function() {
-        it('should get multiple arguments with multiple selector function args.', function(done) {
+        it('should get multiple arguments.', function(done) {
             var model = new Model({cache: M(), source: new LocalDataSource(Cache())});
             var onNext = sinon.spy();
             var secondOnNext = sinon.spy();
@@ -424,6 +426,94 @@ describe('DataSource and Partial Cache', function() {
                 subscribe(noOp, done, done);
         });
 
+    });
+    describe('Recycle JSON', function() {
+        it('should get multiple arguments with multiple trips to the dataSource into a single toJSON response.', function(done) {
+            var model = new Model({cache: M(), source: new LocalDataSource(Cache()), recycleJSON: true});
+            var count = 0;
+            toObservable(model.
+                get(['lolomo', 0, 0, 'item', 'title'], ['lolomo', 0, 1, 'item', 'title'])).
+                doAction(function(x) {
+                    count++;
+                    x.json[ƒ_meta] = x.json[ƒ_meta];
+                    x.json['lolomo'][ƒ_meta] = x.json['lolomo'][ƒ_meta];
+                    x.json['lolomo'][0][ƒ_meta] = x.json['lolomo'][0][ƒ_meta];
+                    x.json['lolomo'][0][0][ƒ_meta] = x.json['lolomo'][0][0][ƒ_meta];
+                    x.json['lolomo'][0][1][ƒ_meta] = x.json['lolomo'][0][1][ƒ_meta];
+                    x.json['lolomo'][0][0]['item'][ƒ_meta] = x.json['lolomo'][0][0]['item'][ƒ_meta];
+                    x.json['lolomo'][0][1]['item'][ƒ_meta] = x.json['lolomo'][0][1]['item'][ƒ_meta];
+                    expect(x).to.deep.equals({
+                        json: {
+                            [ƒ_meta]: {
+                                '$code':          '350990479',
+                                [ƒm_abs_path]:    undefined,
+                                [ƒm_deref_from]:  undefined,
+                                [ƒm_deref_to]:    undefined,
+                                [ƒm_version]:     1
+                            },
+                            lolomo: {
+                                [ƒ_meta]: {
+                                    '$code':          '1437563678',
+                                    [ƒm_abs_path]:    ['lolomos', '1234'],
+                                    [ƒm_deref_from]:  undefined,
+                                    [ƒm_deref_to]:    undefined,
+                                    [ƒm_version]:     1
+                                },
+                                0: {
+                                    [ƒ_meta]: {
+                                        '$code':          '2823858104',
+                                        [ƒm_abs_path]:    ['lists', 'A'],
+                                        [ƒm_deref_from]:  undefined,
+                                        [ƒm_deref_to]:    undefined,
+                                        [ƒm_version]:     1
+                                    },
+                                    0: {
+                                        [ƒ_meta]: {
+                                            '$code':          '3681981706',
+                                            [ƒm_abs_path]:    ['lists', 'A', '0'],
+                                            [ƒm_deref_from]:  undefined,
+                                            [ƒm_deref_to]:    undefined,
+                                            [ƒm_version]:     0
+                                        },
+                                        item: {
+                                            [ƒ_meta]: {
+                                                '$code':          '165499941',
+                                                [ƒm_abs_path]:    ['videos', '0'],
+                                                [ƒm_deref_from]:  undefined,
+                                                [ƒm_deref_to]:    undefined,
+                                                [ƒm_version]:     0
+                                            },
+                                            title: 'Video 0'
+                                        }
+                                    },
+                                    1: {
+                                        [ƒ_meta]: {
+                                            '$code':          '3681981706',
+                                            [ƒm_abs_path]:    ['lists', 'A', 1],
+                                            [ƒm_deref_from]:  undefined,
+                                            [ƒm_deref_to]:    undefined,
+                                            [ƒm_version]:     1
+                                        },
+                                        item: {
+                                            [ƒ_meta]: {
+                                                '$code':          '165499941',
+                                                [ƒm_abs_path]:    ['videos', '1'],
+                                                [ƒm_deref_from]:  undefined,
+                                                [ƒm_deref_to]:    undefined,
+                                                [ƒm_version]:     1
+                                            },
+                                            title: 'Video 1'
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }, noOp, function() {
+                    expect(count).to.equals(1);
+                }).
+                subscribe(noOp, done, done);
+        });
     });
     describe('Error Selector (during merge)', function() {
 

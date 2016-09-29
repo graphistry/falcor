@@ -47,32 +47,54 @@ describe('Errors', function() {
             cache: errorCache
         });
     });
-    it('should report error with path in treateErrorsAsValues.', function() {
-        var to = {
-            error: 'Oops!'
-        };
-        to.$__path = ['to'];
+    it('should report error with path in treatErrorsAsValues.', function() {
         getCoreRunner({
+            stripMetadata: false,
             input: [['to', 'error']],
             output: {
                 json: {
-                    to: to
+                    [ƒ_meta]: {
+                        [ƒm_abs_path]:    undefined,
+                        [ƒm_deref_from]:  undefined,
+                        [ƒm_deref_to]:    undefined,
+                        [ƒm_version]:     0
+                    },
+                    to: {
+                        [ƒ_meta]: {
+                            [ƒm_abs_path]:    ['to'],
+                            [ƒm_deref_from]:  undefined,
+                            [ƒm_deref_to]:    undefined,
+                            [ƒm_version]:     0
+                        },
+                        error: 'Oops!'
+                    }
                 }
             },
             treatErrorsAsValues: true,
             cache: errorCache
         });
     });
-    it('should report error with path in treateErrorsAsValues and boxValues.', function() {
-        var to = {
-            error: error('Oops!')
-        };
-        to.$__path = ['to'];
+    it('should report error with path in treatErrorsAsValues and boxValues.', function() {
         getCoreRunner({
+            stripMetadata: false,
             input: [['to', 'error']],
             output: {
                 json: {
-                    to: to
+                    [ƒ_meta]: {
+                        [ƒm_abs_path]:    undefined,
+                        [ƒm_deref_from]:  undefined,
+                        [ƒm_deref_to]:    undefined,
+                        [ƒm_version]:     0
+                    },
+                    to: {
+                        [ƒ_meta]: {
+                            [ƒm_abs_path]:    ['to'],
+                            [ƒm_deref_from]:  undefined,
+                            [ƒm_deref_to]:    undefined,
+                            [ƒm_version]:     0
+                        },
+                        error: error('Oops!')
+                    }
                 }
             },
             treatErrorsAsValues: true,
@@ -92,20 +114,36 @@ describe('Errors', function() {
     });
 
     it('should report both values and errors when error is less length than value path.', function() {
-        var list = {
-            0: {
-                title: 'Hello World'
-            }
-        };
-        list.$__path = ['list'];
-        list[0].$__path = ['to'];
         getCoreRunner({
+            stripMetadata: false,
             input: [
                 ['list', {to: 1}, 'title']
             ],
             output: {
                 json: {
-                    list: list
+                    [ƒ_meta]: {
+                        [ƒm_abs_path]:    undefined,
+                        [ƒm_deref_from]:  undefined,
+                        [ƒm_deref_to]:    undefined,
+                        [ƒm_version]:     0
+                    },
+                    list: {
+                        [ƒ_meta]: {
+                            [ƒm_abs_path]:    ['list'],
+                            [ƒm_deref_from]:  undefined,
+                            [ƒm_deref_to]:    undefined,
+                            [ƒm_version]:     0
+                        },
+                        0: {
+                            [ƒ_meta]: {
+                                [ƒm_abs_path]:    ['to'],
+                                [ƒm_deref_from]:  undefined,
+                                [ƒm_deref_to]:    undefined,
+                                [ƒm_version]:     0
+                            },
+                            title: 'Hello World'
+                        }
+                    }
                 }
             },
             errors: [{

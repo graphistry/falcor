@@ -16,21 +16,18 @@ module.exports = function wrapNode(nodeArg, typeArg, value) {
     var type = typeArg;
 
     if (type) {
-        var modelCreated = node.ツmodelCreated;
+        var modelCreated = node[ƒ_wrapped_value];
         node = clone(node);
         size = getSize(node);
         node.$type = type;
-        node.ツprev = undefined;
-        node.ツnext = undefined;
-        node.ツmodelCreated = modelCreated || false;
+        node[ƒ_prev] = undefined;
+        node[ƒ_next] = undefined;
+        node[ƒ_wrapped_value] = modelCreated || false;
     } else {
-        node = {
-            $type: atomType,
-            value: value,
-            ツprev: undefined,
-            ツnext: undefined,
-            ツmodelCreated: true
-        };
+        node = { $type: atomType, value: value };
+        node[ƒ_prev] = undefined;
+        node[ƒ_next] = undefined;
+        node[ƒ_wrapped_value] = true;
     }
 
     if (value == null) {

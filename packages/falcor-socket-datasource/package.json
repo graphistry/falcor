@@ -28,7 +28,7 @@
     "babel-preset-react": "~6.11.1",
     "chai": "^3.5.0",
     "coveralls": "^2.11.9",
-    "@graphistry/falcor": "0.2.1",
+    "@graphistry/falcor": "^2.0.10",
     "@graphistry/falcor-router": "^2.0.10",
     "isparta": "^4.0.0",
     "mocha": "^2.4.5",

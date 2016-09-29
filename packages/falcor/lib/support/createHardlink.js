@@ -1,13 +1,11 @@
-var __ref = require("./../internal/ref");
-
 module.exports = function createHardlink(from, to) {
 
     // create a back reference
-    var backRefs = to.ツrefsLength || 0;
-    to[__ref + backRefs] = from;
-    to.ツrefsLength = backRefs + 1;
+    var backRefs = to[ƒ_refs_length] || 0;
+    to[ƒ_ref + backRefs] = from;
+    to[ƒ_refs_length] = backRefs + 1;
 
     // create a hard reference
-    from.ツrefIndex = backRefs;
-    from.ツcontext = to;
+    from[ƒ_ref_index] = backRefs;
+    from[ƒ_context] = to;
 };

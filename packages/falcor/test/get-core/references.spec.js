@@ -42,18 +42,28 @@ describe('References', function() {
     };
 
     it('should follow a reference to reference', function() {
-        var toReference = {
-            title: 'Title'
-        };
-        toReference.$__path = ['too'];
-
         // Should be the second references reference not
         // toReferences reference.
         getCoreRunner({
+            stripMetadata: false,
             input: [['toReference', 'title']],
             output: {
                 json: {
-                    toReference: toReference
+                    [ƒ_meta]: {
+                        [ƒm_abs_path]:    undefined,
+                        [ƒm_deref_from]:  undefined,
+                        [ƒm_deref_to]:    undefined,
+                        [ƒm_version]:     0
+                    },
+                    toReference: {
+                        [ƒ_meta]: {
+                            [ƒm_abs_path]:    ['too'],
+                            [ƒm_deref_from]:  undefined,
+                            [ƒm_deref_to]:    undefined,
+                            [ƒm_version]:     0
+                        },
+                        title: 'Title'
+                    }
                 }
             },
             cache: referenceCache
@@ -177,11 +187,23 @@ describe('References', function() {
             global.DEBUG = true;
 
             getCoreRunner({
+                stripMetadata: false,
                 input: [['ref-0', 'title']],
                 output: {
                     json: {
+                        [ƒ_meta]: {
+                            [ƒm_abs_path]:    undefined,
+                            [ƒm_deref_from]:  undefined,
+                            [ƒm_deref_to]:    undefined,
+                            [ƒm_version]:     0
+                        },
                         'ref-0': {
-                            $__path: ['too'],
+                            [ƒ_meta]: {
+                                [ƒm_abs_path]:    ['too'],
+                                [ƒm_deref_from]:  undefined,
+                                [ƒm_deref_to]:    undefined,
+                                [ƒm_version]:     0
+                            },
                             title: 'Title'
                         }
                     }
@@ -268,22 +290,38 @@ describe('References', function() {
     });
 
     it('should ensure that values are followed correctly when through references and previous paths have longer lengths to litter the requested path.', function() {
-        var to = {
-            reference: {
-                title: 'Title'
-            },
-            toValue: 'Title'
-        };
-        to.$__path = ['to'];
-        to.reference.$__path = ['too'];
-
         getCoreRunner({
+            stripMetadata: false,
             input: [
                 ['to', ['reference', 'toValue'], 'title'],
             ],
             output: {
                 json: {
-                    to: to
+                    [ƒ_meta]: {
+                        [ƒm_abs_path]:    undefined,
+                        [ƒm_deref_from]:  undefined,
+                        [ƒm_deref_to]:    undefined,
+                        [ƒm_version]:     0
+
+                    },
+                    to: {
+                        [ƒ_meta]: {
+                            [ƒm_abs_path]:    ['to'],
+                            [ƒm_deref_from]:  undefined,
+                            [ƒm_deref_to]:    undefined,
+                            [ƒm_version]:     0
+                        },
+                        reference: {
+                            [ƒ_meta]: {
+                                [ƒm_abs_path]:    ['too'],
+                                [ƒm_deref_from]:  undefined,
+                                [ƒm_deref_to]:    undefined,
+                                [ƒm_version]:     0
+                            },
+                            title: 'Title'
+                        },
+                        toValue: 'Title'
+                    }
                 }
             },
             cache: referenceCache
@@ -295,25 +333,44 @@ describe('References', function() {
             input: [
                 ['lolomo', 0, 0, 'item', 'title'],
             ],
+            stripMetadata: false,
             fromWhenceYouCame: true,
             output: {
                 json: {
+                    [ƒ_meta]: {
+                        [ƒm_abs_path]:    undefined,
+                        [ƒm_deref_from]:  undefined,
+                        [ƒm_deref_to]:    undefined,
+                        [ƒm_version]:     0
+                    },
                     lolomo: {
-                        $__path: ['lolomos', 1234],
-                        $__refPath: ['lolomos', 1234],
-                        $__toReference: ['lolomo'],
+                        [ƒ_meta]: {
+                            [ƒm_abs_path]:    ['lolomos', 1234],
+                            [ƒm_deref_from]:  ['lolomo'],
+                            [ƒm_deref_to]:    ['lolomos', 1234],
+                            [ƒm_version]:     0
+                        },
                         0: {
-                            $__path: ['lists', 'A'],
-                            $__refPath: ['lists', 'A'],
-                            $__toReference: ['lolomos', 1234, 0],
+                            [ƒ_meta]: {
+                                [ƒm_abs_path]:    ['lists', 'A'],
+                                [ƒm_deref_from]:  ['lolomos', 1234, 0],
+                                [ƒm_deref_to]:    ['lists', 'A'],
+                                [ƒm_version]:     0
+                            },
                             0: {
-                                $__path: ['lists', 'A', 0],
-                                $__refPath: ['lists', 'A'],
-                                $__toReference: ['lolomos', 1234, 0],
+                                [ƒ_meta]: {
+                                    [ƒm_abs_path]:    ['lists', 'A', 0],
+                                    [ƒm_deref_from]:  ['lolomos', 1234, 0],
+                                    [ƒm_deref_to]:    ['lists', 'A'],
+                                    [ƒm_version]:     0
+                                },
                                 item: {
-                                    $__path: ['videos', 0],
-                                    $__refPath: ['videos', 0],
-                                    $__toReference: ['lists', 'A', 0, 'item'],
+                                    [ƒ_meta]: {
+                                        [ƒm_abs_path]:    ['videos', 0],
+                                        [ƒm_deref_from]:  ['lists', 'A', 0, 'item'],
+                                        [ƒm_deref_to]:    ['videos', 0],
+                                        [ƒm_version]:     0
+                                    },
                                     title: 'Video 0'
                                 }
                             }

@@ -199,9 +199,6 @@ function getSortedKeys(map, keys, sort) {
         keys[len++] = null;
     } else {
         for (var key in map) {
-            // if (key === '$__null__$') {
-            //     key = null;
-            // }
             keys[len++] = key;
         }
         if (len > 1) {

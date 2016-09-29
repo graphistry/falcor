@@ -101,20 +101,36 @@ describe('Edges', function() {
         });
     });
     it('should get out a relative expired item.', function() {
-        var output = {
-            videos: {
-                1234: {
-                    title: 'Running Man'
-                }
-            }
-        };
-        output.videos.$__path = ['videos']
-        output.videos[1234].$__path = ['videos', 1234];
-
         getCoreRunner({
+            stripMetadata: false,
             input: [['videos', 1234, 'title']],
             output: {
-                json: output
+                json: {
+                    [ƒ_meta]: {
+                        [ƒm_abs_path]:    undefined,
+                        [ƒm_deref_from]:  undefined,
+                        [ƒm_deref_to]:    undefined,
+                        [ƒm_version]:     0
+
+                    },
+                    videos: {
+                        [ƒ_meta]: {
+                            [ƒm_abs_path]:    ['videos'],
+                            [ƒm_deref_from]:  undefined,
+                            [ƒm_deref_to]:    undefined,
+                            [ƒm_version]:     0
+                        },
+                        1234: {
+                            [ƒ_meta]: {
+                                [ƒm_abs_path]:    ['videos', 1234],
+                                [ƒm_deref_from]:  undefined,
+                                [ƒm_deref_to]:    undefined,
+                                [ƒm_version]:     0
+                            },
+                            title: 'Running Man'
+                        }
+                    }
+                }
             },
             cache: {
                 videos: {
@@ -162,6 +178,45 @@ describe('Edges', function() {
                     title: 'Running Man'
                 }
             }
+        });
+    });
+    describe('Recycle JSON', function() {
+        it('should not get out an expired item.', function() {
+            getCoreRunner({
+                input: [['videos', 1234, 'title']],
+                output: { },
+                recycleJSON: true,
+                requestedMissingPaths: [['videos', 1234, 'title']],
+                cache: {
+                    videos: {
+                        1234: {
+                            title: {
+                                $type: $atom,
+                                $expires: Date.now() - 1000,
+                                value: 'Running Man'
+                            }
+                        }
+                    }
+                }
+            });
+        });
+        it('should not get out an expired item through references.', function() {
+            getCoreRunner({
+                input: [['videos', 1234, 'title']],
+                output: { },
+                recycleJSON: true,
+                requestedMissingPaths: [['videos', 1234, 'title']],
+                cache: {
+                    to: {
+                        $type: $ref,
+                        $expires: Date.now() - 1000,
+                        value: ['videos']
+                    },
+                    videos: {
+                        title: 'Running Man'
+                    }
+                }
+            });
         });
     });
 });

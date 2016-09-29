@@ -7,7 +7,7 @@ var HttpDataSource = require('falcor-http-datasource');
 var expect = require('chai').expect;
 var sinon = require('sinon');
 var noOp = function() {};
-var Router = require('@graphistry/falcor-router');
+var Router = require('falcor-router');
 var strip = require('./../cleanData').stripDerefAndVersionKeys;
 
 describe('Get Integration Tests', function() {

@@ -1,11 +1,15 @@
 module.exports = {
-    iterateKeySet: require('./iterateKeySet'),
     toTree: require('./toTree'),
-    pathsComplementFromTree: require('./pathsComplementFromTree'),
-    pathsComplementFromLengthTree: require('./pathsComplementFromLengthTree'),
-    hasIntersection: require('./hasIntersection'),
     toPaths: require('./toPaths'),
     collapse: require('./collapse'),
+    pathCount: require('./pathCount'),
+    getHashCode: require('./getHashCode'),
+    toFlatBuffer: require('./toFlatBuffer'),
+    iterateKeySet: require('./iterateKeySet'),
+    hasIntersection: require('./hasIntersection'),
     optimizePathSets: require('./optimizePathSets'),
-    pathCount: require('./pathCount')
+    flatBufferToPaths: require('./flatBufferToPaths'),
+    computeFlatBufferHash: require('./computeFlatBufferHash'),
+    pathsComplementFromTree: require('./pathsComplementFromTree'),
+    pathsComplementFromLengthTree: require('./pathsComplementFromLengthTree'),
 };

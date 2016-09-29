@@ -1,20 +1,20 @@
 module.exports = function lruSplice(root, object) {
 
     // Its in the cache.  Splice out.
-    var prev = object.ツprev;
-    var next = object.ツnext;
+    var prev = object[ƒ_prev];
+    var next = object[ƒ_next];
     if (next) {
-        next.ツprev = prev;
+        next[ƒ_prev] = prev;
     }
     if (prev) {
-        prev.ツnext = next;
+        prev[ƒ_next] = next;
     }
-    object.ツprev = object.ツnext = undefined;
+    object[ƒ_prev] = object[ƒ_next] = undefined;
 
-    if (object === root.ツhead) {
-        root.ツhead = next;
+    if (object === root[ƒ_head]) {
+        root[ƒ_head] = next;
     }
-    if (object === root.ツtail) {
-        root.ツtail = prev;
+    if (object === root[ƒ_tail]) {
+        root[ƒ_tail] = prev;
     }
 };

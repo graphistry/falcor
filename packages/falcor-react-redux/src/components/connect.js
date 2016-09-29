@@ -40,7 +40,6 @@ setObservableConfig(rxjsObservableConfig);
 
 const contextTypes = {
     falcor: PropTypes.object,
-    version: PropTypes.number,
     dispatch: PropTypes.func
 };
 
@@ -61,13 +60,14 @@ const connect = (BaseComponent) => compose(
         .distinctUntilKeyChanged('version')
         .auditTime(0, Scheduler.asap)
     ),
-    withContext(contextTypes, ({ falcor, version, dispatch }) => ({
-        falcor, dispatch, version
+    withContext(contextTypes, ({ falcor, dispatch }) => ({
+        falcor, dispatch
     })),
     lifecycle({
         componentDidUpdate() {
             this.props.dispatch({
-                data: { ...this.props.data },
+                // data: { ...this.props.data },
+                data: this.props.data,
                 type: 'falcor-react-redux/update'
             });
         }

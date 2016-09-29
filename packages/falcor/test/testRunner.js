@@ -12,7 +12,6 @@ var cleanData = require('./cleanData');
 var clean = cleanData.clean;
 var strip = cleanData.strip;
 var traverseAndConvert = cleanData.traverseAndConvert;
-var __key = require("../lib/internal/key");
 
 module.exports = {
     validateData: validateData,
@@ -108,8 +107,8 @@ function validateOperation(name, expected, actual, messageSuffix) {
     // Removes all 5 !== "5" errors when it comes to pathValues.
     traverseAndConvert(actual);
     traverseAndConvert(expected);
-    strip(expected, __key);
-    strip(actual, __key, "pathSetIndex");
+    strip(expected, ƒ_key);
+    strip(actual, ƒ_key, "pathSetIndex");
 
     if (expected.values) {
         expect(actual.values, name + ".values " + messageSuffix).

@@ -7,7 +7,12 @@ module.exports = {
     videoGenerator: function(ids, fields) {
         fields = fields || ['title'];
         var videos = {};
-        videos.$__path = ['videos'];
+        videos[ƒ_meta] = {
+            [ƒm_abs_path]:    ['videos'],
+            [ƒm_deref_from]:  undefined,
+            [ƒm_deref_to]:    undefined
+        };
+
         var json = {
             json: {
                 videos: videos
@@ -16,7 +21,11 @@ module.exports = {
 
         ids.forEach(function(id, i) {
             var video = {};
-            video.$__path = ['videos', id];
+            video[ƒ_meta] = {
+                [ƒm_abs_path]:    ['videos', id],
+                [ƒm_deref_from]:  undefined,
+                [ƒm_deref_to]:    undefined
+            };
 
             fields.forEach(function(field) {
                 video[field] = 'Video ' + id;
@@ -30,7 +39,11 @@ module.exports = {
     lolomoGenerator: function(lists, items, fields) {
         fields = fields || ['title'];
         var lolomo = {
-            $__path: ['lolomos', 1234]
+            [ƒ_meta]: {
+                [ƒm_abs_path]:    ['lolomos', 1234],
+                [ƒm_deref_from]:  undefined,
+                [ƒm_deref_to]:    undefined
+            },
         };
         var json = {
             json: {
@@ -40,14 +53,22 @@ module.exports = {
 
         lists.forEach(function(listIndex) {
             var list = {
-                $__path: getListRef(listIndex)
+                [ƒ_meta]: {
+                    [ƒm_abs_path]:    getListRef(listIndex),
+                    [ƒm_deref_from]:  undefined,
+                    [ƒm_deref_to]:    undefined
+                },
             };
 
             lolomo[listIndex] = list;
 
             items.forEach(function(itemIndex) {
                 var ro = list[itemIndex] = {
-                    $__path: getListRef(listIndex).concat(itemIndex)
+                    [ƒ_meta]: {
+                        [ƒm_abs_path]:    getListRef(listIndex).concat(itemIndex),
+                        [ƒm_deref_from]:  undefined,
+                        [ƒm_deref_to]:    undefined
+                    },
                 };
                 ro.item = getItemObject(listIndex, itemIndex, fields);
             });
@@ -73,7 +94,11 @@ function getItemObject(listIndex, itemIndex, fields) {
     var refPath = ['videos', videoIdx];
     var toReference = getListRef(listIndex).concat([itemIndex, 'item']);
     var item = {
-        $__path: ['videos', videoIdx]
+        [ƒ_meta]: {
+            [ƒm_abs_path]:    ['videos', videoIdx],
+            [ƒm_deref_from]:  undefined,
+            [ƒm_deref_to]:    undefined
+        },
     };
 
     fields.forEach(function(f) {

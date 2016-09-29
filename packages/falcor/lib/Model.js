@@ -65,7 +65,9 @@ function Model(o) {
     var options = o || {};
     this._root = options._root || new ModelRoot(options, this);
     this._path = options.path || options._path || [];
+    this._node = options._node || this._root.cache;
     this._source = options.source || options._source;
+    this._recycleJSON = options.recycleJSON || options._recycleJSON;
     this._request = options.request || options._request || new RequestQueue(
         this, options.scheduler || new ImmediateScheduler()
     );
@@ -74,6 +76,11 @@ function Model(o) {
         this._maxSize = options.maxSize;
     } else {
         this._maxSize = options._maxSize || Model.prototype._maxSize;
+    }
+
+    if (options._seed) {
+        this._seed = options._seed;
+        this._recycleJSON = true;
     }
 
     if (typeof options.collectRatio === "number") {
@@ -94,6 +101,8 @@ function Model(o) {
         this._treatErrorsAsValues = options.treatErrorsAsValues;
     } else if (options.hasOwnProperty("_treatErrorsAsValues")) {
         this._treatErrorsAsValues = options._treatErrorsAsValues;
+    } else if (this._recycleJSON) {
+        this._treatErrorsAsValues = true;
     }
 
     this._allowFromWhenceYouCame = options.allowFromWhenceYouCame ||
@@ -329,7 +338,7 @@ Model.prototype.setCache = function modelSetCache(cacheOrJSONGraphEnvelope) {
 
         // performs promotion without producing output.
         if (out) {
-            get.getWithPathsAsPathMap(this, out, []);
+            get.getWithPathsAsPathMap(this, out, [], true);
         }
         this._path = boundPath;
     } else if (typeof cache === "undefined") {
@@ -384,12 +393,19 @@ Model.prototype._syncCheck = function syncCheck(name) {
 /* eslint-disable guard-for-in */
 Model.prototype._clone = function cloneModel(opts) {
     var clone = new Model(this);
-    for (var key in opts) {
-        var value = opts[key];
-        if (value === "delete") {
-            delete clone[key];
-        } else {
-            clone[key] = value;
+    if (opts) {
+        for (var key in opts) {
+            var value = opts[key];
+            if (value === "delete") {
+                delete clone[key];
+            } else if (key === "_path") {
+                clone[key] = value;
+                if (false === opts.hasOwnProperty("_node")) {
+                    delete clone["_node"];
+                }
+            } else {
+                clone[key] = value;
+            }
         }
     }
     if (clone._path.length > 0) {

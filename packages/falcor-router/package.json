@@ -15,12 +15,12 @@
   "dependencies": {
     "@graphistry/falcor-path-syntax": "^2.0.4",
     "@graphistry/falcor-path-utils": "^2.0.10",
-    "rxjs": ">=5.0.0-beta.11"
+    "rxjs": ">=5.0.0-beta.12"
   },
   "devDependencies": {
     "chai": "^2.3.0",
     "coveralls": "^2.11.2",
-    "@graphistry/falcor": "0.2.1",
+    "@graphistry/falcor": "^2.0.10",
     "gulp": "~3.8.11",
     "gulp-bump": "~0.1.13",
     "gulp-clean": "~0.3.1",

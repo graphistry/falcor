@@ -6,11 +6,6 @@ var expect = chai.expect;
 var noOp = function() {};
 var sinon = require('sinon');
 
-var __head = require("./../../lib/internal/head");
-var __tail = require("./../../lib/internal/tail");
-var __next = require("./../../lib/internal/next");
-var __prev = require("./../../lib/internal/prev");
-
 describe('Expired', function() {
     it('should ensure that get avoids expired items', function(done) {
         var model = new Model({cache: {
@@ -25,7 +20,7 @@ describe('Expired', function() {
             }
         }});
 
-        expect(model._root[__head].value).to.equal('sad panda');
+        expect(model._root[ƒ_head].value).to.equal('sad panda');
 
         var onNext = sinon.spy();
         Rx.Observable.
@@ -35,8 +30,8 @@ describe('Expired', function() {
             }).
             doAction(onNext, noOp, function() {
                 expect(onNext.callCount).to.equal(0);
-                expect(model._root[__head]).to.be.not.ok;
-                expect(model._root[__tail]).to.be.not.ok;
+                expect(model._root[ƒ_head]).to.be.not.ok;
+                expect(model._root[ƒ_tail]).to.be.not.ok;
             }).
             subscribe(noOp, done, done);
     });

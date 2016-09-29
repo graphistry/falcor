@@ -55,7 +55,7 @@ describe("an old reference over a newer reference", function() {
         }));
     });
 
-    it("should correctly assign ツabsolutePath after setting past references", function() {
+    it("should correctly assign ƒ_abs_path after setting past references", function() {
 
         var cache = {};
         var version = 0;
@@ -76,7 +76,7 @@ describe("an old reference over a newer reference", function() {
             }]
         );
 
-        expect(cache.genrelist[0].ツabsolutePath).to.deep.equal(["genrelist", 0]);
-        expect(cache.genrelist[1].ツabsolutePath).to.deep.equal(["genrelist", 1]);
+        expect(cache.genrelist[0][ƒ_abs_path]).to.deep.equal(["genrelist", 0]);
+        expect(cache.genrelist[1][ƒ_abs_path]).to.deep.equal(["genrelist", 1]);
     });
 });

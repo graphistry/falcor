@@ -8,6 +8,8 @@ var ref = jsonGraph.ref;
 var _ = require('lodash');
 var expect = require('chai').expect;
 var InvalidKeySetError = require('./../../lib/errors/InvalidKeySetError');
+var toFlatBuffer = require('@graphistry/falcor-path-utils').toFlatBuffer;
+var computeFlatBufferHash = require('@graphistry/falcor-path-utils').computeFlatBufferHash;
 
 describe('Values', function() {
     // PathMap ----------------------------------------
@@ -29,16 +31,38 @@ describe('Values', function() {
         getCoreRunner({
             input: [['videos', {to:1}, 'title']],
             materialize: true,
+            stripMetadata: false,
             output: {
                 json: {
+                    [ƒ_meta]: {
+                        [ƒm_abs_path]:    undefined,
+                        [ƒm_deref_from]:  undefined,
+                        [ƒm_deref_to]:    undefined,
+                        [ƒm_version]:     0
+                    },
                     videos: {
-                        $__path: ['videos'],
+                        [ƒ_meta]: {
+                            [ƒm_abs_path]:    ['videos'],
+                            [ƒm_deref_from]:  undefined,
+                            [ƒm_deref_to]:    undefined,
+                            [ƒm_version]:     0
+                        },
                         0: {
-                            $__path: ['videos', 0],
+                            [ƒ_meta]: {
+                                [ƒm_abs_path]:    ['videos', 0],
+                                [ƒm_deref_from]:  undefined,
+                                [ƒm_deref_to]:    undefined,
+                                [ƒm_version]:     0
+                            },
                             title: {$type: 'atom'}
                         },
                         1: {
-                            $__path: ['videos', 1],
+                            [ƒ_meta]: {
+                                [ƒm_abs_path]:    ['videos', 1],
+                                [ƒm_deref_from]:  undefined,
+                                [ƒm_deref_to]:    undefined,
+                                [ƒm_version]:     0
+                            },
                             title: {$type: 'atom'}
                         }
                     }
@@ -83,27 +107,40 @@ describe('Values', function() {
         }
     });
     it('should allow for multiple arguments with different length paths.', function() {
-        var lolomo0 = {
-            length: 1337
-        };
-        lolomo0.$__path = ['lolomo', '0'];
-        var lolomo = {
-            length: 1,
-            0: lolomo0
-        };
-        lolomo.$__path = ['lolomo'];
-        var output = {
-            json: {
-                lolomo: lolomo
-            }
-        };
-
         getCoreRunner({
+            stripMetadata: false,
             input: [
                 ['lolomo', 0, 'length'],
                 ['lolomo', 'length']
             ],
-            output: output,
+            output: {
+                json: {
+                    [ƒ_meta]: {
+                        [ƒm_abs_path]:    undefined,
+                        [ƒm_deref_from]:  undefined,
+                        [ƒm_deref_to]:    undefined,
+                        [ƒm_version]:     0
+                    },
+                    lolomo: {
+                        [ƒ_meta]: {
+                            [ƒm_abs_path]:    ['lolomo'],
+                            [ƒm_deref_from]:  undefined,
+                            [ƒm_deref_to]:    undefined,
+                            [ƒm_version]:     0
+                        },
+                        length: 1,
+                        0: {
+                            [ƒ_meta]: {
+                                [ƒm_abs_path]:    ['lolomo', '0'],
+                                [ƒm_deref_from]:  undefined,
+                                [ƒm_deref_to]:    undefined,
+                                [ƒm_version]:     0
+                            },
+                            length: 1337
+                        }
+                    }
+                }
+            },
             cache: {
                 lolomo: {
                     length: 1,
@@ -157,43 +194,46 @@ describe('Values', function() {
         getCoreRunner({
             input: [['videos', [0, 1], 'title']],
             cache: cacheGenerator(0, 2),
+            stripMetadata: false,
 
-            // branchSelector = (
-            //     nodeKey: String|Number|null,
-            //     nodePath: Array|null,
-            //     nodeVersion: Number,
-            //     requestedPath: Array,
-            //     requestedDepth: Number,
-            //     referencePath: Array|null,
-            //     pathToReference: Array|null
-            // ) => Object { $__path?, $__refPath?, $__toReference? }
-
-            branchSelector: function(key, path, version,
-                                     requestedPath, requestedDepth,
-                                     referencePath, pathToReference) {
-                var json = { $__userGenerated: true };
-                if (path) {
-                    json.$__path = path;
-                }
-                if (referencePath && pathToReference) {
-                    json.$__refPath = referencePath;
-                    json.$__toReference = pathToReference;
-                }
-                return json;
+            // branchSelector = (metadata) => Object
+            branchSelector: function(meta) {
+                return { $__userGenerated: true };
             },
             output: {
                 json: {
+                    [ƒ_meta]: {
+                        [ƒm_abs_path]:    undefined,
+                        [ƒm_deref_from]:  undefined,
+                        [ƒm_deref_to]:    undefined,
+                        [ƒm_version]:     0
+                    },
                     $__userGenerated: true,
                     videos: {
-                        $__path: ['videos'],
+                        [ƒ_meta]: {
+                            [ƒm_abs_path]:    ['videos'],
+                            [ƒm_deref_from]:  undefined,
+                            [ƒm_deref_to]:    undefined,
+                            [ƒm_version]:     0
+                        },
                         $__userGenerated: true,
                         0: {
-                            $__path: ['videos', 0],
+                            [ƒ_meta]: {
+                                [ƒm_abs_path]:    ['videos', 0],
+                                [ƒm_deref_from]:  undefined,
+                                [ƒm_deref_to]:    undefined,
+                                [ƒm_version]:     0
+                            },
                             $__userGenerated: true,
                             title: 'Video 0'
                         },
                         1: {
-                            $__path: ['videos', 1],
+                            [ƒ_meta]: {
+                                [ƒm_abs_path]:    ['videos', 1],
+                                [ƒm_deref_from]:  undefined,
+                                [ƒm_deref_to]:    undefined,
+                                [ƒm_version]:     0
+                            },
                             $__userGenerated: true,
                             title: 'Video 1'
                         }
@@ -202,10 +242,10 @@ describe('Values', function() {
             }
         });
     });
-    it('should build json output with hash codes if JSONWithHashCodes is true', function() {
+    it('should build json output with flatBuffers if recycleJSON is true', function() {
 
         var model = new Model({
-            JSONWithHashCodes: true,
+            recycleJSON: true,
             cache: cacheGenerator(0, 2)
         });
 
@@ -217,45 +257,49 @@ describe('Values', function() {
 
         expect(actualJSON).to.deep.equals({
             json: {
-                $__key: '$__cache__$',
-                $__path: [],
-                $__version: 0,
-                $__keysPath: ['videos', [0, {from: 1, length: 1}], 'title'],
-                $__keyDepth: 0,
+                [ƒ_meta]: {
+                    '$code':          '2076667107',
+                    [ƒm_abs_path]:    undefined,
+                    [ƒm_deref_from]:  undefined,
+                    [ƒm_deref_to]:    undefined,
+                    [ƒm_version]:     0
+                },
                 videos: {
-                    $__key: 'videos',
-                    $__path: ['videos'],
-                    $__version: 0,
-                    $__keysPath: ['videos', [0, {from: 1, length: 1}], 'title'],
-                    $__keyDepth: 1,
+                    [ƒ_meta]: {
+                        '$code':          '1720011066',
+                        [ƒm_abs_path]:    ['videos'],
+                        [ƒm_deref_from]:  undefined,
+                        [ƒm_deref_to]:    undefined,
+                        [ƒm_version]:     0
+                    },
                     0: {
-                        $__key: '0',
-                        $__path: ['videos', '0'],
-                        $__version: 0,
-                        $__keysPath: ['videos', [0, {from: 1, length: 1}], 'title'],
-                        $__keyDepth: 2,
+                        [ƒ_meta]: {
+                            '$code':          '165499941',
+                            [ƒm_abs_path]:    ['videos', '0'],
+                            [ƒm_deref_from]:  undefined,
+                            [ƒm_deref_to]:    undefined,
+                            [ƒm_version]:     0
+                        },
                         title: 'Video 0'
                     },
                     1: {
-                        $__key: '1',
-                        $__path: ['videos', '1'],
-                        $__version: 0,
-                        $__keysPath: ['videos', [0, {from: 1, length: 1}], 'title'],
-                        $__keyDepth: 2,
+                        [ƒ_meta]: {
+                            '$code':          '165499941',
+                            [ƒm_abs_path]:    ['videos', '1'],
+                            [ƒm_deref_from]:  undefined,
+                            [ƒm_deref_to]:    undefined,
+                            [ƒm_version]:     0
+                        },
                         title: 'Video 1'
                     }
                 }
             }
         });
 
-        expect(actualJSON.json.$__hash).to.equal('1169336459');
-        expect(actualJSON.json.$__hash__$).to.equal('1169336459');
-        expect(actualJSON.json.videos.$__hash).to.equal('2161227570');
-        expect(actualJSON.json.videos.$__hash__$).to.equal('2161227570');
-        expect(actualJSON.json.videos[0].$__hash).to.equal('1464653548');
-        expect(actualJSON.json.videos[0].$__hash__$).to.equal('1464653548');
-        expect(actualJSON.json.videos[1].$__hash).to.equal('2339530808');
-        expect(actualJSON.json.videos[1].$__hash__$).to.equal('2339530808');
+        expect(actualJSON.json.$__hash).to.equal('2076667107');
+        expect(actualJSON.json.videos.$__hash).to.equal('1720011066');
+        expect(actualJSON.json.videos[0].$__hash).to.equal('165499941');
+        expect(actualJSON.json.videos[1].$__hash).to.equal('165499941');
     });
 
     // JSONGraph ----------------------------------------

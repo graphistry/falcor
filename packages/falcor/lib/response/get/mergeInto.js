@@ -11,9 +11,7 @@ function mergeInto(dest, node) {
 
         key = keys[index];
 
-        if (key !== "$__path" &&
-            key !== "$__refPath" &&
-            key !== "$__toReference") {
+        if (key !== ƒ_meta) {
 
             nodeValue = node[key];
             destValue = dest[key];
@@ -29,17 +27,7 @@ function mergeInto(dest, node) {
         }
     }
 
-    var $__path = node.$__path;
-
-    if ($__path) {
-        dest.$__path = $__path;
-        var $__refPath = node.$__refPath;
-        var $__toReference = node.$__toReference;
-        if ($__refPath && $__toReference) {
-            dest.$__refPath = $__refPath;
-            dest.$__toReference = $__toReference;
-        }
-    }
+    dest[ƒ_meta] = node[ƒ_meta];
 
     return dest;
 }

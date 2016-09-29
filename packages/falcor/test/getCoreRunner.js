@@ -2,8 +2,7 @@ var get = require('./../lib/get');
 var Model = require('./../lib');
 var expect = require('chai').expect;
 var clean = require('./cleanData').clean;
-var convert = require('./cleanData').convert;
-var internalKeys = require('./../lib/internal');
+var convertKey = require('./cleanData').convertKey;
 var getCachePosition = require('./../lib/get/getCachePosition');
 
 module.exports = function(testConfig) {
@@ -36,6 +35,7 @@ module.exports = function(testConfig) {
         model = new Model({
             cache: cache,
             source: source,
+            recycleJSON: testConfig.recycleJSON,
             branchSelector: testConfig.branchSelector
         });
     }
@@ -83,12 +83,19 @@ module.exports = function(testConfig) {
     }
 
     var valueNode = out.values && out.values[0];
+    var stripMetadataKeys = testConfig.stripMetadata === false ? [] : [ƒ_meta];
+
+    if (testConfig.stripMetadata === false) {
+        valueNode = convertKey(valueNode, {
+            [ƒ_meta]: function(x) { return x; }
+        });
+    }
 
     // $size is stripped out of basic core tests.
     // We have to strip out parent as well from the output since it will produce
     // infinite recursion.
-    clean(valueNode, {strip: ['$size']});
-    clean(expectedOutput, {strip: ['$size']});
+    valueNode = clean(valueNode, {strip: ['$size'].concat(stripMetadataKeys)});
+    expectedOutput = clean(expectedOutput, {strip: ['$size'].concat(stripMetadataKeys)});
 
     if (expectedOutput) {
         expect(valueNode).to.deep.equals(expectedOutput);

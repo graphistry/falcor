@@ -28,7 +28,7 @@ function onJSONGraphValue(node, type, depth, seed, results,
              */
              $ref === type ||
              $error === type ||
-             !node.ツmodelCreated ||
+             !node[ƒ_wrapped_value] ||
              "object" === typeof value) {
         value = clone(node);
     }

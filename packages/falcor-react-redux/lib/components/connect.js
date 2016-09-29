@@ -114,7 +114,6 @@ _falcor.Model.prototype.changes = function () {
 
 var contextTypes = {
     falcor: _react.PropTypes.object,
-    version: _react.PropTypes.number,
     dispatch: _react.PropTypes.func
 };
 
@@ -136,15 +135,15 @@ var connect = function connect(BaseComponent) {
         }).distinctUntilKeyChanged('version').auditTime(0, _rxjs.Scheduler.asap);
     }), (0, _withContext2.default)(contextTypes, function (_ref4) {
         var falcor = _ref4.falcor;
-        var version = _ref4.version;
         var dispatch = _ref4.dispatch;
         return {
-            falcor: falcor, dispatch: dispatch, version: version
+            falcor: falcor, dispatch: dispatch
         };
     }), (0, _lifecycle2.default)({
         componentDidUpdate: function componentDidUpdate() {
             this.props.dispatch({
-                data: _extends({}, this.props.data),
+                // data: { ...this.props.data },
+                data: this.props.data,
                 type: 'falcor-react-redux/update'
             });
         }

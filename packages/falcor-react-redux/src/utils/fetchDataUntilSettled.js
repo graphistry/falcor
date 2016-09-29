@@ -1,6 +1,5 @@
 import { Observable } from 'rxjs';
 import memoizeQueryies from './memoizeQueryies';
-import mergeIntoFalcorJSON from './mergeIntoFalcorJSON';
 const memoizedQuerySyntax = memoizeQueryies(100);
 
 export default function fetchDataUntilSettled({
@@ -8,7 +7,8 @@ export default function fetchDataUntilSettled({
 }) {
     return Observable.of({
         prev: null, settled: false,
-        data, falcor, fragment, props
+        version: falcor.getVersion(),
+        data, props, falcor, fragment,
     })
     .expand(_fetchDataUntilSettled)
     .takeLast(1);
@@ -18,16 +18,16 @@ function _fetchDataUntilSettled(state) {
     if (state.settled === true) {
         return Observable.empty();
     }
-    const { data, props, prev, falcor, fragment } = state;
-    const query = fragment(data, props);
-    if (query !== prev) {
+    const { falcor, fragment } = state;
+    const query = fragment(state.data, state.props);
+    if (query !== state.prev || state.version !== falcor.getVersion()) {
         return Observable
-            .from(falcor.get(...memoizedQuerySyntax(query)))
+            .from(falcor.get(memoizedQuerySyntax(query)))
             .map(({ json }) => Object.assign(state, {
-                prev: query, data: mergeIntoFalcorJSON(data, json)
+                prev: query, data: json, version: falcor.getVersion()
             }))
             .catch((error) => Observable.of(Object.assign(state, {
-                error, settled: true
+                error, settled: true, version: falcor.getVersion()
             })));
     }
     return Observable.empty();

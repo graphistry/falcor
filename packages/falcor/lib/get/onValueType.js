@@ -26,7 +26,7 @@ function onValueType(node, type,
                              optimizedPath, optimizedLength);
         }
     } else if (isExpired(node)) {
-        if (!node.ツinvalidated) {
+        if (!node[ƒ_invalidated]) {
             expireNode(node, expired, modelRoot);
         }
         return onMissing(path, depth, results,

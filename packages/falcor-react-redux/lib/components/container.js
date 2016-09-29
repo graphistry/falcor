@@ -32,7 +32,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _typeof = typeof _symbol2.default === "function" && typeof _iterator2.default === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof _symbol2.default === "function" && obj.constructor === _symbol2.default ? "symbol" : typeof obj; };
+var _typeof = typeof _symbol2.default === "function" && typeof _iterator2.default === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof _symbol2.default === "function" && obj.constructor === _symbol2.default && obj !== _symbol2.default.prototype ? "symbol" : typeof obj; };
 
 var _extends = _assign2.default || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
@@ -66,14 +66,6 @@ var _bindActionCreators = require('../utils/bindActionCreators');
 
 var _bindActionCreators2 = _interopRequireDefault(_bindActionCreators);
 
-var _mergeIntoFalcorJSON = require('../utils/mergeIntoFalcorJSON');
-
-var _mergeIntoFalcorJSON2 = _interopRequireDefault(_mergeIntoFalcorJSON);
-
-var _invalidateFalcorJSON = require('../utils/invalidateFalcorJSON');
-
-var _invalidateFalcorJSON2 = _interopRequireDefault(_invalidateFalcorJSON);
-
 var _fetchDataUntilSettled = require('../utils/fetchDataUntilSettled');
 
 var _fetchDataUntilSettled2 = _interopRequireDefault(_fetchDataUntilSettled);
@@ -90,7 +82,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 var contextTypes = {
     falcor: _react.PropTypes.object,
-    version: _react.PropTypes.number,
     dispatch: _react.PropTypes.func
 };
 
@@ -103,15 +94,14 @@ var FalcorContainer = function (_React$Component) {
         var _this = _possibleConstructorReturn(this, (FalcorContainer.__proto__ || (0, _getPrototypeOf2.default)(FalcorContainer)).call(this, props, context));
 
         var data = props.data;
+        var falcor = context.falcor;
+        var dispatch = context.dispatch;
         var _this$constructor = _this.constructor;
         var fragment = _this$constructor.fragment;
         var Component = _this$constructor.Component;
         var mergeFragmentAndProps = _this$constructor.mergeFragmentAndProps;
         var mapFragment = _this$constructor.mapFragment;
         var mapDispatch = _this$constructor.mapDispatch;
-        var falcor = context.falcor;
-        var version = context.version;
-        var dispatch = context.dispatch;
 
 
         _this.fragment = fragment;
@@ -120,7 +110,13 @@ var FalcorContainer = function (_React$Component) {
         _this.mapFragment = mapFragment;
         _this.mergeFragmentAndProps = mergeFragmentAndProps;
 
-        _this.state = _extends({ falcor: falcor, version: version, dispatch: dispatch }, props);
+        data = (0, _mapToFalcorJSON2.default)(data);
+        falcor = falcor.deref(data);
+        _this.state = _extends({}, props, {
+            hash: data.$__hash,
+            data: data, falcor: falcor, dispatch: dispatch,
+            version: falcor.getVersion()
+        });
         _this.propsStream = new _rxjs.Subject();
         _this.propsAction = _this.propsStream.map(function (_ref) {
             var data = _ref.data;
@@ -128,21 +124,20 @@ var FalcorContainer = function (_React$Component) {
 
             var rest = _objectWithoutProperties(_ref, ['data', 'falcor']);
 
-            data = (0, _invalidateFalcorJSON2.default)((0, _mapToFalcorJSON2.default)(data, falcor));
-            return _extends({}, rest, { fragment: fragment, data: data, falcor: data && data.$__path && data.$__path.length && falcor.deref(data) || falcor
-            });
+            data = (0, _mapToFalcorJSON2.default)(data);
+            falcor = falcor.deref(data);
+            return _extends({}, rest, { data: data, falcor: falcor, fragment: fragment });
         }).switchMap(_fetchDataUntilSettled2.default, function (_ref2, _ref3) {
-            var data = _ref2.data;
-            var falcor = _ref2.falcor;
-            var version = _ref2.version;
             var fragment = _ref2.fragment;
 
-            var rest = _objectWithoutProperties(_ref2, ['data', 'falcor', 'version', 'fragment']);
+            var props = _objectWithoutProperties(_ref2, ['fragment']);
 
-            var d2 = _ref3.data;
+            var data = _ref3.data;
             var error = _ref3.error;
-            return _extends({
-                falcor: falcor }, rest, { data: d2, error: error
+            var version = _ref3.version;
+            return _extends({}, props, {
+                hash: data.$__hash,
+                version: version, data: data, error: error
             });
         });
         return _this;
@@ -155,28 +150,23 @@ var FalcorContainer = function (_React$Component) {
             var falcor = _state.falcor;
             var dispatch = _state.dispatch;
 
-            return { falcor: falcor, dispatch: dispatch, version: falcor.getVersion() };
+            return { falcor: falcor, dispatch: dispatch };
         }
     }, {
         key: 'shouldComponentUpdate',
         value: function shouldComponentUpdate(nextProps, nextState, nextContext) {
-            var _state2 = this.state;
-            var thisVersion = _state2.version;
-            var thisJSON = _state2.data;
-
-            var restProps = _objectWithoutProperties(_state2, ['version', 'data']);
-
-            var nextVersion = nextProps.version;
             var nextJSON = nextProps.data;
 
-            var restNextProps = _objectWithoutProperties(nextProps, ['version', 'data']);
+            var restNextProps = _objectWithoutProperties(nextProps, ['data']);
 
-            if (thisVersion !== nextVersion) {
-                return true;
-            } else if (!thisJSON || !nextJSON || thisJSON.$__hash !== nextJSON.$__hash) {
-                return true;
-            }
-            return !(0, _shallowEqual2.default)(restProps, restNextProps);
+            var _state2 = this.state;
+            var thisJSON = _state2.data;
+            var thisHash = _state2.hash;
+            var thisVersion = _state2.version;
+
+            var restState = _objectWithoutProperties(_state2, ['data', 'hash', 'version']);
+
+            return !(thisJSON && nextJSON && thisHash === nextJSON.$__hash && thisVersion === nextJSON.$__version && (0, _shallowEqual2.default)(restState, restNextProps));
         }
     }, {
         key: 'componentWillReceiveProps',
@@ -215,6 +205,7 @@ var FalcorContainer = function (_React$Component) {
             var mapDispatch = this.mapDispatch;
             var _state3 = this.state;
             var data = _state3.data;
+            var hash = _state3.hash;
             var error = _state3.error;
             var falcor = _state3.falcor;
             var version = _state3.version;
@@ -222,23 +213,11 @@ var FalcorContainer = function (_React$Component) {
             var dispatch = _state3.dispatch;
             var fragment = _state3.fragment;
 
-            var rest = _objectWithoutProperties(_state3, ['data', 'error', 'falcor', 'version', 'loading', 'dispatch', 'fragment']);
+            var rest = _objectWithoutProperties(_state3, ['data', 'hash', 'error', 'falcor', 'version', 'loading', 'dispatch', 'fragment']);
 
             var mappedFragment = mapFragment(data, _extends({ error: error }, rest));
             var mappedDispatch = mapDispatch(dispatch, mappedFragment, falcor);
-
-            var _mergeFragmentAndProp = mergeFragmentAndProps(mappedFragment, mappedDispatch, rest);
-
-            var $__key = _mergeFragmentAndProp.$__key;
-            var $__path = _mergeFragmentAndProp.$__path;
-            var $__refPath = _mergeFragmentAndProp.$__refPath;
-            var $__version = _mergeFragmentAndProp.$__version;
-            var $__hash__$ = _mergeFragmentAndProp.$__hash__$;
-            var $__keysPath = _mergeFragmentAndProp.$__keysPath;
-            var $__keyDepth = _mergeFragmentAndProp.$__keyDepth;
-            var $__toReference = _mergeFragmentAndProp.$__toReference;
-
-            var allMergedProps = _objectWithoutProperties(_mergeFragmentAndProp, ['$__key', '$__path', '$__refPath', '$__version', '$__hash__$', '$__keysPath', '$__keyDepth', '$__toReference']);
+            var allMergedProps = mergeFragmentAndProps(mappedFragment, mappedDispatch, rest);
 
             return _react2.default.createElement(Component, allMergedProps);
         }
@@ -262,9 +241,9 @@ var defaultMergeProps = function defaultMergeProps(stateProps, dispatchProps, pa
 };
 
 function container(getFragment) {
-    var mapFragment = arguments.length <= 1 || arguments[1] === undefined ? defaultMapFragmentToProps : arguments[1];
-    var mapDispatch = arguments.length <= 2 || arguments[2] === undefined ? defaultMapDispatchToProps : arguments[2];
-    var mergeFragmentAndProps = arguments.length <= 3 || arguments[3] === undefined ? defaultMergeProps : arguments[3];
+    var mapFragment = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : defaultMapFragmentToProps;
+    var mapDispatch = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : defaultMapDispatchToProps;
+    var mergeFragmentAndProps = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : defaultMergeProps;
 
 
     if (typeof mapDispatch !== 'function') {

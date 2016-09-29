@@ -20,12 +20,12 @@ function hasValidParentReference() {
     }
 
     // Its been disconnected (set over or collected) from the graph.
-    if (reference && reference.ツparent === undefined) {
+    if (reference && reference[ƒ_parent] === undefined) {
         return false;
     }
 
     // The reference has expired but has not been collected from the graph.
-    if (reference && reference.ツinvalidated) {
+    if (reference && reference[ƒ_invalidated]) {
         return false;
     }
 

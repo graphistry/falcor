@@ -1,6 +1,5 @@
 var hasOwn = require("./support/hasOwn");
 var isFunction = require("./support/isFunction");
-var toJSONWithHashCodes = require("./get/toJSONWithHashCodes");
 
 function ModelRoot(o, topLevelModel) {
 
@@ -17,9 +16,7 @@ function ModelRoot(o, topLevelModel) {
         this.comparator = options.comparator;
     }
 
-    if (options.JSONWithHashCodes === true) {
-        this.branchSelector = toJSONWithHashCodes;
-    } else if (isFunction(options.branchSelector)) {
+    if (isFunction(options.branchSelector)) {
         this.branchSelector = options.branchSelector;
     }
 

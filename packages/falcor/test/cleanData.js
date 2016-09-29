@@ -1,7 +1,6 @@
 var util = require('util');
 var internalKeyMap = require('./../lib/internal');
-var internalKeys = Object.keys(internalKeyMap);
-var $modelCreated = require('./../lib/internal/model-created.js');
+var internalKeys = Object.keys(internalKeyMap).concat(ƒ_meta);
 
 module.exports = {
     clean: clean,
@@ -13,15 +12,14 @@ module.exports = {
         return convertNodes(null, null, obj, transform);
     },
     stripDerefAndVersionKeys: function(item) {
-        strip.apply(null, [item, '$size'].concat(internalKeys));
-        return item;
+        return strip.apply(null, [item, '$size'].concat(internalKeys));
     },
     traverseAndConvert: traverseAndConvert
 };
 
 function convertModelCreatedAtoms(cache) {
     convertNodes(null, null, cache, function transform(sentinel) {
-        if (sentinel.$type === 'atom' && sentinel[$modelCreated] &&
+        if (sentinel.$type === 'atom' && sentinel[ƒ_wrapped_value] &&
             typeof sentinel.value !== 'object') {
 
             return sentinel.value;
@@ -35,8 +33,8 @@ function clean(item, options) {
         strip: ['$size'].concat(internalKeys)
     };
 
-    strip.apply(null, [item].concat(options.strip));
-    traverseAndConvert(item);
+    item = strip.apply(null, [item].concat(options.strip));
+    item = traverseAndConvert(item);
 
     return item;
 }
@@ -103,12 +101,16 @@ function strip(obj, key) {
     var keys = Array.prototype.slice.call(arguments, 1);
     var args = [0].concat(keys);
     if (obj != null && typeof obj === "object") {
-        Object.keys(obj).forEach(function(k) {
-            if (~keys.indexOf(k)) {
-                delete obj[k];
-            } else if ((args[0] = obj[k]) != null && typeof obj[k] === "object") {
-                strip.apply(null, args);
+        return Object.keys(obj).reduce(function(newObj, k) {
+            if (keys.indexOf(k) === -1) {
+                if ((args[0] = obj[k]) != null && typeof obj[k] === "object") {
+                    newObj[k] = strip.apply(null, args);
+                } else {
+                    newObj[k] = obj[k];
+                }
             }
-        });
+            return newObj;
+        }, Array.isArray(obj) ? [] : {});
     }
+    return obj;
 }

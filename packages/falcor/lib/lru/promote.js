@@ -8,11 +8,11 @@ module.exports = function lruPromote(root, object) {
         return;
     }
 
-    var head = root.ツhead;
+    var head = root[ƒ_head];
 
     // Nothing is in the cache.
     if (!head) {
-        root.ツhead = root.ツtail = object;
+        root[ƒ_head] = root[ƒ_tail] = object;
         return;
     }
 
@@ -22,23 +22,23 @@ module.exports = function lruPromote(root, object) {
 
     // The item always exist in the cache since to get anything in the
     // cache it first must go through set.
-    var prev = object.ツprev;
-    var next = object.ツnext;
+    var prev = object[ƒ_prev];
+    var next = object[ƒ_next];
     if (next) {
-        next.ツprev = prev;
+        next[ƒ_prev] = prev;
     }
     if (prev) {
-        prev.ツnext = next;
+        prev[ƒ_next] = next;
     }
-    object.ツprev = undefined;
+    object[ƒ_prev] = undefined;
 
     // Insert into head position
-    root.ツhead = object;
-    object.ツnext = head;
-    head.ツprev = object;
+    root[ƒ_head] = object;
+    object[ƒ_next] = head;
+    head[ƒ_prev] = object;
 
     // If the item we promoted was the tail, then set prev to tail.
-    if (object === root.ツtail) {
-        root.ツtail = prev;
+    if (object === root[ƒ_tail]) {
+        root[ƒ_tail] = prev;
     }
 };

@@ -24,7 +24,7 @@ module.exports = function setJSONGraphs(model, jsonGraphEnvelopes, errorSelector
     var expired = modelRoot.expired;
     var version = modelRoot.version++;
     var cache = modelRoot.cache;
-    var initialVersion = cache.ツversion;
+    var initialVersion = cache[ƒ_version];
 
     var requestedPath = [];
     var optimizedPath = [];
@@ -63,7 +63,7 @@ module.exports = function setJSONGraphs(model, jsonGraphEnvelopes, errorSelector
     arr[3] = undefined;
     arr[4] = undefined;
 
-    var newVersion = cache.ツversion;
+    var newVersion = cache[ƒ_version];
     var rootChangeHandler = modelRoot.onChange;
 
     if (isFunction(rootChangeHandler) && initialVersion !== newVersion) {
@@ -172,7 +172,7 @@ function setReference(
 
         optimizedPath.index = index;
 
-        if (container.ツcontext !== node) {
+        if (container[ƒ_context] !== node) {
             createHardlink(container, node);
         }
     }
@@ -218,7 +218,7 @@ function setNode(
             if (branch) {
                 throw new NullInPathError();
             } else if (node) {
-                key = node.ツkey;
+                key = node[ƒ_key];
             }
         } else {
             parent = node;

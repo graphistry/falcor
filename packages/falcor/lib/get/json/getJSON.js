@@ -1,10 +1,14 @@
+var isArray = Array.isArray;
 var walkPathAndBuildOutput = require("./walkPath");
+var walkFlatBufferAndBuildOutput = require("./walkFlatBuffer");
 var getBoundCacheNode = require("./../getBoundCacheNode");
 var InvalidModelError = require("./../../errors/InvalidModelError");
+var toFlatBuffer = require("@graphistry/falcor-path-utils").toFlatBuffer;
+var computeFlatBufferHash = require("@graphistry/falcor-path-utils").computeFlatBufferHash;
 
 module.exports = getJSON;
 
-function getJSON(model, paths, values) {
+function getJSON(model, paths, values, forceUsePathWalk) {
 
     var node,
         referenceContainer,
@@ -39,28 +43,41 @@ function getJSON(model, paths, values) {
 
     var boxValues = model._boxed,
         expired = modelRoot.expired,
+        recycleJSON = model._recycleJSON,
         materialized = model._materialized,
         hasDataSource = Boolean(model._source),
         branchSelector = modelRoot.branchSelector,
         treatErrorsAsValues = model._treatErrorsAsValues,
         allowFromWhenceYouCame = model._allowFromWhenceYouCame,
 
-        seed = values[0],
+        path, seed = values[0],
         json = seed && seed.json,
-        results = { values: values },
-        path, pathsIndex = -1, pathsCount = paths.length;
+        results = { values: values };
 
-    while (++pathsIndex < pathsCount) {
-        path = paths[pathsIndex];
-        requestedLength = path.length;
-        json = walkPathAndBuildOutput(cache, node, json, path,
-                                   /* depth = */ 0, seed, results,
-                                      requestedPath, requestedLength,
-                                      optimizedPath, optimizedLength,
-                     /* fromReference = */ false, referenceContainer,
-                                      modelRoot, expired, branchSelector,
-                                      boxValues, materialized, hasDataSource,
-                                      treatErrorsAsValues, allowFromWhenceYouCame);
+    if (recycleJSON && forceUsePathWalk !== true) {
+        if (isArray(path = paths)) {
+            path = computeFlatBufferHash(toFlatBuffer(paths));
+        }
+        json = walkFlatBufferAndBuildOutput(cache, node, json, path, 0, seed, results,
+                                            requestedPath, optimizedPath, optimizedLength,
+                                            /* fromReference = */ false, referenceContainer,
+                                            modelRoot, expired, branchSelector,
+                                            boxValues, materialized, hasDataSource,
+                                            treatErrorsAsValues, allowFromWhenceYouCame);
+    } else {
+        var pathsIndex = -1, pathsCount = paths.length;
+        while (++pathsIndex < pathsCount) {
+            path = paths[pathsIndex];
+            requestedLength = path.length;
+            json = walkPathAndBuildOutput(cache, node, json, path,
+                                       /* depth = */ 0, seed, results,
+                                          requestedPath, requestedLength,
+                                          optimizedPath, optimizedLength,
+                                          /* fromReference = */ false, referenceContainer,
+                                          modelRoot, expired, branchSelector,
+                                          boxValues, materialized, hasDataSource,
+                                          treatErrorsAsValues, allowFromWhenceYouCame);
+        }
     }
 
     if (results.hasValue) {

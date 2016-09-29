@@ -1,6 +1,7 @@
 var path = require('path');
 var webpack = require('webpack');
 var WebpackVisualizer = require('webpack-visualizer-plugin');
+var internalKeyDefinitions = require('../internalKeyDefinitions');
 var ClosureCompilerPlugin = require('webpack-closure-compiler');
 
 module.exports = webpackConfig();
@@ -8,9 +9,8 @@ module.exports = webpackConfig();
 function webpackConfig(isDev = process.env.NODE_ENV === 'development') {
     return {
         amd: false,
-        queit: true,
-        progress: false,
-        devtool: isDev && /*'cheap-module-eval-*/'source-map' || 'source-map',
+        // Create Sourcemaps for the bundle
+        devtool: isDev ? 'source-map' : 'hidden-source-map',
         resolve: {
             unsafeCache: true
         },
@@ -49,21 +49,40 @@ function loaders(isDev) {
             exclude: /(node_modules(?!\/rxjs))/,
             loader: 'babel-loader',
             query: {
-                presets: [isDev ? 'es2015' : 'es2016']
+                presets: [isDev ?
+                    require.resolve('babel-preset-es2015') :
+                    require.resolve('babel-preset-es2016')
+                ]
             }
         };
     }
 }
 
 function plugins(isDev) {
+    var internalKeys = internalKeyDefinitions();
+    var internalKeysAsStrings = Object
+        .keys(internalKeys)
+        .reduce(function(xs, key) {
+            xs[key] = JSON.stringify(internalKeys[key]);
+            return xs;
+        }, {});
+
     var plugins = [
         license(),
         new webpack.NoErrorsPlugin(),
-        new webpack.DefinePlugin({ DEBUG: isDev }),
+        new webpack.DefinePlugin(Object.assign(
+            { DEBUG: isDev },
+            internalKeysAsStrings
+        )),
         new webpack.ProvidePlugin({ 'Promise': 'es6-promise' }),
         new webpack.optimize.AggressiveMergingPlugin(),
         new webpack.optimize.OccurrenceOrderPlugin(true),
-        new webpack.LoaderOptionsPlugin({ debug: isDev, minimize: !isDev }),
+        new webpack.LoaderOptionsPlugin({
+            debug: isDev,
+            queit: true,
+            minimize: !isDev,
+            progress: false,
+        }),
     ];
     if (isDev) {
         plugins.push(new WebpackVisualizer());
@@ -71,11 +90,23 @@ function plugins(isDev) {
     else {
         plugins.push(new ClosureCompilerPlugin({
             compiler: {
-                language_in: 'ECMASCRIPT6_STRICT',
-                language_out: 'ECMASCRIPT5_STRICT',
+                language_in: 'ECMASCRIPT6',
+                language_out: 'ECMASCRIPT5',
                 compilation_level: 'SIMPLE',
-                create_source_map: path.resolve('./dist') + '/falcor.min.js.map'
-                // output_wrapper: '(function(){\n%output%\n}).call(this)\n//# sourceMappingURL=falcor.min.js.map'
+                // compilation_level: 'ADVANCED', // not yet
+                rewrite_polyfills: false,
+                use_types_for_optimization: false,
+                // warning_level: 'QUIET',
+                jscomp_off: '*',
+                jscomp_warning: '*',
+                source_map_format: 'V3',
+                create_source_map: `${path.resolve('./dist')}/falcor.min.js.map`,
+                output_wrapper: `%output%\n//# sourceMappingURL=falcor.min.js.map`
+                // language_in: 'ECMASCRIPT6_STRICT',
+                // language_out: 'ECMASCRIPT5_STRICT',
+                // compilation_level: 'SIMPLE',
+                // create_source_map: path.resolve('./dist') + '/falcor.min.js.map',
+                // output_wrapper: '%output%\n//# sourceMappingURL=falcor.min.js.map'
             },
             concurrency: 3,
         }));
@@ -101,4 +132,36 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
 or implied. See the License for the specific language governing
 permissions and limitations under the License.`
     });
+}
+
+function internalKeyDefinitions() {
+
+    const ƒ_ = String.fromCharCode(30);
+
+    return {
+        'ƒ_':              `'${ƒ_}'`,
+        'ƒ_meta':          `'${ƒ_}m'`,
+
+        'ƒm_path':         `'path'`,
+        'ƒm_version':      `'version'`,
+        'ƒm_abs_path':     `'abs_path'`,
+        'ƒm_deref_to':     `'deref_to'`,
+        'ƒm_deref_from':   `'deref_from'`,
+
+        'ƒ_key':           `'${ƒ_}key'`,
+        'ƒ_ref':           `'${ƒ_}ref'`,
+        'ƒ_head':          `'${ƒ_}head'`,
+        'ƒ_next':          `'${ƒ_}next'`,
+        'ƒ_path':          `'${ƒ_}path'`,
+        'ƒ_prev':          `'${ƒ_}prev'`,
+        'ƒ_tail':          `'${ƒ_}tail'`,
+        'ƒ_parent':        `'${ƒ_}parent'`,
+        'ƒ_context':       `'${ƒ_}context'`,
+        'ƒ_version':       `'${ƒ_}version'`,
+        'ƒ_abs_path':      `'${ƒ_}abs_path'`,
+        'ƒ_ref_index':     `'${ƒ_}ref_index'`,
+        'ƒ_refs_length':   `'${ƒ_}refs_length'`,
+        'ƒ_invalidated':   `'${ƒ_}invalidated'`,
+        'ƒ_wrapped_value': `'${ƒ_}wrapped_value'`,
+    };
 }

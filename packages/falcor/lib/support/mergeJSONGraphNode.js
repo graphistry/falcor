@@ -55,7 +55,7 @@ module.exports = function mergeJSONGraphNode(
                 if (cType == null) {
                     // Has the branch been introduced to the cache yet? If not,
                     // give it a parent, key, and absolute path.
-                    if (node.ツparent == null) {
+                    if (node[ƒ_parent] == null) {
                         insertNode(node, parent, key, version, optimizedPath);
                     }
                     return node;
@@ -107,7 +107,7 @@ module.exports = function mergeJSONGraphNode(
                     // grandparents. If we've previously graphed this
                     // reference, break early. Otherwise, continue to
                     // leaf insertion below.
-                    if (node.ツparent != null) {
+                    if (node[ƒ_parent] != null) {
                         return node;
                     }
                 } else {
@@ -147,7 +147,7 @@ module.exports = function mergeJSONGraphNode(
         }
 
         if (mType && node === message) {
-            if (node.ツparent == null) {
+            if (node[ƒ_parent] == null) {
                 node = wrapNode(node, cType, node.value);
                 parent = updateNodeAncestors(parent, -node.$size, lru, version);
                 node = insertNode(node, parent, key, version, optimizedPath);

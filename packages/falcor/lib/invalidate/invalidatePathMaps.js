@@ -1,5 +1,4 @@
 var createHardlink = require("../support/createHardlink");
-var __prefix = require("./../internal/unicodePrefix");
 
 var $ref = require("./../types/ref");
 
@@ -33,8 +32,8 @@ module.exports = function invalidatePathMaps(model, pathMapEnvelopes) {
     var errorSelector = modelRoot._errorSelector;
     var cache = modelRoot.cache;
     var node = getBoundCacheNode(model);
-    var parent = node.ツparent || cache;
-    var initialVersion = cache.ツversion;
+    var parent = node[ƒ_parent] || cache;
+    var initialVersion = cache[ƒ_version];
 
     var pathMapIndex = -1;
     var pathMapCount = pathMapEnvelopes.length;
@@ -49,7 +48,7 @@ module.exports = function invalidatePathMaps(model, pathMapEnvelopes) {
         );
     }
 
-    var newVersion = cache.ツversion;
+    var newVersion = cache[ƒ_version];
     var rootChangeHandler = modelRoot.onChange;
 
     if (isFunction(rootChangeHandler) && initialVersion !== newVersion) {
@@ -64,7 +63,7 @@ function invalidatePathMap(pathMap, depth, root, parent, node, version, expired,
     }
 
     for (var key in pathMap) {
-        if (key[0] !== __prefix && key[0] !== "$" && hasOwn(pathMap, key)) {
+        if (key[0] !== ƒ_ && key[0] !== "$" && hasOwn(pathMap, key)) {
             var child = pathMap[key];
             var branch = isObject(child) && !child.$type;
             var results = invalidateNode(
@@ -102,10 +101,10 @@ function invalidateReference(value, root, node, version, expired, lru, comparato
     var reference = node.value;
     var parent = root;
 
-    node = node.ツcontext;
+    node = node[ƒ_context];
 
     if (node != null) {
-        parent = node.ツparent || root;
+        parent = node[ƒ_parent] || root;
     } else {
 
         var index = 0;
@@ -128,7 +127,7 @@ function invalidateReference(value, root, node, version, expired, lru, comparato
             parent = results[1];
         } while (index++ < count);
 
-        if (container.ツcontext !== node) {
+        if (container[ƒ_context] !== node) {
             createHardlink(container, node);
         }
     }
@@ -165,7 +164,7 @@ function invalidateNode(
         if (branch) {
             throw new Error("`null` is not allowed in branch key positions.");
         } else if (node) {
-            key = node.ツkey;
+            key = node[ƒ_key];
         }
     } else {
         parent = node;

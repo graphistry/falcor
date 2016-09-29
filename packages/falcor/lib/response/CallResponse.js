@@ -1,7 +1,6 @@
 var SetResponse = require("./../response/set/SetResponse");
 var ModelResponse = require("./../response/ModelResponse");
 var InvalidSourceError = require("./../errors/InvalidSourceError");
-var __version = require("./../internal/version");
 
 /**
  * @private
@@ -19,7 +18,7 @@ function CallResponse(model, callPath, args, suffix, paths) {
     }
     this.model = model;
 
-    var currentVersion = model._root.cache[__version];
+    var currentVersion = model._root.cache[ƒ_version];
 
     if (typeof currentVersion === "number") {
         this.initialCacheVersion = currentVersion;

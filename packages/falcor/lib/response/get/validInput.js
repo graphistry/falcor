@@ -1,4 +1,5 @@
 module.exports = {
     path: true,
-    pathSyntax: true
+    pathSyntax: true,
+    flatBuffer: true,
 };

@@ -3,12 +3,6 @@ var Model = falcor.Model;
 var chai = require("chai");
 var expect = chai.expect;
 var noOp = function() {};
-
-var __head = require("./../../lib/internal/head");
-var __tail = require("./../../lib/internal/tail");
-var __next = require("./../../lib/internal/next");
-var __prev = require("./../../lib/internal/prev");
-var __key = require("./../../lib/internal/key");
 var cacheGenerator = require('./../CacheGenerator');
 
 describe('Set', function() {
@@ -187,22 +181,22 @@ describe('Set', function() {
         });
 
         var root = model._root;
-        var curr = root[__head];
-        expect(curr[__key]).to.equals('title');
+        var curr = root[ƒ_head];
+        expect(curr[ƒ_key]).to.equals('title');
         expect(curr.value).to.deep.equals('Video 0');
 
-        curr = curr[__next];
-        expect(curr[__key]).to.equals('item');
+        curr = curr[ƒ_next];
+        expect(curr[ƒ_key]).to.equals('item');
         expect(curr.value).to.deep.equals(['videos', '0']);
 
-        curr = curr[__next];
-        expect(curr[__key]).to.equals('0');
+        curr = curr[ƒ_next];
+        expect(curr[ƒ_key]).to.equals('0');
         expect(curr.value).to.deep.equals(['lists', 'A']);
 
-        curr = curr[__next];
-        expect(curr[__key]).to.equals('lolomo');
+        curr = curr[ƒ_next];
+        expect(curr[ƒ_key]).to.equals('lolomo');
         expect(curr.value).to.deep.equals(['lolomos', '1234']);
-        expect(curr[__next]).to.be.not.ok;
+        expect(curr[ƒ_next]).to.be.not.ok;
 
         model.
             set({
@@ -212,22 +206,22 @@ describe('Set', function() {
             subscribe();
 
         // new order to the list
-        curr = root[__head];
-        expect(curr[__key]).to.equals('0');
+        curr = root[ƒ_head];
+        expect(curr[ƒ_key]).to.equals('0');
         expect(curr.value).to.deep.equals('foo');
 
-        curr = curr[__next];
-        expect(curr[__key]).to.equals('lolomo');
+        curr = curr[ƒ_next];
+        expect(curr[ƒ_key]).to.equals('lolomo');
         expect(curr.value).to.deep.equals(['lolomos', '1234']);
 
-        curr = curr[__next];
-        expect(curr[__key]).to.equals('title');
+        curr = curr[ƒ_next];
+        expect(curr[ƒ_key]).to.equals('title');
         expect(curr.value).to.deep.equals('Video 0');
 
-        curr = curr[__next];
-        expect(curr[__key]).to.equals('item');
+        curr = curr[ƒ_next];
+        expect(curr[ƒ_key]).to.equals('item');
         expect(curr.value).to.deep.equals(['videos', '0']);
-        expect(curr[__next]).to.be.not.ok;
+        expect(curr[ƒ_next]).to.be.not.ok;
     });
 });
 function getModel() {
@@ -237,27 +231,27 @@ function getModel() {
 }
 
 function singleItem(model) {
-    expect(model._root[__head].value).to.equal('i am 1');
-    expect(model._root[__head][__next]).to.be.not.ok;
-    expect(model._root[__head][__prev]).to.be.not.ok;
+    expect(model._root[ƒ_head].value).to.equal('i am 1');
+    expect(model._root[ƒ_head][ƒ_next]).to.be.not.ok;
+    expect(model._root[ƒ_head][ƒ_prev]).to.be.not.ok;
 }
 
 function doubleItem(model) {
-    expect(model._root[__head].value).to.equal('i am 2');
-    expect(model._root[__tail].value).to.equal('i am 1');
-    expect(model._root[__head][__next].value).to.equal('i am 1');
-    expect(model._root[__tail][__prev].value).to.equal('i am 2');
-    expect(model._root[__head][__prev]).to.be.not.ok;
-    expect(model._root[__tail][__next]).to.be.not.ok;
+    expect(model._root[ƒ_head].value).to.equal('i am 2');
+    expect(model._root[ƒ_tail].value).to.equal('i am 1');
+    expect(model._root[ƒ_head][ƒ_next].value).to.equal('i am 1');
+    expect(model._root[ƒ_tail][ƒ_prev].value).to.equal('i am 2');
+    expect(model._root[ƒ_head][ƒ_prev]).to.be.not.ok;
+    expect(model._root[ƒ_tail][ƒ_next]).to.be.not.ok;
 }
 
 function tripleItem(model) {
-    expect(model._root[__head].value).to.equal('i am 3');
-    expect(model._root[__tail].value).to.equal('i am 1');
-    expect(model._root[__head][__next].value).to.equal('i am 2');
-    expect(model._root[__tail][__prev].value).to.equal('i am 2');
-    expect(model._root[__head][__next][__next].value).to.equal('i am 1');
-    expect(model._root[__tail][__prev][__prev].value).to.equal('i am 3');
-    expect(model._root[__head][__prev]).to.be.not.ok;
-    expect(model._root[__tail][__next]).to.be.not.ok;
+    expect(model._root[ƒ_head].value).to.equal('i am 3');
+    expect(model._root[ƒ_tail].value).to.equal('i am 1');
+    expect(model._root[ƒ_head][ƒ_next].value).to.equal('i am 2');
+    expect(model._root[ƒ_tail][ƒ_prev].value).to.equal('i am 2');
+    expect(model._root[ƒ_head][ƒ_next][ƒ_next].value).to.equal('i am 1');
+    expect(model._root[ƒ_tail][ƒ_prev][ƒ_prev].value).to.equal('i am 3');
+    expect(model._root[ƒ_head][ƒ_prev]).to.be.not.ok;
+    expect(model._root[ƒ_tail][ƒ_next]).to.be.not.ok;
 }

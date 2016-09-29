@@ -20,9 +20,11 @@ var getWithPathsAsJSONGraph = gets.getWithPathsAsJSONGraph;
  */
 module.exports = function checkCacheAndReport(model, requestedPaths, observer,
                                               progressive, isJSONG, seed,
-                                              errors) {
+                                              errors, recycleJSON) {
 
+    var recycledJSONSeed, f_meta, originalHashCode;
     var originalSeed, isSeedImmutable = progressive && !isJSONG && seed;
+    var shouldRecycleJSONSeed = !isJSONG && !progressive && recycleJSON;
 
     // If we request paths as JSON in progressive mode, ensure each progressive
     // valueNode is immutable. If not in progressive mode, we can write into the
@@ -30,6 +32,10 @@ module.exports = function checkCacheAndReport(model, requestedPaths, observer,
     if (isSeedImmutable) {
         originalSeed = seed[0];
         seed[0] = {};
+    } else if (shouldRecycleJSONSeed && seed[0] && (
+               recycledJSONSeed = seed[0].json) && (
+               f_meta = recycledJSONSeed[ƒ_meta])) {
+        originalHashCode = f_meta["$code"];
     }
 
     // checks the cache for the data.
@@ -37,7 +43,7 @@ module.exports = function checkCacheAndReport(model, requestedPaths, observer,
     if (isJSONG) {
         results = getWithPathsAsJSONGraph(model, requestedPaths, seed);
     } else {
-        results = getWithPathsAsPathMap(model, requestedPaths, seed);
+        results = getWithPathsAsPathMap(model, requestedPaths, seed, !recycleJSON);
     }
 
     // We must communicate critical errors from get that are critical
@@ -50,7 +56,7 @@ module.exports = function checkCacheAndReport(model, requestedPaths, observer,
 
     var hasValues = results.hasValue;
     var valueNode = results.values[0];
-    var hasValueOverall = Boolean(valueNode.json || valueNode.jsonGraph);
+    var hasValueOverall = Boolean(valueNode && valueNode.json || valueNode.jsonGraph);
 
     // We are done when there are no missing paths or the model does not
     // have a dataSource to continue on fetching from.
@@ -106,6 +112,12 @@ module.exports = function checkCacheAndReport(model, requestedPaths, observer,
         }
 
         return null;
+    }
+
+    if (shouldRecycleJSONSeed && seed[0] && (
+        recycledJSONSeed = seed[0].json) && (
+        f_meta = recycledJSONSeed[ƒ_meta])) {
+        f_meta["$code"] = originalHashCode;
     }
 
     // Return the results object.

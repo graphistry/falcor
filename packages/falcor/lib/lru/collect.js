@@ -21,17 +21,17 @@ module.exports = function collect(lru, expired, totalArg, max, ratioArg, version
         total -= size;
         if (shouldUpdate === true) {
             updateNodeAncestors(node, size, lru, version);
-        } else if (parent = node.ツparent) {  // eslint-disable-line no-cond-assign
-            removeNode(node, parent, node.ツkey, lru);
+        } else if (parent = node[ƒ_parent]) {  // eslint-disable-line no-cond-assign
+            removeNode(node, parent, node[ƒ_key], lru);
         }
         node = expired.pop();
     }
 
     if (total >= max) {
-        var prev = lru.ツtail;
+        var prev = lru[ƒ_tail];
         node = prev;
         while ((total >= targetSize) && node) {
-            prev = prev.ツprev;
+            prev = prev[ƒ_prev];
             size = node.$size || 0;
             total -= size;
             if (shouldUpdate === true) {
@@ -40,11 +40,11 @@ module.exports = function collect(lru, expired, totalArg, max, ratioArg, version
             node = prev;
         }
 
-        lru.ツtail = lru.ツprev = node;
+        lru[ƒ_tail] = lru[ƒ_prev] = node;
         if (node == null) {
-            lru.ツhead = lru.ツnext = undefined;
+            lru[ƒ_head] = lru[ƒ_next] = undefined;
         } else {
-            node.ツnext = undefined;
+            node[ƒ_next] = undefined;
         }
     }
 };

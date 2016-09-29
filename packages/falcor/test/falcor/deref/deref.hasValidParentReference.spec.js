@@ -5,9 +5,6 @@ var sinon = require('sinon');
 var expect = require('chai').expect;
 var cacheGenerator = require('./../../CacheGenerator');
 var noOp = function() {};
-var __head = require('./../../../lib/internal/head');
-var __next = require('./../../../lib/internal/next');
-var __key = require('./../../../lib/internal/key');
 
 describe('fromWhenceYouCame', function() {
     it('should have an invalid parent reference when derefd and fromWhenceYouCame is false.', function() {
@@ -164,19 +161,19 @@ describe('fromWhenceYouCame', function() {
             }).
             subscribe();
 
-        var node = model._root[__head];
+        var node = model._root[ƒ_head];
         while (node) {
-            expect(node[__key]).to.not.equals('lolomo');
-            node = node[__next];
+            expect(node[ƒ_key]).to.not.equals('lolomo');
+            node = node[ƒ_next];
         }
 
         var foundA, foundB, foundC;
-        var node = model._root[__head];
+        var node = model._root[ƒ_head];
         while (node) {
             foundA = foundA || node.value[1] === 'A';
             foundB = foundB || node.value[1] === 'B';
             foundC = foundC || node.value[1] === 'C';
-            node = node[__next];
+            node = node[ƒ_next];
         }
         expect(foundA, 'List A does not exist').to.be.ok;
         expect(foundB, 'List B does not exist').to.be.ok;
@@ -188,10 +185,10 @@ describe('fromWhenceYouCame', function() {
 
 function log(model) {
     var root = model._root;
-    var node = root[__head];
+    var node = root[ƒ_head];
     console.log('------------------');
     while (node) {
-        console.log(node[__key]);
-        node = node[__next];
+        console.log(node[ƒ_key]);
+        node = node[ƒ_next];
     }
 }

@@ -1,8 +1,8 @@
 'use strict';
 
-var _assign = require('babel-runtime/core-js/object/assign');
+var _create = require('babel-runtime/core-js/object/create');
 
-var _assign2 = _interopRequireDefault(_assign);
+var _create2 = _interopRequireDefault(_create);
 
 var _iterator = require('babel-runtime/core-js/symbol/iterator');
 
@@ -16,16 +16,33 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _typeof = typeof _symbol2.default === "function" && typeof _iterator2.default === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof _symbol2.default === "function" && obj.constructor === _symbol2.default ? "symbol" : typeof obj; };
+var _typeof = typeof _symbol2.default === "function" && typeof _iterator2.default === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof _symbol2.default === "function" && obj.constructor === _symbol2.default && obj !== _symbol2.default.prototype ? "symbol" : typeof obj; };
+
+exports.default = mapToFalcorJSON;
+
+var _falcorMetadataKey = require('./falcorMetadataKey');
+
+var _falcorMetadataKey2 = _interopRequireDefault(_falcorMetadataKey);
+
+var _falcor = require('@graphistry/falcor');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-exports.default = mapToFalcorJSON;
 function mapToFalcorJSON(data, falcor) {
+    var dataProto = void 0;
     if (!data || (typeof data === 'undefined' ? 'undefined' : _typeof(data)) !== 'object') {
-        data = falcor._root.branchSelector();
-    } else if (data.$__name !== 'falcor-node') {
-        data = (0, _assign2.default)(falcor._root.branchSelector(), data);
+        dataProto = new _falcor.JSONProto();
+        data = (0, _create2.default)(dataProto);
+        if (falcor && falcor._recycleJSON) {
+            falcor._seed = { json: data };
+        }
+    } else if (!(data instanceof _falcor.JSONProto)) {
+        dataProto = new _falcor.JSONProto(data[_falcorMetadataKey2.default]);
+        delete data[_falcorMetadataKey2.default];
+        data.__proto__ = dataProto;
+        if (falcor && falcor._recycleJSON) {
+            falcor._seed = { json: data };
+        }
     }
     return data;
 }

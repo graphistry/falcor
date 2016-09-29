@@ -143,19 +143,31 @@ describe('Paths', function() {
             '0': {
                 '1': {
                     '2': {
-                        $keys: [null]
+                        '$code': '2087659838',
+                        '$keys': [null],
+                        '$keysMap': { 'null': 0 },
                     },
                     '3': {
                         '1': {
-                            '$keys': ['name', 'rating', 'box-shot']
+                            '$code': '2206282020',
+                            '$keys': ['name', 'rating', 'box-shot'],
+                            '$keysMap': { 'name':  0, 'rating': 1, 'box-shot': 2 },
                         },
-                        '$keys': ['length', { from: 9, length: 2 }]
+                        '$code': '1746177635',
+                        '$keys': ['length', { from: 9, length: 2 }],
+                        '$keysMap': { 'length':  0, '{from:9,length:2}': 1 },
                     },
-                    '$keys': ['name', 'rating', 'color', 'titles']
+                    '$code': '3230558773',
+                    '$keys': ['name', 'rating', 'color', 'titles'],
+                    '$keysMap': { 'name': 0, 'rating': 1, 'color': 2, 'titles': 3 },
                 },
-                '$keys': ['length', { from: 1, length: 9 }]
+                '$code': '172977669',
+                '$keys': ['length', { from: 1, length: 9 }],
+                '$keysMap': { 'length': 0, '{from:1,length:9}': 1 }
             },
-            '$keys': ['genreLists']
+            '$code': '1149064955',
+            '$keys': ['genreLists'],
+            '$keysMap': { 'genreLists': 0 }
         });
     });
 });

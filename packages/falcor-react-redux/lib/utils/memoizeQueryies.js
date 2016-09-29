@@ -12,7 +12,7 @@ var _falcorQuerySyntax2 = _interopRequireDefault(_falcorQuerySyntax);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function memoizeQueryies() {
-    var limit = arguments.length <= 0 || arguments[0] === undefined ? 100 : arguments[0];
+    var limit = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 100;
 
     var count = 0;
     var map = {};
@@ -24,10 +24,10 @@ function memoizeQueryies() {
                 delete map[lru.tail.query];
                 splice(lru, lru.tail);
             }
-            entry = map[query] = { query: query, paths: (0, _falcorQuerySyntax2.default)(query) };
+            entry = map[query] = { query: query, ast: (0, _falcorQuerySyntax2.default)(query) };
         }
         promote(lru, entry);
-        return entry.paths;
+        return entry.ast;
     };
 }
 

@@ -24,7 +24,7 @@ function getReferenceTarget(root, ref, modelRoot, seed, boxValues, materialized)
         copy = path, length = path.length;
 
     do {
-        if (depth === 0 && undefined !== (context = ref.ツcontext)) {
+        if (depth === 0 && undefined !== (context = ref[ƒ_context])) {
             node = context;
             depth = length;
         } else {

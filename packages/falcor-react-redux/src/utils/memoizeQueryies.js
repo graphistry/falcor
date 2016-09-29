@@ -11,10 +11,10 @@ export default function memoizeQueryies(limit = 100) {
                 delete map[lru.tail.query];
                 splice(lru, lru.tail);
             }
-            entry = map[query] = { query, paths: FalcorQuerySyntax(query) };
+            entry = map[query] = { query, ast: FalcorQuerySyntax(query) };
         }
         promote(lru, entry);
-        return entry.paths;
+        return entry.ast;
     }
 }
 

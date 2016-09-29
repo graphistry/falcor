@@ -5,13 +5,10 @@ import shallowEqual from 'recompose/shallowEqual';
 import mapToFalcorJSON from '../utils/mapToFalcorJSON';
 import wrapDisplayName from 'recompose/wrapDisplayName';
 import bindActionCreators from '../utils/bindActionCreators';
-import mergeIntoFalcorJSON from '../utils/mergeIntoFalcorJSON';
-import invalidateFalcorJSON from '../utils/invalidateFalcorJSON';
 import fetchDataUntilSettled from '../utils/fetchDataUntilSettled';
 
 const contextTypes = {
     falcor: PropTypes.object,
-    version: PropTypes.number,
     dispatch: PropTypes.func
 };
 
@@ -23,11 +20,11 @@ class FalcorContainer extends React.Component {
     constructor(props, context) {
         super(props, context);
 
-        const { data } = props;
+        let { data } = props;
+        let { falcor, dispatch } = context;
         const { fragment, Component,
                 mergeFragmentAndProps,
                 mapFragment, mapDispatch } = this.constructor;
-        const { falcor, version, dispatch } = context;
 
         this.fragment = fragment;
         this.Component = Component;
@@ -35,37 +32,44 @@ class FalcorContainer extends React.Component {
         this.mapFragment = mapFragment;
         this.mergeFragmentAndProps = mergeFragmentAndProps;
 
-        this.state = { falcor, version, dispatch, ...props };
+        data = mapToFalcorJSON(data);
+        falcor = falcor.deref(data);
+        this.state = {
+            ...props,
+            hash: data.$__hash,
+            data, falcor, dispatch,
+            version: falcor.getVersion()
+        };
         this.propsStream = new Subject();
         this.propsAction = this.propsStream
             .map((({ data, falcor, ...rest }) => {
-                data = invalidateFalcorJSON(mapToFalcorJSON(data, falcor));
-                return { ...rest, fragment, data, falcor: data &&
-                    data.$__path &&
-                    data.$__path.length &&
-                    falcor.deref(data) || falcor
-                };
+                data = mapToFalcorJSON(data);
+                falcor = falcor.deref(data);
+                return { ...rest, data, falcor, fragment };
             }))
-            .switchMap(
-                fetchDataUntilSettled,
-                ({ data, falcor, version, fragment, ...rest }, { data: d2, error }) => ({
-                    falcor, ...rest, data: d2, error
+            .switchMap(fetchDataUntilSettled, (
+                { fragment, ...props },
+                { data, error, version }) => ({
+                    ...props,
+                    hash: data.$__hash,
+                    version, data, error,
                 })
             );
     }
     getChildContext() {
         const { falcor, dispatch } = this.state;
-        return { falcor, dispatch, version: falcor.getVersion() };
+        return { falcor, dispatch };
     }
     shouldComponentUpdate(nextProps, nextState, nextContext) {
-        const { version: thisVersion, data: thisJSON, ...restProps } = this.state;
-        const { version: nextVersion, data: nextJSON, ...restNextProps } = nextProps;
-        if (thisVersion !== nextVersion) {
-            return true;
-        } else if (!thisJSON || !nextJSON || thisJSON.$__hash !== nextJSON.$__hash) {
-            return true;
-        }
-        return !shallowEqual(restProps, restNextProps);
+        const { data: nextJSON, ...restNextProps } = nextProps;
+        const { data: thisJSON, hash: thisHash,
+                version: thisVersion, ...restState } = this.state;
+        return !(
+            thisJSON && nextJSON && (
+            thisHash === nextJSON.$__hash) && (
+            thisVersion === nextJSON.$__version) &&
+            shallowEqual(restState, restNextProps)
+        );
     }
     componentWillReceiveProps(nextProps, nextContext) {
         // Receive new props from the owner
@@ -93,16 +97,12 @@ class FalcorContainer extends React.Component {
                 mergeFragmentAndProps,
                 mapFragment, mapDispatch } = this;
 
-        const { data, error, falcor, version,
+        const { data, hash, error, falcor, version,
                 loading, dispatch, fragment, ...rest } = this.state;
 
         const mappedFragment = mapFragment(data, { error, ...rest });
         const mappedDispatch = mapDispatch(dispatch, mappedFragment, falcor);
-        const {
-            $__key, $__path, $__refPath, $__version,
-            $__hash__$, $__keysPath, $__keyDepth, $__toReference,
-            ...allMergedProps
-        } = mergeFragmentAndProps(mappedFragment, mappedDispatch, rest);
+        const allMergedProps = mergeFragmentAndProps(mappedFragment, mappedDispatch, rest);
 
         return (
             <Component { ...allMergedProps }/>

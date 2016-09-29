@@ -4,7 +4,6 @@ var isPathValue = require("./../../support/isPathValue");
 var isJSONGraphEnvelope = require("./../../support/isJSONGraphEnvelope");
 var isJSONEnvelope = require("./../../support/isJSONEnvelope");
 var setRequestCycle = require("./setRequestCycle");
-var __version = require("./../../internal/version");
 
 /**
  *  The set response is responsible for doing the request loop for the set
@@ -34,7 +33,7 @@ var SetResponse = module.exports = function SetResponse(model, args,
     this._initialArgs = args;
     this._value = [{}];
 
-    var currentVersion = model._root.cache[__version];
+    var currentVersion = model._root.cache[ƒ_version];
 
     if (typeof initialCacheVersion === "number") {
         this.initialCacheVersion = initialCacheVersion;

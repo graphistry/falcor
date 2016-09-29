@@ -9,6 +9,7 @@ The [Closure Compiler](https://developers.google.com/closure/compiler/) is a too
  * [Download a specific version](https://github.com/google/closure-compiler/wiki/Binary-Downloads). Also available via:
    - [Maven](https://github.com/google/closure-compiler/wiki/Maven)
    - [NPM](https://www.npmjs.com/package/google-closure-compiler)
+ * [Use the JavaScript version](https://github.com/google/closure-compiler-js), with no Java dependency
  * See the [Google Developers Site](https://developers.google.com/closure/compiler/docs/gettingstarted_app) for documentation including instructions for running the compiler from the command line.
 
 ## Options for Getting Help
@@ -44,17 +45,22 @@ Note: The Closure Compiler requires [Java 7 or higher](http://www.java.com/).
 unit tests too).
 
     This will produce a jar file called `target/closure-compiler-1.0-SNAPSHOT.jar`.
+    Running `mvn -DskipTests -pl "!pom-gwt.xml"` will skip building the GWT
+    version of the compiler. This can speed up the build process significantly.
 
 ### Using [Eclipse](http://www.eclipse.org/)
 
 1. Download and open the [Eclipse IDE](http://www.eclipse.org/).
-2. Navigate to `File > New > Project ...` and create a Java Project. Give
-   the project a name.
-3. Select `Create project from existing source` and choose the root of the
-   checked-out source tree as the existing directory.
-3. Navigate to the `build.xml` file. You will see all the build rules in
-   the Outline pane. Run the `jar` rule to build the compiler in
-   `build/compiler.jar`.
+2. Run `mvn eclipse:eclipse -DdownloadSources=true` to download JARs and build Eclipse project configuration.
+3. Navigate to `File > Import > Maven > Existing Maven Projects` and browse to closure-compiler.
+4. Import both closure-compiler and the nested externs project.
+5. Disregard the warnings about maven-antrun-plugin and build errors.
+6. In Package Explorer, remove from the build path:
+    - `src/com/google/javascript/jscomp/debugger/DebuggerGwtMain.java`
+    - `src/com/google/javascript/jscomp/gwt/`
+7. In Project config, navigate to `Java Code Style > Formatter` and configure the project to
+   use the [Google styleguide settings](https://github.com/google/styleguide/blob/gh-pages/eclipse-java-google-style.xml).
+8. See *Using Maven* above to build the JAR.
 
 ## Running
 

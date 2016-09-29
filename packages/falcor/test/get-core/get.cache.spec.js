@@ -20,15 +20,13 @@ describe('getCache', function() {
     it("should serialize the cache", function() {
         var model = new Model({ cache: cacheGenerator(0, 1) });
         var cache = model.getCache();
-        clean(cache);
-        expect(cache).to.deep.equals(cacheGenerator(0, 1));
+        expect(clean(cache)).to.deep.equals(cacheGenerator(0, 1));
     });
 
     it("should serialize part of the cache", function() {
         var model = new Model({ cache: cacheGenerator(0, 10) });
         var cache = model.getCache(['lolomo', 0, 3, 'item', 'title']);
-        clean(cache);
-        expect(cache).to.deep.equals(cacheGenerator(3, 1));
+        expect(clean(cache)).to.deep.equals(cacheGenerator(3, 1));
     });
 
     it("serialized cache should not contain internal keys (including $size, on boxedValues)", function(done) {
@@ -55,8 +53,7 @@ describe('getCache', function() {
         // mimicking cache clean-up
         model._root.cache.testing = undefined;
         var cache = model.getCache();
-        clean(cache);
-        expect(cache).to.deep.equals({
+        expect(clean(cache)).to.deep.equals({
             test: 'foo'
         });
     });

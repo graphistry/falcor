@@ -19,6 +19,11 @@ module.exports = function validateInput(args, allowedInput, method) {
             valid = true;
         }
 
+        // Flat Buffer
+        else if (isArray(arg["$keys"]) && allowedInput.flatBuffer) {
+            valid = true;
+        }
+
         // Path Syntax
         // else if (typeof arg === "string" && allowedInput.pathSyntax) {
         //     valid = true;

@@ -14,7 +14,7 @@ module.exports = function removeNode(node, parent, key, lru) {
             splice(lru, node);
         }
         unlinkBackReferences(node);
-        parent[key] = node.ツparent = void 0;
+        parent[key] = node[ƒ_parent] = void 0;
         return true;
     }
     return false;

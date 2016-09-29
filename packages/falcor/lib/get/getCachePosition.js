@@ -17,13 +17,15 @@ function getCachePosition(cache, path) {
     var type, depth = 0;
     var maxDepth = path.length;
 
-    do {
-        node = node[path[depth]];
+    if (maxDepth > 0) {
+        do {
+            node = node[path[depth]];
 
-        while (node && (type = node.$type) === $ref) {
-            node = getCachePosition(cache, node.value);
-        }
-    } while (++depth < maxDepth && node && !type);
+            while (node && (type = node.$type) === $ref) {
+                node = getCachePosition(cache, node.value);
+            }
+        } while (++depth < maxDepth && node && !type);
+    }
 
     return node;
 };

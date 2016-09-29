@@ -1,3 +1,16 @@
+{
+    function getHashCode(str) {
+        var hash = 5381, i = str.length;
+        while (i) {
+            hash = (hash * 33) ^ str.charCodeAt(--i);
+        }
+        // JavaScript does bitwise operations (like XOR, above) on 32-bit signed
+        // integers. Since we want the results to be always positive, convert the
+        // signed int to an unsigned by doing an unsigned bitshift.
+        return hash >>> 0;
+    }
+}
+
 /*
  * Falcor PathSet Grammar
  * ============
@@ -40,49 +53,73 @@ object
       head:member
       tail:(value_separator m:member { return m; })*
 {
-  var result = {}, i, keyIndex = -1, keys = result['$keys'] = [];
+  var keys = [];
+  var code = '', key;
+  var i, keyIndex = -1;
+  var node = head.value;
+  var result = { '$keys': keys };
   if (head.type) {
     keyIndex++;
-    keys.push(head);
+    keys.push(key = head);
+    code = '' + getHashCode('' + code + key);
   }
   else if (Array.isArray(head.name)) {
-    head.name.forEach(function(key) {
+    head.name.forEach(function(x) {
+      key = x;
       keyIndex++;
       keys.push(key);
-      if (head.value !== undefined) {
-        result[keyIndex] = head.value;
+      if (node === undefined) {
+        code = '' + getHashCode('' + code + key);
+      } else {
+        result[keyIndex] = node;
+        code = '' + getHashCode('' + code + key + node['$code']);
       }
     });
   }
   else {
     keyIndex++;
-    keys.push(head.name);
-    if (head.value !== undefined) {
-      result[keyIndex] = head.value;
+    key = head.name;
+    keys.push(key);
+    if (node === undefined) {
+      code = '' + getHashCode('' + code + key);
+    } else {
+      result[keyIndex] = node;
+      code = '' + getHashCode('' + code + key + node['$code']);
     }
   }
   for (i = 0; i < tail.length; i++) {
+    node = tail[i].value;
     if (tail[i].type) {
       keyIndex++;
-      keys.push(tail[i]);
+      keys.push(key = tail[i]);
+      code = '' + getHashCode('' + code + key);
     }
     else if (Array.isArray(tail[i].name)) {
-        tail[i].name.forEach(function(key) {
-            keyIndex++;
-            keys.push(key);
-            if (tail[i].value !== undefined) {
-              result[keyIndex] = tail[i].value;
-            }
-        });
+      tail[i].name.forEach(function(x) {
+        key = x;
+        keyIndex++;
+        keys.push(key);
+        if (node === undefined) {
+          code = '' + getHashCode('' + code + key);
+        } else {
+          result[keyIndex] = node;
+          code = '' + getHashCode('' + code + key + node['$code']);
+        }
+      });
     }
     else {
-        keyIndex++;
-        keys.push(tail[i].name);
-        if (tail[i].value !== undefined) {
-          result[keyIndex] = tail[i].value;
-        }
+      keyIndex++;
+      key = tail[i].name;
+      keys.push(key);
+      if (node === undefined) {
+        code = '' + getHashCode('' + code + key);
+      } else {
+        result[keyIndex] = node;
+        code = '' + getHashCode('' + code + key + node['$code']);
+      }
     }
   }
+  result['$code'] = code;
   return result;
 }
     )?

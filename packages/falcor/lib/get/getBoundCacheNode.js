@@ -5,7 +5,7 @@ module.exports = getBoundCacheNode;
 function getBoundCacheNode(model, path) {
     path = path || model._path;
     var node = model._node;
-    if (!node || node.ツparent === undefined || node.ツinvalidated) {
+    if (!node || node[ƒ_parent] === undefined || node[ƒ_invalidated]) {
         model._node = null;
         if (path.length === 0) {
             node = model._root.cache;

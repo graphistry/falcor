@@ -28,13 +28,14 @@ module.exports = function setRequestCycle(model, observer, groups,
     // internals.  Figured this is more "pure".
     if (isMaster) {
         return subscribeToFollowupGet(model, observer, requestedPaths,
-                              isJSONGraph, isProgressive, initialCacheVersion);
+                                      isJSONGraph, isProgressive,
+                                      initialCacheVersion);
     }
 
 
     // Progressively output the data from the first set.
     if (isProgressive) {
-        var results = getWithPathsAsPathMap(model, requestedPaths, [{}]);
+        var results = getWithPathsAsPathMap(model, requestedPaths, [{}], true);
         if (results.criticalError) {
             observer.onError(results.criticalError);
             return null;
@@ -72,7 +73,8 @@ module.exports = function setRequestCycle(model, observer, groups,
             if (isCompleted) {
                 disposable.currentDisposable =
                     subscribeToFollowupGet(model, observer, requestedPaths,
-                                          isJSONGraph, isProgressive, initialCacheVersion);
+                                           isJSONGraph, isProgressive,
+                                           initialCacheVersion);
             }
 
             // TODO: The unhappy case.  I am unsure how this can even be
@@ -80,7 +82,8 @@ module.exports = function setRequestCycle(model, observer, groups,
             else {
                 // We need to restart the setRequestCycle.
                 setRequestCycle(model, observer, groups, isJSONGraph,
-                                isProgressive, count + 1, initialCacheVersion);
+                                isProgressive, count + 1,
+                                initialCacheVersion);
             }
         });
 
@@ -101,12 +104,12 @@ function getJSONGraph(model, optimizedPaths) {
 }
 
 function subscribeToFollowupGet(model, observer, requestedPaths, isJSONGraph,
-                               isProgressive, initialCacheVersion) {
+                                isProgressive, initialCacheVersion) {
 
     // Creates a new response and subscribes to it with the original observer.
-    // Also sets forceCollect to true, incase the operation is synchronous and
+    // Also sets forceCollect to true, in case the operation is synchronous and
     // exceeds the cache limit size
     var response = new GetResponse(model, requestedPaths, isJSONGraph,
-                                   isProgressive, true, initialCacheVersion);
+                                   isProgressive, true, initialCacheVersion, false);
     return response.subscribe(observer);
 }

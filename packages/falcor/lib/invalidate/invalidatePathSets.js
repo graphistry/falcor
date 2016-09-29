@@ -1,5 +1,3 @@
-var __ref = require("./../internal/ref");
-
 var $ref = require("./../types/ref");
 
 var getBoundCacheNode = require("./../get/getBoundCacheNode");
@@ -29,8 +27,8 @@ module.exports = function invalidatePathSets(model, paths) {
     var version = modelRoot.version++;
     var cache = modelRoot.cache;
     var node = getBoundCacheNode(model);
-    var parent = node.ツparent || cache;
-    var initialVersion = cache.ツversion;
+    var parent = node[ƒ_parent] || cache;
+    var initialVersion = cache[ƒ_version];
 
     var pathIndex = -1;
     var pathCount = paths.length;
@@ -45,7 +43,7 @@ module.exports = function invalidatePathSets(model, paths) {
         );
     }
 
-    var newVersion = cache.ツversion;
+    var newVersion = cache[ƒ_version];
     var rootChangeHandler = modelRoot.onChange;
 
     if (isFunction(rootChangeHandler) && initialVersion !== newVersion) {
@@ -98,10 +96,10 @@ function invalidateReference(root, node, version, expired, lru) {
     var reference = node.value;
     var parent = root;
 
-    node = node.ツcontext;
+    node = node[ƒ_context];
 
     if (node != null) {
-        parent = node.ツparent || root;
+        parent = node[ƒ_parent] || root;
     } else {
 
         var index = 0;
@@ -124,12 +122,12 @@ function invalidateReference(root, node, version, expired, lru) {
             parent = results[1];
         } while (index++ < count);
 
-        if (container.ツcontext !== node) {
-            var backRefs = node.ツrefsLength || 0;
-            node.ツrefsLength = backRefs + 1;
-            node[__ref + backRefs] = container;
-            container.ツcontext = node;
-            container.ツrefIndex = backRefs;
+        if (container[ƒ_context] !== node) {
+            var backRefs = node[ƒ_refs_length] || 0;
+            node[ƒ_refs_length] = backRefs + 1;
+            node[ƒ_ref + backRefs] = container;
+            container[ƒ_context] = node;
+            container[ƒ_ref_index] = backRefs;
         }
     }
 
@@ -165,7 +163,7 @@ function invalidateNode(
         if (branch) {
             throw new Error("`null` is not allowed in branch key positions.");
         } else if (node) {
-            key = node.ツkey;
+            key = node[ƒ_key];
         }
     } else {
         parent = node;

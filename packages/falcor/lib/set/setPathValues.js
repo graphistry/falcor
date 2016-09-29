@@ -1,7 +1,7 @@
 var arr = new Array(3);
 var $ref = require("./../types/ref");
 var createHardlink = require("./../support/createHardlink");
-var getBoundCacheNode = require("./../get/getBoundCacheNode");
+var getCachePosition = require("./../get/getCachePosition");
 var isExpired = require("./../support/isExpired");
 var isFunction = require("./../support/isFunction");
 var isPrimitive = require("./../support/isPrimitive");
@@ -26,9 +26,9 @@ module.exports = function setPathValues(model, pathValues, errorSelector, compar
     var version = modelRoot.version++;
     var bound = model._path;
     var cache = modelRoot.cache;
-    var node = getBoundCacheNode(model);
-    var parent = node.ツparent || cache;
-    var initialVersion = cache.ツversion;
+    var node = getCachePosition(cache, bound);
+    var parent = node[ƒ_parent] || cache;
+    var initialVersion = cache[ƒ_version];
 
     var requestedPath = [];
     var requestedPaths = [];
@@ -56,7 +56,7 @@ module.exports = function setPathValues(model, pathValues, errorSelector, compar
     arr[1] = undefined;
     arr[2] = undefined;
 
-    var newVersion = cache.ツversion;
+    var newVersion = cache[ƒ_version];
     var rootChangeHandler = modelRoot.onChange;
 
     if (isFunction(rootChangeHandler) && initialVersion !== newVersion) {
@@ -138,10 +138,10 @@ function setReference(
         var container = node;
         parent = root;
 
-        node = node.ツcontext;
+        node = node[ƒ_context];
 
         if (node != null) {
-            parent = node.ツparent || root;
+            parent = node[ƒ_parent] || root;
             optimizedPath.index = reference.length;
         } else {
 
@@ -171,7 +171,7 @@ function setReference(
 
             optimizedPath.index = index;
 
-            if (container.ツcontext !== node) {
+            if (container[ƒ_context] !== node) {
                 createHardlink(container, node);
             }
         }
@@ -214,7 +214,7 @@ function setNode(
             if (branch) {
                 throw new NullInPathError();
             } else if (node) {
-                key = node.ツkey;
+                key = node[ƒ_key];
             }
         } else {
             parent = node;

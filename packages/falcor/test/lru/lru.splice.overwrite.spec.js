@@ -4,11 +4,6 @@ var chai = require("chai");
 var expect = chai.expect;
 var noOp = function() {};
 
-var __head = require("./../../lib/internal/head");
-var __tail = require("./../../lib/internal/tail");
-var __next = require("./../../lib/internal/next");
-var __prev = require("./../../lib/internal/prev");
-
 describe('Overwrite', function() {
     it('should overwrite the cache and update the lru as PathValue', function() {
         var model = getModel();
@@ -42,10 +37,10 @@ function getModel() {
 function testLRU(model) {
     function log(x) { console.log(JSON.stringify(x, null, 4)) }
 
-    expect(model._root[__head].value).to.equal('overwrite');
-    expect(model._root[__head].value).to.deep.equal(model._root[__tail].value);
-    expect(model._root[__head][__next]).to.be.not.ok;
-    expect(model._root[__head][__prev]).to.be.not.ok;
-    expect(model._root[__tail][__next]).to.be.not.ok;
-    expect(model._root[__tail][__prev]).to.be.not.ok;
+    expect(model._root[ƒ_head].value).to.equal('overwrite');
+    expect(model._root[ƒ_head].value).to.deep.equal(model._root[ƒ_tail].value);
+    expect(model._root[ƒ_head][ƒ_next]).to.be.not.ok;
+    expect(model._root[ƒ_head][ƒ_prev]).to.be.not.ok;
+    expect(model._root[ƒ_tail][ƒ_next]).to.be.not.ok;
+    expect(model._root[ƒ_tail][ƒ_prev]).to.be.not.ok;
 }

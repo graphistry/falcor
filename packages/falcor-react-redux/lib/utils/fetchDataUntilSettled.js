@@ -4,10 +4,6 @@ var _assign = require('babel-runtime/core-js/object/assign');
 
 var _assign2 = _interopRequireDefault(_assign);
 
-var _from = require('babel-runtime/core-js/array/from');
-
-var _from2 = _interopRequireDefault(_from);
-
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
@@ -19,13 +15,7 @@ var _memoizeQueryies = require('./memoizeQueryies');
 
 var _memoizeQueryies2 = _interopRequireDefault(_memoizeQueryies);
 
-var _mergeIntoFalcorJSON = require('./mergeIntoFalcorJSON');
-
-var _mergeIntoFalcorJSON2 = _interopRequireDefault(_mergeIntoFalcorJSON);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return (0, _from2.default)(arr); } }
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
@@ -40,7 +30,8 @@ function fetchDataUntilSettled(_ref) {
 
     return _rxjs.Observable.of({
         prev: null, settled: false,
-        data: data, falcor: falcor, fragment: fragment, props: props
+        version: falcor.getVersion(),
+        data: data, props: props, falcor: falcor, fragment: fragment
     }).expand(_fetchDataUntilSettled).takeLast(1);
 }
 
@@ -48,22 +39,19 @@ function _fetchDataUntilSettled(state) {
     if (state.settled === true) {
         return _rxjs.Observable.empty();
     }
-    var data = state.data;
-    var props = state.props;
-    var prev = state.prev;
     var falcor = state.falcor;
     var fragment = state.fragment;
 
-    var query = fragment(data, props);
-    if (query !== prev) {
-        return _rxjs.Observable.from(falcor.get.apply(falcor, _toConsumableArray(memoizedQuerySyntax(query)))).map(function (_ref2) {
+    var query = fragment(state.data, state.props);
+    if (query !== state.prev || state.version !== falcor.getVersion()) {
+        return _rxjs.Observable.from(falcor.get(memoizedQuerySyntax(query))).map(function (_ref2) {
             var json = _ref2.json;
             return (0, _assign2.default)(state, {
-                prev: query, data: (0, _mergeIntoFalcorJSON2.default)(data, json)
+                prev: query, data: json, version: falcor.getVersion()
             });
         }).catch(function (error) {
             return _rxjs.Observable.of((0, _assign2.default)(state, {
-                error: error, settled: true
+                error: error, settled: true, version: falcor.getVersion()
             }));
         });
     }
