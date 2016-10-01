@@ -39,7 +39,7 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
                            treatErrorsAsValues, onValue, onMissing);
     }
 
-    var jsonProto, f_meta, f_code = "";
+    var f_meta, f_code = "";
 
     var next, nextKey,
         keyset, keyIsRange,
@@ -56,6 +56,10 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
     }
 
     if (json && (f_meta = json[ƒ_meta])) {
+        if (!branchSelector && !(json instanceof JSONProto)) {
+            delete json[ƒ_meta];
+            json.__proto__ = new JSONProto(f_meta);
+        }
         if (f_meta[ƒm_version] === node[ƒ_version] &&
             f_meta["$code"]    === path["$code"]) {
             results.hasValue = true;
@@ -199,8 +203,7 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
                             json[ƒ_meta] = f_meta;
                         }
                     } else {
-                        jsonProto = new JSONProto(f_meta);
-                        json = Object.create(jsonProto);
+                        json = Object.create(new JSONProto(f_meta));
                     }
                 }
 

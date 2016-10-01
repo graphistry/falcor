@@ -5460,8 +5460,7 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
         return onValueType(node, type, path, depth, seed, results, requestedPath, optimizedPath, optimizedLength, fromReference, modelRoot, expired, boxValues, materialized, hasDataSource, treatErrorsAsValues, onValue, onMissing);
     }
 
-    var jsonProto,
-        f_meta,
+    var f_meta,
         f_code = "";
 
     var next,
@@ -5485,6 +5484,10 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
     }
 
     if (json && (f_meta = json["\u001eƒalcor_metadata"])) {
+        if (!branchSelector && !(json instanceof JSONProto)) {
+            delete json["\u001eƒalcor_metadata"];
+            json.__proto__ = new JSONProto(f_meta);
+        }
         if (f_meta["version"] === node["\u001eƒalcor_version"] && f_meta["$code"] === path["$code"]) {
             results.hasValue = true;
             return json;
@@ -5617,8 +5620,7 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
                             json["\u001eƒalcor_metadata"] = f_meta;
                         }
                     } else {
-                        jsonProto = new JSONProto(f_meta);
-                        json = Object.create(jsonProto);
+                        json = Object.create(new JSONProto(f_meta));
                     }
                 }
 
