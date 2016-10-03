@@ -94,6 +94,38 @@ describe('Paths', function() {
             ['titles', 'length']
         ]);
     });
+    it('should merge ... queries', function() {
+
+        expect(toPaths`{
+            titles: {
+                length,
+                [9..0]: {
+                    ... {name},
+                    ... {rating, box-shot}
+                }
+            }
+        }`).to.deep.equal([
+            ['titles', { from:0, length:10 }, ['name', 'rating', 'box-shot']],
+            ['titles', 'length']
+        ]);
+    });
+    it('should merge nested ... queries', function() {
+
+        expect(toPaths`{
+            titles: {
+                ... {length},
+                ... {
+                    [9..0]: {
+                        ... {name},
+                        ... {rating, box-shot}
+                    }
+                }
+            }
+        }`).to.deep.equal([
+            ['titles', { from:0, length:10 }, ['name', 'rating', 'box-shot']],
+            ['titles', 'length']
+        ]);
+    });
     it('should do all the things at once', function() {
         var range = { from: 10, to: 9 };
 
@@ -107,9 +139,8 @@ describe('Paths', function() {
                     titles: {
                         length,
                         [${range}]: {
-                            name,
-                            rating,
-                            box-shot
+                            ... {name},
+                            ... {rating, box-shot}
                         }
                     }
                 }

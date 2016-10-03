@@ -5,10 +5,13 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha test/index.js",
+    "debug": "node --inspect --debug-brk ./node_modules/.bin/_mocha ./test/index.js",
     "perf": "node perf",
-    "build-paths": "pegjs -o lib/paths-parser.peg.js --format umd peg/paths-parser.peg && java -jar compiler/closure-compiler.jar --js_output_file=lib/paths-parser.js lib/paths-parser.peg.js && rimraf lib/paths-parser.peg.js",
-    "build-route": "pegjs -o lib/route-parser.peg.js --format umd peg/route-parser.peg && java -jar compiler/closure-compiler.jar --js_output_file=lib/route-parser.js lib/route-parser.peg.js && rimraf lib/route-parser.peg.js",
-    "build": "npm-run-all -l -p build-paths build-route",
+    "build-paths": "pegjs -o lib/paths-parser.peg.js --format umd peg/paths-parser.peg",
+    "build-route": "pegjs -o lib/route-parser.peg.js --format umd peg/route-parser.peg",
+    "build-paths-min": "npm run build-paths && java -jar compiler/closure-compiler.jar --js_output_file=lib/paths-parser.js lib/paths-parser.peg.js && rimraf lib/paths-parser.peg.js",
+    "build-route-min": "npm run build-route && java -jar compiler/closure-compiler.jar --js_output_file=lib/route-parser.js lib/route-parser.peg.js && rimraf lib/route-parser.peg.js",
+    "build": "npm-run-all -l -p build-paths-min build-route-min",
     "start": "npm run build && npm test",
     "prepublish": "npm run build"
   },

@@ -27,6 +27,7 @@ end_array       = ws "]" ws
 end_object      = ws "}" ws
 name_separator  = ws ":" ws
 value_separator = ws "," ws
+ellipses        = ws "..." ws
 
 ws "whitespace" = [ \t\n\r]*
 
@@ -56,58 +57,53 @@ object
   var keys = [];
   var keysMap = {};
   var code = '', key;
-  var i, keyIndex = -1;
-  var node = head.value;
+  var m = head, name, node;
+  var subNode, subKeys, subKeysMap;
+  var i = -1, j = -1, k = -1, keyIndex = -1;
   var result = { '$keys': keys, '$keysMap': keysMap };
-  if (Array.isArray(head.name)) {
-    head.name.forEach(function(x) {
-      key = x;
-      keys[++keyIndex] = key;
-      if (key && typeof key === 'object') {
-        key = `{from:${key.from},length:${key.length}}`;
+  do {
+    name = m.name;
+    node = m.value;
+    if (name === '...') {
+      if (!node) {
+        continue;
       }
-      keysMap[key] = keyIndex;
-      if (node === undefined) {
-        code = '' + getHashCode('' + code + key);
-      } else {
-        result[keyIndex] = node;
-        code = '' + getHashCode('' + code + key + node['$code']);
-      }
-    });
-  }
-  else {
-    key = head.name;
-    keys[++keyIndex] = key;
-    if (key && typeof key === 'object') {
-      key = `{from:${key.from},length:${key.length}}`;
-    }
-    keysMap[key] = keyIndex;
-    if (node === undefined) {
-      code = '' + getHashCode('' + code + key);
-    } else {
-      result[keyIndex] = node;
-      code = '' + getHashCode('' + code + key + node['$code']);
-    }
-  }
-  for (i = 0; i < tail.length; i++) {
-    node = tail[i].value;
-    if (Array.isArray(tail[i].name)) {
-      tail[i].name.forEach(function(x) {
-        key = x;
-        keys[++keyIndex] = key;
-        if (key && typeof key === 'object') {
-          key = `{from:${key.from},length:${key.length}}`;
-        }
+      subKeys = node.$keys;
+      subKeysMap = node.$keysMap;
+      for (key in subKeysMap) {
+        j = subKeysMap[key];
+        keys[++keyIndex] = subKeys[j];
         keysMap[key] = keyIndex;
-        if (node === undefined) {
+        subNode = node[j];
+        if (subNode === undefined) {
           code = '' + getHashCode('' + code + key);
         } else {
-          result[keyIndex] = node;
-          code = '' + getHashCode('' + code + key + node['$code']);
+          result[keyIndex] = subNode;
+          code = '' + getHashCode('' + code + key + subNode['$code']);
         }
-      });
-    } else {
-      key = tail[i].name;
+      }
+    }
+    else if (Array.isArray(name)) {
+      j = -1;
+      k = name.length;
+      while (++j < k) {
+        if (key = name[j]) {
+          keys[++keyIndex] = key;
+          if (key && typeof key === 'object') {
+            key = `{from:${key.from},length:${key.length}}`;
+          }
+          keysMap[key] = keyIndex;
+          if (node === undefined) {
+            code = '' + getHashCode('' + code + key);
+          } else {
+            result[keyIndex] = node;
+            code = '' + getHashCode('' + code + key + node['$code']);
+          }
+        }
+      }
+    }
+    else {
+      key = name;
       keys[++keyIndex] = key;
       if (key && typeof key === 'object') {
         key = `{from:${key.from},length:${key.length}}`;
@@ -120,7 +116,7 @@ object
         code = '' + getHashCode('' + code + key + node['$code']);
       }
     }
-  }
+  } while (m = tail[++i]);
   result['$code'] = code;
   return result;
 }
@@ -129,19 +125,20 @@ object
     { return members !== null ? members: []; }
 
 member
-  = name:name name_separator value:object {
-      return { name: name, value: value };
-    }
+  = name:ellipses value:object {
+    return { name: '...', value: value };
+  }
+  / name:name name_separator value:object {
+    return { name: name, value: value };
+  }
   / name: name {
     return { name: name, value: undefined }
   }
   / name:array name_separator value:object {
-    return { name: name, value: value
-    };
+    return { name: name, value: value };
   }
   / name:array {
-    return { name: name, value: undefined
-    };
+    return { name: name, value: undefined };
   }
 
 name
