@@ -446,6 +446,7 @@ describe('DataSource and Partial Cache', function() {
                         json: {
                             [ƒ_meta]: {
                                 '$code':          '350990479',
+                                [ƒm_keys]:        { lolomo: true },
                                 [ƒm_abs_path]:    undefined,
                                 [ƒm_deref_from]:  undefined,
                                 [ƒm_deref_to]:    undefined,
@@ -454,6 +455,7 @@ describe('DataSource and Partial Cache', function() {
                             lolomo: {
                                 [ƒ_meta]: {
                                     '$code':          '1437563678',
+                                    [ƒm_keys]:        { 0: true },
                                     [ƒm_abs_path]:    ['lolomos', '1234'],
                                     [ƒm_deref_from]:  undefined,
                                     [ƒm_deref_to]:    undefined,
@@ -462,6 +464,7 @@ describe('DataSource and Partial Cache', function() {
                                 0: {
                                     [ƒ_meta]: {
                                         '$code':          '2823858104',
+                                        [ƒm_keys]:        { 0: true, 1: true },
                                         [ƒm_abs_path]:    ['lists', 'A'],
                                         [ƒm_deref_from]:  undefined,
                                         [ƒm_deref_to]:    undefined,
@@ -470,6 +473,7 @@ describe('DataSource and Partial Cache', function() {
                                     0: {
                                         [ƒ_meta]: {
                                             '$code':          '3681981706',
+                                            [ƒm_keys]:        { item: true },
                                             [ƒm_abs_path]:    ['lists', 'A', '0'],
                                             [ƒm_deref_from]:  undefined,
                                             [ƒm_deref_to]:    undefined,
@@ -478,6 +482,7 @@ describe('DataSource and Partial Cache', function() {
                                         item: {
                                             [ƒ_meta]: {
                                                 '$code':          '165499941',
+                                                [ƒm_keys]:        { title: true },
                                                 [ƒm_abs_path]:    ['videos', '0'],
                                                 [ƒm_deref_from]:  undefined,
                                                 [ƒm_deref_to]:    undefined,
@@ -489,6 +494,7 @@ describe('DataSource and Partial Cache', function() {
                                     1: {
                                         [ƒ_meta]: {
                                             '$code':          '3681981706',
+                                            [ƒm_keys]:        { item: true },
                                             [ƒm_abs_path]:    ['lists', 'A', 1],
                                             [ƒm_deref_from]:  undefined,
                                             [ƒm_deref_to]:    undefined,
@@ -497,6 +503,7 @@ describe('DataSource and Partial Cache', function() {
                                         item: {
                                             [ƒ_meta]: {
                                                 '$code':          '165499941',
+                                                [ƒm_keys]:        { title: true },
                                                 [ƒm_abs_path]:    ['videos', '1'],
                                                 [ƒm_deref_from]:  undefined,
                                                 [ƒm_deref_to]:    undefined,

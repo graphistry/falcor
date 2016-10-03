@@ -259,6 +259,7 @@ describe('Values', function() {
             json: {
                 [ƒ_meta]: {
                     '$code':          '2076667107',
+                    [ƒm_keys]:        { videos: true },
                     [ƒm_abs_path]:    undefined,
                     [ƒm_deref_from]:  undefined,
                     [ƒm_deref_to]:    undefined,
@@ -267,6 +268,7 @@ describe('Values', function() {
                 videos: {
                     [ƒ_meta]: {
                         '$code':          '1720011066',
+                        [ƒm_keys]:        { 0: true, 1: true },
                         [ƒm_abs_path]:    ['videos'],
                         [ƒm_deref_from]:  undefined,
                         [ƒm_deref_to]:    undefined,
@@ -275,6 +277,7 @@ describe('Values', function() {
                     0: {
                         [ƒ_meta]: {
                             '$code':          '165499941',
+                            [ƒm_keys]:        { title: true },
                             [ƒm_abs_path]:    ['videos', '0'],
                             [ƒm_deref_from]:  undefined,
                             [ƒm_deref_to]:    undefined,
@@ -285,6 +288,7 @@ describe('Values', function() {
                     1: {
                         [ƒ_meta]: {
                             '$code':          '165499941',
+                            [ƒm_keys]:        { title: true },
                             [ƒm_abs_path]:    ['videos', '1'],
                             [ƒm_deref_from]:  undefined,
                             [ƒm_deref_to]:    undefined,

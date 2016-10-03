@@ -4,6 +4,7 @@ function JSONProto(f_meta) {
 
 JSONProto.prototype = Object.create(Object.prototype, Object.assign({
         toJSON: { value: toJSON },
+        toProps: { value: toProps },
         $__hash: {
             enumerable: false,
             get() {
@@ -42,22 +43,40 @@ function arrayProtoMethods() {
 var isArray = Array.isArray;
 var typeofObject = 'object';
 
-function toJSON() {
+function toProps(inst, serialize) {
+    inst = inst !== undefined && inst || this;
+    serialize = serialize !== undefined && serialize || toProps;
+    var isObject = inst && typeof inst === typeofObject;
+    var json = isObject && toJSON(inst, serialize) || inst;
+    if (isObject) {
+        var f_meta = json[ƒ_meta];
+        if (f_meta) {
+            delete json[ƒ_meta];
+            f_meta[ƒm_version] = inst[ƒ_meta][ƒm_version];
+        }
+        json.__proto__ = new JSONProto(f_meta);
+    }
+    return json;
+}
 
+function toJSON(inst, serialize) {
+
+    inst = inst !== undefined && inst || this;
+    serialize = serialize !== undefined && serialize || toJSON;
     var count, total, value, f_meta, keys, key, xs;
 
-    if (isArray(this)) {
+    if (isArray(inst)) {
         count = -1;
-        total = this.length;
+        total = inst.length;
         xs = new Array(total);
         while (++count < total) {
-            xs[count] = this[count];
+            xs[count] = inst[count];
         }
     } else {
         xs = {};
         count = -1;
-        f_meta = this[ƒ_meta];
-        keys = Object.keys(this);
+        f_meta = inst[ƒ_meta];
+        keys = Object.keys(inst);
         total = keys.length;
         if (f_meta) {
             var $code = f_meta["$code"],
@@ -73,9 +92,9 @@ function toJSON() {
         while (++count < total) {
             key = keys[count]
             if (key !== ƒ_meta) {
-                value = this[key];
+                value = inst[key];
                 xs[key] = !(!value || typeof value !== typeofObject) &&
-                    toJSON.call(value) || value;
+                    serialize(value, serialize) || value;
             }
         }
     }

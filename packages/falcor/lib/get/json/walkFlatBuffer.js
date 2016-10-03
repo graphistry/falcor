@@ -1,6 +1,7 @@
 var JSONProto = require("./JSONProto");
 var $ref = require("./../../types/ref");
 var onValue = require("./onValue");
+var onValueType = require("./../onValueType");
 var originalOnMissing = require("./../onMissing");
 var isExpired = require("./../../support/isExpired");
 var getReferenceTarget = require("./getReferenceTarget");
@@ -32,14 +33,14 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
         undefined === path) {
         return onValueType(node, type,
                            path, depth, seed, results,
-                           requestedPath,
+                           requestedPath, depth,
                            optimizedPath, optimizedLength,
                            fromReference, modelRoot, expired,
                            boxValues, materialized, hasDataSource,
                            treatErrorsAsValues, onValue, onMissing);
     }
 
-    var f_meta, f_code = "";
+    var f_meta, f_old_keys, f_new_keys, f_code = "";
 
     var next, nextKey,
         keyset, keyIsRange,
@@ -59,17 +60,21 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
         if (!branchSelector && !(json instanceof JSONProto)) {
             delete json[ƒ_meta];
             json.__proto__ = new JSONProto(f_meta);
-        }
-        if (f_meta[ƒm_version] === node[ƒ_version] &&
-            f_meta["$code"]    === path["$code"]) {
+        } else if (
+            f_meta[ƒm_version] === node[ƒ_version] &&
+            f_meta["$code"]    === path["$code"] &&
+            f_meta[ƒm_abs_path] === node[ƒ_abs_path]) {
             results.hasValue = true;
             return json;
         }
+        f_old_keys = f_meta[ƒm_keys] || {};
         f_meta[ƒm_version] = node[ƒ_version];
         f_meta[ƒm_abs_path] = node[ƒ_abs_path];
         f_meta[ƒm_deref_to] = refContainerRefPath;
         f_meta[ƒm_deref_from] = refContainerAbsPath;
     }
+
+    f_new_keys = {};
 
     var keysIndex = -1;
     var keysLength = keys.length;
@@ -207,6 +212,10 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
                     }
                 }
 
+                f_new_keys[nextKey] = true;
+                if (f_old_keys) {
+                    delete f_old_keys[nextKey];
+                }
                 // Set the reported branch or leaf into this branch.
                 json[nextKey] = nextJSON;
             } else if (json && json.hasOwnProperty(nextKey)) {
@@ -229,58 +238,17 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
 
     if (f_meta) {
         f_meta["$code"] = f_code;
+        f_meta[ƒm_keys] = f_new_keys;
+        if (!f_old_keys) {
+            return json;
+        }
+        for (nextKey in f_old_keys) {
+            delete json[nextKey];
+        }
     }
 
     // `json` will either be a branch, or undefined if all paths were cache misses
     return json;
-}
-
-var $atom = require("./../../types/atom");
-var promote = require("./../../lru/promote");
-var isExpired = require("./../../support/isExpired");
-var expireNode = require("./../../support/expireNode");
-
-function onValueType(node, type,
-                     path, depth, seed, results,
-                     requestedPath,
-                     optimizedPath, optimizedLength,
-                     fromReference, modelRoot, expired,
-                     boxValues, materialized, hasDataSource,
-                     treatErrorsAsValues, onValue, onMissing) {
-
-    if (!node || !type) {
-        if (materialized && !hasDataSource) {
-            if (seed) {
-                results.hasValue = true;
-                return { $type: $atom };
-            }
-            return undefined;
-        } else {
-            return onMissing(path, depth, results,
-                             requestedPath, depth,
-                             optimizedPath, optimizedLength);
-        }
-    } else if (isExpired(node)) {
-        if (!node[ƒ_invalidated]) {
-            expireNode(node, expired, modelRoot);
-        }
-        return onMissing(path, depth, results,
-                         requestedPath, depth,
-                         optimizedPath, optimizedLength);
-    }
-
-    promote(modelRoot, node);
-
-    if (seed) {
-        if (fromReference) {
-            requestedPath[depth] = null;
-        }
-        return onValue(node, type, depth, seed, results,
-                       requestedPath, optimizedPath, optimizedLength,
-                       fromReference, boxValues, materialized, treatErrorsAsValues);
-    }
-
-    return undefined;
 }
 
 function onMissing(path, depth, results,
@@ -300,5 +268,53 @@ function onMissing(path, depth, results,
 
     return undefined;
 }
+
+// var $atom = require("./../../types/atom");
+// var promote = require("./../../lru/promote");
+// var isExpired = require("./../../support/isExpired");
+// var expireNode = require("./../../support/expireNode");
+
+// function onValueType(node, type,
+//                      path, depth, seed, results,
+//                      requestedPath,
+//                      optimizedPath, optimizedLength,
+//                      fromReference, modelRoot, expired,
+//                      boxValues, materialized, hasDataSource,
+//                      treatErrorsAsValues, onValue, onMissing) {
+
+//     if (!node || !type) {
+//         if (materialized && !hasDataSource) {
+//             if (seed) {
+//                 results.hasValue = true;
+//                 return { $type: $atom };
+//             }
+//             return undefined;
+//         } else {
+//             return onMissing(path, depth, results,
+//                              requestedPath, depth,
+//                              optimizedPath, optimizedLength);
+//         }
+//     } else if (isExpired(node)) {
+//         if (!node[ƒ_invalidated]) {
+//             expireNode(node, expired, modelRoot);
+//         }
+//         return onMissing(path, depth, results,
+//                          requestedPath, depth,
+//                          optimizedPath, optimizedLength);
+//     }
+
+//     promote(modelRoot, node);
+
+//     if (seed) {
+//         if (fromReference) {
+//             requestedPath[depth] = null;
+//         }
+//         return onValue(node, type, depth, seed, results,
+//                        requestedPath, optimizedPath, optimizedLength,
+//                        fromReference, boxValues, materialized, treatErrorsAsValues);
+//     }
+
+//     return undefined;
+// }
 
 /* eslint-enable */

@@ -188,6 +188,7 @@ describe('Missing', function() {
                 json: {
                     [ƒ_meta]: {
                         '$code':          '1204621415',
+                        [ƒm_keys]:        { 0: true },
                         [ƒm_abs_path]:    undefined,
                         [ƒm_deref_from]:  undefined,
                         [ƒm_deref_to]:    undefined,
@@ -196,6 +197,7 @@ describe('Missing', function() {
                     0: {
                         [ƒ_meta]: {
                             '$code':          '1204621415',
+                            [ƒm_keys]:        { 0: true },
                             [ƒm_abs_path]:    ['0'],
                             [ƒm_deref_from]:  undefined,
                             [ƒm_deref_to]:    undefined,
@@ -204,6 +206,7 @@ describe('Missing', function() {
                         0: {
                             [ƒ_meta]: {
                                 '$code':          '185788185',
+                                [ƒm_keys]:        { 0: true, 1: true },
                                 [ƒm_abs_path]:    ['0', '0'],
                                 [ƒm_deref_from]:  undefined,
                                 [ƒm_deref_to]:    undefined,
@@ -212,6 +215,7 @@ describe('Missing', function() {
                             0: {
                                 [ƒ_meta]: {
                                     '$code':          '135417139',
+                                    [ƒm_keys]:        { title: true },
                                     [ƒm_abs_path]:    ['0', '0', '0'],
                                     [ƒm_deref_from]:  undefined,
                                     [ƒm_deref_to]:    undefined,
@@ -222,6 +226,7 @@ describe('Missing', function() {
                             1: {
                                 [ƒ_meta]: {
                                     '$code':          '135417139',
+                                    [ƒm_keys]:        { title: true },
                                     [ƒm_abs_path]:    ['0', '0', '1'],
                                     [ƒm_deref_from]:  undefined,
                                     [ƒm_deref_to]:    undefined,

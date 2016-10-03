@@ -9,5 +9,6 @@ function falcor(opts) {
 
 falcor["Model"] = Model;
 falcor["JSONProto"] = JSONProto;
+falcor["toProps"] = JSONProto.prototype.toProps;
 
 module.exports = falcor;

@@ -33,16 +33,13 @@ function mapToFalcorJSON(data, falcor) {
     if (!data || (typeof data === 'undefined' ? 'undefined' : _typeof(data)) !== 'object') {
         dataProto = new _falcor.JSONProto();
         data = (0, _create2.default)(dataProto);
-        if (falcor && falcor._recycleJSON) {
-            falcor._seed = { json: data };
-        }
     } else if (!(data instanceof _falcor.JSONProto)) {
         dataProto = new _falcor.JSONProto(data[_falcorMetadataKey2.default]);
         delete data[_falcorMetadataKey2.default];
         data.__proto__ = dataProto;
-        if (falcor && falcor._recycleJSON) {
-            falcor._seed = { json: data };
-        }
+    }
+    if (falcor && falcor._recycleJSON) {
+        falcor._seed = { json: data };
     }
     return data;
 }

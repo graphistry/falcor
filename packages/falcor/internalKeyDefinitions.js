@@ -10,6 +10,7 @@ function internalKeyDefinitions() {
         'ƒ_meta':          ƒalcor + '_metadata',
 
         'ƒm_path':         'path',
+        'ƒm_keys':         'keys',
         'ƒm_version':      'version',
         'ƒm_abs_path':     'abs_path',
         'ƒm_deref_to':     'deref_to',

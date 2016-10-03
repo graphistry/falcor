@@ -6,16 +6,13 @@ export default function mapToFalcorJSON(data, falcor) {
     if (!data || typeof data !== 'object') {
         dataProto = new JSONProto();
         data = Object.create(dataProto);
-        if (falcor && falcor._recycleJSON) {
-            falcor._seed = { json: data };
-        }
     } else if (!(data instanceof JSONProto)) {
         dataProto = new JSONProto(data[f_meta]);
         delete data[f_meta];
         data.__proto__ = dataProto;
-        if (falcor && falcor._recycleJSON) {
-            falcor._seed = { json: data };
-        }
+    }
+    if (falcor && falcor._recycleJSON) {
+        falcor._seed = { json: data };
     }
     return data;
 }
