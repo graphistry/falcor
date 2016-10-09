@@ -1,9 +1,18 @@
 'use strict';
 
+var _assign = require('babel-runtime/core-js/object/assign');
+
+var _assign2 = _interopRequireDefault(_assign);
+
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
+
+var _extends = _assign2.default || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 exports.default = memoizeQueryies;
+
+var _pegjsUtil = require('pegjs-util');
 
 var _falcorQuerySyntax = require('@graphistry/falcor-query-syntax');
 
@@ -24,10 +33,12 @@ function memoizeQueryies() {
                 delete map[lru.tail.query];
                 splice(lru, lru.tail);
             }
-            entry = map[query] = { query: query, ast: (0, _falcorQuerySyntax2.default)(query) };
+            entry = map[query] = _extends({ query: query }, (0, _pegjsUtil.parse)(_falcorQuerySyntax2.default.parser, query));
+        } else if (entry.error) {
+            entry = map[query] = _extends({ query: query }, (0, _pegjsUtil.parse)(_falcorQuerySyntax2.default.parser, query));
         }
         promote(lru, entry);
-        return entry.ast;
+        return entry;
     };
 }
 

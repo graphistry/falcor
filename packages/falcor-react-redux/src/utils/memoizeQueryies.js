@@ -1,3 +1,4 @@
+import { parse as parseUtil } from 'pegjs-util';
 import FalcorQuerySyntax from '@graphistry/falcor-query-syntax';
 
 export default function memoizeQueryies(limit = 100) {
@@ -11,10 +12,12 @@ export default function memoizeQueryies(limit = 100) {
                 delete map[lru.tail.query];
                 splice(lru, lru.tail);
             }
-            entry = map[query] = { query, ast: FalcorQuerySyntax(query) };
+            entry = map[query] = { query, ...parseUtil(FalcorQuerySyntax.parser, query) };
+        } else if (entry.error) {
+            entry = map[query] = { query, ...parseUtil(FalcorQuerySyntax.parser, query) };
         }
         promote(lru, entry);
-        return entry.ast;
+        return entry;
     }
 }
 

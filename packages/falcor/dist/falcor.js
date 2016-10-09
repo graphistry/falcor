@@ -1071,11 +1071,11 @@ module.exports = {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-function JSONProto(f_meta) {
+function FalcorJSON(f_meta) {
     this["\u001eƒalcor_metadata"] = f_meta || {};
 }
 
-JSONProto.prototype = Object.create(Object.prototype, Object.assign({
+FalcorJSON.prototype = Object.create(Object.prototype, Object.assign({
     toJSON: { value: toJSON },
     toProps: { value: toProps },
     $__hash: {
@@ -1092,14 +1092,14 @@ JSONProto.prototype = Object.create(Object.prototype, Object.assign({
             return f_meta && f_meta["version"] || 0;
         }
     }
-}, arrayProtoMethods().reduce(function (jsonProto, methodName) {
+}, arrayProtoMethods().reduce(function (falcorJSONProto, methodName) {
     var method = Array.prototype[methodName];
-    jsonProto[methodName] = {
+    falcorJSONProto[methodName] = {
         writable: true, enumerable: false, value: function value() {
             return method.apply(this, arguments);
         }
     };
-    return jsonProto;
+    return falcorJSONProto;
 }, {})));
 
 function arrayProtoMethods() {
@@ -1110,26 +1110,36 @@ var isArray = Array.isArray;
 var typeofObject = 'object';
 
 function toProps(inst, serialize) {
-    inst = inst !== undefined && inst || this;
-    serialize = serialize !== undefined && serialize || toProps;
-    var isObject = inst && (typeof inst === 'undefined' ? 'undefined' : _typeof(inst)) === typeofObject;
-    var json = isObject && toJSON(inst, serialize) || inst;
-    if (isObject) {
-        var f_meta = json["\u001eƒalcor_metadata"];
-        if (f_meta) {
-            delete json["\u001eƒalcor_metadata"];
-            f_meta["version"] = inst["\u001eƒalcor_metadata"]["version"];
-        }
-        json.__proto__ = new JSONProto(f_meta);
+    var argsLen = arguments.length;
+    inst = argsLen === 0 ? this : inst;
+    if (!inst || (typeof inst === 'undefined' ? 'undefined' : _typeof(inst)) !== typeofObject) {
+        return inst;
+    } else if (inst['self'] === inst || inst['global'] === inst || inst['window'] === inst) {
+        return undefined;
     }
+    var json = toJSON(inst, argsLen > 0 && serialize || toProps);
+    var f_meta = json["\u001eƒalcor_metadata"];
+    if (f_meta) {
+        delete json["\u001eƒalcor_metadata"];
+        f_meta["version"] = inst["\u001eƒalcor_metadata"]["version"];
+    }
+    json.__proto__ = new FalcorJSON(f_meta);
     return json;
 }
 
 function toJSON(inst, serialize) {
 
-    inst = inst !== undefined && inst || this;
-    serialize = serialize !== undefined && serialize || toJSON;
-    var count, total, value, f_meta, keys, key, xs;
+    var argsLen = arguments.length;
+    inst = argsLen === 0 ? this : inst;
+    if (!inst || (typeof inst === 'undefined' ? 'undefined' : _typeof(inst)) !== typeofObject) {
+        return inst;
+    } else if (inst['self'] === inst || inst['global'] === inst || inst['window'] === inst) {
+        return undefined;
+    }
+
+    var count, total, f_meta, keys, key, xs;
+
+    serialize = argsLen > 0 && serialize || toJSON;
 
     if (isArray(inst)) {
         count = -1;
@@ -1158,8 +1168,7 @@ function toJSON(inst, serialize) {
         while (++count < total) {
             key = keys[count];
             if (key !== "\u001eƒalcor_metadata") {
-                value = inst[key];
-                xs[key] = !(!value || (typeof value === 'undefined' ? 'undefined' : _typeof(value)) !== typeofObject) && serialize(value, serialize) || value;
+                xs[key] = serialize(inst[key], serialize);
             }
         }
     }
@@ -1167,7 +1176,7 @@ function toJSON(inst, serialize) {
     return xs;
 }
 
-module.exports = JSONProto;
+module.exports = FalcorJSON;
 
 /***/ },
 /* 29 */
@@ -3521,15 +3530,15 @@ module.exports = g;
 "use strict";
 
 var Model = __webpack_require__(80);
-var JSONProto = __webpack_require__(28);
+var FalcorJSON = __webpack_require__(28);
 
 function falcor(opts) {
     return new Model(opts);
 }
 
 falcor["Model"] = Model;
-falcor["JSONProto"] = JSONProto;
-falcor["toProps"] = JSONProto.prototype.toProps;
+falcor["FalcorJSON"] = FalcorJSON;
+falcor["toProps"] = FalcorJSON.prototype.toProps;
 
 module.exports = falcor;
 
@@ -5452,9 +5461,9 @@ function onError(node, depth, results, requestedPath, fromReference, boxValues) 
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var JSONProto = __webpack_require__(28);
-var $ref = __webpack_require__(0);
 var onValue = __webpack_require__(52);
+var $ref = __webpack_require__(0);
+var FalcorJSON = __webpack_require__(28);
 var onValueType = __webpack_require__(31);
 var originalOnMissing = __webpack_require__(30);
 var isExpired = __webpack_require__(2);
@@ -5507,14 +5516,14 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
     }
 
     if (json && (f_meta = json["\u001eƒalcor_metadata"])) {
-        if (!branchSelector && !(json instanceof JSONProto)) {
+        if (!branchSelector && !(json instanceof FalcorJSON)) {
             delete json["\u001eƒalcor_metadata"];
-            json.__proto__ = new JSONProto(f_meta);
+            json.__proto__ = new FalcorJSON(f_meta);
         } else if (f_meta["version"] === node["\u001eƒalcor_version"] && f_meta["$code"] === path["$code"] && f_meta["abs_path"] === node["\u001eƒalcor_abs_path"]) {
             results.hasValue = true;
             return json;
         }
-        f_old_keys = f_meta["keys"] || {};
+        f_old_keys = f_meta["keys"];
         f_meta["version"] = node["\u001eƒalcor_version"];
         f_meta["abs_path"] = node["\u001eƒalcor_abs_path"];
         f_meta["deref_to"] = refContainerRefPath;
@@ -5645,13 +5654,13 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
                             json["\u001eƒalcor_metadata"] = f_meta;
                         }
                     } else {
-                        json = Object.create(new JSONProto(f_meta));
+                        json = Object.create(new FalcorJSON(f_meta));
                     }
                 }
 
                 f_new_keys[nextKey] = true;
-                if (f_old_keys) {
-                    delete f_old_keys[nextKey];
+                if (f_old_keys && f_old_keys.hasOwnProperty(nextKey)) {
+                    f_old_keys[nextKey] = false;
                 }
                 // Set the reported branch or leaf into this branch.
                 json[nextKey] = nextJSON;
@@ -5676,11 +5685,12 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
     if (f_meta) {
         f_meta["$code"] = f_code;
         f_meta["keys"] = f_new_keys;
-        if (!f_old_keys) {
-            return json;
-        }
-        for (nextKey in f_old_keys) {
-            delete json[nextKey];
+        if (f_old_keys) {
+            for (nextKey in f_old_keys) {
+                if (f_old_keys[nextKey]) {
+                    delete json[nextKey];
+                }
+            }
         }
     }
 
@@ -5701,54 +5711,6 @@ function onMissing(path, depth, results, requestedPath, requestedLength, optimiz
     return undefined;
 }
 
-// var $atom = require("./../../types/atom");
-// var promote = require("./../../lru/promote");
-// var isExpired = require("./../../support/isExpired");
-// var expireNode = require("./../../support/expireNode");
-
-// function onValueType(node, type,
-//                      path, depth, seed, results,
-//                      requestedPath,
-//                      optimizedPath, optimizedLength,
-//                      fromReference, modelRoot, expired,
-//                      boxValues, materialized, hasDataSource,
-//                      treatErrorsAsValues, onValue, onMissing) {
-
-//     if (!node || !type) {
-//         if (materialized && !hasDataSource) {
-//             if (seed) {
-//                 results.hasValue = true;
-//                 return { $type: $atom };
-//             }
-//             return undefined;
-//         } else {
-//             return onMissing(path, depth, results,
-//                              requestedPath, depth,
-//                              optimizedPath, optimizedLength);
-//         }
-//     } else if (isExpired(node)) {
-//         if (!node[ƒ_invalidated]) {
-//             expireNode(node, expired, modelRoot);
-//         }
-//         return onMissing(path, depth, results,
-//                          requestedPath, depth,
-//                          optimizedPath, optimizedLength);
-//     }
-
-//     promote(modelRoot, node);
-
-//     if (seed) {
-//         if (fromReference) {
-//             requestedPath[depth] = null;
-//         }
-//         return onValue(node, type, depth, seed, results,
-//                        requestedPath, optimizedPath, optimizedLength,
-//                        fromReference, boxValues, materialized, treatErrorsAsValues);
-//     }
-
-//     return undefined;
-// }
-
 /* eslint-enable */
 
 /***/ },
@@ -5760,10 +5722,10 @@ function onMissing(path, depth, results, requestedPath, requestedLength, optimiz
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var JSONProto = __webpack_require__(28);
 var isArray = Array.isArray;
-var $ref = __webpack_require__(0);
 var onValue = __webpack_require__(52);
+var $ref = __webpack_require__(0);
+var FalcorJSON = __webpack_require__(28);
 var onMissing = __webpack_require__(30);
 var onValueType = __webpack_require__(31);
 var isExpired = __webpack_require__(2);
@@ -5788,7 +5750,7 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
         return onValueType(node, type, path, depth, seed, results, requestedPath, requestedLength, optimizedPath, optimizedLength, fromReference, modelRoot, expired, boxValues, materialized, hasDataSource, treatErrorsAsValues, onValue, onMissing);
     }
 
-    var jsonProto, f_meta;
+    var f_meta;
 
     var next,
         nextKey,
@@ -5967,7 +5929,7 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
                             json["\u001eƒalcor_metadata"] = f_meta;
                         }
                     } else {
-                        json = new JSONProto(f_meta);
+                        json = new FalcorJSON(f_meta);
                     }
                 }
 

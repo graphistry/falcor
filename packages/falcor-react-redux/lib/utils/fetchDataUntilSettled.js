@@ -9,7 +9,13 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = fetchDataUntilSettled;
 
+var _warning = require('warning');
+
+var _warning2 = _interopRequireDefault(_warning);
+
 var _rxjs = require('rxjs');
+
+var _pegjsUtil = require('pegjs-util');
 
 var _memoizeQueryies = require('./memoizeQueryies');
 
@@ -44,7 +50,15 @@ function _fetchDataUntilSettled(state) {
 
     var query = fragment(state.data, state.props);
     if (query !== state.prev || state.version !== falcor.getVersion()) {
-        return _rxjs.Observable.from(falcor.get(memoizedQuerySyntax(query))).map(function (_ref2) {
+        var parsed = memoizedQuerySyntax(query);
+        if (parsed.error) {
+            (0, _warning2.default)(process.env.NODE_ENV !== 'development', (0, _pegjsUtil.errorMessage)(parsed.error));
+            (0, _warning2.default)(process.env.NODE_ENV !== 'development', 'Error parsing query: ' + query);
+            return _rxjs.Observable.of((0, _assign2.default)(state, {
+                error: parsed.error, settled: true, version: falcor.getVersion()
+            }));
+        }
+        return _rxjs.Observable.from(falcor.get(parsed.ast)).map(function (_ref2) {
             var json = _ref2.json;
             return (0, _assign2.default)(state, {
                 prev: query, data: json, version: falcor.getVersion()

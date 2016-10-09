@@ -249,13 +249,15 @@ describe('Values', function() {
             cache: cacheGenerator(0, 2)
         });
 
-        var actualJSON = model._getPathValuesAsPathMap(
+        var seed = {};
+
+        model._getPathValuesAsPathMap(
             model,
             [['videos', [0, {from: 1, length: 1}], 'title']],
-            [{}]
-        ).values[0];
+            [seed]
+        );
 
-        expect(actualJSON).to.deep.equals({
+        expect(seed).to.deep.equals({
             json: {
                 [ƒ_meta]: {
                     '$code':          '2076667107',
@@ -300,10 +302,73 @@ describe('Values', function() {
             }
         });
 
-        expect(actualJSON.json.$__hash).to.equal('2076667107');
-        expect(actualJSON.json.videos.$__hash).to.equal('1720011066');
-        expect(actualJSON.json.videos[0].$__hash).to.equal('165499941');
-        expect(actualJSON.json.videos[1].$__hash).to.equal('165499941');
+        expect(seed.json.$__hash).to.equal('2076667107');
+        expect(seed.json.videos.$__hash).to.equal('1720011066');
+        expect(seed.json.videos[0].$__hash).to.equal('165499941');
+        expect(seed.json.videos[1].$__hash).to.equal('165499941');
+    });
+
+    it('should remove keys not re-requested when recycleJSON is true', function() {
+
+        var model = new Model({
+            recycleJSON: true,
+            cache: cacheGenerator(0, 2)
+        });
+
+        var seed = {};
+
+        model._getPathValuesAsPathMap(
+            model,
+            [['videos', [0, {from: 1, length: 1}], 'title']],
+            [seed]
+        );
+
+        model._getPathValuesAsPathMap(
+            model,
+            [['videos', 0, 'title']],
+            [seed]
+        );
+
+        expect(seed.json.videos[0]).to.be.ok;
+        expect(seed.json.videos[1]).to.equal(undefined);
+
+        expect(seed).to.deep.equals({
+            json: {
+                [ƒ_meta]: {
+                    '$code':          '580640226',
+                    [ƒm_keys]:        { videos: true },
+                    [ƒm_abs_path]:    undefined,
+                    [ƒm_deref_from]:  undefined,
+                    [ƒm_deref_to]:    undefined,
+                    [ƒm_version]:     0
+                },
+                videos: {
+                    [ƒ_meta]: {
+                        '$code':          '1405226223',
+                        [ƒm_keys]:        { 0: true },
+                        [ƒm_abs_path]:    ['videos'],
+                        [ƒm_deref_from]:  undefined,
+                        [ƒm_deref_to]:    undefined,
+                        [ƒm_version]:     0
+                    },
+                    0: {
+                        [ƒ_meta]: {
+                            '$code':          '165499941',
+                            [ƒm_keys]:        { title: true },
+                            [ƒm_abs_path]:    ['videos', '0'],
+                            [ƒm_deref_from]:  undefined,
+                            [ƒm_deref_to]:    undefined,
+                            [ƒm_version]:     0
+                        },
+                        title: 'Video 0'
+                    }
+                }
+            }
+        });
+
+        expect(seed.json.$__hash).to.equal('580640226');
+        expect(seed.json.videos.$__hash).to.equal('1405226223');
+        expect(seed.json.videos[0].$__hash).to.equal('165499941');
     });
 
     // JSONGraph ----------------------------------------

@@ -1,7 +1,7 @@
-var JSONProto = require("./JSONProto");
 var isArray = Array.isArray;
-var $ref = require("./../../types/ref");
 var onValue = require("./onValue");
+var $ref = require("./../../types/ref");
+var FalcorJSON = require("./FalcorJSON");
 var onMissing = require("./../onMissing");
 var onValueType = require("./../onValueType");
 var isExpired = require("./../../support/isExpired");
@@ -41,7 +41,7 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path,
                            treatErrorsAsValues, onValue, onMissing);
     }
 
-    var jsonProto, f_meta;
+    var f_meta;
 
     var next, nextKey,
         keyset, keyIsRange,
@@ -220,7 +220,7 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path,
                             json[ƒ_meta] = f_meta;
                         }
                     } else {
-                        json = new JSONProto(f_meta);
+                        json = new FalcorJSON(f_meta);
                     }
                 }
 

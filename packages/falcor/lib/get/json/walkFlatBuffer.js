@@ -1,6 +1,6 @@
-var JSONProto = require("./JSONProto");
-var $ref = require("./../../types/ref");
 var onValue = require("./onValue");
+var $ref = require("./../../types/ref");
+var FalcorJSON = require("./FalcorJSON");
 var onValueType = require("./../onValueType");
 var originalOnMissing = require("./../onMissing");
 var isExpired = require("./../../support/isExpired");
@@ -57,9 +57,9 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
     }
 
     if (json && (f_meta = json[ƒ_meta])) {
-        if (!branchSelector && !(json instanceof JSONProto)) {
+        if (!branchSelector && !(json instanceof FalcorJSON)) {
             delete json[ƒ_meta];
-            json.__proto__ = new JSONProto(f_meta);
+            json.__proto__ = new FalcorJSON(f_meta);
         } else if (
             f_meta[ƒm_version] === node[ƒ_version] &&
             f_meta["$code"]    === path["$code"] &&
@@ -67,7 +67,7 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
             results.hasValue = true;
             return json;
         }
-        f_old_keys = f_meta[ƒm_keys] || {};
+        f_old_keys = f_meta[ƒm_keys];
         f_meta[ƒm_version] = node[ƒ_version];
         f_meta[ƒm_abs_path] = node[ƒ_abs_path];
         f_meta[ƒm_deref_to] = refContainerRefPath;
@@ -208,13 +208,13 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
                             json[ƒ_meta] = f_meta;
                         }
                     } else {
-                        json = Object.create(new JSONProto(f_meta));
+                        json = Object.create(new FalcorJSON(f_meta));
                     }
                 }
 
                 f_new_keys[nextKey] = true;
-                if (f_old_keys) {
-                    delete f_old_keys[nextKey];
+                if (f_old_keys && f_old_keys.hasOwnProperty(nextKey)) {
+                    f_old_keys[nextKey] = false;
                 }
                 // Set the reported branch or leaf into this branch.
                 json[nextKey] = nextJSON;
@@ -239,11 +239,12 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
     if (f_meta) {
         f_meta["$code"] = f_code;
         f_meta[ƒm_keys] = f_new_keys;
-        if (!f_old_keys) {
-            return json;
-        }
-        for (nextKey in f_old_keys) {
-            delete json[nextKey];
+        if (f_old_keys) {
+            for (nextKey in f_old_keys) {
+                if (f_old_keys[nextKey]) {
+                    delete json[nextKey];
+                }
+            }
         }
     }
 
@@ -268,53 +269,5 @@ function onMissing(path, depth, results,
 
     return undefined;
 }
-
-// var $atom = require("./../../types/atom");
-// var promote = require("./../../lru/promote");
-// var isExpired = require("./../../support/isExpired");
-// var expireNode = require("./../../support/expireNode");
-
-// function onValueType(node, type,
-//                      path, depth, seed, results,
-//                      requestedPath,
-//                      optimizedPath, optimizedLength,
-//                      fromReference, modelRoot, expired,
-//                      boxValues, materialized, hasDataSource,
-//                      treatErrorsAsValues, onValue, onMissing) {
-
-//     if (!node || !type) {
-//         if (materialized && !hasDataSource) {
-//             if (seed) {
-//                 results.hasValue = true;
-//                 return { $type: $atom };
-//             }
-//             return undefined;
-//         } else {
-//             return onMissing(path, depth, results,
-//                              requestedPath, depth,
-//                              optimizedPath, optimizedLength);
-//         }
-//     } else if (isExpired(node)) {
-//         if (!node[ƒ_invalidated]) {
-//             expireNode(node, expired, modelRoot);
-//         }
-//         return onMissing(path, depth, results,
-//                          requestedPath, depth,
-//                          optimizedPath, optimizedLength);
-//     }
-
-//     promote(modelRoot, node);
-
-//     if (seed) {
-//         if (fromReference) {
-//             requestedPath[depth] = null;
-//         }
-//         return onValue(node, type, depth, seed, results,
-//                        requestedPath, optimizedPath, optimizedLength,
-//                        fromReference, boxValues, materialized, treatErrorsAsValues);
-//     }
-
-//     return undefined;
-// }
 
 /* eslint-enable */

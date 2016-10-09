@@ -20,7 +20,7 @@ module.exports = _.zip(
 
 function runTestsWithModel(ModelClass, ModelName, recycleJSON) {
 
-    var seed = [{}];
+    var seed = new Array(1);
     var memoizedModel = new ModelClass({
         recycleJSON: recycleJSON,
         cache: createCacheWith100Videos()
@@ -38,12 +38,13 @@ function runTestsWithModel(ModelClass, ModelName, recycleJSON) {
         seed[0] = memoizedModel._seed;
     }
 
-    var tests = [{
+    return [{
         name: ModelName + ' getJSON - 100 paths from cache' + testNameSuffix,
         runner: function() {
-            memoizedModel._getPathValuesAsPathMap(memoizedModel, allTitlesPaths, seed);
+            memoizedModel._getPathValuesAsPathMap(memoizedModel,
+                                                  allTitlesPaths,
+                                                  recycleJSON && seed || (
+                                                  (seed[0] = {}) && seed));
         }
     }];
-
-    return tests;
 }

@@ -1,4 +1,6 @@
+import warning from 'warning';
 import { Observable } from 'rxjs';
+import { errorMessage } from 'pegjs-util';
 import memoizeQueryies from './memoizeQueryies';
 const memoizedQuerySyntax = memoizeQueryies(100);
 
@@ -21,8 +23,16 @@ function _fetchDataUntilSettled(state) {
     const { falcor, fragment } = state;
     const query = fragment(state.data, state.props);
     if (query !== state.prev || state.version !== falcor.getVersion()) {
+        const parsed = memoizedQuerySyntax(query);
+        if (parsed.error) {
+            warning(process.env.NODE_ENV !== 'development', errorMessage(parsed.error));
+            warning(process.env.NODE_ENV !== 'development', `Error parsing query: ${query}`)
+            return Observable.of(Object.assign(state, {
+                error: parsed.error, settled: true, version: falcor.getVersion()
+            }));
+        }
         return Observable
-            .from(falcor.get(memoizedQuerySyntax(query)))
+            .from(falcor.get(parsed.ast))
             .map(({ json }) => Object.assign(state, {
                 prev: query, data: json, version: falcor.getVersion()
             }))

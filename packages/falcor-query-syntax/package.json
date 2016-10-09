@@ -9,8 +9,8 @@
     "perf": "node perf",
     "build-paths": "pegjs -o lib/paths-parser.peg.js --format umd peg/paths-parser.peg",
     "build-route": "pegjs -o lib/route-parser.peg.js --format umd peg/route-parser.peg",
-    "build-paths-min": "npm run build-paths && java -jar compiler/closure-compiler.jar --js_output_file=lib/paths-parser.js lib/paths-parser.peg.js && rimraf lib/paths-parser.peg.js",
-    "build-route-min": "npm run build-route && java -jar compiler/closure-compiler.jar --js_output_file=lib/route-parser.js lib/route-parser.peg.js && rimraf lib/route-parser.peg.js",
+    "build-paths-min": "npm run build-paths && java -jar ./node_modules/google-closure-compiler/compiler.jar --js_output_file=lib/paths-parser.js lib/paths-parser.peg.js && rimraf lib/paths-parser.peg.js",
+    "build-route-min": "npm run build-route && java -jar ./node_modules/google-closure-compiler/compiler.jar --js_output_file=lib/route-parser.js lib/route-parser.peg.js && rimraf lib/route-parser.peg.js",
     "build": "npm-run-all -l -p build-paths-min build-route-min",
     "start": "npm run build && npm test",
     "prepublish": "npm run build"
@@ -44,6 +44,7 @@
     "@graphistry/falcor-path-utils": "^2.1.0",
     "benchmark": "~2.1.1",
     "chai": "~3.5.0",
+    "google-closure-compiler": "~20160911.0.0",
     "mocha": "~3.0.2",
     "npm-run-all": "~3.0.0",
     "rimraf": "~2.5.4"

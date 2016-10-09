@@ -35,18 +35,20 @@
   },
   "peerDependencies": {},
   "dependencies": {
+    "@graphistry/falcor": "^2.1.4",
+    "@graphistry/falcor-json-graph": "^2.0.4",
+    "@graphistry/falcor-path-syntax": "^2.0.4",
+    "@graphistry/falcor-path-utils": "^2.1.0",
+    "@graphistry/falcor-query-syntax": "^2.1.4",
     "babel-plugin-transform-runtime": "~6.12.0",
     "babel-preset-react": "~6.11.1",
     "hoist-non-react-statics": "~1.2.0",
+    "pegjs-util": "~1.4.0",
     "react": "~15.3.1",
     "react-redux": "~4.4.5",
-    "redux": "~3.6.0",
-    "@graphistry/falcor": "^2.1.4",
-    "@graphistry/falcor-json-graph": "^2.0.4",
-    "@graphistry/falcor-path-utils": "^2.1.0",
-    "@graphistry/falcor-path-syntax": "^2.0.4",
-    "@graphistry/falcor-query-syntax": "^2.1.4",
     "recompose": "~0.20.2",
-    "rxjs": "~5.0.0-beta.11"
+    "redux": "~3.6.0",
+    "rxjs": "~5.0.0-beta.11",
+    "warning": "~3.0.0"
   }
 }

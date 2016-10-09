@@ -13,7 +13,7 @@ This is the [Graphistry](http://graphistry.com) fork of the FalcorJS client libr
 - `getVersion` runtime is now `O(1)`.
 - Performance tests have been added to benchmark against Netflix/falcor wherever possible.
 - An optional `branchSelector` has been introduced to allow users to customize the results from `get` calls.
-- An optional `recycleJSON` flag has been introduced which instructs the Model to diff and recycle the output JSON Objects across `get` calls. This allows us to make some significant performance improvements (see `get` performance numbers below).
+- An optional `recycleJSON` flag has been introduced which instructs the Model to diff and recycle the output JSON Objects across `get` calls. This allows us to significantly improve performance for stable queries (see `get` performance numbers below).
 - An `onChangesCompleted` callback has been added to the API. This callback is similar to the existing `onChange` callback, except it's only called after all the operations that will change the cache have finished (this is more explicit than debouncing the `onChange` callback).
 - `falcor-http-datasource` has been removed from the public browser build.
 - The path syntax has been removed. To use the path syntax, you can use the [@graphistry/falcor-path-syntax](https://github.com/graphistry/falcor/tree/master/packages/falcor-path-syntax) module to parse strings into paths. Better yet, use the new [query syntax](https://github.com/graphistry/falcor/tree/master/packages/falcor-query-syntax) template string.
@@ -26,70 +26,78 @@ This is the [Graphistry](http://graphistry.com) fork of the FalcorJS client libr
 ## Performance Comparison
 
 ```
+running Get Tests
+finished Get Tests
 @netflix/falcor    getJSON - 100 paths from cache:
-    11836.819404310283 ops/s
-    0.08 ms/op
-    0.48% of 1 frame @ 60FPS
+    13641.702484548276 ops/s
+    0.07 ms/op
+    0.42% of 1 frame @ 60FPS
 
 @graphistry/falcor getJSON - 100 paths from cache:
-    29952.45570157102 ops/s
-    0.03 ms/op
-    0.18% of 1 frame @ 60FPS
+    25234.675291722833 ops/s
+    0.04 ms/op
+    0.24% of 1 frame @ 60FPS
 
 @graphistry/falcor getJSON - 100 paths from cache recycling the JSON:
-    8356718.688533832 ops/s
+    7213181.673262027 ops/s
     0 ms/op
     0% of 1 frame @ 60FPS
 
+running Set Tests
+finished Set Tests
 @netflix/falcor    setCache - cache with 100 videos:
-    970.2200269131123 ops/s
-    1.03 ms/op
-    6.18% of 1 frame @ 60FPS
+    1018.530835522926 ops/s
+    0.98 ms/op
+    5.88% of 1 frame @ 60FPS
 
 @graphistry/falcor setCache - cache with 100 videos:
-    1308.6495876713034 ops/s
-    0.76 ms/op
-    4.56% of 1 frame @ 60FPS
+    1055.6024924166336 ops/s
+    0.95 ms/op
+    5.7% of 1 frame @ 60FPS
 
 @netflix/falcor    setJSONGraph - 100 paths into Cache:
-    4487.478073921594 ops/s
-    0.22 ms/op
-    1.32% of 1 frame @ 60FPS
-
-@graphistry/falcor setJSONGraph - 100 paths into Cache:
-    5937.631079472985 ops/s
+    5850.27883921989 ops/s
     0.17 ms/op
     1.02% of 1 frame @ 60FPS
 
+@graphistry/falcor setJSONGraph - 100 paths into Cache:
+    5605.451411415314 ops/s
+    0.18 ms/op
+    1.08% of 1 frame @ 60FPS
+
+running Get Version Tests
+finished Get Version Tests
 @netflix/falcor    getVersion:
-    2190813.937211525 ops/s
+    2210081.781511778 ops/s
     0 ms/op
     0% of 1 frame @ 60FPS
 
 @graphistry/falcor getVersion:
-    3437878.525428905 ops/s
+    3240285.470425864 ops/s
     0 ms/op
     0% of 1 frame @ 60FPS
 
+running DataSource Tests
+finished DataSource Tests
 @netflix/falcor    getJSON + setJSONGraph + getJSON - 100 paths from DataSource:
-    528.3908358610701 ops/s
-    1.89 ms/op
-    11.34% of 1 frame @ 60FPS
+    589.3084623349998 ops/s
+    1.7 ms/op
+    10.2% of 1 frame @ 60FPS
 
 @graphistry/falcor getJSON + setJSONGraph + getJSON - 100 paths from DataSource:
-    583.6132178573525 ops/s
-    1.71 ms/op
-    10.26% of 1 frame @ 60FPS
+    609.0614300007979 ops/s
+    1.64 ms/op
+    9.84% of 1 frame @ 60FPS
 
 @netflix/falcor    getJSONGraph + setJSONGraph + getJSONGraph - 100 paths from DataSource:
-    404.2896033359927 ops/s
-    2.47 ms/op
-    14.82% of 1 frame @ 60FPS
+    434.5908427320259 ops/s
+    2.3 ms/op
+    13.8% of 1 frame @ 60FPS
 
 @graphistry/falcor getJSONGraph + setJSONGraph + getJSONGraph - 100 paths from DataSource:
-    399.88145166775513 ops/s
-    2.5 ms/op
-    15% of 1 frame @ 60FPS
+    406.08557299248673 ops/s
+    2.46 ms/op
+    14.76% of 1 frame @ 60FPS
 ```
 
 ## Getting Started

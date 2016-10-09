@@ -31,10 +31,10 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function mapToFalcorJSON(data, falcor) {
     var dataProto = void 0;
     if (!data || (typeof data === 'undefined' ? 'undefined' : _typeof(data)) !== 'object') {
-        dataProto = new _falcor.JSONProto();
+        dataProto = new _falcor.FalcorJSON();
         data = (0, _create2.default)(dataProto);
-    } else if (!(data instanceof _falcor.JSONProto)) {
-        dataProto = new _falcor.JSONProto(data[_falcorMetadataKey2.default]);
+    } else if (!(data instanceof _falcor.FalcorJSON)) {
+        dataProto = new _falcor.FalcorJSON(data[_falcorMetadataKey2.default]);
         delete data[_falcorMetadataKey2.default];
         data.__proto__ = dataProto;
     }
