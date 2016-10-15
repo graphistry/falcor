@@ -25,10 +25,10 @@ Model.prototype.changes = function() {
     let { changes } = _root;
     if (!changes) {
         changes = _root.changes = new BehaviorSubject(this);
-        const { onChangesCompleted } = _root;
-        _root.onChangesCompleted = function() {
-            if (onChangesCompleted) {
-                onChangesCompleted.call(this);
+        const { onChange } = _root;
+        _root.onChange = () => {
+            if (onChange) {
+                onChange.call(this);
             }
             changes.next(this);
         }

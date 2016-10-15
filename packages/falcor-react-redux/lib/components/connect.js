@@ -97,13 +97,13 @@ _falcor.Model.prototype.changes = function () {
     if (!changes) {
         (function () {
             changes = _root.changes = new _rxjs.BehaviorSubject(_this);
-            var onChangesCompleted = _root.onChangesCompleted;
+            var onChange = _root.onChange;
 
-            _root.onChangesCompleted = function () {
-                if (onChangesCompleted) {
-                    onChangesCompleted.call(this);
+            _root.onChange = function () {
+                if (onChange) {
+                    onChange.call(_this);
                 }
-                changes.next(this);
+                changes.next(_this);
             };
         })();
     }
