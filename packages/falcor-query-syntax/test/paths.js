@@ -126,6 +126,22 @@ describe('Paths', function() {
             ['titles', 'length']
         ]);
     });
+    it('should ignore empty ... queries', function() {
+
+        expect(toPaths`{
+            titles: {
+                ... { },
+                ... {
+                    [9..0]: {
+                        ... { },
+                        ... {rating, box-shot}
+                    }
+                }
+            }
+        }`).to.deep.equal([
+            ['titles', { from:0, length:10 }, ['rating', 'box-shot']]
+        ]);
+    });
     it('should do all the things at once', function() {
         var range = { from: 10, to: 9 };
 
