@@ -58,7 +58,7 @@ const connect = (BaseComponent) => compose(
             })
         )
         .distinctUntilKeyChanged('version')
-        .auditTime(0, Scheduler.asap)
+        .auditTime(0, Scheduler.animationFrame)
     ),
     withContext(contextTypes, ({ falcor, dispatch }) => ({
         falcor, dispatch

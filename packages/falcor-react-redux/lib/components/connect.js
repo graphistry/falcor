@@ -132,7 +132,7 @@ var connect = function connect(BaseComponent) {
 
             return _extends({}, props, { falcor: falcor, version: falcor.getVersion()
             });
-        }).distinctUntilKeyChanged('version').auditTime(0, _rxjs.Scheduler.asap);
+        }).distinctUntilKeyChanged('version').auditTime(0, _rxjs.Scheduler.animationFrame);
     }), (0, _withContext2.default)(contextTypes, function (_ref4) {
         var falcor = _ref4.falcor;
         var dispatch = _ref4.dispatch;
