@@ -1078,6 +1078,7 @@ function FalcorJSON(f_meta) {
 FalcorJSON.prototype = Object.create(Object.prototype, Object.assign({
     toJSON: { value: toJSON },
     toProps: { value: toProps },
+    serialize: { value: serialize },
     $__hash: {
         enumerable: false,
         get: function get() {
@@ -1108,8 +1109,28 @@ function arrayProtoMethods() {
 
 var isArray = Array.isArray;
 var typeofObject = 'object';
+var typeofString = 'string';
 
-function toProps(inst, serialize) {
+function toJSON(inst) {
+    if ((typeof inst === 'undefined' ? 'undefined' : _typeof(inst)) === typeofString) {
+        if (arguments.length !== 1) {
+            return inst;
+        }
+        inst = this;
+    } else if (!inst) {
+        inst = this;
+    }
+    if (inst['self'] === inst || inst['global'] === inst || inst['window'] === inst) {
+        return undefined;
+    }
+    var json = serialize(inst, toJSON);
+    if (json["\u001eƒalcor_metadata"]) {
+        delete json["\u001eƒalcor_metadata"];
+    }
+    return json;
+}
+
+function toProps(inst, serializer) {
     var argsLen = arguments.length;
     inst = argsLen === 0 ? this : inst;
     if (!inst || (typeof inst === 'undefined' ? 'undefined' : _typeof(inst)) !== typeofObject) {
@@ -1117,7 +1138,7 @@ function toProps(inst, serialize) {
     } else if (inst['self'] === inst || inst['global'] === inst || inst['window'] === inst) {
         return undefined;
     }
-    var json = toJSON(inst, argsLen > 0 && serialize || toProps);
+    var json = serialize(inst, argsLen > 0 && serializer || toProps);
     var f_meta = json["\u001eƒalcor_metadata"];
     if (f_meta) {
         delete json["\u001eƒalcor_metadata"];
@@ -1127,10 +1148,11 @@ function toProps(inst, serialize) {
     return json;
 }
 
-function toJSON(inst, serialize) {
+function serialize(inst, serializer) {
 
     var argsLen = arguments.length;
     inst = argsLen === 0 ? this : inst;
+
     if (!inst || (typeof inst === 'undefined' ? 'undefined' : _typeof(inst)) !== typeofObject) {
         return inst;
     } else if (inst['self'] === inst || inst['global'] === inst || inst['window'] === inst) {
@@ -1139,7 +1161,7 @@ function toJSON(inst, serialize) {
 
     var count, total, f_meta, keys, key, xs;
 
-    serialize = argsLen > 0 && serialize || toJSON;
+    serializer = argsLen > 0 && serializer || serialize;
 
     if (isArray(inst)) {
         count = -1;
@@ -1168,7 +1190,7 @@ function toJSON(inst, serialize) {
         while (++count < total) {
             key = keys[count];
             if (key !== "\u001eƒalcor_metadata") {
-                xs[key] = serialize(inst[key], serialize);
+                xs[key] = serializer(inst[key], serializer);
             }
         }
     }
