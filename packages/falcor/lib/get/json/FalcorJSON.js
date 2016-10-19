@@ -81,8 +81,8 @@ function toProps(inst, serializer) {
     if (f_meta) {
         delete json[ƒ_meta];
         f_meta[ƒm_version] = inst[ƒ_meta][ƒm_version];
+        json.__proto__ = new FalcorJSON(f_meta);
     }
-    json.__proto__ = new FalcorJSON(f_meta);
     return json;
 }
 
