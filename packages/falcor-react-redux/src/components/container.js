@@ -115,6 +115,16 @@ const defaultMapDispatchToProps = (dispatch, props, falcor) => ({});
 const defaultMergeProps = (stateProps, dispatchProps, parentProps) => ({
     ...parentProps, ...stateProps, ...dispatchProps
 });
+const getFragments = function(items = []) {
+    if (!items || !items.hasOwnProperty('length')) {
+        return `{ [0]: ${this.fragment(items)} }`;
+    }
+    return `{${Array
+        .from(items, (xs, i) => xs)
+        .map((item, index) => `${index}: ${this.fragment(item)}`)
+        .join(',\n')
+    }}`;
+}
 
 export default function container(
     getFragment,
@@ -136,6 +146,7 @@ export default function container(
 
     return hoistStatics((BaseComponent) => class Container extends FalcorContainer {
         static fragment = getFragment;
+        static fragments = getFragments;
         static Component = BaseComponent;
         static mapFragment = mapFragment;
         static mapDispatch = mapDispatch;

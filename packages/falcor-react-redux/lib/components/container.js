@@ -1,5 +1,9 @@
 'use strict';
 
+var _from = require('babel-runtime/core-js/array/from');
+
+var _from2 = _interopRequireDefault(_from);
+
 var _getPrototypeOf = require('babel-runtime/core-js/object/get-prototype-of');
 
 var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
@@ -239,6 +243,20 @@ var defaultMapDispatchToProps = function defaultMapDispatchToProps(dispatch, pro
 var defaultMergeProps = function defaultMergeProps(stateProps, dispatchProps, parentProps) {
     return _extends({}, parentProps, stateProps, dispatchProps);
 };
+var getFragments = function getFragments() {
+    var _this3 = this;
+
+    var items = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+
+    if (!items || !items.hasOwnProperty('length')) {
+        return '{ [0]: ' + this.fragment(items) + ' }';
+    }
+    return '{' + (0, _from2.default)(items, function (xs, i) {
+        return xs;
+    }).map(function (item, index) {
+        return index + ': ' + _this3.fragment(item);
+    }).join(',\n') + '}';
+};
 
 function container(getFragment) {
     var mapFragment = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : defaultMapFragmentToProps;
@@ -271,7 +289,7 @@ function container(getFragment) {
             }
 
             return Container;
-        }(FalcorContainer), _class.fragment = getFragment, _class.Component = BaseComponent, _class.mapFragment = mapFragment, _class.mapDispatch = mapDispatch, _class.mergeFragmentAndProps = mergeFragmentAndProps, _class.displayName = (0, _wrapDisplayName2.default)(BaseComponent, 'Container'), _temp;
+        }(FalcorContainer), _class.fragment = getFragment, _class.fragments = getFragments, _class.Component = BaseComponent, _class.mapFragment = mapFragment, _class.mapDispatch = mapDispatch, _class.mergeFragmentAndProps = mergeFragmentAndProps, _class.displayName = (0, _wrapDisplayName2.default)(BaseComponent, 'Container'), _temp;
     });
 }
 //# sourceMappingURL=container.js.map
