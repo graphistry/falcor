@@ -16,6 +16,7 @@ var isObject = require("./support/isObject");
 var isFunction = require("./support/isFunction");
 var isPrimitive = require("./support/isPrimitive");
 var isJSONEnvelope = require("./support/isJSONEnvelope");
+var getCachePosition = require("./get/getCachePosition");
 var isJSONGraphEnvelope = require("./support/isJSONGraphEnvelope");
 
 var setCache = require("./set/setPathMaps");
@@ -582,6 +583,12 @@ Model.prototype._fromWhenceYouCame = function fromWhenceYouCame(allow) {
     return this._clone({
         _allowFromWhenceYouCame: allow === undefined ? true : allow
     });
+};
+
+Model.prototype._optimizePath = function _optimizePath(path) {
+    var node = getCachePosition(this._root.cache, path);
+    var abs_path = node && node[ƒ_abs_path] || [];
+    return abs_path.slice(0);
 };
 
 Model.prototype._getVersion = require("./get/getVersion");
