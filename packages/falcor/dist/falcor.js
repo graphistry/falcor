@@ -5269,6 +5269,11 @@ function cloneBoxedValue(boxedValue) {
 function _copyCache(node, out, fromKey) {
     // copy and return
 
+    // only copy objects
+    if ((typeof node === "undefined" ? "undefined" : _typeof(node)) !== "object") {
+        return;
+    }
+
     Object.keys(node).filter(function (k) {
         // Its not an internal key and the node has a value.  In the cache
         // there are 3 possibilities for values.
