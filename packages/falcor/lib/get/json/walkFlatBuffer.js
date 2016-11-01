@@ -198,7 +198,7 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
                     f_meta[ƒm_deref_from] = refContainerAbsPath;
                 }
 
-                if (undefined === json) {
+                if (undefined === json || null === json) {
                     // Enable developers to instrument branch node creation by
                     // providing a custom function. If they do, delegate branch
                     // node creation to them.

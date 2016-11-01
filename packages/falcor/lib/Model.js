@@ -207,9 +207,9 @@ Model.prototype.invalidate = function invalidate() {
     args = [];
     while (++argsIdx < argsLen) {
         args[argsIdx] = arguments[argsIdx];
-        if (!Array.isArray(args[argsIdx])) {
-            throw new Error("Invalid argument");
-        }
+        // if (!Array.isArray(args[argsIdx])) {
+        //     throw new Error("Invalid argument");
+        // }
     }
 
     // creates the obs, subscribes and will throw the errors if encountered.

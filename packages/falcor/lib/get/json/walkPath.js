@@ -205,7 +205,7 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path,
                 // The json value will initially be undefined. If we're here,
                 // then at least one leaf value was encountered, so create a
                 // branch to contain it.
-                if (undefined === json) {
+                if (undefined === json || null === json) {
                     f_meta = {};
                     f_meta[ƒm_version] = node[ƒ_version];
                     f_meta[ƒm_abs_path] = node[ƒ_abs_path];

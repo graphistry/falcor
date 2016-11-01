@@ -4421,9 +4421,9 @@ Model.prototype.invalidate = function invalidate() {
     args = [];
     while (++argsIdx < argsLen) {
         args[argsIdx] = arguments[argsIdx];
-        if (!Array.isArray(args[argsIdx])) {
-            throw new Error("Invalid argument");
-        }
+        // if (!Array.isArray(args[argsIdx])) {
+        //     throw new Error("Invalid argument");
+        // }
     }
 
     // creates the obs, subscribes and will throw the errors if encountered.
@@ -5678,7 +5678,7 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
                     f_meta["deref_from"] = refContainerAbsPath;
                 }
 
-                if (undefined === json) {
+                if (undefined === json || null === json) {
                     // Enable developers to instrument branch node creation by
                     // providing a custom function. If they do, delegate branch
                     // node creation to them.
@@ -5948,7 +5948,7 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
                 // The json value will initially be undefined. If we're here,
                 // then at least one leaf value was encountered, so create a
                 // branch to contain it.
-                if (undefined === json) {
+                if (undefined === json || null === json) {
                     f_meta = {};
                     f_meta["version"] = node["\u001eƒalcor_version"];
                     f_meta["abs_path"] = node["\u001eƒalcor_abs_path"];
