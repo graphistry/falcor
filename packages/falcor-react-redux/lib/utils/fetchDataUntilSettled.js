@@ -13,62 +13,105 @@ var _warning = require('warning');
 
 var _warning2 = _interopRequireDefault(_warning);
 
-var _rxjs = require('rxjs');
-
 var _pegjsUtil = require('pegjs-util');
 
 var _memoizeQueryies = require('./memoizeQueryies');
 
 var _memoizeQueryies2 = _interopRequireDefault(_memoizeQueryies);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _Observable = require('rxjs/Observable');
 
-function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+require('rxjs/add/operator/map');
+
+require('rxjs/add/operator/catch');
+
+require('rxjs/add/operator/expand');
+
+require('rxjs/add/observable/of');
+
+require('rxjs/add/observable/from');
+
+require('rxjs/add/observable/empty');
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var memoizedQuerySyntax = (0, _memoizeQueryies2.default)(100);
 
 function fetchDataUntilSettled(_ref) {
     var data = _ref.data;
+    var props = _ref.props;
     var falcor = _ref.falcor;
     var fragment = _ref.fragment;
 
-    var props = _objectWithoutProperties(_ref, ['data', 'falcor', 'fragment']);
 
-    return _rxjs.Observable.of({
-        prev: null, settled: false,
+    var memo = {
+        query: null, loading: true,
         version: falcor.getVersion(),
         data: data, props: props, falcor: falcor, fragment: fragment
-    }).expand(_fetchDataUntilSettled).takeLast(1);
+    };
+    memo.mapNext = handleNext(memo, falcor);
+    memo.catchError = handleError(memo, falcor);
+
+    return _Observable.Observable.of(memo).expand(_fetchDataUntilSettled);
 }
 
-function _fetchDataUntilSettled(state) {
-    if (state.settled === true) {
-        return _rxjs.Observable.empty();
+function _fetchDataUntilSettled(memo) {
+    if (memo.loading === false) {
+        return _Observable.Observable.empty();
     }
-    var falcor = state.falcor;
-    var fragment = state.fragment;
+    var query = memo.query;
+    var falcor = memo.falcor;
+    var version = memo.version;
+    var fragment = memo.fragment;
 
-    var query = fragment(state.data, state.props);
-    if (query !== state.prev || state.version !== falcor.getVersion()) {
-        var parsed = memoizedQuerySyntax(query);
-        if (parsed.error) {
-            (0, _warning2.default)(process.env.NODE_ENV !== 'development', (0, _pegjsUtil.errorMessage)(parsed.error));
-            (0, _warning2.default)(process.env.NODE_ENV !== 'development', 'Error parsing query: ' + query);
-            return _rxjs.Observable.of((0, _assign2.default)(state, {
-                error: parsed.error, settled: true, version: falcor.getVersion()
-            }));
+    if (query !== (memo.query = fragment(memo.data, memo.props)) || version !== (memo.version = falcor.getVersion())) {
+        var _memoizedQuerySyntax = memoizedQuerySyntax(memo.query);
+
+        var ast = _memoizedQuerySyntax.ast;
+        var error = _memoizedQuerySyntax.error;
+
+        if (error) {
+            return handleParseError(memo, error);
         }
-        return _rxjs.Observable.from(falcor.get(parsed.ast)).map(function (_ref2) {
-            var json = _ref2.json;
-            return (0, _assign2.default)(state, {
-                prev: query, data: json, version: falcor.getVersion()
-            });
-        }).catch(function (error) {
-            return _rxjs.Observable.of((0, _assign2.default)(state, {
-                error: error, settled: true, version: falcor.getVersion()
-            }));
-        });
+        return _Observable.Observable.from(falcor.get(ast)).map(memo.mapNext).catch(memo.catchError);
     }
-    return _rxjs.Observable.empty();
+    return _Observable.Observable.of({
+        loading: false,
+        data: memo.data,
+        version: memo.version
+    });
+}
+
+function handleNext(memo, falcor) {
+    return function mapNext(_ref2) {
+        var data = _ref2.json;
+
+        return (0, _assign2.default)(memo, {
+            data: data, loading: true,
+            version: falcor.getVersion()
+        });
+    };
+}
+
+function handleError(memo, falcor) {
+    return function catchError(error) {
+        return _Observable.Observable.of({
+            error: error,
+            data: memo.data,
+            loading: false,
+            version: falcor.getVersion()
+        });
+    };
+}
+
+function handleParseError(memo, error) {
+    (0, _warning2.default)(process.env.NODE_ENV !== 'development', (0, _pegjsUtil.errorMessage)(error));
+    (0, _warning2.default)(process.env.NODE_ENV !== 'development', 'Error parsing query: ' + memo.query);
+    return _Observable.Observable.of({
+        error: error,
+        loading: false,
+        data: memo.data,
+        version: memo.version
+    });
 }
 //# sourceMappingURL=fetchDataUntilSettled.js.map

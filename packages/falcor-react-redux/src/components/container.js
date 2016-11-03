@@ -1,4 +1,4 @@
-import { Subject } from 'rxjs';
+import invariant from 'invariant';
 import React, { PropTypes, Children } from 'react';
 import hoistStatics from 'recompose/hoistStatics';
 import shallowEqual from 'recompose/shallowEqual';
@@ -6,6 +6,107 @@ import mapToFalcorJSON from '../utils/mapToFalcorJSON';
 import wrapDisplayName from 'recompose/wrapDisplayName';
 import bindActionCreators from '../utils/bindActionCreators';
 import fetchDataUntilSettled from '../utils/fetchDataUntilSettled';
+
+import { Subject } from 'rxjs/Subject';
+import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/switchMap';
+
+const defaultMapFragmentToProps = (data) => data;
+const defaultMapDispatchToProps = (dispatch, props, falcor) => ({});
+const defaultMergeProps = (stateProps, dispatchProps, parentProps) => ({
+    ...parentProps, ...stateProps, ...dispatchProps
+});
+
+export default function container(fragmentDesc, ...rest) {
+
+    invariant(fragmentDesc && (
+        typeof fragmentDesc === 'function' || (
+        typeof fragmentDesc === 'object' &&
+        typeof fragmentDesc.fragment === 'function')),
+`Attempted to create a Falcor container component without a fragment.
+Falcor containers must be created with either a fragment function or an Object with a fragment function.`);
+
+    let renderLoading,
+        fragment, mapFragment,
+        mapDispatch, mapFragmentAndProps;
+
+    if (typeof fragmentDesc === 'object') {
+        fragment = fragmentDesc.fragment;
+        mapFragment = fragmentDesc.mapFragment;
+        renderLoading = fragmentDesc.renderLoading;
+        mapFragmentAndProps = fragmentDesc.mapFragmentAndProps;
+        mapDispatch = fragmentDesc.mapDispatch || fragmentDesc.dispatchers;
+    } else {
+        fragment = fragmentDesc;
+        mapFragment = rest[0];
+        mapDispatch = rest[1];
+        mapFragmentAndProps = rest[2];
+    }
+
+    mapFragment = mapFragment || defaultMapFragmentToProps;
+    mapDispatch = mapDispatch || defaultMapDispatchToProps;
+    mapFragmentAndProps = mapFragmentAndProps || defaultMergeProps;
+
+    if (typeof mapDispatch !== 'function') {
+        if (mapDispatch && typeof mapDispatch !== 'object') {
+            mapDispatch = defaultMapDispatchToProps;
+        } else {
+            mapDispatch = function(actionCreators) {
+                return function(dispatch, mappedFragment, falcor) {
+                    return bindActionCreators(actionCreators, dispatch, falcor);
+                };
+            }(mapDispatch);
+        }
+    }
+
+    return hoistStatics((BaseComponent) => class Container extends FalcorContainer {
+        static fragment = fragment;
+        static fragments = fragments;
+        static Component = BaseComponent;
+        static mapFragment = mapFragment;
+        static mapDispatch = mapDispatch;
+        static renderLoading = renderLoading;
+        static mapFragmentAndProps = mapFragmentAndProps;
+        static displayName = wrapDisplayName(BaseComponent, 'Container');
+    });
+}
+
+const fragments = function(items = []) {
+    if (!items || typeof items !== 'object') {
+        return `{ length }`;
+    } else if (!items.hasOwnProperty('length')) {
+        items = Object.keys(items).map((key) => items[key]);
+    }
+    return `{ length ${Array
+        .from(items, (xs, i) => xs)
+        .reduce((xs, x, i) => `${xs}, ${i}: ${this.fragment(x)}`, '')
+    }}`;
+}
+
+function derefEachPropUpdate(update) {
+    update.falcor = update.falcor.deref(
+        update.data = mapToFalcorJSON(update.data)
+    );
+    return update;
+}
+
+function fetchEachPropUpdate({ self, data, props, falcor }) {
+    const { fragment, renderLoading } = self;
+    return fetchDataUntilSettled({ data, props, falcor, fragment });
+        // .let((source) => renderLoading ? source : source.takeLast(1));
+}
+
+function mergeEachPropUpdate(
+    { props, falcor, dispatch },
+    { data, error, version, loading }
+) {
+    return {
+        ...props, falcor,
+        dispatch, version,
+        data, error, loading,
+        hash: data && data.$__hash
+    };
+}
 
 const contextTypes = {
     falcor: PropTypes.object,
@@ -22,38 +123,36 @@ class FalcorContainer extends React.Component {
 
         let { data } = props;
         let { falcor, dispatch } = context;
-        const { fragment, Component,
-                mergeFragmentAndProps,
-                mapFragment, mapDispatch } = this.constructor;
+        const { fragment,
+                Component,
+                mapFragment,
+                mapDispatch,
+                renderLoading,
+                mapFragmentAndProps
+        } = this.constructor;
 
         this.fragment = fragment;
         this.Component = Component;
         this.mapDispatch = mapDispatch;
         this.mapFragment = mapFragment;
-        this.mergeFragmentAndProps = mergeFragmentAndProps;
+        this.renderLoading = renderLoading;
+        this.mapFragmentAndProps = mapFragmentAndProps;
 
-        data = mapToFalcorJSON(data);
-        falcor = falcor.deref(data);
+        falcor = falcor.deref(data = mapToFalcorJSON(data));
+
         this.state = {
             ...props,
             hash: data.$__hash,
             data, falcor, dispatch,
             version: falcor.getVersion()
         };
+
         this.propsStream = new Subject();
         this.propsAction = this.propsStream
-            .map((({ data, falcor, ...rest }) => {
-                data = mapToFalcorJSON(data);
-                falcor = falcor.deref(data);
-                return { ...rest, data, falcor, fragment };
-            }))
-            .switchMap(fetchDataUntilSettled, (
-                { fragment, ...props },
-                { data, error, version }) => ({
-                    ...props,
-                    hash: data.$__hash,
-                    version, data, error,
-                })
+            .map(derefEachPropUpdate)
+            .switchMap(
+                fetchEachPropUpdate,
+                mergeEachPropUpdate
             );
     }
     getChildContext() {
@@ -73,84 +172,61 @@ class FalcorContainer extends React.Component {
     }
     componentWillReceiveProps(nextProps, nextContext) {
         // Receive new props from the owner
-        this.propsStream.next({ ...nextContext, ...nextProps });
+        this.propsStream.next({
+            self: this,
+            props: nextProps,
+            data: nextProps.data,
+            falcor: nextContext.falcor,
+            dispatch: nextContext.dispatch
+        });
     }
     componentWillMount() {
         // Subscribe to child prop changes so we know when to re-render
-        this.propsSubscription = this.propsAction.subscribe((nextProps) => {
-            this.setState(nextProps);
+        this.propsSubscription = this.propsAction.subscribe((nextState) => {
+            this.setState(nextState);
         });
-        this.propsStream.next({ ...this.context, ...this.props });
+        this.propsStream.next({
+            self: this,
+            props: this.props,
+            data: this.props.data,
+            falcor: this.context.falcor,
+            dispatch: this.context.dispatch
+        });
     }
     componentWillUnmount() {
         // Clean-up subscription before un-mounting
         this.propsSubscription.unsubscribe();
+        this.propsSubscription = undefined;
         this.fragment = null;
         this.Component = null;
         this.mapDispatch = null;
         this.mapFragment = null;
+        this.renderLoading = null;
         this.mergeFragmentAndProps = null;
     }
     render() {
 
         const { Component,
-                mergeFragmentAndProps,
+                renderLoading,
+                mapFragmentAndProps,
                 mapFragment, mapDispatch } = this;
+
+        if (!Component) {
+            return null;
+        }
 
         const { data, hash, error, falcor, version,
                 loading, dispatch, fragment, ...rest } = this.state;
 
         const mappedFragment = mapFragment(data, { error, ...rest });
-        const mappedDispatch = mapDispatch(dispatch, mappedFragment, falcor);
-        const allMergedProps = mergeFragmentAndProps(mappedFragment, mappedDispatch, rest);
 
-        return (
-            <Component { ...allMergedProps }/>
-        );
-    }
-}
-
-const defaultMapFragmentToProps = (data) => data;
-const defaultMapDispatchToProps = (dispatch, props, falcor) => ({});
-const defaultMergeProps = (stateProps, dispatchProps, parentProps) => ({
-    ...parentProps, ...stateProps, ...dispatchProps
-});
-const getFragments = function(items = []) {
-    if (!items || !items.hasOwnProperty('length')) {
-        return `{ [0]: ${this.fragment(items)} }`;
-    }
-    return `{${Array
-        .from(items, (xs, i) => xs)
-        .map((item, index) => `${index}: ${this.fragment(item)}`)
-        .join(',\n')
-    }}`;
-}
-
-export default function container(
-    getFragment,
-    mapFragment = defaultMapFragmentToProps,
-    mapDispatch = defaultMapDispatchToProps,
-    mergeFragmentAndProps = defaultMergeProps) {
-
-    if (typeof mapDispatch !== 'function') {
-        if (mapDispatch && typeof mapDispatch !== 'object') {
-            mapDispatch = defaultMapDispatchToProps;
-        } else {
-            mapDispatch = function(actionCreators) {
-                return function(dispatch, mappedFragment, falcor) {
-                    return bindActionCreators(actionCreators, dispatch, falcor);
-                };
-            }(mapDispatch)
+        if (loading && renderLoading) {
+            mappedFragment.loading = loading;
         }
-    }
 
-    return hoistStatics((BaseComponent) => class Container extends FalcorContainer {
-        static fragment = getFragment;
-        static fragments = getFragments;
-        static Component = BaseComponent;
-        static mapFragment = mapFragment;
-        static mapDispatch = mapDispatch;
-        static mergeFragmentAndProps = mergeFragmentAndProps;
-        static displayName = wrapDisplayName(BaseComponent, 'Container');
-    });
+        const mappedDispatch = mapDispatch(dispatch, mappedFragment, falcor);
+        const allMergedProps = mapFragmentAndProps(mappedFragment, mappedDispatch, rest);
+
+        return <Component { ...allMergedProps }/>;
+    }
 }

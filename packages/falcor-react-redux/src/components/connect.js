@@ -15,11 +15,18 @@ import bindActionCreators from '../utils/bindActionCreators';
 import setObservableConfig from 'recompose/setObservableConfig';
 import rxjsObservableConfig from 'recompose/rxjsObservableConfig';
 
-import { Observable, BehaviorSubject, Scheduler } from 'rxjs';
+import { Model } from '@graphistry/falcor';
 import React, { PropTypes, Children } from 'react';
 import { connect as connectRedux } from 'react-redux';
 
-import { Model } from '@graphistry/falcor';
+import { Observable } from 'rxjs/Observable';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { animationFrame } from 'rxjs/scheduler/animationFrame';
+
+import 'rxjs/add/operator/auditTime';
+import 'rxjs/add/operator/switchMap';
+import 'rxjs/add/operator/distinctUntilKeyChanged';
+
 Model.prototype.changes = function() {
     const { _root } = this;
     let { changes } = _root;
@@ -58,7 +65,7 @@ const connect = (BaseComponent) => compose(
             })
         )
         .distinctUntilKeyChanged('version')
-        .auditTime(0, Scheduler.animationFrame)
+        .auditTime(0, animationFrame)
     ),
     withContext(contextTypes, ({ falcor, dispatch }) => ({
         falcor, dispatch

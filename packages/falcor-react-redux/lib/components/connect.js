@@ -74,7 +74,7 @@ var _rxjsObservableConfig = require('recompose/rxjsObservableConfig');
 
 var _rxjsObservableConfig2 = _interopRequireDefault(_rxjsObservableConfig);
 
-var _rxjs = require('rxjs');
+var _falcor = require('@graphistry/falcor');
 
 var _react = require('react');
 
@@ -82,7 +82,17 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = require('react-redux');
 
-var _falcor = require('@graphistry/falcor');
+var _Observable = require('rxjs/Observable');
+
+var _BehaviorSubject = require('rxjs/BehaviorSubject');
+
+var _animationFrame = require('rxjs/scheduler/animationFrame');
+
+require('rxjs/add/operator/auditTime');
+
+require('rxjs/add/operator/switchMap');
+
+require('rxjs/add/operator/distinctUntilKeyChanged');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -96,7 +106,7 @@ _falcor.Model.prototype.changes = function () {
 
     if (!changes) {
         (function () {
-            changes = _root.changes = new _rxjs.BehaviorSubject(_this);
+            changes = _root.changes = new _BehaviorSubject.BehaviorSubject(_this);
             var onChange = _root.onChange;
 
             _root.onChange = function () {
@@ -132,7 +142,7 @@ var connect = function connect(BaseComponent) {
 
             return _extends({}, props, { falcor: falcor, version: falcor.getVersion()
             });
-        }).distinctUntilKeyChanged('version').auditTime(0, _rxjs.Scheduler.animationFrame);
+        }).distinctUntilKeyChanged('version').auditTime(0, _animationFrame.animationFrame);
     }), (0, _withContext2.default)(contextTypes, function (_ref4) {
         var falcor = _ref4.falcor;
         var dispatch = _ref4.dispatch;
