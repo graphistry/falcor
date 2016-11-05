@@ -15,7 +15,7 @@
   "dependencies": {
     "@graphistry/falcor-path-syntax": "^2.0.4",
     "@graphistry/falcor-path-utils": "^2.1.0",
-    "rxjs": ">=5.0.0-beta.12"
+    "rxjs": ">=5.0.0-rc.2"
   },
   "devDependencies": {
     "chai": "^2.3.0",
