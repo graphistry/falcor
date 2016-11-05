@@ -553,7 +553,7 @@ describe('DataSource and Partial Cache', function() {
             });
         }
 
-        it('should get invoked with the right arguments for branches in cache', function(done) {
+        xit('should get invoked with the right arguments for branches in cache', function(done) {
 
             // Cache has [lolomo,0,0,item]
             var testPath = ['lolomo',0,0,'item','errorPath'];
@@ -597,7 +597,7 @@ describe('DataSource and Partial Cache', function() {
                     });
         });
 
-        it('should get invoked with the right arguments for branches not in cache', function(done) {
+        xit('should get invoked with the right arguments for branches not in cache', function(done) {
 
             // Cache doesn't have [lolomo,1,0,item]
             var testPath = ['lolomo',1,0,'item','errorPath'];
@@ -642,7 +642,7 @@ describe('DataSource and Partial Cache', function() {
                     });
         });
 
-        it('should get invoked with the correct error paths for a keyset', function(done) {
+        xit('should get invoked with the correct error paths for a keyset', function(done) {
             var testPath = ['lolomo',[0,1],0,'item','errorPath'];
 
             var modelCache = M();

@@ -42,7 +42,7 @@ module.exports = function mergeJSONGraphNode(
             return node;
         }
 
-        // The messange and cache are both undefined, therefore return null.
+        // The message and cache are both undefined, return undefined.
         else if (message === undefined) {
             return message;
         }

@@ -11,7 +11,8 @@ module.exports = function complement(requested, optimized, tree) {
     var optimizedComplement = [];
     var requestedComplement = [];
     var requestedIntersection = [];
-    var intersectionLength = -1, complementLength = -1;
+    var optimizedIntersection = [];
+    var intersectionLength = 0, complementLength = -1;
     var intersectionFound = false;
 
     for (var i = 0, len = optimized.length; i < len; ++i) {
@@ -37,7 +38,8 @@ module.exports = function complement(requested, optimized, tree) {
                 optimizedComplement = optimized.slice(0, i);
             }
 
-            requestedIntersection[++intersectionLength] = requested[i];
+            requestedIntersection[intersectionLength] = requested[i];
+            optimizedIntersection[intersectionLength++] = optimized[i];
             intersectionFound = true;
         }
     }
@@ -46,5 +48,5 @@ module.exports = function complement(requested, optimized, tree) {
         return null;
     }
 
-    return [requestedIntersection, optimizedComplement, requestedComplement];
+    return [requestedIntersection, optimizedIntersection, optimizedComplement, requestedComplement];
 };

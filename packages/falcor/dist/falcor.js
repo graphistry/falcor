@@ -6829,7 +6829,8 @@ GetRequest.prototype = {
                     // If there is at least one callback remaining, then
                     // callback the callbacks.
                     if (self._count) {
-                        self._merge(rPaths, err, data);
+                        // self._merge(rPaths, err, data);
+                        self._merge(rPaths, oPaths, err, data);
 
                         // Call the callbacks.  The first one inserts all
                         // the data so that the rest do not have consider
@@ -6872,8 +6873,8 @@ GetRequest.prototype = {
         var requestedComplement;
 
         if (complementTuple) {
-            requestedComplement = complementTuple[2];
-            optimizedComplement = complementTuple[1];
+            requestedComplement = complementTuple[3];
+            optimizedComplement = complementTuple[2];
         } else {
             requestedComplement = requested;
             optimizedComplement = optimized;
@@ -6890,7 +6891,7 @@ GetRequest.prototype = {
             var idx = self._callbacks.length;
             self._callbacks[idx] = callback;
             self._requestedPaths[idx] = complementTuple[0];
-            self._optimizedPaths[idx] = [];
+            self._optimizedPaths[idx] = complementTuple[1];
             ++self._count;
 
             disposable = createDisposable(self, idx);
@@ -6902,7 +6903,8 @@ GetRequest.prototype = {
     /**
      * merges the response into the model"s cache.
      */
-    _merge: function _merge(requested, err, data) {
+    // _merge: function(requested, err, data) {
+    _merge: function _merge(requested, optimized, err, data) {
         var self = this;
         var model = self.requestQueue.model;
         var modelRoot = model._root;
@@ -6911,9 +6913,6 @@ GetRequest.prototype = {
         var boundPath = model._path;
 
         model._path = emptyArray;
-
-        // flatten all the requested paths, adds them to the
-        var nextPaths = flattenRequestedPaths(requested);
 
         // Insert errors in every requested position.
         if (err) {
@@ -6934,7 +6933,8 @@ GetRequest.prototype = {
                     };
                 }
 
-            var pathValues = nextPaths.map(function (x) {
+            // flatten all the requested paths, adds them to the
+            var pathValues = flattenPaths(requested).map(function (x) {
                 return {
                     path: x,
                     value: error
@@ -6946,8 +6946,8 @@ GetRequest.prototype = {
         // Insert the jsonGraph from the dataSource.
         else {
                 setJSONGraphs(model, [{
-                    paths: nextPaths,
-                    jsonGraph: data.jsonGraph
+                    jsonGraph: data.jsonGraph,
+                    paths: flattenPaths(optimized)
                 }], errorSelector, comparator);
             }
 
@@ -6980,11 +6980,11 @@ function createDisposable(request, idx) {
     };
 }
 
-function flattenRequestedPaths(requested) {
+function flattenPaths(listOfPaths) {
     var out = [];
     var outLen = -1;
-    for (var i = 0, len = requested.length; i < len; ++i) {
-        var paths = requested[i];
+    for (var i = 0, len = listOfPaths.length; i < len; ++i) {
+        var paths = listOfPaths[i];
         for (var j = 0, innerLen = paths.length; j < innerLen; ++j) {
             out[++outLen] = paths[j];
         }
@@ -7182,7 +7182,8 @@ module.exports = function complement(requested, optimized, tree) {
     var optimizedComplement = [];
     var requestedComplement = [];
     var requestedIntersection = [];
-    var intersectionLength = -1,
+    var optimizedIntersection = [];
+    var intersectionLength = 0,
         complementLength = -1;
     var intersectionFound = false;
 
@@ -7209,7 +7210,8 @@ module.exports = function complement(requested, optimized, tree) {
                 optimizedComplement = optimized.slice(0, i);
             }
 
-            requestedIntersection[++intersectionLength] = requested[i];
+            requestedIntersection[intersectionLength] = requested[i];
+            optimizedIntersection[intersectionLength++] = optimized[i];
             intersectionFound = true;
         }
     }
@@ -7218,7 +7220,7 @@ module.exports = function complement(requested, optimized, tree) {
         return null;
     }
 
-    return [requestedIntersection, optimizedComplement, requestedComplement];
+    return [requestedIntersection, optimizedIntersection, optimizedComplement, requestedComplement];
 };
 
 /***/ },
@@ -8260,7 +8262,7 @@ module.exports = function mergeJSONGraphNode(parent, node, message, key, request
             return node;
         }
 
-        // The messange and cache are both undefined, therefore return null.
+        // The message and cache are both undefined, return undefined.
         else if (message === undefined) {
                 return message;
             } else {
