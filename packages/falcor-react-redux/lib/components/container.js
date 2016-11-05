@@ -88,8 +88,6 @@ require('rxjs/add/operator/switchMap');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -110,7 +108,8 @@ function container(fragmentDesc) {
 
     (0, _invariant2.default)(fragmentDesc && (typeof fragmentDesc === 'function' || (typeof fragmentDesc === 'undefined' ? 'undefined' : _typeof(fragmentDesc)) === 'object' && typeof fragmentDesc.fragment === 'function'), 'Attempted to create a Falcor container component without a fragment.\nFalcor containers must be created with either a fragment function or an Object with a fragment function.');
 
-    var renderLoading = void 0,
+    var renderErrors = void 0,
+        renderLoading = void 0,
         fragment = void 0,
         mapFragment = void 0,
         mapDispatch = void 0,
@@ -119,6 +118,7 @@ function container(fragmentDesc) {
     if ((typeof fragmentDesc === 'undefined' ? 'undefined' : _typeof(fragmentDesc)) === 'object') {
         fragment = fragmentDesc.fragment;
         mapFragment = fragmentDesc.mapFragment;
+        renderErrors = fragmentDesc.renderErrors;
         renderLoading = fragmentDesc.renderLoading;
         mapFragmentAndProps = fragmentDesc.mapFragmentAndProps;
         mapDispatch = fragmentDesc.mapDispatch || fragmentDesc.dispatchers;
@@ -158,7 +158,7 @@ function container(fragmentDesc) {
             }
 
             return Container;
-        }(FalcorContainer), _class.fragment = fragment, _class.fragments = fragments, _class.Component = BaseComponent, _class.mapFragment = mapFragment, _class.mapDispatch = mapDispatch, _class.renderLoading = renderLoading, _class.mapFragmentAndProps = mapFragmentAndProps, _class.displayName = (0, _wrapDisplayName2.default)(BaseComponent, 'Container'), _temp;
+        }(FalcorContainer), _class.fragment = fragment, _class.fragments = fragments, _class.Component = BaseComponent, _class.mapFragment = mapFragment, _class.mapDispatch = mapDispatch, _class.renderErrors = renderErrors, _class.renderLoading = renderLoading, _class.mapFragmentAndProps = mapFragmentAndProps, _class.displayName = (0, _wrapDisplayName2.default)(BaseComponent, 'Container'), _temp;
     });
 }
 
@@ -182,7 +182,13 @@ var fragments = function fragments() {
 };
 
 function derefEachPropUpdate(update) {
-    update.falcor = update.falcor.deref(update.data = (0, _mapToFalcorJSON2.default)(update.data));
+    var data = update.data;
+    var falcor = update.falcor;
+
+    update.data = data = (0, _mapToFalcorJSON2.default)(data);
+    if (!falcor._node || falcor._node !== data) {
+        update.falcor = falcor.deref(data);
+    }
     return update;
 }
 
@@ -194,8 +200,11 @@ function fetchEachPropUpdate(_ref) {
     var fragment = self.fragment;
     var renderLoading = self.renderLoading;
 
-    return (0, _fetchDataUntilSettled2.default)({ data: data, props: props, falcor: falcor, fragment: fragment });
-    // .let((source) => renderLoading ? source : source.takeLast(1));
+    return (0, _fetchDataUntilSettled2.default)({
+        data: data, props: props, falcor: falcor, fragment: fragment
+    }).let(function (source) {
+        return renderLoading ? source : source.takeLast(1);
+    });
 }
 
 function mergeEachPropUpdate(_ref2, _ref3) {
@@ -207,11 +216,11 @@ function mergeEachPropUpdate(_ref2, _ref3) {
     var version = _ref3.version;
     var loading = _ref3.loading;
 
-    return _extends({}, props, { falcor: falcor,
-        dispatch: dispatch, version: version,
+    return {
         data: data, error: error, loading: loading,
+        falcor: falcor, dispatch: dispatch, version: version,
         hash: data && data.$__hash
-    });
+    };
 }
 
 var contextTypes = {
@@ -235,6 +244,7 @@ var FalcorContainer = function (_React$Component) {
         var Component = _this3$constructor.Component;
         var mapFragment = _this3$constructor.mapFragment;
         var mapDispatch = _this3$constructor.mapDispatch;
+        var renderErrors = _this3$constructor.renderErrors;
         var renderLoading = _this3$constructor.renderLoading;
         var mapFragmentAndProps = _this3$constructor.mapFragmentAndProps;
 
@@ -243,16 +253,17 @@ var FalcorContainer = function (_React$Component) {
         _this3.Component = Component;
         _this3.mapDispatch = mapDispatch;
         _this3.mapFragment = mapFragment;
+        _this3.renderErrors = renderErrors;
         _this3.renderLoading = renderLoading;
         _this3.mapFragmentAndProps = mapFragmentAndProps;
 
         falcor = falcor.deref(data = (0, _mapToFalcorJSON2.default)(data));
 
-        _this3.state = _extends({}, props, {
+        _this3.state = {
             hash: data.$__hash,
             data: data, falcor: falcor, dispatch: dispatch,
             version: falcor.getVersion()
-        });
+        };
 
         _this3.propsStream = new _Subject.Subject();
         _this3.propsAction = _this3.propsStream.map(derefEachPropUpdate).switchMap(fetchEachPropUpdate, mergeEachPropUpdate);
@@ -272,17 +283,11 @@ var FalcorContainer = function (_React$Component) {
         key: 'shouldComponentUpdate',
         value: function shouldComponentUpdate(nextProps, nextState, nextContext) {
             var nextJSON = nextProps.data;
+            var thisJSON = nextState.data;
+            var thisHash = nextState.hash;
+            var thisVersion = nextState.version;
 
-            var restNextProps = _objectWithoutProperties(nextProps, ['data']);
-
-            var _state2 = this.state;
-            var thisJSON = _state2.data;
-            var thisHash = _state2.hash;
-            var thisVersion = _state2.version;
-
-            var restState = _objectWithoutProperties(_state2, ['data', 'hash', 'version']);
-
-            return !(thisJSON && nextJSON && thisHash === nextJSON.$__hash && thisVersion === nextJSON.$__version && (0, _shallowEqual2.default)(restState, restNextProps));
+            return !(thisJSON && nextJSON && thisHash === nextJSON.$__hash && thisVersion === nextJSON.$__version && (0, _shallowEqual2.default)(this.state, nextState));
         }
     }, {
         key: 'componentWillReceiveProps',
@@ -330,6 +335,9 @@ var FalcorContainer = function (_React$Component) {
         key: 'render',
         value: function render() {
             var Component = this.Component;
+            var props = this.props;
+            var state = this.state;
+            var renderErrors = this.renderErrors;
             var renderLoading = this.renderLoading;
             var mapFragmentAndProps = this.mapFragmentAndProps;
             var mapFragment = this.mapFragment;
@@ -340,26 +348,25 @@ var FalcorContainer = function (_React$Component) {
                 return null;
             }
 
-            var _state3 = this.state;
-            var data = _state3.data;
-            var hash = _state3.hash;
-            var error = _state3.error;
-            var falcor = _state3.falcor;
-            var version = _state3.version;
-            var loading = _state3.loading;
-            var dispatch = _state3.dispatch;
-            var fragment = _state3.fragment;
+            var data = state.data;
+            var error = state.error;
+            var loading = state.loading;
+            var falcor = state.falcor;
+            var dispatch = state.dispatch;
 
-            var rest = _objectWithoutProperties(_state3, ['data', 'hash', 'error', 'falcor', 'version', 'loading', 'dispatch', 'fragment']);
 
-            var mappedFragment = mapFragment(data, _extends({ error: error }, rest));
+            var mappedFragment = mapFragment(data, props);
 
-            if (loading && renderLoading) {
+            if (error && renderErrors === true) {
+                mappedFragment.error = error;
+            }
+
+            if (loading && renderLoading === true) {
                 mappedFragment.loading = loading;
             }
 
             var mappedDispatch = mapDispatch(dispatch, mappedFragment, falcor);
-            var allMergedProps = mapFragmentAndProps(mappedFragment, mappedDispatch, rest);
+            var allMergedProps = mapFragmentAndProps(mappedFragment, mappedDispatch, props);
 
             return _react2.default.createElement(Component, allMergedProps);
         }

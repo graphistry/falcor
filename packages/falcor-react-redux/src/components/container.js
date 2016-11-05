@@ -26,13 +26,15 @@ export default function container(fragmentDesc, ...rest) {
 `Attempted to create a Falcor container component without a fragment.
 Falcor containers must be created with either a fragment function or an Object with a fragment function.`);
 
-    let renderLoading,
+    let renderErrors,
+        renderLoading,
         fragment, mapFragment,
         mapDispatch, mapFragmentAndProps;
 
     if (typeof fragmentDesc === 'object') {
         fragment = fragmentDesc.fragment;
         mapFragment = fragmentDesc.mapFragment;
+        renderErrors = fragmentDesc.renderErrors;
         renderLoading = fragmentDesc.renderLoading;
         mapFragmentAndProps = fragmentDesc.mapFragmentAndProps;
         mapDispatch = fragmentDesc.mapDispatch || fragmentDesc.dispatchers;
@@ -65,6 +67,7 @@ Falcor containers must be created with either a fragment function or an Object w
         static Component = BaseComponent;
         static mapFragment = mapFragment;
         static mapDispatch = mapDispatch;
+        static renderErrors = renderErrors;
         static renderLoading = renderLoading;
         static mapFragmentAndProps = mapFragmentAndProps;
         static displayName = wrapDisplayName(BaseComponent, 'Container');
@@ -84,16 +87,21 @@ const fragments = function(items = []) {
 }
 
 function derefEachPropUpdate(update) {
-    update.falcor = update.falcor.deref(
-        update.data = mapToFalcorJSON(update.data)
-    );
+    let { data, falcor } = update;
+    update.data = data = mapToFalcorJSON(data);
+    if (!falcor._node || falcor._node !== data) {
+        update.falcor = falcor.deref(data);
+    }
     return update;
 }
 
 function fetchEachPropUpdate({ self, data, props, falcor }) {
     const { fragment, renderLoading } = self;
-    return fetchDataUntilSettled({ data, props, falcor, fragment });
-        // .let((source) => renderLoading ? source : source.takeLast(1));
+    return fetchDataUntilSettled({
+        data, props, falcor, fragment
+    }).let((source) =>
+        renderLoading ? source : source.takeLast(1)
+    );
 }
 
 function mergeEachPropUpdate(
@@ -101,9 +109,8 @@ function mergeEachPropUpdate(
     { data, error, version, loading }
 ) {
     return {
-        ...props, falcor,
-        dispatch, version,
         data, error, loading,
+        falcor, dispatch, version,
         hash: data && data.$__hash
     };
 }
@@ -127,6 +134,7 @@ class FalcorContainer extends React.Component {
                 Component,
                 mapFragment,
                 mapDispatch,
+                renderErrors,
                 renderLoading,
                 mapFragmentAndProps
         } = this.constructor;
@@ -135,13 +143,13 @@ class FalcorContainer extends React.Component {
         this.Component = Component;
         this.mapDispatch = mapDispatch;
         this.mapFragment = mapFragment;
+        this.renderErrors = renderErrors;
         this.renderLoading = renderLoading;
         this.mapFragmentAndProps = mapFragmentAndProps;
 
         falcor = falcor.deref(data = mapToFalcorJSON(data));
 
         this.state = {
-            ...props,
             hash: data.$__hash,
             data, falcor, dispatch,
             version: falcor.getVersion()
@@ -160,14 +168,14 @@ class FalcorContainer extends React.Component {
         return { falcor, dispatch };
     }
     shouldComponentUpdate(nextProps, nextState, nextContext) {
-        const { data: nextJSON, ...restNextProps } = nextProps;
+        const { data: nextJSON } = nextProps;
         const { data: thisJSON, hash: thisHash,
-                version: thisVersion, ...restState } = this.state;
+                version: thisVersion } = nextState;
         return !(
-            thisJSON && nextJSON && (
-            thisHash === nextJSON.$__hash) && (
-            thisVersion === nextJSON.$__version) &&
-            shallowEqual(restState, restNextProps)
+            thisJSON && nextJSON &&
+            thisHash === nextJSON.$__hash &&
+            thisVersion === nextJSON.$__version &&
+            shallowEqual(this.state, nextState)
         );
     }
     componentWillReceiveProps(nextProps, nextContext) {
@@ -207,6 +215,8 @@ class FalcorContainer extends React.Component {
     render() {
 
         const { Component,
+                props, state,
+                renderErrors,
                 renderLoading,
                 mapFragmentAndProps,
                 mapFragment, mapDispatch } = this;
@@ -215,17 +225,20 @@ class FalcorContainer extends React.Component {
             return null;
         }
 
-        const { data, hash, error, falcor, version,
-                loading, dispatch, fragment, ...rest } = this.state;
+        const { data, error, loading, falcor, dispatch } = state;
 
-        const mappedFragment = mapFragment(data, { error, ...rest });
+        const mappedFragment = mapFragment(data, props);
 
-        if (loading && renderLoading) {
+        if (error && renderErrors === true) {
+            mappedFragment.error = error;
+        }
+
+        if (loading && renderLoading === true) {
             mappedFragment.loading = loading;
         }
 
         const mappedDispatch = mapDispatch(dispatch, mappedFragment, falcor);
-        const allMergedProps = mapFragmentAndProps(mappedFragment, mappedDispatch, rest);
+        const allMergedProps = mapFragmentAndProps(mappedFragment, mappedDispatch, props);
 
         return <Component { ...allMergedProps }/>;
     }
