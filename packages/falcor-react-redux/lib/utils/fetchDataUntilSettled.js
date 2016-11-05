@@ -105,8 +105,10 @@ function handleError(memo, falcor) {
 }
 
 function handleParseError(memo, error) {
-    (0, _warning2.default)(process.env.NODE_ENV !== 'development', (0, _pegjsUtil.errorMessage)(error));
-    (0, _warning2.default)(process.env.NODE_ENV !== 'development', 'Error parsing query: ' + memo.query);
+    if (typeof console !== 'undefined' && typeof console.error === 'function') {
+        console.error((0, _pegjsUtil.errorMessage)(error));
+        console.error('Error parsing query: ' + memo.query);
+    }
     return _Observable.Observable.of({
         error: error,
         loading: false,

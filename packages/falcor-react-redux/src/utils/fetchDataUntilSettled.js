@@ -70,8 +70,10 @@ function handleError(memo, falcor) {
 }
 
 function handleParseError(memo, error) {
-    warning(process.env.NODE_ENV !== 'development', errorMessage(error));
-    warning(process.env.NODE_ENV !== 'development', `Error parsing query: ${memo.query}`);
+    if (typeof console !== 'undefined' && typeof console.error === 'function') {
+        console.error(errorMessage(error));
+        console.error(`Error parsing query: ${memo.query}`);
+    }
     return Observable.of({
         error,
         loading: false,
