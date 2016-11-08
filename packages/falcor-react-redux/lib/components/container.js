@@ -4,13 +4,13 @@ var _from = require('babel-runtime/core-js/array/from');
 
 var _from2 = _interopRequireDefault(_from);
 
-var _keys = require('babel-runtime/core-js/object/keys');
-
-var _keys2 = _interopRequireDefault(_keys);
-
 var _getPrototypeOf = require('babel-runtime/core-js/object/get-prototype-of');
 
 var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+
+var _keys = require('babel-runtime/core-js/object/keys');
+
+var _keys2 = _interopRequireDefault(_keys);
 
 var _setPrototypeOf = require('babel-runtime/core-js/object/set-prototype-of');
 
@@ -72,10 +72,6 @@ var _wrapDisplayName = require('recompose/wrapDisplayName');
 
 var _wrapDisplayName2 = _interopRequireDefault(_wrapDisplayName);
 
-var _bindActionCreators = require('../utils/bindActionCreators');
-
-var _bindActionCreators2 = _interopRequireDefault(_bindActionCreators);
-
 var _fetchDataUntilSettled = require('../utils/fetchDataUntilSettled');
 
 var _fetchDataUntilSettled2 = _interopRequireDefault(_fetchDataUntilSettled);
@@ -87,6 +83,8 @@ require('rxjs/add/operator/map');
 require('rxjs/add/operator/switchMap');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -108,8 +106,8 @@ function container(fragmentDesc) {
 
     (0, _invariant2.default)(fragmentDesc && (typeof fragmentDesc === 'function' || (typeof fragmentDesc === 'undefined' ? 'undefined' : _typeof(fragmentDesc)) === 'object' && typeof fragmentDesc.fragment === 'function'), 'Attempted to create a Falcor container component without a fragment.\nFalcor containers must be created with either a fragment function or an Object with a fragment function.');
 
-    var renderErrors = void 0,
-        renderLoading = void 0,
+    var renderErrors = false,
+        renderLoading = false,
         fragment = void 0,
         mapFragment = void 0,
         mapDispatch = void 0,
@@ -138,8 +136,18 @@ function container(fragmentDesc) {
             mapDispatch = defaultMapDispatchToProps;
         } else {
             mapDispatch = function (actionCreators) {
-                return function (dispatch, mappedFragment, falcor) {
-                    return (0, _bindActionCreators2.default)(actionCreators, dispatch, falcor);
+                return function (container) {
+                    return (0, _keys2.default)(actionCreators).reduce(function (dispatchers, key) {
+                        var actionCreator = actionCreators[key];
+                        dispatchers[key] = function () {
+                            var _container$state = container.state;
+                            var falcor = _container$state.falcor;
+                            var dispatch = _container$state.dispatch;
+
+                            return dispatch(_extends({ falcor: falcor }, actionCreator.apply(undefined, arguments)));
+                        };
+                        return dispatchers;
+                    }, {});
                 };
             }(mapDispatch);
         }
@@ -193,17 +201,17 @@ function derefEachPropUpdate(update) {
 }
 
 function fetchEachPropUpdate(_ref) {
-    var self = _ref.self;
+    var container = _ref.container;
     var data = _ref.data;
     var props = _ref.props;
     var falcor = _ref.falcor;
-    var fragment = self.fragment;
-    var renderLoading = self.renderLoading;
+    var fragment = container.fragment;
+    var renderLoading = container.renderLoading;
 
     return (0, _fetchDataUntilSettled2.default)({
         data: data, props: props, falcor: falcor, fragment: fragment
     }).let(function (source) {
-        return renderLoading ? source : source.takeLast(1);
+        return renderLoading === true ? source : source.takeLast(1);
     });
 }
 
@@ -251,10 +259,10 @@ var FalcorContainer = function (_React$Component) {
 
         _this3.fragment = fragment;
         _this3.Component = Component;
-        _this3.mapDispatch = mapDispatch;
         _this3.mapFragment = mapFragment;
         _this3.renderErrors = renderErrors;
         _this3.renderLoading = renderLoading;
+        _this3.dispatchers = mapDispatch(_this3);
         _this3.mapFragmentAndProps = mapFragmentAndProps;
 
         falcor = falcor.deref(data = (0, _mapToFalcorJSON2.default)(data));
@@ -282,19 +290,50 @@ var FalcorContainer = function (_React$Component) {
     }, {
         key: 'shouldComponentUpdate',
         value: function shouldComponentUpdate(nextProps, nextState, nextContext) {
-            var nextJSON = nextProps.data;
-            var thisJSON = nextState.data;
-            var thisHash = nextState.hash;
-            var thisVersion = nextState.version;
+            var _props = this.props;
+            var currProps = _props === undefined ? {} : _props;
+            var _state2 = this.state;
+            var currState = _state2 === undefined ? {} : _state2;
 
-            return !(thisJSON && nextJSON && thisHash === nextJSON.$__hash && thisVersion === nextJSON.$__version && (0, _shallowEqual2.default)(this.state, nextState));
+
+            if (this.renderLoading === true && currState.loading !== nextState.loading) {
+                return true;
+            } else if (currState.version !== nextState.version) {
+                return true;
+            } else if (currState.error !== nextState.error) {
+                return true;
+            } else if (currState.hash !== nextState.hash) {
+                return true;
+            }
+
+            var currData = currProps.data;
+            var _currProps$style = currProps.style;
+            var currStyle = _currProps$style === undefined ? {} : _currProps$style;
+
+            var restCurrProps = _objectWithoutProperties(currProps, ['data', 'style']);
+
+            var nextData = nextProps.data;
+            var _nextProps$style = nextProps.style;
+            var nextStyle = _nextProps$style === undefined ? currStyle : _nextProps$style;
+
+            var restNextProps = _objectWithoutProperties(nextProps, ['data', 'style']);
+
+            if (!(0, _shallowEqual2.default)(currData, nextData)) {
+                return true;
+            } else if (!(0, _shallowEqual2.default)(currStyle, nextStyle)) {
+                return true;
+            } else if (!(0, _shallowEqual2.default)(restCurrProps, restNextProps)) {
+                return true;
+            }
+
+            return false;
         }
     }, {
         key: 'componentWillReceiveProps',
         value: function componentWillReceiveProps(nextProps, nextContext) {
             // Receive new props from the owner
             this.propsStream.next({
-                self: this,
+                container: this,
                 props: nextProps,
                 data: nextProps.data,
                 falcor: nextContext.falcor,
@@ -311,13 +350,29 @@ var FalcorContainer = function (_React$Component) {
                 _this4.setState(nextState);
             });
             this.propsStream.next({
-                self: this,
+                container: this,
                 props: this.props,
                 data: this.props.data,
                 falcor: this.context.falcor,
                 dispatch: this.context.dispatch
             });
         }
+        // componentWillUpdate() {
+        //     const { state = {} } = this;
+        //     const { falcor } = state;
+        //     if (falcor) {
+        //         const pathString = falcor.getPath().reduce((xs, key, idx) => {
+        //             if (idx === 0) {
+        //                 return key;
+        //             } else if (typeof key === 'number') {
+        //                 return `${xs}[${key}]`;
+        //             }
+        //             return `${xs}['${key}']`;
+        //         }, '');
+        //         console.log(`cwu:`, pathString);
+        //     }
+        // }
+
     }, {
         key: 'componentWillUnmount',
         value: function componentWillUnmount() {
@@ -326,6 +381,7 @@ var FalcorContainer = function (_React$Component) {
             this.propsSubscription = undefined;
             this.fragment = null;
             this.Component = null;
+            this.dispatchers = null;
             this.mapDispatch = null;
             this.mapFragment = null;
             this.renderLoading = null;
@@ -335,13 +391,13 @@ var FalcorContainer = function (_React$Component) {
         key: 'render',
         value: function render() {
             var Component = this.Component;
+            var dispatchers = this.dispatchers;
+            var mapFragment = this.mapFragment;
             var props = this.props;
             var state = this.state;
             var renderErrors = this.renderErrors;
             var renderLoading = this.renderLoading;
             var mapFragmentAndProps = this.mapFragmentAndProps;
-            var mapFragment = this.mapFragment;
-            var mapDispatch = this.mapDispatch;
 
 
             if (!Component) {
@@ -357,16 +413,15 @@ var FalcorContainer = function (_React$Component) {
 
             var mappedFragment = mapFragment(data, props);
 
+            var allMergedProps = mapFragmentAndProps(mappedFragment, dispatchers, props);
+
             if (error && renderErrors === true) {
-                mappedFragment.error = error;
+                allMergedProps.error = error;
             }
 
             if (loading && renderLoading === true) {
-                mappedFragment.loading = loading;
+                allMergedProps.loading = loading;
             }
-
-            var mappedDispatch = mapDispatch(dispatch, mappedFragment, falcor);
-            var allMergedProps = mapFragmentAndProps(mappedFragment, mappedDispatch, props);
 
             return _react2.default.createElement(Component, allMergedProps);
         }
