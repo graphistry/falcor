@@ -22,9 +22,7 @@ module.exports = function checkCacheAndReport(model, requestedPaths, observer,
                                               progressive, isJSONG, seed,
                                               errors, recycleJSON) {
 
-    var recycledJSONSeed, f_meta, originalHashCode;
     var originalSeed, isSeedImmutable = progressive && !isJSONG && seed;
-    var shouldRecycleJSONSeed = !isJSONG && !progressive && recycleJSON;
 
     // If we request paths as JSON in progressive mode, ensure each progressive
     // valueNode is immutable. If not in progressive mode, we can write into the
@@ -32,10 +30,6 @@ module.exports = function checkCacheAndReport(model, requestedPaths, observer,
     if (isSeedImmutable) {
         originalSeed = seed[0];
         seed[0] = {};
-    } else if (shouldRecycleJSONSeed && seed[0] && (
-               recycledJSONSeed = seed[0].json) && (
-               f_meta = recycledJSONSeed[ƒ_meta])) {
-        originalHashCode = f_meta["$code"];
     }
 
     // checks the cache for the data.
@@ -112,12 +106,6 @@ module.exports = function checkCacheAndReport(model, requestedPaths, observer,
         }
 
         return null;
-    }
-
-    if (shouldRecycleJSONSeed && seed[0] && (
-        recycledJSONSeed = seed[0].json) && (
-        f_meta = recycledJSONSeed[ƒ_meta])) {
-        f_meta["$code"] = originalHashCode;
     }
 
     // Return the results object.

@@ -3036,10 +3036,8 @@ var getWithPathsAsJSONGraph = gets.getWithPathsAsJSONGraph;
  */
 module.exports = function checkCacheAndReport(model, requestedPaths, observer, progressive, isJSONG, seed, errors, recycleJSON) {
 
-    var recycledJSONSeed, f_meta, originalHashCode;
     var originalSeed,
         isSeedImmutable = progressive && !isJSONG && seed;
-    var shouldRecycleJSONSeed = !isJSONG && !progressive && recycleJSON;
 
     // If we request paths as JSON in progressive mode, ensure each progressive
     // valueNode is immutable. If not in progressive mode, we can write into the
@@ -3047,8 +3045,6 @@ module.exports = function checkCacheAndReport(model, requestedPaths, observer, p
     if (isSeedImmutable) {
         originalSeed = seed[0];
         seed[0] = {};
-    } else if (shouldRecycleJSONSeed && seed[0] && (recycledJSONSeed = seed[0].json) && (f_meta = recycledJSONSeed["\u001eƒalcor_metadata"])) {
-        originalHashCode = f_meta["$code"];
     }
 
     // checks the cache for the data.
@@ -3123,10 +3119,6 @@ module.exports = function checkCacheAndReport(model, requestedPaths, observer, p
         }
 
         return null;
-    }
-
-    if (shouldRecycleJSONSeed && seed[0] && (recycledJSONSeed = seed[0].json) && (f_meta = recycledJSONSeed["\u001eƒalcor_metadata"])) {
-        f_meta["$code"] = originalHashCode;
     }
 
     // Return the results object.
@@ -5437,8 +5429,11 @@ function getJSON(model, paths, values, forceUsePathWalk) {
         if (isArray(path = paths)) {
             path = computeFlatBufferHash(toFlatBuffer(paths));
         }
-        json = walkFlatBufferAndBuildOutput(cache, node, json, path, 0, seed, results, requestedPath, optimizedPath, optimizedLength,
+        var arr = walkFlatBufferAndBuildOutput(cache, node, json, path, 0, seed, results, requestedPath, optimizedPath, optimizedLength,
         /* fromReference = */false, referenceContainer, modelRoot, expired, branchSelector, boxValues, materialized, hasDataSource, treatErrorsAsValues, allowFromWhenceYouCame);
+        json = arr[0];
+        arr[0] = undefined;
+        arr[1] = undefined;
     } else {
         var pathsIndex = -1,
             pathsCount = paths.length;
@@ -5495,6 +5490,7 @@ function onError(node, depth, results, requestedPath, fromReference, boxValues) 
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
+var arr = new Array(2);
 var onValue = __webpack_require__(52);
 var $ref = __webpack_require__(0);
 var FalcorJSON = __webpack_require__(28);
@@ -5521,7 +5517,9 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
     // If there's nowhere to go, we've reached a terminal node, or hit
     // the end of the path, stop now. Either build missing paths or report the value.
     if (undefined === node || undefined !== (type = node.$type) || undefined === path) {
-        return onValueType(node, type, path, depth, seed, results, requestedPath, depth, optimizedPath, optimizedLength, fromReference, modelRoot, expired, boxValues, materialized, hasDataSource, treatErrorsAsValues, onValue, onMissing);
+        arr[1] = false;
+        arr[0] = onValueType(node, type, path, depth, seed, results, requestedPath, depth, optimizedPath, optimizedLength, fromReference, modelRoot, expired, boxValues, materialized, hasDataSource, treatErrorsAsValues, onValue, onMissing);
+        return arr;
     }
 
     var f_meta,
@@ -5555,7 +5553,9 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
             json.__proto__ = new FalcorJSON(f_meta);
         } else if (f_meta["version"] === node["\u001eƒalcor_version"] && f_meta["$code"] === path["$code"] && f_meta["abs_path"] === node["\u001eƒalcor_abs_path"]) {
             results.hasValue = true;
-            return json;
+            arr[0] = json;
+            arr[1] = false;
+            return arr;
         }
         f_old_keys = f_meta["keys"];
         f_meta["version"] = node["\u001eƒalcor_version"];
@@ -5568,13 +5568,16 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
 
     var keysIndex = -1;
     var keysLength = keys.length;
-    var nextPath, nextPathKey, hasNextMissingPath, nextMeta, nextMetaPath;
+    var nextPath,
+        nextPathKey,
+        hasMissingPath = false,
+        nextMeta,
+        nextMetaPath;
 
     iteratingKeyset: while (++keysIndex < keysLength) {
 
         keyset = keys[keysIndex];
         nextPath = path[keysIndex];
-        hasNextMissingPath = false;
         nextMeta = undefined;
         nextMetaPath = undefined;
 
@@ -5650,7 +5653,10 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
 
             // Continue following the path
 
-            nextJSON = walkPathAndBuildOutput(cacheRoot, next, nextJSON, nextPath, nextDepth, seed, results, requestedPath, nextOptimizedPath, nextOptimizedLength, fromReference, nextReferenceContainer, modelRoot, expired, branchSelector, boxValues, materialized, hasDataSource, treatErrorsAsValues, allowFromWhenceYouCame);
+            arr = walkPathAndBuildOutput(cacheRoot, next, nextJSON, nextPath, nextDepth, seed, results, requestedPath, nextOptimizedPath, nextOptimizedLength, fromReference, nextReferenceContainer, modelRoot, expired, branchSelector, boxValues, materialized, hasDataSource, treatErrorsAsValues, allowFromWhenceYouCame);
+
+            nextJSON = arr[0];
+            hasMissingPath = hasMissingPath || arr[1];
 
             // Inspect the return value from the step and determine whether to
             // create or write into the JSON branch at this level.
@@ -5700,20 +5706,26 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
                 json[nextKey] = nextJSON;
             } else if (json && json.hasOwnProperty(nextKey)) {
                 delete json[nextKey];
-                hasNextMissingPath = true;
+                hasMissingPath = true;
             } else {
-                hasNextMissingPath = true;
+                hasMissingPath = true;
             }
         }
         // Re-enter the inner loop and continue iterating the Range, or exit
         // here if we encountered a Key.
         while (keyIsRange && ++nextKey <= rangeEnd);
 
-        if (hasNextMissingPath === true || undefined === nextPath) {
-            f_code = "" + getHashCode("" + f_code + nextPathKey);
-        } else {
-            f_code = "" + getHashCode("" + f_code + nextPathKey + nextPath["$code"]);
+        if (!hasMissingPath) {
+            if (undefined === nextPath) {
+                f_code = "" + getHashCode("" + f_code + nextPathKey);
+            } else {
+                f_code = "" + getHashCode("" + f_code + nextPathKey + nextPath["$code"]);
+            }
         }
+    }
+
+    if (hasMissingPath) {
+        f_code = "__incomplete__";
     }
 
     if (f_meta) {
@@ -5729,7 +5741,11 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
     }
 
     // `json` will either be a branch, or undefined if all paths were cache misses
-    return json;
+
+    arr[0] = json;
+    arr[1] = hasMissingPath;
+
+    return arr;
 }
 
 function onMissing(path, depth, results, requestedPath, requestedLength, optimizedPath, optimizedLength) {

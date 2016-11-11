@@ -187,7 +187,7 @@ describe('Missing', function() {
             expect(x).to.deep.equals({
                 json: {
                     [ƒ_meta]: {
-                        '$code':          '1204621415',
+                        '$code':          '__incomplete__',
                         [ƒm_keys]:        { 0: true },
                         [ƒm_abs_path]:    undefined,
                         [ƒm_deref_from]:  undefined,
@@ -196,7 +196,7 @@ describe('Missing', function() {
                     },
                     0: {
                         [ƒ_meta]: {
-                            '$code':          '1204621415',
+                            '$code':          '__incomplete__',
                             [ƒm_keys]:        { 0: true },
                             [ƒm_abs_path]:    ['0'],
                             [ƒm_deref_from]:  undefined,
@@ -205,7 +205,7 @@ describe('Missing', function() {
                         },
                         0: {
                             [ƒ_meta]: {
-                                '$code':          '185788185',
+                                '$code':          '__incomplete__',
                                 [ƒm_keys]:        { 0: true, 1: true },
                                 [ƒm_abs_path]:    ['0', '0'],
                                 [ƒm_deref_from]:  undefined,
@@ -214,7 +214,7 @@ describe('Missing', function() {
                             },
                             0: {
                                 [ƒ_meta]: {
-                                    '$code':          '135417139',
+                                    '$code':          '__incomplete__',
                                     [ƒm_keys]:        { title: true },
                                     [ƒm_abs_path]:    ['0', '0', '0'],
                                     [ƒm_deref_from]:  undefined,
@@ -225,7 +225,7 @@ describe('Missing', function() {
                             },
                             1: {
                                 [ƒ_meta]: {
-                                    '$code':          '135417139',
+                                    '$code':          '__incomplete__',
                                     [ƒm_keys]:        { title: true },
                                     [ƒm_abs_path]:    ['0', '0', '1'],
                                     [ƒm_deref_from]:  undefined,

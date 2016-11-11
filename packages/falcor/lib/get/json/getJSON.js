@@ -58,12 +58,15 @@ function getJSON(model, paths, values, forceUsePathWalk) {
         if (isArray(path = paths)) {
             path = computeFlatBufferHash(toFlatBuffer(paths));
         }
-        json = walkFlatBufferAndBuildOutput(cache, node, json, path, 0, seed, results,
-                                            requestedPath, optimizedPath, optimizedLength,
-                                            /* fromReference = */ false, referenceContainer,
-                                            modelRoot, expired, branchSelector,
-                                            boxValues, materialized, hasDataSource,
-                                            treatErrorsAsValues, allowFromWhenceYouCame);
+        var arr = walkFlatBufferAndBuildOutput(cache, node, json, path, 0, seed, results,
+                                               requestedPath, optimizedPath, optimizedLength,
+                                               /* fromReference = */ false, referenceContainer,
+                                               modelRoot, expired, branchSelector,
+                                               boxValues, materialized, hasDataSource,
+                                               treatErrorsAsValues, allowFromWhenceYouCame);
+        json = arr[0];
+        arr[0] = undefined;
+        arr[1] = undefined;
     } else {
         var pathsIndex = -1, pathsCount = paths.length;
         while (++pathsIndex < pathsCount) {

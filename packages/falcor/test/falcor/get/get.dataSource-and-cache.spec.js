@@ -521,6 +521,106 @@ describe('DataSource and Partial Cache', function() {
                 }).
                 subscribe(noOp, done, done);
         });
+        it('should get a complex keyset where a reference is in the cache but the ref target is loaded from a trip to the dataSource into a single toJSON response.', function(done) {
+            var cache = cacheGenerator(0, 2);
+            delete cache.videos[1];
+            var model = new Model({
+                cache: cache,
+                recycleJSON: true,
+                source: new LocalDataSource(Cache())
+            });
+            var count = 0;
+            toObservable(model.
+                // get(['lolomo', 0, { length: 2 }, 'item', 'title'])).
+                get(['lolomo', 0, 0, 'item', 'title'], ['lolomo', 0, 1, 'item', 'title'])).
+                doAction(function(x) {
+                    count++;
+                    x.json[ƒ_meta] = x.json[ƒ_meta];
+                    x.json['lolomo'][ƒ_meta] = x.json['lolomo'][ƒ_meta];
+                    x.json['lolomo'][0][ƒ_meta] = x.json['lolomo'][0][ƒ_meta];
+                    x.json['lolomo'][0][0][ƒ_meta] = x.json['lolomo'][0][0][ƒ_meta];
+                    x.json['lolomo'][0][1][ƒ_meta] = x.json['lolomo'][0][1][ƒ_meta];
+                    x.json['lolomo'][0][0]['item'][ƒ_meta] = x.json['lolomo'][0][0]['item'][ƒ_meta];
+                    x.json['lolomo'][0][1]['item'][ƒ_meta] = x.json['lolomo'][0][1]['item'][ƒ_meta];
+                    expect(x).to.deep.equals({
+                        json: {
+                            [ƒ_meta]: {
+                                '$code':          '350990479',
+                                [ƒm_keys]:        { lolomo: true },
+                                [ƒm_abs_path]:    undefined,
+                                [ƒm_deref_from]:  undefined,
+                                [ƒm_deref_to]:    undefined,
+                                [ƒm_version]:     1
+                            },
+                            lolomo: {
+                                [ƒ_meta]: {
+                                    '$code':          '1437563678',
+                                    [ƒm_keys]:        { 0: true },
+                                    [ƒm_abs_path]:    ['lolomos', '1234'],
+                                    [ƒm_deref_from]:  undefined,
+                                    [ƒm_deref_to]:    undefined,
+                                    [ƒm_version]:     0
+                                },
+                                0: {
+                                    [ƒ_meta]: {
+                                        '$code':          '2823858104',
+                                        [ƒm_keys]:        { 0: true, 1: true },
+                                        [ƒm_abs_path]:    ['lists', 'A'],
+                                        [ƒm_deref_from]:  undefined,
+                                        [ƒm_deref_to]:    undefined,
+                                        [ƒm_version]:     0
+                                    },
+                                    0: {
+                                        [ƒ_meta]: {
+                                            '$code':          '3681981706',
+                                            [ƒm_keys]:        { item: true },
+                                            [ƒm_abs_path]:    ['lists', 'A', '0'],
+                                            [ƒm_deref_from]:  undefined,
+                                            [ƒm_deref_to]:    undefined,
+                                            [ƒm_version]:     0
+                                        },
+                                        item: {
+                                            [ƒ_meta]: {
+                                                '$code':          '165499941',
+                                                [ƒm_keys]:        { title: true },
+                                                [ƒm_abs_path]:    ['videos', '0'],
+                                                [ƒm_deref_from]:  undefined,
+                                                [ƒm_deref_to]:    undefined,
+                                                [ƒm_version]:     0
+                                            },
+                                            title: 'Video 0'
+                                        }
+                                    },
+                                    1: {
+                                        [ƒ_meta]: {
+                                            '$code':          '3681981706',
+                                            [ƒm_keys]:        { item: true },
+                                            [ƒm_abs_path]:    ['lists', 'A', '1'],
+                                            [ƒm_deref_from]:  undefined,
+                                            [ƒm_deref_to]:    undefined,
+                                            [ƒm_version]:     0
+                                        },
+                                        item: {
+                                            [ƒ_meta]: {
+                                                '$code':          '165499941',
+                                                [ƒm_keys]:        { title: true },
+                                                [ƒm_abs_path]:    ['videos', '1'],
+                                                [ƒm_deref_from]:  undefined,
+                                                [ƒm_deref_to]:    undefined,
+                                                [ƒm_version]:     1
+                                            },
+                                            title: 'Video 1'
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }, noOp, function() {
+                    expect(count).to.equals(1);
+                }).
+                subscribe(noOp, done, done);
+        });
     });
     describe('Error Selector (during merge)', function() {
 

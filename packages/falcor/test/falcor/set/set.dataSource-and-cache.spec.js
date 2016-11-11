@@ -18,10 +18,10 @@ var sinon = require('sinon');
 var strip = require('./../../cleanData').stripDerefAndVersionKeys;
 
 describe('DataSource and Cache', function() {
-    xit('should accept jsongraph without paths from the datasource', function(done) {
+    it('should accept jsonGraph without paths from the datasource', function(done) {
         var mockDataSource = {
             set: function(jsonGraphEnvelope) {
-                return {
+                return Rx.Observable.return({
                     jsonGraph: {
                         titlesById: {
                             0: {
@@ -29,21 +29,23 @@ describe('DataSource and Cache', function() {
                             }
                         }
                     }
-                }
+                });
             }
         },
         model = new falcor.Model({
             source: mockDataSource
         });
-        model.
-            setValue('titlesById[0].rating', 5).then(function(value) {
-                return model.withoutDataSource().getValue('titlesById[0].rating').then(function(postSetValue) {
-                    testRunner.compare(postSetValue, value, 'value after Model.set without paths not equal to same value retrieved from Model.')
-                    done();
-                });
-            }, function(error) {
-                testRunner.compare(true, false, 'Model.set operation was not able to accept jsonGraph without paths from the dataSource.');
-            });
+        toObservable(model.
+            setValue('titlesById[0].rating', 5)).
+            flatMap(function (valueA) {
+                return toObservable(model.
+                        withoutDataSource().
+                        getValue('titlesById[0].rating')).
+                    map(function (valueB) {
+                        return testRunner.compare(valueB, valueA, 'value after Model.set without paths not equal to same value retrieved from Model.');
+                    })
+            })
+            .subscribe(noOp, done, done);
     });
 
     describe('Seeds', function() {

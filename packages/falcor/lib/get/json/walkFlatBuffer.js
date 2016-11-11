@@ -1,3 +1,4 @@
+var arr = new Array(2);
 var onValue = require("./onValue");
 var $ref = require("./../../types/ref");
 var FalcorJSON = require("./FalcorJSON");
@@ -31,13 +32,15 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
     if (undefined === node ||
         undefined !== (type = node.$type) ||
         undefined === path) {
-        return onValueType(node, type,
-                           path, depth, seed, results,
-                           requestedPath, depth,
-                           optimizedPath, optimizedLength,
-                           fromReference, modelRoot, expired,
-                           boxValues, materialized, hasDataSource,
-                           treatErrorsAsValues, onValue, onMissing);
+        arr[1] = false;
+        arr[0] = onValueType(node, type,
+                             path, depth, seed, results,
+                             requestedPath, depth,
+                             optimizedPath, optimizedLength,
+                             fromReference, modelRoot, expired,
+                             boxValues, materialized, hasDataSource,
+                             treatErrorsAsValues, onValue, onMissing);
+        return arr;
     }
 
     var f_meta, f_old_keys, f_new_keys, f_code = "";
@@ -65,7 +68,9 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
             f_meta["$code"]    === path["$code"] &&
             f_meta[ƒm_abs_path] === node[ƒ_abs_path]) {
             results.hasValue = true;
-            return json;
+            arr[0] = json;
+            arr[1] = false;
+            return arr;
         }
         f_old_keys = f_meta[ƒm_keys];
         f_meta[ƒm_version] = node[ƒ_version];
@@ -79,7 +84,7 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
     var keysIndex = -1;
     var keysLength = keys.length;
     var nextPath, nextPathKey,
-        hasNextMissingPath,
+        hasMissingPath = false,
         nextMeta, nextMetaPath;
 
     iteratingKeyset:
@@ -87,7 +92,6 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
 
         keyset = keys[keysIndex];
         nextPath = path[keysIndex];
-        hasNextMissingPath = false;
         nextMeta = undefined;
         nextMetaPath = undefined;
 
@@ -164,13 +168,16 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
 
             // Continue following the path
 
-            nextJSON = walkPathAndBuildOutput(
+            arr = walkPathAndBuildOutput(
                 cacheRoot, next, nextJSON, nextPath, nextDepth, seed,
                 results, requestedPath, nextOptimizedPath,
                 nextOptimizedLength, fromReference, nextReferenceContainer,
                 modelRoot, expired, branchSelector, boxValues, materialized,
                 hasDataSource, treatErrorsAsValues, allowFromWhenceYouCame
             );
+
+            nextJSON = arr[0];
+            hasMissingPath = hasMissingPath || arr[1];
 
             // Inspect the return value from the step and determine whether to
             // create or write into the JSON branch at this level.
@@ -220,20 +227,26 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
                 json[nextKey] = nextJSON;
             } else if (json && json.hasOwnProperty(nextKey)) {
                 delete json[nextKey];
-                hasNextMissingPath = true;
+                hasMissingPath = true;
             } else {
-                hasNextMissingPath = true;
+                hasMissingPath = true;
             }
         }
         // Re-enter the inner loop and continue iterating the Range, or exit
         // here if we encountered a Key.
         while (keyIsRange && ++nextKey <= rangeEnd);
 
-        if (hasNextMissingPath === true || undefined === nextPath) {
-            f_code = "" + getHashCode("" + f_code + nextPathKey);
-        } else {
-            f_code = "" + getHashCode("" + f_code + nextPathKey + nextPath["$code"]);
+        if (!hasMissingPath) {
+            if (undefined === nextPath) {
+                f_code = "" + getHashCode("" + f_code + nextPathKey);
+            } else {
+                f_code = "" + getHashCode("" + f_code + nextPathKey + nextPath["$code"]);
+            }
         }
+    }
+
+    if (hasMissingPath) {
+        f_code = "__incomplete__";
     }
 
     if (f_meta) {
@@ -249,7 +262,11 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
     }
 
     // `json` will either be a branch, or undefined if all paths were cache misses
-    return json;
+
+    arr[0] = json;
+    arr[1] = hasMissingPath;
+
+    return arr;
 }
 
 function onMissing(path, depth, results,
