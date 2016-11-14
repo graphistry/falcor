@@ -95,7 +95,7 @@ const fragments = function(items = []) {
 function derefEachPropUpdate(update) {
     let { data, falcor } = update;
     update.data = data = mapToFalcorJSON(data);
-    if (!falcor._node || falcor._node !== data) {
+    if (!falcor._seed || !falcor._seed.json || falcor._seed.json !== data) {
         update.falcor = falcor.deref(data);
     }
     return update;
@@ -261,7 +261,6 @@ class FalcorContainer extends React.Component {
         const { Component,
                 dispatchers,
                 mapFragment,
-                props, state,
                 renderErrors,
                 renderLoading,
                 mapFragmentAndProps } = this;
@@ -270,7 +269,8 @@ class FalcorContainer extends React.Component {
             return null;
         }
 
-        const { data, error, loading, falcor, dispatch } = state;
+        const { data: outerData, ...props } = this.props;
+        const { data, error, loading, falcor, dispatch } = this.state;
 
         const mappedFragment = mapFragment(data, props);
 
