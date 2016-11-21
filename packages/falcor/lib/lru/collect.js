@@ -1,5 +1,5 @@
-var removeNode = require("./../support/removeNode");
-var updateNodeAncestors = require("./../support/updateNodeAncestors");
+var removeNode = require("../cache/removeNode");
+var updateNodeAncestors = require("../cache/updateNodeAncestors");
 
 module.exports = function collect(lru, expired, totalArg, max, ratioArg, version) {
 

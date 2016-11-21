@@ -6,7 +6,7 @@ var $pathValue = require("@graphistry/falcor-json-graph").pathValue;
 
 var expect = require('chai').expect;
 var getModel = require("../support/getModel");
-var setPathValues = require("../../../lib/set/setPathValues");
+var setPathValues = require("../../../lib/cache/set/setPathValues");
 var NullInPathError = require('./../../../lib/errors/NullInPathError');
 var Model = require('./../../../lib');
 

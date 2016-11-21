@@ -7,8 +7,16 @@ var MESSAGE = "The allowed number of retries have been exceeded.";
  *
  * @private
  */
-function MaxRetryExceededError() {
-    var err = Error.call(this, MESSAGE);
+function MaxRetryExceededError(maxRetryCount, absolute, relative, optimized) {
+    var err = Error.call(this,
+        "Exceeded the max retry count (" + maxRetryCount + ") for these paths: \n" +
+        (absolute &&
+        "absolute: [\n\t" + printPaths(absolute) + "\n]\n" || "") +
+        (relative &&
+        "relative: [\n\t" + printPaths(relative) + "\n]\n" || "") +
+        (optimized &&
+        "optimized: [\n\t" + printPaths(optimized) + "\n]\n" || "")
+    );
     err.name = NAME;
     this.stack = err.stack;
     this.message = err.message;
@@ -24,3 +32,9 @@ MaxRetryExceededError.is = function(e) {
 };
 
 module.exports = MaxRetryExceededError;
+
+function printPaths(paths) {
+    return paths.map(function(path) {
+        return JSON.stringify(path);
+    }).join(',\n\t');
+}

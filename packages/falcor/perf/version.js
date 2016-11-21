@@ -9,8 +9,7 @@ var prev = require('../lib/internal/prev');
 
 function noop() {}
 
-var f_ = String.fromCharCode(30) + 'ƒalcor';
-var f_meta = f_ + '_metadata';
+var f_meta = require('../internalKeyDefinitions')['ƒ_meta'];
 
 module.exports = _.zip(
         runTestsWithModel(require('falcor/dist/falcor.browser.min').Model, '@netflix/falcor   '),
@@ -24,11 +23,13 @@ module.exports = _.zip(
 
 function runTestsWithModel(ModelClass, ModelName) {
 
-    var memoizedModel = new ModelClass({ cache: createCacheWith100Videos() });
-    var memoizedBoundModel = memoizedModel.deref({
-        $__path: ['lolomos', '1234'],
-        [f_meta]: { abs_path: ['lolomos', '1234'] }
-    });
+
+    var derefInfo = { $__path: ['lists', 'A', '0'] };
+    derefInfo[f_meta] = { abs_path: ['lists', 'A', '0'] };
+
+    var memoizedBoundModel = new ModelClass({
+        cache: createCacheWith100Videos()
+    }).deref(derefInfo);
 
     return [{
         name: ModelName + ' getVersion',

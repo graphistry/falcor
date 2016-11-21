@@ -40,25 +40,16 @@ LocalSource.prototype = {
         return Rx.Observable.create(function(observer) {
             function exec() {
                 var results;
-                var values = [{}];
+                var seed = {};
                 if (self._missCount >= miss) {
                     onGet(self, paths);
-                    self.model._getPathValuesAsJSONG(self.model, paths, values, errorSelector);
+                    self.model._getPathValuesAsJSONG(self.model, paths, seed, errorSelector);
                 } else {
                     self._missCount++;
                 }
 
-                // always output all the paths
-                var output = {
-                    // paths: paths,
-                    jsonGraph: {}
-                };
-                if (values[0]) {
-                    output.jsonGraph = values[0].jsonGraph;
-                }
-
-                onResults(output);
-                observer.onNext(output);
+                onResults(seed);
+                observer.onNext(seed);
                 observer.onCompleted();
             }
             if (wait > 0) {
@@ -78,7 +69,7 @@ LocalSource.prototype = {
         var errorSelector = options.errorSelector;
         return Rx.Observable.create(function(observer) {
             function exec() {
-                var seed = [{}];
+                var seed = {};
                 var tempModel = new falcor.Model({
                     cache: jsongEnv.jsonGraph,
                     errorSelector: errorSelector});
@@ -91,8 +82,8 @@ LocalSource.prototype = {
                     seed);
 
                 // always output all the paths
-                onResults(seed[0]);
-                observer.onNext(seed[0]);
+                onResults(seed);
+                observer.onNext(seed);
                 observer.onCompleted();
             }
 

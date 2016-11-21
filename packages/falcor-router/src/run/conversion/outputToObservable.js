@@ -26,13 +26,13 @@ module.exports = function outputToObservable(valueOrObservable) {
     }
 
     // promise
-    else if (value.then) {
+    else if (typeof value.then === 'function') {
         value = Observable.fromPromise(value);
     }
 
     // from array of pathValues.
     else if (isArray(value)) {
-        value = Observable.of(value);
+        value = Observable.from(value);
     }
 
     // this will be jsong or pathValue at this point.

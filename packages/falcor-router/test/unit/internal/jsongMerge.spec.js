@@ -27,6 +27,7 @@ describe('JSONG - Merge', function() {
 
         var out = mergeTest(jsong);
         expect(out).to.deep.equals({
+            invalidations: undefined,
             values: [{
                 path: ['there', 'is'],
                 value: 'a value'
@@ -48,6 +49,7 @@ describe('JSONG - Merge', function() {
 
         var out = mergeTest(jsong);
         expect(out).to.deep.equals({
+            invalidations: undefined,
             values: [{
                 path: ['there', 'is'],
                 value: 0
@@ -69,6 +71,7 @@ describe('JSONG - Merge', function() {
 
         var out = mergeTest(jsong);
         expect(out).to.deep.equals({
+            invalidations: undefined,
             values: [{
                 path: ['there', 'is'],
                 value: ''
@@ -90,6 +93,7 @@ describe('JSONG - Merge', function() {
 
         var out = mergeTest(jsong);
         expect(out).to.deep.equals({
+            invalidations: undefined,
             values: [{
                 path: ['there', 'is'],
                 value: false
@@ -111,6 +115,7 @@ describe('JSONG - Merge', function() {
 
         var out = mergeTest(jsong);
         expect(out).to.deep.equals({
+            invalidations: undefined,
             values: [{
                 path: ['there', 'is'],
                 value: null
@@ -179,6 +184,7 @@ describe('JSONG - Merge', function() {
         var out = jsongMerge(cache, jsong);
         expect(out).to.deep.equals({
             values: [],
+            invalidations: undefined,
             references: [{
                 path: ['there', 'is'],
                 value: ['a']
@@ -205,6 +211,7 @@ describe('JSONG - Merge', function() {
         var cache = {};
         var out = jsongMerge(cache, jsong);
         expect(out).to.deep.equals({
+            invalidations: undefined,
             values: [{
                 path: ['there', 'is', 'value'],
                 value: 5

@@ -46,8 +46,7 @@ describe('Collapse and Batch', function() {
             subscribe(noOp, done, done);
     });
 
-    it('should validate that paths are ran in parallel, not sequentially.', function(done) {
-        this.timeout(10000);
+    it('should validate that paths are run in parallel, not sequentially.', function(done) {
         var calls;
         var serviceCalls = 0;
         var testedTwo = false;
@@ -73,7 +72,7 @@ describe('Collapse and Batch', function() {
             get: function(aliasMap) {
                 return Observable.
                     from(aliasMap.ids).
-                    delay(100).
+                    delay(50).
                     map(function(id) {
                         if (id === 0) {
                             return {
@@ -93,7 +92,7 @@ describe('Collapse and Batch', function() {
                 called(1);
                 return Observable.
                     from(aliasMap.ids).
-                    delay(2000).
+                    delay(200).
                     map(function(id) {
                         return {
                             path: ['two', 'be', id, 'summary'],
@@ -107,7 +106,7 @@ describe('Collapse and Batch', function() {
                 called(2);
                 return Observable.
                     from(aliasMap.ids).
-                    delay(2000).
+                    delay(200).
                     map(function(id) {
                         return {
                             path: ['three', 'four', id, 'summary'],
@@ -124,7 +123,7 @@ describe('Collapse and Batch', function() {
         obs.
             do(function(res) {
                 var nextTime = Date.now();
-                expect(nextTime - time >= 4000).to.equal(false);
+                expect(nextTime - time >= 400).to.equal(false);
                 count++;
             }, noOp, function() {
                 expect(count, 'expect onNext called 1 time.').to.equal(1);

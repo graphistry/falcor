@@ -9,7 +9,7 @@ var $jsonGraphEnvelope = require("../support/jsonGraphEnvelope");
 
 var expect = require('chai').expect;
 var getModel = require("../support/getModel");
-var setJSONGraphs = require("../../../lib/set/setJSONGraphs");
+var setJSONGraphs = require("../../../lib/cache/set/setJSONGraphs");
 var NullInPathError = require('./../../../lib/errors/NullInPathError');
 var Model = require('./../../../lib');
 

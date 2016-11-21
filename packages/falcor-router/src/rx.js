@@ -1,3 +1,4 @@
+var Subject = require('rxjs/Subject').Subject;
 var Observable = require('rxjs/Observable').Observable;
 
 require('rxjs/add/observable/defer');
@@ -14,9 +15,14 @@ require('rxjs/add/operator/do');
 require('rxjs/add/operator/expand');
 require('rxjs/add/operator/filter');
 require('rxjs/add/operator/map');
+require('rxjs/add/operator/scan');
+require('rxjs/add/operator/multicast');
 require('rxjs/add/operator/materialize');
+require('rxjs/add/operator/merge');
+require('rxjs/add/operator/mergeAll');
 require('rxjs/add/operator/mergeMap');
 require('rxjs/add/operator/reduce');
+require('rxjs/add/operator/takeLast');
 require('rxjs/add/operator/toArray');
 
-module.exports = { Observable: Observable };
+module.exports = { Subject: Subject, Observable: Observable };

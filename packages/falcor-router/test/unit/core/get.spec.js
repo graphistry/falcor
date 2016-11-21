@@ -276,7 +276,6 @@ describe('Get', function() {
     });
 
     it('should validate that optimizedPathSets strips out already found data.', function(done) {
-        this.timeout(10000);
         var serviceCalls = 0;
         var onNext = sinon.spy();
         var routes = [{

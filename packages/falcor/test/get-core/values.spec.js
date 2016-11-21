@@ -198,7 +198,7 @@ describe('Values', function() {
 
             // branchSelector = (metadata) => Object
             branchSelector: function(meta) {
-                return { $__userGenerated: true };
+                return Object.assign({ $__userGenerated: true }, meta);
             },
             output: {
                 json: {
@@ -254,7 +254,7 @@ describe('Values', function() {
         model._getPathValuesAsPathMap(
             model,
             [['videos', [0, {from: 1, length: 1}], 'title']],
-            [seed]
+            seed
         );
 
         expect(seed).to.deep.equals({
@@ -320,13 +320,13 @@ describe('Values', function() {
         model._getPathValuesAsPathMap(
             model,
             [['videos', [0, {from: 1, length: 1}], 'title']],
-            [seed]
+            seed
         );
 
         model._getPathValuesAsPathMap(
             model,
             [['videos', 0, 'title']],
-            [seed]
+            seed
         );
 
         expect(seed.json.videos[0]).to.be.ok;

@@ -6,8 +6,8 @@ var $pathValue = require("@graphistry/falcor-json-graph").pathValue;
 
 var expect = require('chai').expect;
 var getModel = require("../../set/support/getModel");
-var setPathValues = require("../../../lib/set/setPathValues");
-var invalidatePathMaps = require("../../../lib/invalidate/invalidatePathMaps");
+var setPathValues = require("../../../lib/cache/set/setPathValues");
+var invalidatePathMaps = require("../../../lib/cache/invalidate/invalidatePathMaps");
 
 describe("invalidatePathMaps", function() {
 

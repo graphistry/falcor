@@ -8,17 +8,16 @@ var TimerDisposable = function TimerDisposable(id) {
 };
 
 TimeoutScheduler.prototype.schedule = function schedule(action) {
-    var id = setTimeout(action, this.delay);
-    return new TimerDisposable(id);
+    return new TimerDisposable(setTimeout(action, this.delay));
 };
 
-TimerDisposable.prototype.dispose = function() {
-    if (this.disposed) {
-        return;
+TimerDisposable.prototype.dispose =
+TimerDisposable.prototype.unsubscribe = function() {
+    if (!this.disposed) {
+        clearTimeout(this.id);
+        this.id = null;
+        this.disposed = true;
     }
-
-    clearTimeout(this.id);
-    this.disposed = true;
 };
 
 module.exports = TimeoutScheduler;

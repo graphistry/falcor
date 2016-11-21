@@ -29,8 +29,7 @@ describe('Call', function() {
             do(onNext, noOp, function() {
                 expect(onNext.calledOnce, 'onNext called once').to.be.ok;
                 expect(onNext.getCall(0).args[0]).to.deep.equals({
-                    jsonGraph: {},
-                    paths: []
+                    jsonGraph: {}
                 });
             }).
             subscribe(noOp, done, done);
@@ -50,8 +49,7 @@ describe('Call', function() {
             do(onNext, noOp, function() {
                 expect(onNext.calledOnce, 'onNext called once').to.be.ok;
                 expect(onNext.getCall(0).args[0]).to.deep.equals({
-                    jsonGraph: {},
-                    paths: []
+                    jsonGraph: {}
                 });
             }).
             subscribe(noOp, done, done);
@@ -172,17 +170,7 @@ describe('Call', function() {
             do(onNext, noOp, function() {
                 expect(onNext.calledOnce).to.be.ok;
                 expect(onNext.getCall(0).args[0]).to.deep.equals({
-                    "invalidated": [
-                        [
-                            "genrelist",
-                            0,
-                            "titles",
-                            {
-                                "from": 2,
-                                "to": 2
-                            }
-                        ]
-                    ],
+                    "invalidated": [["genrelist", 0, "titles", '2']],
                     "jsonGraph": {
                         "genrelist": {
                             "0": {
@@ -192,14 +180,7 @@ describe('Call', function() {
                             }
                         }
                     },
-                    "paths": [
-                        [
-                            "genrelist",
-                            0,
-                            "titles",
-                            "length"
-                        ]
-                    ]
+                    "paths": [["genrelist", 0, "titles", "length"]]
                 });
             }).
             subscribe(noOp, done, done);

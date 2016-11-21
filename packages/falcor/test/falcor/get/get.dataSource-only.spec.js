@@ -15,6 +15,168 @@ var strip = require('./../../cleanData').stripDerefAndVersionKeys;
 describe('DataSource Only', function() {
     var dataSource = new LocalDataSource(cacheGenerator(0, 2, ['title', 'art'], false));
 
+    it("should get all missing paths in a single request", function(done) {
+        var serviceCalls = 0;
+        var cacheModel = new Model({
+            cache: {
+                lolomo: {
+                    summary: {
+                        $type: "atom",
+                        value: "hello"
+                    },
+                    0: {
+                        summary: {
+                            $type: "atom",
+                            value: "hello-0"
+                        }
+                    },
+                    1: {
+                        summary: {
+                            $type: "atom",
+                            value: "hello-1"
+                        }
+                    },
+                    2: {
+                        summary: {
+                            $type: "atom",
+                            value: "hello-2"
+                        }
+                    }
+                }
+            }
+        });
+        var model = new Model({ source: {
+            get: function(paths) {
+                serviceCalls++;
+                return cacheModel.get.apply(cacheModel, paths)._toJSONG();
+            }
+        }});
+
+
+        var onNext = sinon.spy();
+        toObservable(model.
+            get("lolomo.summary", "lolomo[0..2].summary")).
+            doAction(onNext, noOp, function() {
+                var data = onNext.getCall(0).args[0];
+                var json = data.json;
+                var lolomo = json.lolomo;
+                expect(lolomo.summary).to.be.ok;
+                expect(lolomo[0].summary).to.be.ok;
+                expect(lolomo[1].summary).to.be.ok;
+                expect(lolomo[2].summary).to.be.ok;
+                expect(serviceCalls).to.equal(1);
+            }).
+            subscribe(noOp, done, done);
+    });
+
+    it('should report errors from a dataSource.', function(done) {
+        var model = new Model({
+            source: new ErrorDataSource(500, 'Oops!')
+        });
+        toObservable(model.
+            get(['videos', 0, 'title'])).
+            doAction(noOp, function(err) {
+                expect(err).to.deep.equals([{
+                    path: ['videos', 0, 'title'],
+                    value: {
+                        message: 'Oops!',
+                        status: 500
+                    }
+                }]);
+            }, function() {
+                throw new Error('On Completed was called. ' +
+                     'OnError should have been called.');
+            }).
+            subscribe(noOp, function(err) {
+                // ensure its the same error
+                if (Array.isArray(err) && isPathValue(err[0])) {
+                    return done();
+                }
+                return done(err);
+            });
+    });
+
+    it('should be able to dispose of getRequests.', function(done) {
+        var onGet = sinon.spy();
+        var source = new LocalDataSource(cacheGenerator(0, 2), {
+            onGet: onGet
+        });
+        var model = new Model({source: source}).batch();
+        var onNext = sinon.spy();
+        var disposable = toObservable(model.
+            get(['videos', 0, 'title'])).
+            doAction(onNext, noOp, function() {
+                throw new Error('Should not have completed.');
+            }).
+            subscribe(noOp, done);
+
+        disposable.dispose();
+        setTimeout(function() {
+            try {
+                expect(onNext.callCount).to.equal(0);
+                expect(onGet.callCount).to.equal(0);
+            } catch(e) {
+                return done(e);
+            }
+            return done();
+        }, 10);
+    });
+
+    it('should be able to dispose one of two get requests..', function(done) {
+        var onGet = sinon.spy();
+        var source = new LocalDataSource(cacheGenerator(0, 2), {
+            onGet: onGet
+        });
+        var model = new Model({source: source}).batch();
+        var onNext = sinon.spy();
+        var disposable = toObservable(model.
+            get(['videos', 0, 'title'])).
+            doAction(onNext, noOp, function() {
+                throw new Error('Should not have completed.');
+            }).
+            subscribe(noOp, done);
+        var onNext2 = sinon.spy();
+        toObservable(model.
+            get(['videos', 0, 'title'])).
+            doAction(onNext2).
+            subscribe(noOp, done);
+
+        disposable.dispose();
+        setTimeout(function() {
+            try {
+                expect(onNext.callCount).to.equal(0);
+                expect(onGet.callCount).to.equal(1);
+                expect(onNext2.calledOnce, 'onNext2 should have been called').to.be.ok;
+                expect(strip(onNext2.getCall(0).args[0])).to.deep.equals({
+                    json: {
+                        videos: {
+                            0: {
+                                title: 'Video 0'
+                            }
+                        }
+                    }
+                });
+            } catch(e) {
+                return done(e);
+            }
+            return done();
+        }, 100);
+    });
+    it('should throw a MaxRetryExceededError.', function(done) {
+        var model = new Model({ source: new LocalDataSource({}) });
+        toObservable(model.
+            get(['videos', 0, 'title'])).
+            doAction(noOp, function(e) {
+                expect(MaxRetryExceededError.is(e), 'MaxRetryExceededError expected.').to.be.ok;
+            }).
+            subscribe(noOp, function(e) {
+                if (isAssertionError(e)) {
+                    return done(e);
+                }
+                return done();
+            }, done.bind('should not complete'));
+    });
+
     describe('Preload Functions', function() {
         it('should get a value from falcor.', function(done) {
             var model = new Model({source: dataSource});
@@ -72,7 +234,7 @@ describe('DataSource Only', function() {
                 subscribe(noOp, done, done);
         });
     });
-    describe('PathMap', function() {
+    describe('JSON', function() {
         it('should get a value from falcor.', function(done) {
             var model = new Model({source: dataSource});
             var onNext = sinon.spy();
@@ -107,168 +269,6 @@ describe('DataSource Only', function() {
                 }).
                 subscribe(noOp, done, done);
         });
-    });
-    it('should report errors from a dataSource.', function(done) {
-        var model = new Model({
-            source: new ErrorDataSource(500, 'Oops!')
-        });
-        toObservable(model.
-            get(['videos', 0, 'title'])).
-            doAction(noOp, function(err) {
-                expect(err).to.deep.equals([{
-                    path: ['videos', 0, 'title'],
-                    value: {
-                        message: 'Oops!',
-                        status: 500
-                    }
-                }]);
-            }, function() {
-                throw new Error('On Completed was called. ' +
-                     'OnError should have been called.');
-            }).
-            subscribe(noOp, function(err) {
-                // ensure its the same error
-                if (Array.isArray(err) && isPathValue(err[0])) {
-                    return done();
-                }
-                return done(err);
-            });
-    });
-    it("should get all missing paths in a single request", function(done) {
-        var serviceCalls = 0;
-        var cacheModel = new Model({
-            cache: {
-                lolomo: {
-                    summary: {
-                        $type: "atom",
-                        value: "hello"
-                    },
-                    0: {
-                        summary: {
-                            $type: "atom",
-                            value: "hello-0"
-                        }
-                    },
-                    1: {
-                        summary: {
-                            $type: "atom",
-                            value: "hello-1"
-                        }
-                    },
-                    2: {
-                        summary: {
-                            $type: "atom",
-                            value: "hello-2"
-                        }
-                    }
-                }
-            }
-        });
-        var model = new Model({ source: {
-            get: function(paths) {
-                serviceCalls++;
-                return cacheModel.get.apply(cacheModel, paths)._toJSONG();
-            }
-        }});
-
-
-        var onNext = sinon.spy();
-        toObservable(model.
-            get("lolomo.summary", "lolomo[0..2].summary")).
-            doAction(onNext, noOp, function() {
-                var data = onNext.getCall(0).args[0];
-                var json = data.json;
-                var lolomo = json.lolomo;
-                expect(lolomo.summary).to.be.ok;
-                expect(lolomo[0].summary).to.be.ok;
-                expect(lolomo[1].summary).to.be.ok;
-                expect(lolomo[2].summary).to.be.ok;
-                expect(serviceCalls).to.equal(1);
-            }).
-            subscribe(noOp, done, done);
-    });
-
-    it('should be able to dispose of getRequests.', function(done) {
-        var onGet = sinon.spy();
-        var source = new LocalDataSource(cacheGenerator(0, 2), {
-            onGet: onGet
-        });
-        var model = new Model({source: source}).batch();
-        var onNext = sinon.spy();
-        var disposable = toObservable(model.
-            get(['videos', 0, 'title'])).
-            doAction(onNext, noOp, function() {
-                throw new Error('Should not of completed.  It was disposed.');
-            }).
-            subscribe(noOp, done);
-
-
-        disposable.dispose();
-        setTimeout(function() {
-            try {
-                expect(onNext.callCount).to.equal(0);
-                expect(onGet.callCount).to.equal(0);
-            } catch(e) {
-                return done(e);
-            }
-            return done();
-        }, 200);
-    });
-
-    it('should be able to dispose one of two get requests..', function(done) {
-        var onGet = sinon.spy();
-        var source = new LocalDataSource(cacheGenerator(0, 2), {
-            onGet: onGet
-        });
-        var model = new Model({source: source}).batch();
-        var onNext = sinon.spy();
-        var disposable = toObservable(model.
-            get(['videos', 0, 'title'])).
-            doAction(onNext, noOp, function() {
-                throw new Error('Should not of completed.  It was disposed.');
-            }).
-            subscribe(noOp, done);
-        var onNext2 = sinon.spy();
-        toObservable(model.
-            get(['videos', 0, 'title'])).
-            doAction(onNext2).
-            subscribe(noOp, done);
-
-
-        disposable.dispose();
-        setTimeout(function() {
-            try {
-                expect(onNext.callCount).to.equal(0);
-                expect(onGet.callCount).to.equal(1);
-                expect(onNext2.calledOnce).to.be.ok;
-                expect(strip(onNext2.getCall(0).args[0])).to.deep.equals({
-                    json: {
-                        videos: {
-                            0: {
-                                title: 'Video 0'
-                            }
-                        }
-                    }
-                });
-            } catch(e) {
-                return done(e);
-            }
-            return done();
-        }, 200);
-    });
-    it('should throw a MaxRetryExceededError.', function(done) {
-        var model = new Model({ source: new LocalDataSource({}) });
-        toObservable(model.
-            get(['videos', 0, 'title'])).
-            doAction(noOp, function(e) {
-                expect(MaxRetryExceededError.is(e), 'MaxRetryExceededError expected.').to.be.ok;
-            }).
-            subscribe(noOp, function(e) {
-                if (isAssertionError(e)) {
-                    return done(e);
-                }
-                return done();
-            }, done.bind('should not complete'));
     });
 });
 

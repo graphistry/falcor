@@ -1,7 +1,7 @@
 "use strict";
 
 var Model = require("./Model");
-var FalcorJSON = require("./get/json/FalcorJSON");
+var FalcorJSON = require("./cache/get/json/FalcorJSON");
 
 function falcor(opts) {
     return new Model(opts);

@@ -2,12 +2,13 @@ var Rx = require('rxjs');
 var Observable = Rx.Observable;
 var R = require('../../src/Router');
 var TestRunner = require('./../TestRunner');
+var letDelayEach = require('./letDelayEach');
 var Model = require('@graphistry/falcor').Model;
 var $atom = Model.atom;
 
 module.exports = function() {
     return {
-        Summary: function (fn) {
+        Summary: function (fn, delay) {
             return [{
                 route: 'videos.summary',
                 get: function(path) {
@@ -19,12 +20,13 @@ module.exports = function() {
                             }
                         },
                         paths: [['videos', 'summary']]
-                    });
+                    })
+                    .let(letDelayEach(delay));
                 }
             }];
         },
         Keys: {
-            Summary: function (fn) {
+            Summary: function (fn, delay) {
                 return [{
                     route: 'videos[{keys}].summary',
                     get: function (path) {
@@ -33,13 +35,14 @@ module.exports = function() {
                             from(path[1]).
                             map(function(id) {
                                 return generateVideoJSONG(id);
-                            });
+                            })
+                            .let(letDelayEach(delay));
                     }
                 }];
             }
         },
         Integers: {
-            Summary: function (fn) {
+            Summary: function (fn, delay) {
                 return [{
                     route: ['videos', R.integers, 'summary'],
                     get: function (path) {
@@ -48,14 +51,15 @@ module.exports = function() {
                             from(path[1]).
                             map(function(id) {
                                 return generateVideoJSONG(id);
-                            });
+                            })
+                            .let(letDelayEach(delay));
                     }
                 }];
             }
         },
 
         Ranges: {
-            Summary: function (fn) {
+            Summary: function (fn, delay) {
                 return [{
                     route: ['videos', R.ranges, 'summary'],
                     get: function (path) {
@@ -64,13 +68,14 @@ module.exports = function() {
                             from(TestRunner.rangeToArray(path[1])).
                             map(function(id) {
                                 return generateVideoJSONG(id);
-                            });
+                            })
+                            .let(letDelayEach(delay));
                     }
                 }];
             }
         },
         State: {
-            Keys: function (fn) {
+            Keys: function (fn, delay) {
                 return [{
                     route: ['videos', 'state', R.keys],
                     get: function (path) {
@@ -79,11 +84,12 @@ module.exports = function() {
                             from(path[2]).
                             map(function(key) {
                                 return generateVideoStateJSONG(key);
-                            });
+                            })
+                            .let(letDelayEach(delay));
                     }
                 }];
             },
-            Integers: function (fn) {
+            Integers: function (fn, delay) {
                 return [{
                     route: ['videos', 'state', R.integers],
                     get: function (path) {
@@ -92,11 +98,12 @@ module.exports = function() {
                             from(path[2]).
                             map(function(key) {
                                 return generateVideoStateJSONG(key);
-                            });
+                            })
+                            .let(letDelayEach(delay));
                     }
                 }];
             },
-            Ranges: function (fn) {
+            Ranges: function (fn, delay) {
                 return [{
                     route: ['videos', 'state', R.ranges],
                     get: function (path) {
@@ -105,7 +112,8 @@ module.exports = function() {
                             from(TestRunner.rangeToArray(path[2])).
                             map(function(key) {
                                 return generateVideoStateJSONG(key);
-                            });
+                            })
+                            .let(letDelayEach(delay));
                     }
                 }];
             }

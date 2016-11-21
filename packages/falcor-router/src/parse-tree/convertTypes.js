@@ -1,5 +1,5 @@
 var Keys = require('./../Keys');
-module.exports = function convertTypes(virtualPath) {
+module.exports = function convertTypes(virtualPath, routeString) {
     virtualPath.route = virtualPath.route.map(function(key) {
         if (typeof key === 'object') {
             switch (key.type) {
@@ -12,10 +12,8 @@ module.exports = function convertTypes(virtualPath) {
                 case 'ranges':
                     key.type = Keys.ranges;
                     break;
-                default:
-                    var err = new Error('Unknown route type.');
-                    err.throwToNext = true;
-                    break;
+                // default:
+                //     throw new Error('Unknown keyword "' + key.type + '" in route "' + routeString + '".');
             }
         }
         return key;

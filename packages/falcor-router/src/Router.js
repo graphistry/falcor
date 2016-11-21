@@ -12,6 +12,7 @@ var Router = function(routes, options) {
     this._rst = parseTree(routes);
     this._matcher = matcher(this._rst);
     this._debug = opts.debug;
+    this._streaming = opts.streaming;
     this.maxRefFollow = opts.maxRefFollow || MAX_REF_FOLLOW;
     this.maxPaths = opts.maxPaths || MAX_PATHS;
 };
@@ -20,6 +21,7 @@ Router.createClass = function(routes) {
     function C(options) {
         var opts = options || {};
         this._debug = opts.debug;
+        this._streaming = opts.streaming;
     }
 
     C.prototype = new Router(routes);
@@ -70,6 +72,7 @@ Router.prototype = {
      */
     routeUnhandledPathsTo: function routeUnhandledPathsTo(dataSource) {
         this._unhandled = dataSource;
+        return this;
     }
 };
 

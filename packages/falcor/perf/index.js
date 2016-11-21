@@ -1,7 +1,7 @@
 var suites = [
-    require('./get'),
-    require('./set'),
-    require('./version'),
+    // require('./get'),
+    // require('./set'),
+    // require('./version'),
     require('./dataSource'),
 ];
 
@@ -27,7 +27,7 @@ function run() {
 
             return str;
         }).join('\n'));
-        setTimeout(run, 10);
+        setTimeout(run, 1000);
     })
     .run({ async: true });
 }

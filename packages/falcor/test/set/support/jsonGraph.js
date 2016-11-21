@@ -1,6 +1,6 @@
 var strip = require("./strip");
 var getModel = require("./getModel");
-var setPathValues = require("../../../lib/set/setPathValues");
+var setPathValues = require("../../../lib/cache/set/setPathValues");
 
 module.exports = function jsonGraphEnvelope(pathValues) {
 

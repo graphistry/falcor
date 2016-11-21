@@ -1,5 +1,6 @@
 var falcor = require("./../../../lib/");
 var Model = falcor.Model;
+var Observable = require('rx').Observable;
 var cacheGenerator = require('../../CacheGenerator');
 var noOp = function() {};
 var LocalDataSource = require('../../data/LocalDataSource');
@@ -39,8 +40,7 @@ describe('DataSource and Deref', function() {
             flatMap(function(x) {
                 return model.
                     deref(x.json.lolomo[0]).
-                    set(
-                        {path: [0, 'item', 'title'], value: 1337},
+                    set({path: [0, 'item', 'title'], value: 1337},
                         {path: [1, 'item', 'title'], value: 7331});
             }).
             doAction(onNext).

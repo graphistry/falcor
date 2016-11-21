@@ -1,9 +1,9 @@
-var get = require('./../lib/get');
+var get = require('./../lib/cache/get');
 var Model = require('./../lib');
 var expect = require('chai').expect;
 var clean = require('./cleanData').clean;
 var convertKey = require('./cleanData').convertKey;
-var getCachePosition = require('./../lib/get/getCachePosition');
+var getCachePosition = require('./../lib/cache/getCachePosition');
 
 module.exports = function(testConfig) {
     var isJSONG = testConfig.isJSONG;
@@ -20,8 +20,7 @@ module.exports = function(testConfig) {
     var type = testConfig.input && testConfig.input[0] ||
         testConfig.inputs[0][0];
     var isJSONInput = !Array.isArray(type);
-    var fnKey = 'getWithPathsAs' + (isJSONG ? 'JSONGraph' : 'PathMap');
-    var fn = get[fnKey];
+    var fn = get[isJSONG ? 'jsonGraph' : 'json'];
     var cache = testConfig.cache;
     if (typeof cache === 'function') {
         cache = cache();
@@ -69,8 +68,7 @@ module.exports = function(testConfig) {
         model = model._materialize();
     }
 
-    var seed = [{}];
-    var out;
+    var out, seed = {};
 
     if (testConfig.input) {
         out = fn(model, testConfig.input, seed);
@@ -82,7 +80,7 @@ module.exports = function(testConfig) {
         });
     }
 
-    var valueNode = out.values && out.values[0];
+    var valueNode = out.data;
     var stripMetadataKeys = testConfig.stripMetadata === false ? [] : [ƒ_meta];
 
     if (testConfig.stripMetadata === false) {
@@ -101,10 +99,10 @@ module.exports = function(testConfig) {
         expect(valueNode).to.deep.equals(expectedOutput);
     }
     if (requestedMissingPaths) {
-        expect(out.requestedMissingPaths).to.deep.equals(requestedMissingPaths);
+        expect(out.requested).to.deep.equals(requestedMissingPaths);
     }
     if (optimizedMissingPaths) {
-        expect(out.optimizedMissingPaths).to.deep.equals(optimizedMissingPaths);
+        expect(out.missing).to.deep.equals(optimizedMissingPaths);
     }
     if (errors) {
         expect(out.errors).to.deep.equals(errors);

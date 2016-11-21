@@ -1,0 +1,17 @@
+var removeNode = require("./removeNode");
+var updateBackReferenceVersions = require("./updateBackReferenceVersions");
+
+module.exports = function updateNodeAncestors(nodeArg, offset, lru, version) {
+    var child = nodeArg;
+    do {
+        var node = child[ƒ_parent];
+        var size = child.$size = (child.$size || 0) - offset;
+        if (size <= 0 && node != null) {
+            removeNode(child, node, child[ƒ_key], lru);
+        } else if (child[ƒ_version] !== version) {
+            updateBackReferenceVersions(child, version);
+        }
+        child = node;
+    } while (child);
+    return nodeArg;
+};

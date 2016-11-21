@@ -1,5 +1,7 @@
 var JSONGraphError = module.exports = function JSONGraphError(typeValue) {
+    var err = Error.call(this);
+    this.stack = err.stack;
     this.typeValue = typeValue;
 };
-JSONGraphError.prototype = new Error();
+JSONGraphError.prototype = Object.create(Error.prototype);
 

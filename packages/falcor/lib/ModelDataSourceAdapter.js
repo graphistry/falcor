@@ -1,5 +1,6 @@
 function ModelDataSourceAdapter(model) {
-    this._model = model._materialize().boxValues().treatErrorsAsValues();
+    this._model = model._materialize().treatErrorsAsValues();
+    // this._model = model._materialize().boxValues().treatErrorsAsValues();
 }
 
 ModelDataSourceAdapter.prototype.get = function get(pathSets) {
@@ -11,8 +12,9 @@ ModelDataSourceAdapter.prototype.set = function set(jsongResponse) {
 };
 
 ModelDataSourceAdapter.prototype.call = function call(path, args, suffixes, paths) {
-    var params = [path, args, suffixes].concat(paths);
-    return this._model.call.apply(this._model, params)._toJSONG();
+    return this._model.call.apply(this._model, [
+        path, args, suffixes
+    ].concat(paths))._toJSONG();
 };
 
 module.exports = ModelDataSourceAdapter;

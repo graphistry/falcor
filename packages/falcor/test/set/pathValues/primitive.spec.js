@@ -5,7 +5,7 @@ var $pathValue = require("@graphistry/falcor-json-graph").pathValue;
 
 var expect = require('chai').expect;
 var getModel = require("../support/getModel");
-var setPathValues = require("../../../lib/set/setPathValues");
+var setPathValues = require("../../../lib/cache/set/setPathValues");
 
 describe("a primitive value", function() {
 

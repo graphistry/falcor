@@ -38,18 +38,15 @@ module.exports = function matcher(rst) {
      * functions.
      * @param {[]} paths
      */
-    return function innerMatcher(method, paths) {
+    return function innerMatcher(method, path) {
         var matched = [];
         var missing = [];
-        match(rst, paths, method, matched, missing);
+        match(rst, path, method, matched, missing);
 
         // We are at the end of the path but there is no match and its a
         // call.  Therefore we are going to throw an informative error.
         if (method === call && matched.length === 0) {
-            var err = new CallNotFoundError();
-            err.throwToNext = true;
-
-            throw err;
+            throw new CallNotFoundError(path);
         }
 
         // Reduce into groups multiple matched routes into route sets where
@@ -165,6 +162,7 @@ function match(
             id: currentMatch[methodToUse + 'Id'],
             requested: cloneArray(requested),
 
+            method: method,
             action: currentMatch[methodToUse],
             authorize: currentMatch.authorize,
             virtual: cloneArray(virtual),

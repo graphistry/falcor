@@ -1,18 +1,17 @@
-var hasOwn = require("./../support/hasOwn");
 var isArray = Array.isArray;
-var isObject = require("./../support/isObject");
 
-module.exports = function clone(value) {
-    var dest = value;
-    if (isObject(dest)) {
-        dest = isArray(value) ? [] : {};
-        var src = value;
-        for (var key in src) {
-            if (key.charAt(0) === ƒ_ || !hasOwn(src, key)) {
+module.exports = clone;
+
+function clone(source) {
+    var dest = source;
+    if (!(!dest || typeof dest !== 'object')) {
+        dest = isArray(source) ? [] : {};
+        for (var key in source) {
+            if (key.charAt(0) === ƒ_) {
                 continue;
             }
-            dest[key] = src[key];
+            dest[key] = source[key];
         }
     }
     return dest;
-};
+}

@@ -15,12 +15,11 @@ module.exports = mergeCacheAndGatherRefsAndInvalidations;
  * @param {Array} jsongOrPVs
  */
 function mergeCacheAndGatherRefsAndInvalidations(cache, jsongOrPVs) {
-    var references = [];
-    var len = -1;
-    var invalidations = [];
-    var unhandledPaths = [];
-    var messages = [];
+
     var values = [];
+    var messages = [];
+    var references = [];
+    var invalidations = [];
 
     // Go through each of the outputs from the route end point and separate out
     // each type of potential output.
@@ -29,10 +28,9 @@ function mergeCacheAndGatherRefsAndInvalidations(cache, jsongOrPVs) {
     // * There are references that need to be merged and potentially followed
     // * There are messages that can alter the behavior of the
     //   recurseMatchAndExecute cycle.
-    // * unhandledPaths happens when a path matches a route but the route does
-    //   not match the entire path, therefore there is unmatched paths.
     jsongOrPVs.forEach(function(jsongOrPV) {
-        var refsAndValues = [];
+
+        var refsAndValues, vals, refs, invs;
 
         if (isMessage(jsongOrPV)) {
             messages[messages.length] = jsongOrPV;
@@ -40,34 +38,29 @@ function mergeCacheAndGatherRefsAndInvalidations(cache, jsongOrPVs) {
 
         else if (isJSONG(jsongOrPV)) {
             refsAndValues = jsongMerge(cache, jsongOrPV);
+            vals = refsAndValues.values;
+            refs = refsAndValues.references;
+            invs = refsAndValues.invalidations;
         }
 
         // Last option are path values.
         else {
             refsAndValues = pathValueMerge(cache, jsongOrPV);
+            vals = refsAndValues.values;
+            refs = refsAndValues.references;
+            invs = refsAndValues.invalidations;
         }
-
-        var refs = refsAndValues.references;
-        var vals = refsAndValues.values;
-        var invs = refsAndValues.invalidations;
-        var unhandled = refsAndValues.unhandledPaths;
 
         if (vals && vals.length) {
             values = values.concat(vals);
         }
 
+        if (refs && refs.length) {
+            references = references.concat(refs);
+        }
+
         if (invs && invs.length) {
             invalidations = invalidations.concat(invs);
-        }
-
-        if (unhandled && unhandled.length) {
-            unhandledPaths = unhandledPaths.concat(unhandled);
-        }
-
-        if (refs && refs.length) {
-            refs.forEach(function(ref) {
-                references[++len] = ref;
-            });
         }
     });
 
@@ -75,7 +68,6 @@ function mergeCacheAndGatherRefsAndInvalidations(cache, jsongOrPVs) {
         invalidations: invalidations,
         references: references,
         messages: messages,
-        values: values,
-        unhandledPaths: unhandledPaths
+        values: values
     };
 }

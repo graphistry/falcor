@@ -21,7 +21,7 @@ var Cache = function(c) {
     return cacheGenerator(0, 40);
 };
 
-describe('DataSource and Partial Cache', function() {
+describe('DataSource and Cache', function() {
     describe('Preload Functions', function() {
         it('should get multiple arguments.', function(done) {
             var model = new Model({cache: M(), source: new LocalDataSource(Cache())});
@@ -236,8 +236,7 @@ describe('DataSource and Partial Cache', function() {
                 subscribe(noOp, done, noOp);
         });
 
-        it('should ensure that a response where only materialized atoms come ' +
-           'through still onNexts a value if one is present in cache.', function(done) {
+        it('should ensure that a response where only materialized atoms come through still onNexts a value if one is present in cache.', function(done) {
             var model = new Model({
                 cache: {
                     paths: {
@@ -412,7 +411,7 @@ describe('DataSource and Partial Cache', function() {
             var model = new Model({cache: M(), source: new LocalDataSource(Cache())});
             var revisions = [];
             toObservable(model.
-                get(['lolomo', 0, 0, 'item', 'title'], ['lolomo', 0, 1, 'item', 'title']).
+                get(['lolomo', 0, [0, 1], 'item', 'title']).
                 progressively()).
                 doAction(function(x) {
                     revisions.push(x);
@@ -421,7 +420,7 @@ describe('DataSource and Partial Cache', function() {
                     expect(revisions[1]).to.not.equal(revisions[0]);
                     expect(revisions[1].json.lolomo[0]).to.not.equal(revisions[0].json.lolomo[0]);
                     expect(revisions[1].json.lolomo[0][0]).to.equal(revisions[0].json.lolomo[0][0]);
-
+                    expect(revisions[1].json.lolomo[0][1]).to.not.equal(revisions[0].json.lolomo[0][1]);
                 }).
                 subscribe(noOp, done, done);
         });
@@ -604,7 +603,7 @@ describe('DataSource and Partial Cache', function() {
                                             [ƒ_meta]: {
                                                 '$code':          '165499941',
                                                 [ƒm_keys]:        { title: true },
-                                                [ƒm_abs_path]:    ['videos', '1'],
+                                                [ƒm_abs_path]:    ['videos', 1],
                                                 [ƒm_deref_from]:  undefined,
                                                 [ƒm_deref_to]:    undefined,
                                                 [ƒm_version]:     1

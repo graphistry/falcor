@@ -79,16 +79,8 @@ function optimizePathSet(cache, cacheRoot, pathSet,
                             out, nextOptimized, maxRefFollow, referenceCount+1);
             optimizedPath.length = optimizedPathLength;
         } else {
-            // if (isBranchKey && type === $ref) {
-            //     var refResults =
-            //         followReference(cacheRoot, next.value, maxRefFollow);
-            //     next = refResults[0];
 
-            //     // `followReference` clones the refPath before returning it.
-            //     nextOptimized = refResults[1];
-            // } else {
-                nextOptimized = optimizedPath;
-            // }
+            nextOptimized = optimizedPath;
 
             optimizePathSet(next, cacheRoot, pathSet, nextDepth,
                             out, nextOptimized, maxRefFollow, referenceCount);

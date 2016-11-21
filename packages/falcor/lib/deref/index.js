@@ -1,7 +1,7 @@
 var CONTAINER_DOES_NOT_EXIST = "e";
-var $ref = require("./../types/ref");
-var getCachePosition = require("../get/getCachePosition");
-var InvalidDerefInputError = require("./../errors/InvalidDerefInputError");
+var $ref = require("../types/ref");
+var getCachePosition = require("../cache/getCachePosition");
+var InvalidDerefInputError = require("../errors/InvalidDerefInputError");
 
 module.exports = function deref(boundJSONArg) {
 

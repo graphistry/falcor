@@ -1,3 +1,4 @@
+var Rx = require("rxjs");
 var _ = require('lodash');
 var benchmark = require('benchmark');
 var TriggerDataSource = require("./TriggerDataSource");
@@ -5,17 +6,29 @@ var createCacheWith100Videos = require('./createCacheWith100Videos');
 var toFlatBuffer = require('@graphistry/falcor-path-utils').toFlatBuffer;
 var computeFlatBufferHash = require('@graphistry/falcor-path-utils').computeFlatBufferHash;
 
-var head = require('../lib/internal/head');
-var tail = require('../lib/internal/tail');
-var next = require('../lib/internal/next');
-var prev = require('../lib/internal/prev');
+// function noop() {}
+function noop(x) {
+    debugger
+    // console.log(JSON.stringify(x));
+}
 
-function noop() {}
+if (require.main === module) {
+    var runner = runTestsWithModel(
+        require('../dist/falcor').Model,             '@graphistry/falcor', false, '..'
+    )[0].runner;
+    debugger
+    runner();
+    debugger
+    runner();
+    debugger
+    runner();
+}
 
 module.exports = _.zip(
-        runTestsWithModel(require('falcor/dist/falcor.browser.min').Model, '@netflix/falcor   '),
-        runTestsWithModel(require('../dist/falcor.min').Model,             '@graphistry/falcor')
-        // runTestsWithModel(require('../dist/falcor.min').Model,             '@graphistry/falcor', true)
+        [0],
+        // runTestsWithModel(require('falcor/dist/falcor.browser.min').Model, '@netflix/falcor   ', false, 'falcor'),
+        runTestsWithModel(require('../dist/falcor.min').Model,             '@graphistry/falcor', false, '..')
+        // runTestsWithModel(require('../dist/falcor.min').Model,             '@graphistry/falcor', true, '..')
     )
     .reduce(function(suite, tests) {
         return tests.reduce(function(suite, test) {
@@ -23,7 +36,7 @@ module.exports = _.zip(
         }, suite);
     }, new benchmark.Suite('DataSource Tests'));
 
-function runTestsWithModel(ModelClass, ModelName, recycleJSON) {
+function runTestsWithModel(ModelClass, ModelName, recycleJSON, packagePath) {
 
     var dataSource = new TriggerDataSource(function() {
         return { jsonGraph: createCacheWith100Videos() };
@@ -39,7 +52,11 @@ function runTestsWithModel(ModelClass, ModelName, recycleJSON) {
         allTitlesJSONPath = computeFlatBufferHash(toFlatBuffer([allTitlesPath]));
     }
 
+    var head = require(packagePath + '/lib/internal/head');
+    var tail = require(packagePath + '/lib/internal/tail');
+
     function recycleDataSourceModelState() {
+        debugger
         dataSourceModel._root.cache = {};
         dataSourceModel._root[head] = null;
         dataSourceModel._root[tail] = null;
@@ -49,18 +66,20 @@ function runTestsWithModel(ModelClass, ModelName, recycleJSON) {
     return [{
         name: ModelName + ' getJSON + setJSONGraph + getJSON - 100 paths from DataSource' + testNameSuffix,
         runner: function() {
-            dataSourceModel
-                .get(allTitlesJSONPath)
-                .subscribe(noop, noop, recycleDataSourceModelState);
+            Rx.Observable.from(dataSourceModel
+                .get(allTitlesJSONPath))
+                .finally(recycleDataSourceModelState)
+                .subscribe(noop, noop, noop);
             dataSource.trigger();
         }
     }, {
         name: ModelName + ' getJSONGraph + setJSONGraph + getJSONGraph - 100 paths from DataSource' + testNameSuffix,
         runner: function() {
-            dataSourceModel
+            Rx.Observable.from(dataSourceModel
                 .get(allTitlesPath)
-                ._toJSONG()
-                .subscribe(noop, noop, recycleDataSourceModelState);
+                ._toJSONG())
+                .finally(recycleDataSourceModelState)
+                .subscribe(noop, noop, noop);
             dataSource.trigger();
         }
     }];

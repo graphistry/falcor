@@ -9,46 +9,57 @@ var hasIntersection = require('./../../operations/matcher/intersection/hasInters
  * takes in the set of ordered matches and pathSet that got those matches.
  * From there it will give back a list of matches to execute.
  */
-module.exports = function getExecutableMatches(matches, pathSet) {
-    var remainingPaths = pathSet;
-    var matchAndPaths = [];
-    var out = {
-        matchAndPaths: matchAndPaths,
-        unhandledPaths: false
-    };
-    for (var i = 0; i < matches.length && remainingPaths.length > 0; ++i) {
+module.exports = getExecutableMatches;
+
+function getExecutableMatches(optimized, matches) {
+
+    var matchesIndex = 0;
+    var matchesCount = matches.length;
+    var remainingPaths = [optimized];
+    var executableMatches = [];
+
+    do {
+        var match = matches[matchesIndex];
         var availablePaths = remainingPaths;
-        var match = matches[i];
 
         remainingPaths = [];
 
-        if (i > 0) {
+        if (matchesIndex > 0) {
             availablePaths = collapse(availablePaths);
         }
 
-        // For every available path attempt to intersect.  If there
-        // is an intersection then strip and replace.
-        // any relative complements, add to remainingPaths
-        for (var j = 0; j < availablePaths.length; ++j) {
-            var path = availablePaths[j];
+        // For every available path, check for intersection with the
+        // matched virtual path. When the path intersects, strip and
+        // replace any relative complements, and add them to the
+        // remainingPaths.
+
+        var availablePathsIndex = -1;
+        var availablePathsCount = availablePaths.length;
+        while (++availablePathsIndex < availablePathsCount) {
+
+            var path = availablePaths[availablePathsIndex];
+
             if (hasIntersection(path, match.virtual)) {
+
                 var stripResults = stripPath(path, match.virtual);
-                matchAndPaths[matchAndPaths.length] = {
-                    path: stripResults[0],
-                    match: match
-                };
+
                 remainingPaths = remainingPaths.concat(stripResults[1]);
+
+                executableMatches[executableMatches.length] = {
+                    match: match, path: stripResults[0]
+                };
             }
         }
-    }
+    } while (++matchesIndex < matchesCount && remainingPaths.length > 0);
 
-    // Adds the remaining paths to the unhandled paths section.
-    if (remainingPaths && remainingPaths.length) {
-        out.unhandledPaths = remainingPaths;
-    }
-
-    return out;
-};
+    return {
+        executableMatches: executableMatches,
+        // Report the remaining paths as unhandled.
+        unhandledPaths: remainingPaths &&
+            remainingPaths.length &&
+            remainingPaths || undefined
+    };
+}
 
 
 

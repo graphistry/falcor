@@ -57,7 +57,7 @@ describe("Special Cases", function() {
     });
     it("set blows away the cache.", function() {
         var model = new Model({});
-        var get = [["genreList", 1, 0, "summary"]];
+        var paths = [["genreList", 1, 0, "summary"]];
 
         // this mimicks the server setting cycle from the router.
         var set = [
@@ -101,12 +101,16 @@ describe("Special Cases", function() {
             }
         });
 
-        model._getPathValuesAsPathMap(model, get, function(x) {
-            expect(x).to.deep.equals({ json: { genreList: { 1: { 0: { summary: {
-                    "title": "Running Man",
-                    "url": "/movies/553"
-                } } } } }
-            });
+        model.get(paths).subscribe({
+            onNext: function(x) {
+                expect(x).to.deep.equals({ json: { genreList: { 1: { 0: { summary: {
+                        "title": "Running Man",
+                        "url": "/movies/553"
+                    } } } } }
+                });
+            },
+            onError: function() {},
+            onCompleted: function() {}
         });
     });
 });

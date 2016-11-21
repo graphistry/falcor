@@ -5,6 +5,9 @@ var Routes = require('./../data');
 var noOp = function() {};
 var chai = require('chai');
 var expect = chai.expect;
+
+var falcor_metadata = String.fromCharCode(30) + 'ƒalcor_metadata';
+
 describe('Get', function() {
     it('should take in a falcor model and get a value out.', function(done) {
         var router = new R(Routes().Videos.Summary());
@@ -14,14 +17,15 @@ describe('Get', function() {
         var called = false;
 
         Rx.Observable.
-            from(model.get('videos.summary')).
+            from(model.get(['videos', 'summary'])).
             do(function(x) {
                 called = true;
+                delete x.json[falcor_metadata];
+                delete x.json.videos[falcor_metadata];
                 expect(x).to.deep.equals({
                     json: {
                         videos: {
-                            summary: 75,
-                            "$__path": ["videos"]
+                            summary: 75
                         }
                     }
                 });
@@ -42,15 +46,16 @@ describe('Get', function() {
         var called = false;
 
         Rx.Observable.
-            from(model.get('genreLists[0].summary')).
+            from(model.get(['genreLists', '0', 'summary'])).
             do(function(x) {
                 called = true;
+                delete x.json[falcor_metadata];
+                delete x.json.genreLists[falcor_metadata];
+                delete x.json.genreLists[0][falcor_metadata];
                 expect(x).to.deep.equals({
                     json: {
                         genreLists: {
-                            "$__path": ["genreLists"],
                             0: {
-                                "$__path": ["videos", 0],
                                 summary: {
                                     title: 'Some Movie 0'
                                 }

@@ -9,26 +9,29 @@ var catAndSlice = require('./../support/catAndSlice');
  * merges jsong into a seed
  */
 module.exports = function jsongMerge(cache, jsongEnv) {
-    var paths = jsongEnv.paths;
-    var j = jsongEnv.jsonGraph;
-    var references = [];
+
     var values = [];
+    var references = [];
+    var paths = jsongEnv.paths;
+    var jsonGraph = jsongEnv.jsonGraph;
+    var invalidations = jsongEnv.invalidated;
 
     paths.forEach(function(p) {
         merge({
             cacheRoot: cache,
-            messageRoot: j,
+            messageRoot: jsonGraph,
             references: references,
             values: values,
             requestedPath: [],
             requestIdx: -1,
             ignoreCount: 0
-        },  cache, j, 0, p);
+        },  cache, jsonGraph, 0, p);
     });
 
     return {
+        values: values,
         references: references,
-        values: values
+        invalidations: invalidations
     };
 };
 

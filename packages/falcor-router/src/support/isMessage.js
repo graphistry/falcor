@@ -1,3 +1,3 @@
-module.exports = function isMessage(output) {
-    return output.hasOwnProperty('isMessage');
+module.exports = function isMessage(x) {
+    return x.hasOwnProperty('isMessage');
 };

@@ -1,3 +1,4 @@
+var Observable = require("rx").Observable;
 var falcor = require("./../../../lib/");
 var Model = falcor.Model;
 var LocalDataSource = require("../../data/LocalDataSource");
@@ -6,7 +7,7 @@ var chai = require("chai");
 var sinon = require("sinon");
 var expect = chai.expect;
 var noOp = function() {};
-var ModelResponse = require('./../../../lib/response/ModelResponse');
+// var ModelResponse = require('./../../../lib/response/ModelResponse');
 
 /**
  * @param newModel
@@ -40,15 +41,12 @@ describe("Call", function() {
         var model = new Model({
             source: {
                 call: function(callPath, args, suffixes, extraPaths) {
-                    return new ModelResponse(function(observer) {
-                        observer.onNext({
-                            jsonGraph: {
-                                a: 'test'
-                            },
-                            paths: [['a']],
-                            invalidated: [['b']]
-                        });
-                        observer.onCompleted();
+                    return Observable.return({
+                        jsonGraph: {
+                            a: 'test'
+                        },
+                        paths: [['a']],
+                        invalidated: [['b']]
                     });
                 }
             },
@@ -85,18 +83,19 @@ describe("Call", function() {
             }).
             subscribe(noOp, done, done);
     });
-    it('should sent parsed arguments to the dataSource.', function(done) {
+    it('should send parsed arguments to the dataSource.', function(done) {
         var call = sinon.spy(function() {
             return {
-                subscribe: function(onNext, onError, onCompleted) {
-                    onNext({jsonGraph: {
-                        a: {
-                            b: 'hello'
-                        }
-                    }, paths: [
-                        ['a', 'b']
-                    ]});
-                    onCompleted();
+                subscribe: function(observer) {
+                    observer.onNext({
+                        jsonGraph: {
+                            a: {
+                                b: 'hello'
+                            }
+                        },
+                        paths: [['a', 'b']]
+                    });
+                    observer.onCompleted();
                 }
             };
         });
@@ -127,13 +126,10 @@ describe("Call", function() {
 
     it("does not re-execute a call on multiple thens", function(done) {
         var call = sinon.spy(function() {
-            return new ModelResponse(function(observer) {
-                observer.onNext({
-                    jsonGraph: { a: 'test' },
-                    paths: [['a']],
-                    invalidated: []
-                });
-                observer.onCompleted();
+            return Observable.return({
+                jsonGraph: { a: 'test' },
+                paths: [['a']],
+                invalidated: []
             });
         });
         var model = new Model({

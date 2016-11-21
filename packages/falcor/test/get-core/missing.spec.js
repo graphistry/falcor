@@ -175,8 +175,8 @@ describe('Missing', function() {
             var x = model._getPathValuesAsPathMap(
                 model,
                 [[{to:1}, {to:1}, {to:1}, ['title', 'summary']]],
-                [{}]
-            ).values[0];
+                {}
+            ).data;
 
             x.json[ƒ_meta] = x.json[ƒ_meta];
             x.json[0][ƒ_meta] = x.json[0][ƒ_meta];

@@ -3,9 +3,9 @@ var Model = falcor.Model;
 var chai = require("chai");
 var expect = chai.expect;
 var _ = require('lodash');
-var get = require('./../../lib/get');
-var getWithPathsAsJSONGraph = get.getWithPathsAsJSONGraph;
-var getWithPathsAsPathMap = get.getWithPathsAsPathMap;
+var get = require('./../../lib/cache/get');
+var getWithPathsAsPathMap = get.json;
+var getWithPathsAsJSONGraph = get.jsonGraph;
 var cacheGenerator = require('./../CacheGenerator');
 
 describe('Get', function () {

@@ -165,8 +165,7 @@ describe('#set', function() {
             subscribe(noOp, done, done);
     });
 
-    it('should be able to send correctly constructed jsonGraph when set passes' +
-       'through referencs.', function(done) {
+    it('should be able to send correctly constructed jsonGraph when set passes through references.', function(done) {
         var router = new R([{
             route: 'videos.summary',
             set: function() {

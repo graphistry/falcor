@@ -1,1 +1,1 @@
-module.exports = String.fromCharCode(30) + "ƒalcor";
+module.exports = String.fromCharCode(30) + "ƒalcor_";

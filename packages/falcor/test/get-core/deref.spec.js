@@ -68,14 +68,15 @@ describe('Deref', function() {
         });
     });
 
-    xit('should throw an error when bound and calling jsonGraph.', function() {
+    it('should throw an error when bound and calling jsonGraph.', function() {
         var model = new Model({
+            _path: ['videos', 0],
             cache: cacheGenerator(0, 1)
-        })._derefSync(['videos', 0]);
+        });
 
-        var res = model._getPathValuesAsJSONG(model, [['summary']], [{}]);
-        expect(res.criticalError.name).to.equals(BoundJSONGraphModelError.name);
-        expect(res.criticalError.message).to.equals(BoundJSONGraphModelError.message);
+        var res = model._getPathValuesAsJSONG(model, [['summary']], {});
+        expect(res.error.name).to.equals(BoundJSONGraphModelError.name);
+        expect(res.error.message).to.equals(BoundJSONGraphModelError.message);
     });
 
     it('should ensure that correct parents are produced for non-paths.', function(done) {
@@ -125,12 +126,12 @@ describe('Deref', function() {
             }
         });
 
-        model.get(['a', 'b', 'e']).subscribe(function(json) {
-            model = model.deref(json.json.a);
+        model.get(['a', 'b', 'e']).subscribe(function(data) {
+            model = model.deref(data.json.a);
         });
 
-        model.get(['b', 'e']).subscribe(function(json) {
-            model = model.deref(json.json.b);
+        model.get(['b', 'e']).subscribe(function(data) {
+            model = model.deref(data.json.b);
         });
 
         var onNext = sinon.spy();

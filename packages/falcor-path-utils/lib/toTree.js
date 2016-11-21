@@ -5,10 +5,10 @@ var nullTerminator = require('./support/nullTerminator');
  * @param {Array} paths -
  * @returns {Object} -
  */
-module.exports = function toTree(paths) {
-    return paths.reduce(function(acc, path) {
-        return innerToTree(acc, path, 0, path.length);
-    }, {});
+module.exports = function toTree(paths, seed) {
+    return paths.reduce(function(seed, path) {
+        return innerToTree(seed, path, 0, path.length);
+    }, seed || {});
 };
 
 function innerToTree(seed, path, depth, length) {

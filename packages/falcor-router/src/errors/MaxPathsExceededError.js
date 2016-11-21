@@ -1,11 +1,11 @@
 var MESSAGE = "Maximum number of paths exceeded.";
 
 var MaxPathsExceededError = function MaxPathsExceededError(message) {
-    this.message = message === undefined ? MESSAGE : message;
-    this.stack = (new Error()).stack;
+    var err = Error.call(this, message || MESSAGE);
+    this.message = err.message;
+    this.stack = err.stack;
 };
 
-MaxPathsExceededError.prototype = new Error();
-MaxPathsExceededError.prototype.throwToNext = true;
+MaxPathsExceededError.prototype = Object.create(Error.prototype);
 
 module.exports = MaxPathsExceededError;

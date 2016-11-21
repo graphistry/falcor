@@ -7,10 +7,10 @@ var iterateKeySet = require('@graphistry/falcor-path-utils').iterateKeySet;
  * merges pathValue into a cache
  */
 module.exports = function pathValueMerge(cache, pathValue) {
+
     var refs = [];
     var values = [];
     var invalidations = [];
-    var isValueType = true;
 
     var path = pathValue.path;
     var value = pathValue.value;
@@ -18,33 +18,29 @@ module.exports = function pathValueMerge(cache, pathValue) {
 
     // The pathValue invalidation shape.
     if (pathValue.invalidated === true) {
-        invalidations.push({path: path});
-        isValueType = false;
+        invalidations.push(path);
     }
-
-    // References and reference sets. Needed for evaluating suffixes in all
-    // three types, get, call and set.
-    else if (type === $ref) {
-        refs.push({
-            path: path,
-            value: value.value
-        });
-    }
-
-    // Values.  Needed for reporting for call.
-    else {
-        values.push(pathValue);
-    }
-
     // If the type of pathValue is a valueType (reference or value) then merge
     // it into the jsonGraph cache.
-    if (isValueType) {
+    else {
+        // References and reference sets. Needed for evaluating suffixes in all
+        // three types, get, call and set.
+        if (type === $ref) {
+            refs.push({
+                path: path,
+                value: value.value
+            });
+        }
+        // Values.  Needed for reporting for call.
+        else {
+            values.push(pathValue);
+        }
         innerPathValueMerge(cache, pathValue);
     }
 
     return {
-        references: refs,
         values: values,
+        references: refs,
         invalidations: invalidations
     };
 };

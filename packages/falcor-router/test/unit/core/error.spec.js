@@ -9,7 +9,7 @@ var circularReference = require('./../../../src/exceptions').circularReference;
 var Promise = require('promise');
 
 describe('Error', function() {
-    it('should return an empty error when throwing a non error.', function(done) {
+    it('should return an error with a string message when throwing a string.', function(done) {
         var router = new R([{
             route: 'videos[{integers:ids}]',
             get: function (alias) {
@@ -30,7 +30,7 @@ describe('Error', function() {
                         videos: {
                             1: {
                                 $type: 'error',
-                                value: {}
+                                value: { message: 'hello world' }
                             }
                         }
                     }
@@ -68,7 +68,7 @@ describe('Error', function() {
             });
     });
 
-    it('thrown non-Error should insert in the value property of $error object for all requested paths.', function(done) {
+    it('thrown non-Error should insert a thrown Object error in the value property of $error object for all requested paths.', function(done) {
         var router = new R([{
             route: 'videos[{integers:id}].rating',
             get: function(json) {
@@ -82,7 +82,7 @@ describe('Error', function() {
         }]);
         var onNext = sinon.spy();
         router.
-            get([['videos', [1234, 333], 'rating']]).
+            get([['videos', [333, 1234], 'rating']]).
             do(onNext).
             do(noOp, noOp, function() {
                 expect(onNext.calledOnce).to.be.ok;
@@ -92,13 +92,19 @@ describe('Error', function() {
                             1234: {
                                 rating: {
                                     $type: "error",
-                                    value: { }
+                                    value: {
+                                        message: "not authorized",
+                                        unauthorized: true
+                                    }
                                 }
                             },
                             333: {
                                 rating: {
                                     $type: "error",
-                                    value: { }
+                                    value: {
+                                        message: "not authorized",
+                                        unauthorized: true
+                                    }
                                 }
                             }
                         }
@@ -131,9 +137,7 @@ describe('Error', function() {
                         }
                     }
                 },
-                paths: [
-                    ['videos', [1234, 333], 'rating']
-                ]
+                paths: [['videos', [333, 1234], 'rating']]
             }).
             do(onNext).
             do(noOp, noOp, function() {
@@ -144,13 +148,19 @@ describe('Error', function() {
                             1234: {
                                 rating: {
                                     $type: "error",
-                                    value: { }
+                                    value: {
+                                        message: "user not authorized",
+                                        unauthorized: true
+                                    }
                                 }
                             },
                             333: {
                                 rating: {
                                     $type: "error",
-                                    value: { }
+                                    value: {
+                                        message: "user not authorized",
+                                        unauthorized: true
+                                    }
                                 }
                             }
                         }
@@ -185,9 +195,7 @@ describe('Error', function() {
                         }
                     }
                 },
-                paths: [
-                    ['videos', [1234, 333], 'rating']
-                ]
+                paths: [['videos', [333, 1234], 'rating']]
             }).
             do(onNext).
             do(noOp, noOp, function() {
@@ -198,13 +206,19 @@ describe('Error', function() {
                             1234: {
                                 rating: {
                                     $type: "error",
-                                    value: { }
+                                    value: {
+                                        message: "not authorized",
+                                        unauthorized: true
+                                    }
                                 }
                             },
                             333: {
                                 rating: {
                                     $type: "error",
-                                    value: { }
+                                    value: {
+                                        message: "not authorized",
+                                        unauthorized: true
+                                    }
                                 }
                             }
                         }

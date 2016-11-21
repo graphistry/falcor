@@ -1,9 +1,10 @@
-var MESSAGE = 'Any JSONG-Graph returned from call must have paths.';
+var MESSAGE = 'JSONGraph returned from call must have a paths Array.';
 var CallRequiresPathsError = function CallRequiresPathsError() {
-    this.message = MESSAGE;
-    this.stack = (new Error()).stack;
+    var err = Error.call(this, MESSAGE);
+    this.stack = err.stack;
+    this.message = err.message;
 };
 
-CallRequiresPathsError.prototype = new Error();
+CallRequiresPathsError.prototype = Object.create(Error.prototype);
 
 module.exports = CallRequiresPathsError;

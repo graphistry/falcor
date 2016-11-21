@@ -1,35 +1,27 @@
 var Observable = require('../../rx').Observable;
+var materialize = require('./../materialize');
 var getExecutableMatches = require('./getExecutableMatches');
 
 /**
  * Sorts and strips the set of available matches given the pathSet.
  */
-module.exports = function runByPrecedence(pathSet, matches, actionRunner) {
+module.exports = function runByPrecedence(optimized, matches, method, actionRunner) {
 
     // Precendence matching
-    var sortedMatches = matches.
-        sort(sortByPrecedence);
+    var execs = getExecutableMatches(
+        optimized, matches.sort(sortByPrecedence)
+    );
 
-    var execs = getExecutableMatches(sortedMatches, [pathSet]);
-
-    var setOfMatchedPaths = Observable.
-        from(execs.matchAndPaths).
-        flatMap(actionRunner).
-
+    var setOfMatchedPaths = Observable
+        .from(execs.executableMatches)
         // Note: We do not wait for each observable to finish,
         // but repeat the cycle per onNext.
-        map(function(actionTuple) {
-
-            return {
-                match: actionTuple[0],
-                value: actionTuple[1]
-            };
-        });
+        .flatMap(actionRunner);
 
     if (execs.unhandledPaths) {
         setOfMatchedPaths = setOfMatchedPaths.
             concat(Observable.of({
-                match: {suffix: []},
+                match: { method: method },
                 value: {
                     isMessage: true,
                     unhandledPaths: execs.unhandledPaths

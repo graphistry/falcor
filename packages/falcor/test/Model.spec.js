@@ -9,32 +9,6 @@ var $error = require('@graphistry/falcor-json-graph').error;
 var fromPath = require('@graphistry/falcor-path-syntax').fromPath;
 var fromPaths = require('@graphistry/falcor-path-syntax').fromPathsOrPathValues;
 
-function ResponseObservable(response) {
-    this.response = response;
-}
-
-ResponseObservable.prototype = Object.create(Rx.Observable.prototype);
-
-ResponseObservable.prototype._subscribe = function(observer) {
-    return this.response.subscribe(observer);
-};
-
-ResponseObservable.prototype._toJSONG = function() {
-    return new ResponseObservable(this.response._toJSONG.apply(this.response, arguments));
-};
-
-ResponseObservable.prototype.progressively = function() {
-    return new ResponseObservable(this.response.progressively.apply(this.response, arguments));
-};
-
-ResponseObservable.prototype.then = function() {
-    return this.response.then.apply(this.response, arguments);
-};
-
-ResponseObservable.prototype[Symbol.observable] = function() {
-    return this.response[Symbol.observable].apply(this.response, arguments);
-};
-
 var modelGet = Model.prototype.get;
 var modelSet = Model.prototype.set;
 var modelCall = Model.prototype.call;
@@ -45,18 +19,18 @@ var modelGetValue = Model.prototype.getValue;
 var modelSetValue = Model.prototype.setValue;
 
 Model.prototype.get = function() {
-    return new ResponseObservable(modelGet.apply(this, fromPaths(Array.prototype.slice.call(arguments))));
+    return modelGet.apply(this, fromPaths(Array.prototype.slice.call(arguments)));
 };
 
 Model.prototype.set = function() {
-    return new ResponseObservable(modelSet.apply(this, fromPaths(Array.prototype.slice.call(arguments))));
+    return modelSet.apply(this, fromPaths(Array.prototype.slice.call(arguments)));
 };
 
 Model.prototype.call = function(fnPath, fnArgs, refPaths, thisPaths) {
     fnPath = fromPath(fnPath);
     refPaths = refPaths && fromPaths([].concat(refPaths)) || [];
     thisPaths = thisPaths && fromPaths([].concat(thisPaths)) || [];
-    return new ResponseObservable(modelCall.call(this, fnPath, fnArgs, refPaths, thisPaths));
+    return modelCall.call(this, fnPath, fnArgs, refPaths, thisPaths);
 };
 
 Model.prototype.invalidate = function() {
@@ -68,18 +42,18 @@ Model.prototype.getVersion = function() {
 };
 
 Model.prototype.preload = function() {
-    return new ResponseObservable(modelPreload.apply(this, fromPaths(Array.prototype.slice.call(arguments))));
+    return modelPreload.apply(this, fromPaths(Array.prototype.slice.call(arguments)));
 };
 
 Model.prototype.getValue = function() {
-    return new ResponseObservable(modelGetValue.apply(this, fromPaths(Array.prototype.slice.call(arguments))));
+    return modelGetValue.apply(this, fromPaths(Array.prototype.slice.call(arguments)));
 };
 
 Model.prototype.setValue = function(path, value) {
     if (typeof path === 'string') {
         path = fromPath(path);
     }
-    return new ResponseObservable(modelSetValue.call(this, path, value));
+    return modelSetValue.call(this, path, value);
 };
 
 var testRunner = require('./testRunner');
@@ -181,12 +155,13 @@ describe("Model", function() {
 
         subscription.dispose();
 
-        if (dataSourceGetCalled === 1 && !onNextCalled && unusubscribeCalled === 1 && !onErrorCalled && !onCompletedCalled) {
-            done()
-        }
-        else {
-            done(new Error("DataSource unsubscribe not called."));
-        }
+        expect(dataSourceGetCalled, 'dataSource.get should have been called').to.equal(1);
+        expect(!onNextCalled, 'onNext should not be called').to.be.ok;
+        expect(unusubscribeCalled, 'unusubscribe should have been called').to.equal(1);
+        expect(!onErrorCalled, 'onError should not be called').to.be.ok;
+        expect(!onCompletedCalled, 'onCompleted should not be called').to.be.ok;
+
+        done();
     });
 
     it('Supports RxJS 5.', function(done) {
@@ -214,7 +189,7 @@ describe("Model", function() {
                                             1: { name: "another test" }
                                         }
                                     },
-                                    paths: ["list", 1, "name"]
+                                    paths: [["list", 1, "name"]]
                                 };
 
                                 if (typeof observerOrOnNext === "function") {

@@ -7,7 +7,7 @@ var LocalDataSource = require('./../../data/LocalDataSource');
 var Cache = require('./../../data/Cache');
 var strip = require('./../../cleanData').stripDerefAndVersionKeys;
 
-describe('DataSource.', function() {
+describe('DataSource Only', function() {
     it('should validate args are sent to the dataSource collapsed.', function(done) {
         var onSet = sinon.spy(function(source, tmpGraph, jsonGraphFromSet) {
             return jsonGraphFromSet;
@@ -190,7 +190,7 @@ describe('DataSource.', function() {
 
                 count++;
             }, noOp, function() {
-                expect(count === 2, 'onNext to be called 2x').to.be.ok;
+                expect(count, 'expected onNext to be called twice').to.equal(2);
             }).
             subscribe(noOp, done, done);
     });

@@ -10,18 +10,18 @@ UnoDataSource.prototype = {
         var self = this;
         return Rx.Observable.create(function(observer) {
             var results;
-            var out = [{}];
+            var out = {};
             var error;
             try {
-                results = self.model._getPathValuesAsJSONG(self.model, paths.slice(0, 1), out).values;
+                results = self.model._getPathValuesAsJSONG(self.model, paths.slice(0, 1), out);
             } catch(e) {
                 error = e;
                 results = null;
             }
             if (results) {
-                if (results[0]) {
+                if (out) {
                     // returns all the paths even though they are missing
-                    observer.onNext({values: results[0].jsonGraph, paths: paths});
+                    observer.onNext({ jsonGraph: out.jsonGraph, paths: paths });
                 } else {
                     observer.onNext(undefined);
                 }

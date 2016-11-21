@@ -24,6 +24,9 @@ module.exports = function() {
     return retVal;
 };
 
+module.exports.generateState = generateState;
+module.exports.generateSummary = generateSummary;
+
 function generateSummary(id) {
     var videos = {};
     videos[id] = {

@@ -30,13 +30,12 @@ describe('Precedence Matching', function() {
             subscribe(noOp, done, done);
     });
 
-    xit('should properly precedence match with different lengths from call', function(done) {
+    it('should properly precedence match with different lengths from call', function(done) {
         var refCalled = 0;
         var leafCalled = 0;
         var router = new R([{
             route: 'init',
             call: function(path) {
-                debugger
                 return {
                     path: ['init'],
                     value: {

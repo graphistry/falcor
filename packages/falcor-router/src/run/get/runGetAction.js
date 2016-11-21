@@ -1,6 +1,8 @@
-var outputToObservable = require('../conversion/outputToObservable');
-var noteToJsongOrPV = require('../conversion/noteToJsongOrPV');
 var Observable = require('../../rx').Observable;
+var notOnCompleted = require('../conversion/notOnCompleted');
+var outputToObservable = require('../conversion/outputToObservable');
+var noteToMatchAndResult = require('../conversion/noteToMatchAndResult');
+var flattenAndNormalizeActionResults = require('../conversion/flattenAndNormalizeActionResults');
 
 module.exports = function runGetAction(routerInstance, jsongCache) {
     return function innerGetAction(matchAndPath) {
@@ -9,23 +11,13 @@ module.exports = function runGetAction(routerInstance, jsongCache) {
 };
 
 function getAction(routerInstance, matchAndPath, jsongCache) {
-    var match = matchAndPath.match;
-    var out;
-    try {
-        out = match.action.call(routerInstance, matchAndPath.path);
-        out = outputToObservable(out);
-    } catch (e) {
-        out = Observable.throw(e);
-    }
-
-    return out.
-        materialize().
-        filter(function(note) {
-            return note.kind !== 'C';
-        }).
-        map(noteToJsongOrPV(matchAndPath.path)).
-        map(function(jsonGraphOrPV) {
-            return [matchAndPath.match, jsonGraphOrPV];
-        });
+    return Observable.defer(function() {
+            return outputToObservable(matchAndPath.match
+                .action.call(routerInstance, matchAndPath.path));
+        })
+        .materialize()
+        .filter(notOnCompleted)
+        .map(noteToMatchAndResult(matchAndPath))
+        .mergeMap(flattenAndNormalizeActionResults);
 }
 

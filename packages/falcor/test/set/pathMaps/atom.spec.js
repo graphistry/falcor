@@ -5,7 +5,7 @@ var $pathMapEnvelope = require("../support/pathMapEnvelope");
 
 var expect = require('chai').expect;
 var getModel = require("../support/getModel");
-var setPathMaps = require("../../../lib/set/setPathMaps");
+var setPathMaps = require("../../../lib/cache/set/setPathMaps");
 
 describe("an atom", function() {
 
