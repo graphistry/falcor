@@ -19,7 +19,7 @@
     "build": "npm-run-all -l -p build-dev build-prod",
     "build-dev": "cross-env NODE_ENV=development webpack --config ./build/webpack.config.js",
     "build-prod": "cross-env NODE_ENV=production webpack --config ./build/webpack.config.js",
-    "prepublish": "npm run build && npm run test",
+    "prepublish": "npm run test && npm run build",
     "doc": "gulp doc",
     "perf": "node ./perf/index.js",
     "device": "devicePerfRunner",
