@@ -38,10 +38,10 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var memoizedQuerySyntax = (0, _memoizeQueryies2.default)(100);
 
 function fetchDataUntilSettled(_ref) {
-    var data = _ref.data;
-    var props = _ref.props;
-    var falcor = _ref.falcor;
-    var fragment = _ref.fragment;
+    var data = _ref.data,
+        props = _ref.props,
+        falcor = _ref.falcor,
+        fragment = _ref.fragment;
 
 
     var memo = {
@@ -59,16 +59,15 @@ function _fetchDataUntilSettled(memo) {
     if (memo.loading === false) {
         return _Observable.Observable.empty();
     }
-    var query = memo.query;
-    var falcor = memo.falcor;
-    var version = memo.version;
-    var fragment = memo.fragment;
+    var query = memo.query,
+        falcor = memo.falcor,
+        version = memo.version,
+        fragment = memo.fragment;
 
     if (query !== (memo.query = fragment(memo.data, memo.props)) || version !== (memo.version = falcor.getVersion())) {
-        var _memoizedQuerySyntax = memoizedQuerySyntax(memo.query);
-
-        var ast = _memoizedQuerySyntax.ast;
-        var error = _memoizedQuerySyntax.error;
+        var _memoizedQuerySyntax = memoizedQuerySyntax(memo.query),
+            ast = _memoizedQuerySyntax.ast,
+            error = _memoizedQuerySyntax.error;
 
         if (error) {
             return handleParseError(memo, error);

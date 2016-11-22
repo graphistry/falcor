@@ -56,11 +56,11 @@ var PostMessageDataSink = exports.PostMessageDataSink = function (_FalcorPubSubD
         key: 'onPostMessage',
         value: function onPostMessage() {
             var event = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-            var _event$data = event.data;
-            var data = _event$data === undefined ? {} : _event$data;
-            var type = data.type;
+            var _event$data = event.data,
+                data = _event$data === undefined ? {} : _event$data;
 
-            var rest = _objectWithoutProperties(data, ['type']);
+            var type = data.type,
+                rest = _objectWithoutProperties(data, ['type']);
 
             if (type !== 'falcor-operation') {
                 return;

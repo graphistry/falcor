@@ -38,11 +38,11 @@ var PostMessageEmitter = exports.PostMessageEmitter = function () {
         key: 'onPostMessage',
         value: function onPostMessage() {
             var event = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-            var _event$data = event.data;
-            var data = _event$data === undefined ? {} : _event$data;
-            var type = data.type;
+            var _event$data = event.data,
+                data = _event$data === undefined ? {} : _event$data;
 
-            var rest = _objectWithoutProperties(data, ['type']);
+            var type = data.type,
+                rest = _objectWithoutProperties(data, ['type']);
 
             if (!type || type.indexOf('falcor-operation') === -1) {
                 return;
@@ -88,9 +88,9 @@ var PostMessageEmitter = exports.PostMessageEmitter = function () {
     }, {
         key: 'emit',
         value: function emit(eventName, data) {
-            var source = this.source;
-            var target = this.target;
-            var once = this.once;
+            var source = this.source,
+                target = this.target,
+                once = this.once;
 
             if (once) {
                 this.once = null;

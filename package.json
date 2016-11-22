@@ -17,6 +17,6 @@
   },
   "homepage": "https://github.com/graphistry/falcor/blob/master/README.md",
   "devDependencies": {
-    "lerna": "2.0.0-beta.27"
+    "lerna": "2.0.0-beta.30"
   }
 }
