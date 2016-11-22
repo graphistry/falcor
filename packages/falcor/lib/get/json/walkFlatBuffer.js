@@ -59,24 +59,27 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
         refContainerAbsPath = referenceContainer[ƒ_abs_path];
     }
 
-    if (json && (f_meta = json[ƒ_meta])) {
-        if (!branchSelector && !(json instanceof FalcorJSON)) {
-            delete json[ƒ_meta];
-            json.__proto__ = new FalcorJSON(f_meta);
-        } else if (
-            f_meta[ƒm_version] === node[ƒ_version] &&
-            f_meta["$code"]    === path["$code"] &&
-            f_meta[ƒm_abs_path] === node[ƒ_abs_path]) {
-            results.hasValue = true;
-            arr[0] = json;
-            arr[1] = false;
-            return arr;
+    if (json) {
+        if (typeof json !== 'object') {
+            json = undefined;
+        } else if (f_meta = json[ƒ_meta]) {
+            if (!branchSelector && !(json instanceof FalcorJSON)) {
+                json = Object.create(new FalcorJSON(f_meta));
+            } else if (
+                f_meta[ƒm_version] === node[ƒ_version] &&
+                f_meta["$code"]    === path["$code"] &&
+                f_meta[ƒm_abs_path] === node[ƒ_abs_path]) {
+                results.hasValue = true;
+                arr[0] = json;
+                arr[1] = false;
+                return arr;
+            }
+            f_old_keys = f_meta[ƒm_keys];
+            f_meta[ƒm_version] = node[ƒ_version];
+            f_meta[ƒm_abs_path] = node[ƒ_abs_path];
+            f_meta[ƒm_deref_to] = refContainerRefPath;
+            f_meta[ƒm_deref_from] = refContainerAbsPath;
         }
-        f_old_keys = f_meta[ƒm_keys];
-        f_meta[ƒm_version] = node[ƒ_version];
-        f_meta[ƒm_abs_path] = node[ƒ_abs_path];
-        f_meta[ƒm_deref_to] = refContainerRefPath;
-        f_meta[ƒm_deref_from] = refContainerAbsPath;
     }
 
     f_new_keys = {};
@@ -198,14 +201,14 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
                 // then at least one leaf value was encountered, so create a
                 // branch to contain it.
                 if (f_meta === undefined) {
-                    f_meta = {};
+                    f_meta = Object.create(null);
                     f_meta[ƒm_version] = node[ƒ_version];
                     f_meta[ƒm_abs_path] = node[ƒ_abs_path];
                     f_meta[ƒm_deref_to] = refContainerRefPath;
                     f_meta[ƒm_deref_from] = refContainerAbsPath;
                 }
 
-                if (undefined === json || null === json) {
+                if (!json || typeof json !== 'object') {
                     // Enable developers to instrument branch node creation by
                     // providing a custom function. If they do, delegate branch
                     // node creation to them.

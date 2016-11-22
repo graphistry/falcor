@@ -87,7 +87,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 130);
+/******/ 	return __webpack_require__(__webpack_require__.s = 129);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -148,8 +148,24 @@ module.exports = function isFunction(func) {
 /* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(73);
+"use strict";
+'use strict';
 
+module.exports = {
+    toTree: __webpack_require__(48),
+    toPaths: __webpack_require__(47),
+    collapse: __webpack_require__(68),
+    pathCount: __webpack_require__(74),
+    getHashCode: __webpack_require__(43),
+    toFlatBuffer: __webpack_require__(78),
+    iterateKeySet: __webpack_require__(44),
+    hasIntersection: __webpack_require__(24),
+    optimizePathSets: __webpack_require__(73),
+    flatBufferToPaths: __webpack_require__(71),
+    computeFlatBufferHash: __webpack_require__(69),
+    pathsComplementFromTree: __webpack_require__(76),
+    pathsComplementFromLengthTree: __webpack_require__(75)
+};
 
 /***/ },
 /* 5 */
@@ -161,8 +177,8 @@ module.exports = __webpack_require__(73);
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var noop = __webpack_require__(22);
-var _Symbol = __webpack_require__(83);
-var toEsObservable = __webpack_require__(129);
+var _Symbol = __webpack_require__(82);
+var toEsObservable = __webpack_require__(128);
 
 /**
  * A ModelResponse is a container for the results of a get, set, or call operation performed on a Model. The ModelResponse provides methods which can be used to specify the output format of the data retrieved from a Model, as well as how that data is delivered.
@@ -635,12 +651,12 @@ function getBoundCacheNode(model, path) {
 var arr = new Array(5);
 var $ref = __webpack_require__(0);
 var createHardlink = __webpack_require__(11);
-var isExpired = __webpack_require__(123);
+var isExpired = __webpack_require__(122);
 var isFunction = __webpack_require__(3);
 var isPrimitive = __webpack_require__(8);
 var expireNode = __webpack_require__(6);
 var iterateKeySet = __webpack_require__(4).iterateKeySet;
-var mergeJSONGraphNode = __webpack_require__(125);
+var mergeJSONGraphNode = __webpack_require__(124);
 var NullInPathError = __webpack_require__(10);
 
 /**
@@ -1058,8 +1074,8 @@ module.exports = InvalidKeySetError;
 "use strict";
 
 module.exports = {
-    getWithPathsAsPathMap: __webpack_require__(92),
-    getWithPathsAsJSONGraph: __webpack_require__(96)
+    getWithPathsAsPathMap: __webpack_require__(91),
+    getWithPathsAsJSONGraph: __webpack_require__(95)
 };
 
 /***/ },
@@ -1445,7 +1461,7 @@ module.exports = function collect(lru, expired, totalArg, max, ratioArg, version
 
 var ModelResponse = __webpack_require__(5);
 var checkCacheAndReport = __webpack_require__(56);
-var getRequestCycle = __webpack_require__(109);
+var getRequestCycle = __webpack_require__(108);
 var noop = __webpack_require__(22);
 var empty = { dispose: noop, unsubscribe: noop };
 var collectLru = __webpack_require__(32);
@@ -2026,8 +2042,8 @@ module.exports = Date.now;
 var $ref = __webpack_require__(0);
 var splice = __webpack_require__(53);
 var isObject = __webpack_require__(1);
-var unlinkBackReferences = __webpack_require__(127);
-var unlinkForwardReference = __webpack_require__(128);
+var unlinkBackReferences = __webpack_require__(126);
+var unlinkForwardReference = __webpack_require__(127);
 
 module.exports = function removeNode(node, parent, key, lru) {
     if (isObject(node)) {
@@ -2884,7 +2900,7 @@ function getReferenceTarget(root, ref, modelRoot) {
 "use strict";
 
 var clone = __webpack_require__(12);
-var onError = __webpack_require__(93);
+var onError = __webpack_require__(92);
 var $atom = __webpack_require__(23);
 var $error = __webpack_require__(17);
 
@@ -3015,7 +3031,7 @@ module.exports = AssignableDisposable;
 "use strict";
 
 var gets = __webpack_require__(27);
-var mergeInto = __webpack_require__(111);
+var mergeInto = __webpack_require__(110);
 var collapse = __webpack_require__(4).collapse;
 var getWithPathsAsPathMap = gets.getWithPathsAsPathMap;
 var getWithPathsAsJSONGraph = gets.getWithPathsAsJSONGraph;
@@ -3150,7 +3166,7 @@ var isArray = Array.isArray;
 var isPathValue = __webpack_require__(21);
 var isJSONGraphEnvelope = __webpack_require__(36);
 var isJSONEnvelope = __webpack_require__(20);
-var setRequestCycle = __webpack_require__(114);
+var setRequestCycle = __webpack_require__(113);
 
 /**
  *  The set response is responsible for doing the request loop for the set
@@ -3300,7 +3316,7 @@ module.exports = function insertNode(node, parent, key, version, optimizedPath) 
 
 var $ref = __webpack_require__(0);
 var $error = __webpack_require__(17);
-var getType = __webpack_require__(122);
+var getType = __webpack_require__(121);
 var getSize = __webpack_require__(7);
 var getTimestamp = __webpack_require__(59);
 
@@ -3397,7 +3413,7 @@ module.exports = function reconstructPath(currentPath, key) {
 "use strict";
 
 var isObject = __webpack_require__(1);
-var transferBackReferences = __webpack_require__(126);
+var transferBackReferences = __webpack_require__(125);
 var removeNodeAndDescendants = __webpack_require__(39);
 var updateBackReferenceVersions = __webpack_require__(64);
 
@@ -3453,10 +3469,10 @@ var expiresNow = __webpack_require__(42);
 
 var atomSize = 50;
 
-var clone = __webpack_require__(120);
+var clone = __webpack_require__(119);
 var isArray = Array.isArray;
 var getSize = __webpack_require__(7);
-var getExpires = __webpack_require__(121);
+var getExpires = __webpack_require__(120);
 var atomType = __webpack_require__(23);
 
 module.exports = function wrapNode(nodeArg, typeArg, value) {
@@ -3543,7 +3559,7 @@ module.exports = g;
 "use strict";
 "use strict";
 
-var Model = __webpack_require__(80);
+var Model = __webpack_require__(79);
 var FalcorJSON = __webpack_require__(28);
 
 function falcor(opts) {
@@ -3758,34 +3774,11 @@ module.exports = function followReference(cacheRoot, ref, maxRefFollow) {
 "use strict";
 'use strict';
 
-module.exports = {
-    toTree: __webpack_require__(48),
-    toPaths: __webpack_require__(47),
-    collapse: __webpack_require__(68),
-    pathCount: __webpack_require__(75),
-    getHashCode: __webpack_require__(43),
-    toFlatBuffer: __webpack_require__(79),
-    iterateKeySet: __webpack_require__(44),
-    hasIntersection: __webpack_require__(24),
-    optimizePathSets: __webpack_require__(74),
-    flatBufferToPaths: __webpack_require__(71),
-    computeFlatBufferHash: __webpack_require__(69),
-    pathsComplementFromTree: __webpack_require__(77),
-    pathsComplementFromLengthTree: __webpack_require__(76)
-};
-
-/***/ },
-/* 74 */
-/***/ function(module, exports, __webpack_require__) {
-
-"use strict";
-'use strict';
-
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var iterateKeySet = __webpack_require__(44);
 var cloneArray = __webpack_require__(45);
-var catAndSlice = __webpack_require__(78);
+var catAndSlice = __webpack_require__(77);
 var $types = __webpack_require__(46);
 var $ref = $types.$ref;
 var followReference = __webpack_require__(72);
@@ -3868,7 +3861,7 @@ function optimizePathSet(cache, cacheRoot, pathSet, depth, out, optimizedPath, m
 }
 
 /***/ },
-/* 75 */
+/* 74 */
 /***/ function(module, exports) {
 
 "use strict";
@@ -3975,7 +3968,7 @@ function getPathCount(pathSet) {
 module.exports = getPathCount;
 
 /***/ },
-/* 76 */
+/* 75 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4010,7 +4003,7 @@ module.exports = function pathsComplementFromLengthTree(paths, tree) {
 };
 
 /***/ },
-/* 77 */
+/* 76 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4044,7 +4037,7 @@ module.exports = function pathsComplementFromTree(paths, tree) {
 };
 
 /***/ },
-/* 78 */
+/* 77 */
 /***/ function(module, exports) {
 
 "use strict";
@@ -4067,7 +4060,7 @@ module.exports = function catAndSlice(a, b, slice) {
 };
 
 /***/ },
-/* 79 */
+/* 78 */
 /***/ function(module, exports) {
 
 "use strict";
@@ -4202,7 +4195,7 @@ function _toFlatBuffer(seed, path, depth, length) {
 }
 
 /***/ },
-/* 80 */
+/* 79 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4210,16 +4203,16 @@ function _toFlatBuffer(seed, path, depth, length) {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var ModelRoot = __webpack_require__(82);
-var ModelDataSourceAdapter = __webpack_require__(81);
+var ModelRoot = __webpack_require__(81);
+var ModelDataSourceAdapter = __webpack_require__(80);
 
-var RequestQueue = __webpack_require__(103);
+var RequestQueue = __webpack_require__(102);
 var ModelResponse = __webpack_require__(5);
-var CallResponse = __webpack_require__(107);
-var InvalidateResponse = __webpack_require__(108);
+var CallResponse = __webpack_require__(106);
+var InvalidateResponse = __webpack_require__(107);
 
-var TimeoutScheduler = __webpack_require__(117);
-var ImmediateScheduler = __webpack_require__(116);
+var TimeoutScheduler = __webpack_require__(116);
+var ImmediateScheduler = __webpack_require__(115);
 
 var collectLru = __webpack_require__(32);
 
@@ -4235,7 +4228,7 @@ var setCache = __webpack_require__(34);
 var setJSONGraphs = __webpack_require__(19);
 var validateInput = __webpack_require__(40);
 var noOp = function noOp() {};
-var getCache = __webpack_require__(89);
+var getCache = __webpack_require__(88);
 var get = __webpack_require__(27);
 var GET_VALID_INPUT = __webpack_require__(57);
 
@@ -4338,14 +4331,14 @@ Model.prototype._collectRatio = 0.75;
  * @param {...PathSet} path - the path(s) to retrieve
  * @return {ModelResponse.<JSONEnvelope>} - the requested data as JSON
  */
-Model.prototype.get = __webpack_require__(110);
+Model.prototype.get = __webpack_require__(109);
 
 /**
  * Sets the value at one or more places in the JSONGraph model. The set method accepts one or more {@link PathValue}s, each of which is a combination of a location in the document and the value to place there.  In addition to accepting  {@link PathValue}s, the set method also returns the values after the set operation is complete.
  * @function
  * @return {ModelResponse.<JSONEnvelope>} - an {@link Observable} stream containing the values in the JSONGraph model after the set was attempted
  */
-Model.prototype.set = __webpack_require__(112);
+Model.prototype.set = __webpack_require__(111);
 
 /**
  * The preload method retrieves several {@link Path}s or {@link PathSet}s from a {@link Model} and loads them into the Model cache.
@@ -4469,7 +4462,7 @@ model.
 // []
 // ["usersById", 32] - because userModel refers to target of reference at ["users", 0]
  */
-Model.prototype.deref = __webpack_require__(85);
+Model.prototype.deref = __webpack_require__(84);
 
 /**
  * A dereferenced model can become invalid when the reference from which it was
@@ -4482,7 +4475,7 @@ Model.prototype.deref = __webpack_require__(85);
  * @return {Boolean} - If the currently deref'd model is still considered a
  * valid deref.
  */
-Model.prototype._hasValidParentReference = __webpack_require__(84);
+Model.prototype._hasValidParentReference = __webpack_require__(83);
 
 /**
  * Get data for a single {@link Path}.
@@ -4499,7 +4492,7 @@ Model.prototype._hasValidParentReference = __webpack_require__(84);
 
  // The code above prints "Jim" to the console.
  */
-Model.prototype.getValue = __webpack_require__(90);
+Model.prototype.getValue = __webpack_require__(89);
 
 /**
  * Set value for a single {@link Path}.
@@ -4517,7 +4510,7 @@ Model.prototype.getValue = __webpack_require__(90);
 
  // The code above prints "Jim" to the console.
  */
-Model.prototype.setValue = __webpack_require__(118);
+Model.prototype.setValue = __webpack_require__(117);
 
 /**
  * Set the local cache to a {@link JSONGraph} fragment. This method can be a useful way of mocking a remote document, or restoring the local cache from a previously stored state.
@@ -4801,7 +4794,7 @@ Model.prototype._optimizePath = function _optimizePath(path) {
     return abs_path.slice(0);
 };
 
-Model.prototype._getVersion = __webpack_require__(91);
+Model.prototype._getVersion = __webpack_require__(90);
 Model.prototype._getPathValuesAsPathMap = get.getWithPathsAsPathMap;
 Model.prototype._getPathValuesAsJSONG = get.getWithPathsAsJSONGraph;
 
@@ -4810,11 +4803,11 @@ Model.prototype._setPathMaps = __webpack_require__(34);
 Model.prototype._setJSONGs = __webpack_require__(19);
 Model.prototype._setCache = __webpack_require__(34);
 
-Model.prototype._invalidatePathValues = __webpack_require__(101);
-Model.prototype._invalidatePathMaps = __webpack_require__(100);
+Model.prototype._invalidatePathValues = __webpack_require__(100);
+Model.prototype._invalidatePathMaps = __webpack_require__(99);
 
 /***/ },
-/* 81 */
+/* 80 */
 /***/ function(module, exports) {
 
 "use strict";
@@ -4840,7 +4833,7 @@ ModelDataSourceAdapter.prototype.call = function call(path, args, suffixes, path
 module.exports = ModelDataSourceAdapter;
 
 /***/ },
-/* 82 */
+/* 81 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4900,7 +4893,7 @@ ModelRoot.prototype.comparator = function comparator(cacheNode, messageNode) {
 module.exports = ModelRoot;
 
 /***/ },
-/* 83 */
+/* 82 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4972,7 +4965,7 @@ module.exports = polyfillSymbol(_root);
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(66)))
 
 /***/ },
-/* 84 */
+/* 83 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5013,7 +5006,7 @@ function hasValidParentReference() {
 }
 
 /***/ },
-/* 85 */
+/* 84 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5024,7 +5017,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 var CONTAINER_DOES_NOT_EXIST = "e";
 var $ref = __webpack_require__(0);
 var getCachePosition = __webpack_require__(13);
-var InvalidDerefInputError = __webpack_require__(87);
+var InvalidDerefInputError = __webpack_require__(86);
 
 module.exports = function deref(boundJSONArg) {
 
@@ -5122,7 +5115,7 @@ module.exports = function deref(boundJSONArg) {
 };
 
 /***/ },
-/* 86 */
+/* 85 */
 /***/ function(module, exports) {
 
 "use strict";
@@ -5153,7 +5146,7 @@ BoundJSONGraphModelError.message = MESSAGE;
 module.exports = BoundJSONGraphModelError;
 
 /***/ },
-/* 87 */
+/* 86 */
 /***/ function(module, exports) {
 
 "use strict";
@@ -5185,7 +5178,7 @@ InvalidDerefInputError.message = MESSAGE;
 module.exports = InvalidDerefInputError;
 
 /***/ },
-/* 88 */
+/* 87 */
 /***/ function(module, exports) {
 
 "use strict";
@@ -5219,7 +5212,7 @@ InvalidModelError.message = MESSAGE;
 module.exports = InvalidModelError;
 
 /***/ },
-/* 89 */
+/* 88 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5227,7 +5220,7 @@ module.exports = InvalidModelError;
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var isInternalKey = __webpack_require__(124);
+var isInternalKey = __webpack_require__(123);
 
 /**
  * decends and copies the cache.
@@ -5302,7 +5295,7 @@ function _copyCache(node, out, fromKey) {
 }
 
 /***/ },
-/* 90 */
+/* 89 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5346,7 +5339,7 @@ module.exports = function getValue(path) {
 };
 
 /***/ },
-/* 91 */
+/* 90 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5361,17 +5354,17 @@ module.exports = function _getVersion(model, path) {
 };
 
 /***/ },
-/* 92 */
+/* 91 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
 "use strict";
 
 var isArray = Array.isArray;
-var walkPathAndBuildOutput = __webpack_require__(95);
-var walkFlatBufferAndBuildOutput = __webpack_require__(94);
+var walkPathAndBuildOutput = __webpack_require__(94);
+var walkFlatBufferAndBuildOutput = __webpack_require__(93);
 var getBoundCacheNode = __webpack_require__(18);
-var InvalidModelError = __webpack_require__(88);
+var InvalidModelError = __webpack_require__(87);
 var toFlatBuffer = __webpack_require__(4).toFlatBuffer;
 var computeFlatBufferHash = __webpack_require__(4).computeFlatBufferHash;
 
@@ -5454,7 +5447,7 @@ function getJSON(model, paths, values, forceUsePathWalk) {
 }
 
 /***/ },
-/* 93 */
+/* 92 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5482,7 +5475,7 @@ function onError(node, depth, results, requestedPath, fromReference, boxValues) 
 }
 
 /***/ },
-/* 94 */
+/* 93 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5547,21 +5540,24 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
         refContainerAbsPath = referenceContainer["\u001eƒalcor_abs_path"];
     }
 
-    if (json && (f_meta = json["\u001eƒalcor_metadata"])) {
-        if (!branchSelector && !(json instanceof FalcorJSON)) {
-            delete json["\u001eƒalcor_metadata"];
-            json.__proto__ = new FalcorJSON(f_meta);
-        } else if (f_meta["version"] === node["\u001eƒalcor_version"] && f_meta["$code"] === path["$code"] && f_meta["abs_path"] === node["\u001eƒalcor_abs_path"]) {
-            results.hasValue = true;
-            arr[0] = json;
-            arr[1] = false;
-            return arr;
+    if (json) {
+        if ((typeof json === "undefined" ? "undefined" : _typeof(json)) !== 'object') {
+            json = undefined;
+        } else if (f_meta = json["\u001eƒalcor_metadata"]) {
+            if (!branchSelector && !(json instanceof FalcorJSON)) {
+                json = Object.create(new FalcorJSON(f_meta));
+            } else if (f_meta["version"] === node["\u001eƒalcor_version"] && f_meta["$code"] === path["$code"] && f_meta["abs_path"] === node["\u001eƒalcor_abs_path"]) {
+                results.hasValue = true;
+                arr[0] = json;
+                arr[1] = false;
+                return arr;
+            }
+            f_old_keys = f_meta["keys"];
+            f_meta["version"] = node["\u001eƒalcor_version"];
+            f_meta["abs_path"] = node["\u001eƒalcor_abs_path"];
+            f_meta["deref_to"] = refContainerRefPath;
+            f_meta["deref_from"] = refContainerAbsPath;
         }
-        f_old_keys = f_meta["keys"];
-        f_meta["version"] = node["\u001eƒalcor_version"];
-        f_meta["abs_path"] = node["\u001eƒalcor_abs_path"];
-        f_meta["deref_to"] = refContainerRefPath;
-        f_meta["deref_from"] = refContainerAbsPath;
     }
 
     f_new_keys = {};
@@ -5677,14 +5673,14 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
                 // then at least one leaf value was encountered, so create a
                 // branch to contain it.
                 if (f_meta === undefined) {
-                    f_meta = {};
+                    f_meta = Object.create(null);
                     f_meta["version"] = node["\u001eƒalcor_version"];
                     f_meta["abs_path"] = node["\u001eƒalcor_abs_path"];
                     f_meta["deref_to"] = refContainerRefPath;
                     f_meta["deref_from"] = refContainerAbsPath;
                 }
 
-                if (undefined === json || null === json) {
+                if (!json || (typeof json === "undefined" ? "undefined" : _typeof(json)) !== 'object') {
                     // Enable developers to instrument branch node creation by
                     // providing a custom function. If they do, delegate branch
                     // node creation to them.
@@ -5764,7 +5760,7 @@ function onMissing(path, depth, results, requestedPath, requestedLength, optimiz
 /* eslint-enable */
 
 /***/ },
-/* 95 */
+/* 94 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6008,14 +6004,14 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
 /* eslint-enable */
 
 /***/ },
-/* 96 */
+/* 95 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
 "use strict";
 
-var walkPathAndBuildOutput = __webpack_require__(99);
-var BoundJSONGraphModelError = __webpack_require__(86);
+var walkPathAndBuildOutput = __webpack_require__(98);
+var BoundJSONGraphModelError = __webpack_require__(85);
 
 module.exports = getJSONGraph;
 
@@ -6067,7 +6063,7 @@ function getJSONGraph(model, paths, values) {
 }
 
 /***/ },
-/* 97 */
+/* 96 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6188,7 +6184,7 @@ function getReferenceTarget(root, ref, modelRoot, seed, boxValues, materialized)
 /* eslint-enable */
 
 /***/ },
-/* 98 */
+/* 97 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6237,7 +6233,7 @@ function onJSONGraphValue(node, type, depth, seed, results, requestedPath, optim
 }
 
 /***/ },
-/* 99 */
+/* 98 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6248,12 +6244,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 var isArray = Array.isArray;
 var clone = __webpack_require__(12);
 var $ref = __webpack_require__(0);
-var onValue = __webpack_require__(98);
+var onValue = __webpack_require__(97);
 var onMissing = __webpack_require__(30);
 var inlineValue = __webpack_require__(29);
 var onValueType = __webpack_require__(31);
 var isExpired = __webpack_require__(2);
-var getReferenceTarget = __webpack_require__(97);
+var getReferenceTarget = __webpack_require__(96);
 var NullInPathError = __webpack_require__(10);
 var InvalidKeySetError = __webpack_require__(26);
 
@@ -6427,7 +6423,7 @@ function walkPathAndBuildOutput(cacheRoot, node, path, depth, seed, results, req
 /* eslint-enable */
 
 /***/ },
-/* 100 */
+/* 99 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6592,7 +6588,7 @@ function invalidateNode(root, parent, node, key, value, branch, reference, versi
 }
 
 /***/ },
-/* 101 */
+/* 100 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6754,14 +6750,14 @@ function invalidateNode(root, parent, node, key, branch, reference, version, exp
 }
 
 /***/ },
-/* 102 */
+/* 101 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
 "use strict";
 
-var complement = __webpack_require__(104);
-var flushGetRequest = __webpack_require__(105);
+var complement = __webpack_require__(103);
+var flushGetRequest = __webpack_require__(104);
 var REQUEST_ID = 0;
 var GetRequestType = __webpack_require__(54).GetRequest;
 var setJSONGraphs = __webpack_require__(19);
@@ -7023,15 +7019,15 @@ function interopDisposable(disposable) {
 module.exports = GetRequest;
 
 /***/ },
-/* 103 */
+/* 102 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
 "use strict";
 
 var RequestTypes = __webpack_require__(54);
-var sendSetRequest = __webpack_require__(106);
-var GetRequest = __webpack_require__(102);
+var sendSetRequest = __webpack_require__(105);
+var GetRequest = __webpack_require__(101);
 var collapse = __webpack_require__(4).collapse;
 
 /**
@@ -7179,7 +7175,7 @@ RequestQueue.prototype = {
 module.exports = RequestQueue;
 
 /***/ },
-/* 104 */
+/* 103 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7240,7 +7236,7 @@ module.exports = function complement(requested, optimized, tree) {
 };
 
 /***/ },
-/* 105 */
+/* 104 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7336,7 +7332,7 @@ module.exports = function flushGetRequest(request, listOfPaths, callback) {
 };
 
 /***/ },
-/* 106 */
+/* 105 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7422,7 +7418,7 @@ var sendSetRequest = function sendSetRequest(originalJsonGraph, model, callback)
 module.exports = sendSetRequest;
 
 /***/ },
-/* 107 */
+/* 106 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7519,7 +7515,7 @@ CallResponse.prototype._subscribe = function _subscribe(observer) {
 module.exports = CallResponse;
 
 /***/ },
-/* 108 */
+/* 107 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7618,7 +7614,7 @@ InvalidateResponse.prototype._subscribe = function _subscribe(observer) {
 module.exports = InvalidateResponse;
 
 /***/ },
-/* 109 */
+/* 108 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7728,7 +7724,7 @@ function fastCat(arr1, arr2) {
 }
 
 /***/ },
-/* 110 */
+/* 109 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7762,7 +7758,7 @@ module.exports = function get() {
 };
 
 /***/ },
-/* 111 */
+/* 110 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7808,13 +7804,13 @@ function mergeInto(dest, node) {
 /* eslint-enable */
 
 /***/ },
-/* 112 */
+/* 111 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
 "use strict";
 
-var setValidInput = __webpack_require__(115);
+var setValidInput = __webpack_require__(114);
 var validateInput = __webpack_require__(40);
 var SetResponse = __webpack_require__(58);
 var ModelResponse = __webpack_require__(5);
@@ -7837,13 +7833,13 @@ module.exports = function set() {
 };
 
 /***/ },
-/* 113 */
+/* 112 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
 "use strict";
 
-var arrayFlatMap = __webpack_require__(119);
+var arrayFlatMap = __webpack_require__(118);
 
 /**
  * Takes the groups that are created in the SetResponse constructor and sets
@@ -7898,7 +7894,7 @@ function pluckEnvelopePaths(jsonGraphEnvelope) {
 }
 
 /***/ },
-/* 114 */
+/* 113 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7909,7 +7905,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 var emptyArray = [];
 var AssignableDisposable = __webpack_require__(55);
 var GetResponse = __webpack_require__(33);
-var setGroupsIntoCache = __webpack_require__(113);
+var setGroupsIntoCache = __webpack_require__(112);
 var getWithPathsAsPathMap = __webpack_require__(27).getWithPathsAsPathMap;
 var InvalidSourceError = __webpack_require__(9);
 var MaxRetryExceededError = __webpack_require__(50);
@@ -8011,7 +8007,7 @@ function subscribeToFollowupGet(model, observer, requestedPaths, isJSONGraph, is
 }
 
 /***/ },
-/* 115 */
+/* 114 */
 /***/ function(module, exports) {
 
 "use strict";
@@ -8025,7 +8021,7 @@ module.exports = {
 };
 
 /***/ },
-/* 116 */
+/* 115 */
 /***/ function(module, exports) {
 
 "use strict";
@@ -8043,7 +8039,7 @@ ImmediateScheduler.prototype.schedule = function schedule(action) {
 module.exports = ImmediateScheduler;
 
 /***/ },
-/* 117 */
+/* 116 */
 /***/ function(module, exports) {
 
 "use strict";
@@ -8075,7 +8071,7 @@ TimerDisposable.prototype.dispose = function () {
 module.exports = TimeoutScheduler;
 
 /***/ },
-/* 118 */
+/* 117 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8120,7 +8116,7 @@ module.exports = function setValue(pathArg, valueArg) {
 };
 
 /***/ },
-/* 119 */
+/* 118 */
 /***/ function(module, exports) {
 
 "use strict";
@@ -8143,7 +8139,7 @@ module.exports = function arrayFlatMap(array, selector) {
 };
 
 /***/ },
-/* 120 */
+/* 119 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8169,7 +8165,7 @@ module.exports = function clone(value) {
 };
 
 /***/ },
-/* 121 */
+/* 120 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8181,7 +8177,7 @@ module.exports = function getSize(node) {
 };
 
 /***/ },
-/* 122 */
+/* 121 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8198,7 +8194,7 @@ module.exports = function getType(node, anyType) {
 };
 
 /***/ },
-/* 123 */
+/* 122 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8214,7 +8210,7 @@ module.exports = function isAlreadyExpired(node) {
 };
 
 /***/ },
-/* 124 */
+/* 123 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8232,7 +8228,7 @@ module.exports = function isInternalKey(x) {
 };
 
 /***/ },
-/* 125 */
+/* 124 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8429,7 +8425,7 @@ module.exports = function mergeJSONGraphNode(parent, node, message, key, request
 };
 
 /***/ },
-/* 126 */
+/* 125 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8453,7 +8449,7 @@ module.exports = function transferBackReferences(fromNode, destNode) {
 };
 
 /***/ },
-/* 127 */
+/* 126 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8473,7 +8469,7 @@ module.exports = function unlinkBackReferences(node) {
 };
 
 /***/ },
-/* 128 */
+/* 127 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8494,7 +8490,7 @@ module.exports = function unlinkForwardReference(reference) {
 };
 
 /***/ },
-/* 129 */
+/* 128 */
 /***/ function(module, exports) {
 
 "use strict";
@@ -8549,7 +8545,7 @@ function toEsObservable(_self) {
 module.exports = toEsObservable;
 
 /***/ },
-/* 130 */
+/* 129 */
 /***/ function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__(67);
