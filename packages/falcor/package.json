@@ -1,6 +1,6 @@
 {
   "name": "@graphistry/falcor",
-  "version": "2.5.1",
+  "version": "2.5.2",
   "description": "A JavaScript library for efficient data fetching.",
   "main": "./index.js",
   "homepage": "https://github.com/graphistry/falcor/blob/master/packages/falcor/README.md",
@@ -43,7 +43,7 @@
     "falcorjs"
   ],
   "devDependencies": {
-    "@graphistry/falcor-router": "^2.5.1",
+    "@graphistry/falcor-router": "^2.5.2",
     "@graphistry/falcor-json-graph": "^2.0.4",
     "@graphistry/falcor-path-syntax": "^2.0.4",
     "@graphistry/falcor-query-syntax": "^2.5.0",
