@@ -162,7 +162,7 @@ describe('References', function() {
         }
     });
 
-    it('should warn in debug mode if we follow at least 50 references', function() {
+    xit('should warn in debug mode if we follow at least 50 references', function() {
 
         runTestWithConsoleFn(null, false);
         runTestWithConsoleFn('log', true);
@@ -229,7 +229,7 @@ describe('References', function() {
         }
     });
 
-    it('should warn getting JSONGraph in debug mode if we follow at least 50 references', function() {
+    xit('should warn getting JSONGraph in debug mode if we follow at least 50 references', function() {
 
         runTestWithConsoleFn(null, false);
         runTestWithConsoleFn('log', true);

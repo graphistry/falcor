@@ -4,7 +4,8 @@
   "description": "Graphistry's FalcorJS mono repo",
   "main": "index.js",
   "scripts": {
-    "lerna": "lerna"
+    "lerna": "lerna",
+    "pub-alpha": "lerna publish --npm-tag=alpha"
   },
   "repository": {
     "type": "git",

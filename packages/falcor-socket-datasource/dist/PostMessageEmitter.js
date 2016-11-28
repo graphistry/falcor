@@ -23,13 +23,13 @@ function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in ob
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var PostMessageEmitter = exports.PostMessageEmitter = function () {
-    function PostMessageEmitter(source, target, once) {
+    function PostMessageEmitter(source, target) {
         _classCallCheck(this, PostMessageEmitter);
 
-        this.once = once;
         this.source = source;
         this.target = target;
         this.listeners = {};
+        this.connected = true;
         this.onPostMessage = this.onPostMessage.bind(this);
         source.addEventListener('message', this.onPostMessage);
     }
@@ -69,8 +69,8 @@ var PostMessageEmitter = exports.PostMessageEmitter = function () {
             }
         }
     }, {
-        key: 'off',
-        value: function off(eventName, handler) {
+        key: 'removeListener',
+        value: function removeListener(eventName, handler) {
             var listeners = this.listeners;
 
             var handlers = listeners[eventName];
@@ -87,19 +87,42 @@ var PostMessageEmitter = exports.PostMessageEmitter = function () {
         }
     }, {
         key: 'emit',
-        value: function emit(eventName, data) {
-            var source = this.source,
-                target = this.target,
-                once = this.once;
+        value: function emit(eventName) {
+            var _ref = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+                kind = _ref.kind,
+                value = _ref.value,
+                error = _ref.error;
 
-            if (once) {
-                this.once = null;
+            var finalized = false,
+                payload = void 0;
+            var source = this.source,
+                target = this.target;
+
+            switch (kind) {
+                case 'N':
+                    payload = { kind: kind, value: value };
+                    break;
+                case 'E':
+                    payload = { kind: kind, error: error };
+                    finalized = true;
+                    break;
+                case 'C':
+                    payload = { kind: kind };
+                    finalized = true;
+                    break;
+            }
+            if (finalized) {
                 this.target = null;
                 this.source = null;
                 this.listeners = null;
-                source && source.removeEventListener('message', this.onPostMessage);
+                this.connected = false;
+                if (source) {
+                    source.removeEventListener('message', this.onPostMessage);
+                }
             }
-            target && target.postMessage(_extends({ type: eventName }, data), '*');
+            if (payload && target) {
+                target.postMessage(_extends({ type: eventName }, payload), '*');
+            }
         }
     }]);
 

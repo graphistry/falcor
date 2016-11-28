@@ -65,7 +65,7 @@ var PostMessageDataSink = exports.PostMessageDataSink = function (_FalcorPubSubD
             if (type !== 'falcor-operation') {
                 return;
             }
-            this.response(rest, new _PostMessageEmitter.PostMessageEmitter(window, event.source || parent, true));
+            this.response(rest, new _PostMessageEmitter.PostMessageEmitter(window, event.source || parent));
         }
     }, {
         key: 'unsubscribe',
