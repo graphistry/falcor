@@ -1,6 +1,6 @@
 {
   "name": "@graphistry/falcor-router",
-  "version": "2.4.2",
+  "version": "2.5.0",
   "description": "A router DataSource constructor for falcor that allows you to model all your cloud data sources as a single JSON resource.",
   "main": "src/Router.js",
   "homepage": "https://github.com/graphistry/falcor/blob/master/packages/falcor-router/README.md",
@@ -14,13 +14,13 @@
   },
   "dependencies": {
     "@graphistry/falcor-path-syntax": "^2.0.4",
-    "@graphistry/falcor-path-utils": "^2.1.0",
+    "@graphistry/falcor-path-utils": "^2.5.0",
     "rxjs": ">=5.0.0-rc.4"
   },
   "devDependencies": {
     "chai": "^2.3.0",
     "coveralls": "^2.11.2",
-    "@graphistry/falcor": "^2.4.0",
+    "@graphistry/falcor": "^2.5.0",
     "@graphistry/falcor-json-graph": "^2.0.4",
     "gulp": "~3.8.11",
     "gulp-bump": "~0.1.13",
