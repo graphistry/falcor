@@ -1,11 +1,18 @@
 var isArray = Array.isArray;
+var pathToTree = require('@graphistry/falcor-path-utils/lib/toTree').pathToTree;
+var materializedAtom = require('@graphistry/falcor-path-utils/lib/support/materializedAtom');
 
 module.exports = onMissing;
 
 /* eslint-disable no-constant-condition */
 function onMissing(path, depth, results,
-                   requestedPath, requestedLength,
-                   optimizedPath, optimizedLength) {
+                   requestedPath, requestedLength, fromReference,
+                   optimizedPath, optimizedLength, reportMissing,
+                   json, reportMaterialized, createMaterializedBranch) {
+
+    if (!reportMissing && !reportMaterialized) {
+        return;
+    }
 
     var keyset,
         restPathIndex = -1,
@@ -20,12 +27,22 @@ function onMissing(path, depth, results,
         restPath[restPathIndex] = keyset;
     }
 
-    var lastKeyIsNull = keyset === null;
-    var missDepth = depth,
-        missTotal = requestedLength, missingPath = requestedPath,
-        missingPaths = results.requested || (results.requested = []);
 
-    var isRequestedPath = true, index, count, mPath;
+    var index, count, mPath;
+    var lastKeyIsNull = keyset === null;
+    var isRequestedPath = reportMissing;
+    var missDepth, missTotal, missingPath, missingPaths;
+
+    if (!reportMissing) {
+        missDepth = optimizedLength;
+        missingPath = optimizedPath;
+        missTotal = optimizedLength + restPathCount - Number(lastKeyIsNull);
+    } else {
+        missDepth = depth;
+        missTotal = requestedLength;
+        missingPath = requestedPath;
+        missingPaths = results.requested || (results.requested = []);
+    }
 
     do {
         if (restPathCount < requestedLength || !isRequestedPath) {
@@ -39,21 +56,31 @@ function onMissing(path, depth, results,
             while (index < missTotal) {
                 mPath[index++] = restPath[++restPathIndex];
             }
-            missingPaths[missingPaths.length] = mPath;
-        } else {
-            missingPaths[missingPaths.length] = restPath;
         }
 
         // break after inserting both requested and optimized missing paths
         if (isRequestedPath = !isRequestedPath) {
+            if (reportMissing) {
+                missingPaths[missingPaths.length] = mPath;
+            }
             break;
         }
+
+        missingPaths[missingPaths.length] = mPath || restPath;
 
         missDepth = optimizedLength;
         missingPath = optimizedPath;
         missingPaths = results.missing || (results.missing = []);
         missTotal = optimizedLength + restPathCount - Number(lastKeyIsNull);
     } while (true);
+
+    if (reportMaterialized) {
+        if (restPathCount === 0) {
+            return materializedAtom;
+        }
+        return pathToTree(json, mPath, missDepth, missTotal,
+                          materializedAtom, createMaterializedBranch);
+    }
 }
 /* eslint-enable */
 

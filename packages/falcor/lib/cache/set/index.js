@@ -11,13 +11,14 @@ module.exports = {
     setJSONGraphs: require("./setJSONGraphs")
 };
 
-function json(model, args, data, progressive) {
+function json(model, args, data, progressive, expireImmediate) {
     args = groupCacheArguments(args);
-    var set = setGroupsIntoCache(model, args);
-    var get = progressive && getJSON(model, set.relative, data);
+    var set = setGroupsIntoCache(model, args /*, expireImmediate */);
+    var get = progressive && getJSON(model, set.relative, data, progressive, expireImmediate);
     var jsong = getJSONGraph({
         _root: model._root, _boxed: model._boxed, _materialized: true,
-        _treatErrorsAsValues: model._treatErrorsAsValues }, set.optimized, {});
+        _treatErrorsAsValues: model._treatErrorsAsValues
+    }, set.optimized, {}, progressive, expireImmediate);
     return {
         args: args,
         data: data,
@@ -31,14 +32,14 @@ function json(model, args, data, progressive) {
     };
 }
 
-function jsonGraph(model, args, data) {
+function jsonGraph(model, args, data, progressive, expireImmediate) {
     args = groupCacheArguments(args);
-    var set = setGroupsIntoCache(model, args);
+    var set = setGroupsIntoCache(model, args /*, expireImmediate */);
     var jsong = getJSONGraph({
         _root: model._root,
         _boxed: model._boxed, _materialized: true,
         _treatErrorsAsValues: model._treatErrorsAsValues
-    }, set.optimized, data);
+    }, set.optimized, data, progressive, expireImmediate);
     return {
         args: args,
         data: data,
@@ -51,7 +52,7 @@ function jsonGraph(model, args, data) {
     };
 }
 
-function setGroupsIntoCache(model, xs) {
+function setGroupsIntoCache(model, xs /*, expireImmediate */) {
 
     var groupIndex = -1;
     var groupCount = xs.length;
@@ -70,7 +71,7 @@ function setGroupsIntoCache(model, xs) {
 
         if (groupedArgs.length > 0) {
             var operation = module.exports["set" + inputType];
-            var resultPaths = operation(model, groupedArgs, selector);
+            var resultPaths = operation(model, groupedArgs, selector, null, false);
             optimizedPaths.push.apply(optimizedPaths, resultPaths[1]);
             if (inputType === "PathValues") {
                 requestedPaths.push.apply(requestedPaths, groupedArgs.map(pluckPaths));

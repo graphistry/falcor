@@ -5,7 +5,7 @@ var expireNode = require("../expireNode");
 var createHardlink = require("../createHardlink");
 var getCachePosition = require("../getCachePosition");
 var NullInPathError = require("../../errors/NullInPathError");
-var iterateKeySet = require("@graphistry/falcor-path-utils").iterateKeySet;
+var iterateKeySet = require("@graphistry/falcor-path-utils/lib/iterateKeySet");
 var mergeValueOrInsertBranch = require("../mergeValueOrInsertBranch");
 
 /**
@@ -16,7 +16,7 @@ var mergeValueOrInsertBranch = require("../mergeValueOrInsertBranch");
  * @return {Array.<Array.<Path>>} - an Array of Arrays where each inner Array is a list of requested and optimized paths (respectively) for the successfully set values.
  */
 
-module.exports = function setPathValues(model, pathValues, errorSelector, comparator) {
+module.exports = function setPathValues(model, pathValues, errorSelector, comparator, expireImmediate) {
 
     var modelRoot = model._root;
     var lru = modelRoot;
@@ -46,7 +46,7 @@ module.exports = function setPathValues(model, pathValues, errorSelector, compar
         setPathSet(
             value, path, 0, cache, parent, node,
             requestedPaths, optimizedPaths, requestedPath, optimizedPath,
-            version, expired, lru, comparator, errorSelector
+            version, expired, lru, comparator, errorSelector, expireImmediate
         );
     }
 
@@ -68,7 +68,7 @@ module.exports = function setPathValues(model, pathValues, errorSelector, compar
 function setPathSet(
     value, path, depth, root, parent, node,
     requestedPaths, optimizedPaths, requestedPath, optimizedPath,
-    version, expired, lru, comparator, errorSelector) {
+    version, expired, lru, comparator, errorSelector, expireImmediate) {
 
     var note = {};
     var branch = depth < path.length - 1;
@@ -84,8 +84,8 @@ function setPathSet(
 
         var results = setNode(
             root, parent, node, key, value,
-            branch, false, requestedPath, optimizedPath,
-            version, expired, lru, comparator, errorSelector
+            branch, false, requestedPath, optimizedPath, version,
+            expired, lru, comparator, errorSelector, expireImmediate
         );
 
         requestedPath[depth] = key;
@@ -102,7 +102,7 @@ function setPathSet(
                     value, path, depth + 1,
                     root, nextParent, nextNode,
                     requestedPaths, optimizedPaths, requestedPath, nextOptimizedPath,
-                    version, expired, lru, comparator, errorSelector
+                    version, expired, lru, comparator, errorSelector, expireImmediate
                 );
             } else {
                 requestedPaths.push(requestedPath.slice(0, requestedPath.index + 1));
@@ -119,14 +119,14 @@ function setPathSet(
 /* eslint-enable */
 
 function setReference(
-    value, root, node, requestedPath, optimizedPath,
-    version, expired, lru, comparator, errorSelector) {
+    value, root, node, requestedPath, optimizedPath, version,
+    expired, lru, comparator, errorSelector, expireImmediate) {
 
     var parent;
     var reference = node.value;
     optimizedPath = reference.slice(0);
 
-    if (isExpired(node)) {
+    if (isExpired(node, expireImmediate)) {
         expireNode(node, expired, lru);
         node = undefined;
         parent = root;
@@ -155,8 +155,8 @@ function setReference(
 
                 var results = setNode(
                     root, parent, node, key, value,
-                    branch, true, requestedPath, optimizedPath,
-                    version, expired, lru, comparator, errorSelector
+                    branch, true, requestedPath, optimizedPath, version,
+                    expired, lru, comparator, errorSelector, expireImmediate
                 );
                 node = results[0];
                 optimizedPath = results[2];
@@ -184,16 +184,16 @@ function setReference(
 
 function setNode(
     root, parent, node, key, value,
-    branch, reference, requestedPath, optimizedPath,
-    version, expired, lru, comparator, errorSelector) {
+    branch, reference, requestedPath, optimizedPath, version,
+    expired, lru, comparator, errorSelector, expireImmediate) {
 
     var type = node.$type;
 
     while (type === $ref) {
 
         var results = setReference(
-            value, root, node, requestedPath, optimizedPath,
-            version, expired, lru, comparator, errorSelector
+            value, root, node, requestedPath, optimizedPath, version,
+            expired, lru, comparator, errorSelector, expireImmediate
         );
 
         node = results[0];
@@ -221,8 +221,8 @@ function setNode(
 
         node = mergeValueOrInsertBranch(
             parent, node, key, value,
-            branch, reference, requestedPath, optimizedPath,
-            version, expired, lru, comparator, errorSelector
+            branch, reference, requestedPath, optimizedPath, version,
+            expired, lru, comparator, errorSelector, expireImmediate
         );
     }
 

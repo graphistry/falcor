@@ -2,12 +2,12 @@ module.exports = internalKeyDefinitions;
 
 function internalKeyDefinitions() {
 
-    const ƒ_ = String.fromCharCode(30);
-    const ƒalcor = ƒ_ + 'ƒalcor';
+    const _f = String.fromCharCode(30);
+    const f_ = _f + 'f_';
 
     return {
-        'ƒ_':              ƒ_,
-        'ƒ_meta':          ƒalcor + '_metadata',
+        'ƒ_':              _f,
+        'ƒ_meta':          f_ + 'metadata',
 
         'ƒm_path':         'path',
         'ƒm_keys':         'keys',
@@ -16,20 +16,20 @@ function internalKeyDefinitions() {
         'ƒm_deref_to':     'deref_to',
         'ƒm_deref_from':   'deref_from',
 
-        'ƒ_key':           ƒalcor + '_key',
-        'ƒ_ref':           ƒalcor + '_ref',
-        'ƒ_head':          ƒalcor + '_head',
-        'ƒ_next':          ƒalcor + '_next',
-        'ƒ_path':          ƒalcor + '_path',
-        'ƒ_prev':          ƒalcor + '_prev',
-        'ƒ_tail':          ƒalcor + '_tail',
-        'ƒ_parent':        ƒalcor + '_parent',
-        'ƒ_context':       ƒalcor + '_context',
-        'ƒ_version':       ƒalcor + '_version',
-        'ƒ_abs_path':      ƒalcor + '_abs_path',
-        'ƒ_ref_index':     ƒalcor + '_ref_index',
-        'ƒ_refs_length':   ƒalcor + '_refs_length',
-        'ƒ_invalidated':   ƒalcor + '_invalidated',
-        'ƒ_wrapped_value': ƒalcor + '_wrapped_value',
+        'ƒ_key':           f_ + 'key',
+        'ƒ_ref':           f_ + 'ref',
+        'ƒ_head':          f_ + 'head',
+        'ƒ_next':          f_ + 'next',
+        'ƒ_path':          f_ + 'path',
+        'ƒ_prev':          f_ + 'prev',
+        'ƒ_tail':          f_ + 'tail',
+        'ƒ_parent':        f_ + 'parent',
+        'ƒ_context':       f_ + 'context',
+        'ƒ_version':       f_ + 'version',
+        'ƒ_abs_path':      f_ + 'abs_path',
+        'ƒ_ref_index':     f_ + 'ref_index',
+        'ƒ_refs_length':   f_ + 'refs_length',
+        'ƒ_invalidated':   f_ + 'invalidated',
+        'ƒ_wrapped_value': f_ + 'wrapped_value',
     };
 }

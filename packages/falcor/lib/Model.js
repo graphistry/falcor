@@ -7,8 +7,6 @@ var ImmediateScheduler = require("./schedulers/ImmediateScheduler");
 var lruCollect = require("./lru/collect");
 var getSize = require("./support/getSize");
 var isObject = require("./support/isObject");
-var isFunction = require("./support/isFunction");
-var isPrimitive = require("./support/isPrimitive");
 var isJSONEnvelope = require("./support/isJSONEnvelope");
 var getCachePosition = require("./cache/getCachePosition");
 var isJSONGraphEnvelope = require("./support/isJSONGraphEnvelope");
@@ -68,16 +66,16 @@ function Model(opts) {
     if (options._seed) {
         this._recycleJSON = true;
         this._seed = options._seed;
+        this._treatErrorsAsValues = true;
+    } else if (this._recycleJSON) {
+        this._seed = {};
+        this._treatErrorsAsValues = true;
     }
 
     this._boxed = options.boxed === true || options._boxed || false;
     this._materialized = options.materialized === true || options._materialized || false;
     this._treatErrorsAsValues = options.treatErrorsAsValues === true || options._treatErrorsAsValues || false;
     this._allowFromWhenceYouCame = options.allowFromWhenceYouCame === true || options._allowFromWhenceYouCame || false;
-
-    if (this._recycleJSON) {
-        this._treatErrorsAsValues = true;
-    }
 
     if (options.cache) {
         this.setCache(options.cache);
@@ -92,8 +90,8 @@ Model.prototype.constructor = Model;
  * @param {...PathSet} path - the path(s) to retrieve
  * @return {ModelResponse.<JSONEnvelope>} - the requested data as JSON
  */
-Model.prototype.get = function get(...paths) {
-    return new Call('get', this, paths)._toJSON({}, []);
+Model.prototype.get = function get() {
+    return new Call('get', this, Array.prototype.slice.call(arguments, 0))._toJSON(this._seed || {}, []);
 }
 
 /**
@@ -101,8 +99,8 @@ Model.prototype.get = function get(...paths) {
  * @function
  * @return {ModelResponse.<JSONEnvelope>} - an {@link Observable} stream containing the values in the JSONGraph model after the set was attempted
  */
-Model.prototype.set = function set(...values) {
-    return new Call('set', this, values)._toJSON({}, []);
+Model.prototype.set = function set() {
+    return new Call('set', this, Array.prototype.slice.call(arguments, 0))._toJSON({}, []);
 }
 
 /**
@@ -111,8 +109,8 @@ Model.prototype.set = function set(...values) {
  * @param {...PathSet} path - the path(s) to retrieve
  * @return {ModelResponse.<JSONEnvelope>} - a ModelResponse that completes when the data has been loaded into the cache.
  */
-Model.prototype.preload = function preload(...paths) {
-    return new Call('get', this, paths)._toJSON(null, []);
+Model.prototype.preload = function preload() {
+    return new Call('get', this, Array.prototype.slice.call(arguments, 0))._toJSON(null, []);
 }
 
 /**
@@ -125,8 +123,8 @@ Model.prototype.preload = function preload(...paths) {
  * @return {ModelResponse.<JSONEnvelope> - a JSONEnvelope contains the values returned from the function
  */
 
-Model.prototype.call = function call(...args) {
-    return new Call('call', this, args)._toJSON({}, []);
+Model.prototype.call = function call() {
+    return new Call('call', this, Array.prototype.slice.call(arguments, 0))._toJSON({}, []);
 }
 
 /**
@@ -134,8 +132,8 @@ Model.prototype.call = function call(...args) {
  * @function
  * @param {...PathSet} path - the  paths to remove from the {@link Model}'s cache.
  */
-Model.prototype.invalidate = function invalidate(...values) {
-    return new Call('invalidate', this, values)._toJSON(null, null).then();
+Model.prototype.invalidate = function invalidate() {
+    return new Call('invalidate', this, Array.prototype.slice.call(arguments, 0))._toJSON(null, null).then();
 }
 
 /**
@@ -310,7 +308,8 @@ Model.prototype.setCache = function modelSetCache(cacheOrJSONGraphEnvelope) {
  // Storing the boxshot of the first 10 titles in the first 10 genreLists to local storage.
  localStorage.setItem('cache', JSON.stringify(model.getCache("genreLists[0...10][0...10].boxshot")));
  */
-Model.prototype.getCache = function _getCache(...paths) {
+Model.prototype.getCache = function _getCache() {
+    var paths = Array.prototype.slice.call(arguments, 0);
     if (paths.length === 0) {
         return getCache(this._root.cache);
     }
@@ -375,9 +374,9 @@ Model.prototype.batch = function batch(schedulerOrDelay) {
         scheduler = new TimeoutScheduler(Math.round(Math.abs(schedulerOrDelay)));
     } else if (!schedulerOrDelay) {
         scheduler = new TimeoutScheduler(1);
-    } else if (isFunction(schedulerOrDelay.schedule)) {
+    } else if (typeof schedulerOrDelay.schedule === 'function') {
         scheduler = schedulerOrDelay;
-    } else if (isFunction(schedulerOrDelay)) {
+    } else if (typeof schedulerOrDelay === 'function') {
         scheduler = { scheudle: schedulerOrDelay };
     }
 

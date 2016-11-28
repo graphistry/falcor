@@ -556,6 +556,38 @@ describe('Get', function() {
             subscribe(noOp, done, done);
     });
 
+    it('should tolerate routes which return only invalidations', function (done) {
+        var router = new R([{
+            route: 'videos[{integers:ids}].title',
+            get: function (alias) {
+                return alias.ids.map(function(id) {
+                    return {
+                        invalidated: true,
+                        path: ['videos', id, 'title']
+                    };
+                });
+            }
+        }]);
+        var obs = router.get([["videos", 1, "title"]]);
+        var onNext = sinon.spy();
+
+        obs.
+            do(onNext, noOp, function() {
+                expect(onNext.calledOnce).to.be.ok;
+                expect(onNext.getCall(0).args[0]).to.deep.equals({
+                    invalidated: [['videos', 1, 'title']],
+                    jsonGraph: {
+                        videos: {
+                            1: {
+                                title: {$type: 'atom'}
+                            }
+                        }
+                    }
+                });
+            }).
+            subscribe(noOp, done, done);
+    });
+
     function getPrecedenceRouter(onTitle, onRating) {
         return new R([{
             route: 'videos[{integers:ids}].title',

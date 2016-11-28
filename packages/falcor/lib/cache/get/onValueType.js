@@ -1,37 +1,36 @@
-var $atom = require("../../types/atom");
 var isExpired = require("../isExpired");
 var expireNode = require("../expireNode");
 var lruPromote = require("../../lru/promote");
 
 module.exports = onValueType;
 
-function onValueType(node, type,
+function onValueType(node, type, json,
                      path, depth, seed, results,
                      requestedPath, requestedLength,
                      optimizedPath, optimizedLength,
-                     fromReference, modelRoot, expired,
-                     boxValues, materialized, hasDataSource,
+                     fromReference, modelRoot, expired, expireImmediate,
+                     branchSelector, boxValues, materialized, reportMissing,
                      treatErrorsAsValues, onValue, onMissing) {
 
+    var reportMaterialized = materialized;
+
     if (!node || !type) {
-        if (materialized && !hasDataSource) {
-            if (seed) {
-                results.hasValue = true;
-                return { $type: $atom };
-            }
-            return undefined;
-        } else {
-            return onMissing(path, depth, results,
-                             requestedPath, requestedLength,
-                             optimizedPath, optimizedLength);
+        if (materialized) {
+            reportMaterialized = true;
+            seed && (results.hasValue = true);
         }
-    } else if (isExpired(node)) {
+        return onMissing(path, depth, results,
+                         requestedPath, requestedLength, fromReference,
+                         optimizedPath, optimizedLength, reportMissing,
+                         json, reportMaterialized, branchSelector);
+    } else if (isExpired(node, expireImmediate)) {
         if (!node[ƒ_invalidated]) {
             expireNode(node, expired, modelRoot);
         }
         return onMissing(path, depth, results,
-                         requestedPath, requestedLength,
-                         optimizedPath, optimizedLength);
+                         requestedPath, requestedLength, fromReference,
+                         optimizedPath, optimizedLength, reportMissing,
+                         json, reportMaterialized, branchSelector);
     }
 
     lruPromote(modelRoot, node);

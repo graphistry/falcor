@@ -286,11 +286,11 @@ describe('Call', function() {
         getRouter(true, true).
             call(['videos', 1234, 'rating'], [5]).
             do(function() {
-                throw new Error('Should not be called.  onNext');
+                throw new Error('onNext should not be called.');
             }, function(x) {
                 expect(x.message).to.equal('Oops?');
             }, function() {
-                throw new Error('Should not be called.  onCompleted');
+                throw new Error('onCompleted should not be called.');
             }).
             subscribe(noOp, function(e) {
                 if (e.message === 'Oops?') {

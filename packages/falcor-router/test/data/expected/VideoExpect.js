@@ -1,6 +1,8 @@
 var $atom = require('./../../../src/support/types').$atom;
 module.exports = function() {
     var retVal = {
+        state: generateState,
+        summary: generateSummary,
         Summary: {
             jsonGraph: {
                 videos: {
@@ -24,18 +26,19 @@ module.exports = function() {
     return retVal;
 };
 
-module.exports.generateState = generateState;
-module.exports.generateSummary = generateSummary;
+module.exports.state = generateState;
+module.exports.summary = generateSummary;
 
 function generateSummary(id) {
     var videos = {};
     videos[id] = {
-        summary: {
-            $type: $atom,
-            value: {
-                title: 'Some Movie ' + id
-            }
-        }
+        summary: 'Some Movie ' + id
+        // summary: {
+        //     $type: $atom,
+        //     value: {
+        //         title: 'Some Movie ' + id
+        //     }
+        // }
     };
 
     return {

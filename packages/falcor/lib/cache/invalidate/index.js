@@ -6,7 +6,7 @@ module.exports = {
     jsonGraph: invalidate,
 }
 
-function invalidate(model, args, seed) {
-    invalidatePathSets(model, args);
+function invalidate(model, args, seed, progressive, expireImmediate) {
+    invalidatePathSets(model, args, expireImmediate);
     return {};
 }

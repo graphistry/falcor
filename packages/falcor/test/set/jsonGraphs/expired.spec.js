@@ -53,8 +53,7 @@ describe("an expired value", function() {
                     $pathValue("lists['id'][0]", $ref("movies['pulp-fiction']")),
                     $pathValue("movies['pulp-fiction'].title", "Pulp Fiction")
                 ])
-            }]
-        );
+            }], null, null, false);
 
         expect(expired.length).to.equal(1);
         expect(strip(cache)).to.deep.equal(strip({

@@ -34,14 +34,14 @@ var FalcorPubSubDataSink = exports.FalcorPubSubDataSink = function FalcorPubSubD
 };
 
 function response(_ref) {
-    var id = _ref.id;
-    var args = _ref.args;
-    var functionPath = _ref.functionPath;
-    var jsonGraphEnvelope = _ref.jsonGraphEnvelope;
-    var method = _ref.method;
-    var pathSets = _ref.pathSets;
-    var refSuffixes = _ref.refSuffixes;
-    var thisPaths = _ref.thisPaths;
+    var id = _ref.id,
+        args = _ref.args,
+        functionPath = _ref.functionPath,
+        jsonGraphEnvelope = _ref.jsonGraphEnvelope,
+        method = _ref.method,
+        pathSets = _ref.pathSets,
+        refSuffixes = _ref.refSuffixes,
+        thisPaths = _ref.thisPaths;
     var socket = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this.socket;
 
 
@@ -57,9 +57,9 @@ function response(_ref) {
         throw new Error(method + ' is not a valid method');
     }
 
-    var event = this.event;
-    var cancel = this.cancel;
-    var getDataSource = this.getDataSource;
+    var event = this.event,
+        cancel = this.cancel,
+        getDataSource = this.getDataSource;
 
     var responseToken = event + '-' + id;
     var cancellationToken = cancel + '-' + id;

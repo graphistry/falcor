@@ -1,5 +1,5 @@
 var isArray = Array.isArray;
-var nullTerminator = require('./support/nullTerminator');
+var materializedAtom = require('./support/materializedAtom');
 
 module.exports = removeIntersection;
 
@@ -18,7 +18,7 @@ function removeIntersection(tree, path, depth, length) {
     keyset = path[depth];
 
     if (keyset === null) {
-        return tree === nullTerminator;
+        return tree === materializedAtom;
     }
 
     iteratingKeyset: do {

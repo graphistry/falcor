@@ -11,7 +11,7 @@ module.exports = getReferenceTarget;
 /* eslint-disable no-console */
 /* eslint-disable no-cond-assign */
 /* eslint-disable no-constant-condition */
-function getReferenceTarget(root, ref, modelRoot) {
+function getReferenceTarget(root, ref, modelRoot, expireImmediate) {
 
     promote(modelRoot, ref);
 
@@ -36,7 +36,7 @@ function getReferenceTarget(root, ref, modelRoot) {
             type = node.$type;
             // If the reference points to an expired
             // value node, don't create a hard-link.
-            if (undefined !== type && isExpired(node)) {
+            if (undefined !== type && isExpired(node, expireImmediate)) {
                 break;
             }
             // If a reference points to itself, throw an error.

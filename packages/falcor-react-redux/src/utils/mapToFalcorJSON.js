@@ -7,9 +7,7 @@ export default function mapToFalcorJSON(data, falcor) {
         dataProto = new FalcorJSON();
         data = Object.create(dataProto);
     } else if (!(data instanceof FalcorJSON)) {
-        dataProto = new FalcorJSON(data[f_meta]);
-        delete data[f_meta];
-        data.__proto__ = dataProto;
+        data.__proto__ = FalcorJSON.prototype;
     }
     if (falcor && falcor._recycleJSON) {
         falcor._seed = { json: data };

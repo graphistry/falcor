@@ -53,10 +53,7 @@ function toJSON(inst) {
         inst = this;
     } else if (!inst) {
         inst = this;
-    }
-    if (inst['self'] === inst ||
-        inst['global'] === inst ||
-        inst['window'] === inst) {
+    } else if (inst === global) {
         return undefined;
     }
     var json = serialize(inst, toJSON);
@@ -71,10 +68,8 @@ function toProps(inst, serializer) {
     inst = argsLen === 0 ? this : inst;
     if (!inst || typeof inst !== typeofObject) {
         return inst;
-    } else if (inst['self'] === inst ||
-               inst['global'] === inst ||
-               inst['window'] === inst) {
-        return undefined;
+    } else if (inst === global) {
+        return {};
     }
     var json = serialize(inst, argsLen > 0 && serializer || toProps);
     var f_meta = json[ƒ_meta];
@@ -93,10 +88,8 @@ function serialize(inst, serializer) {
 
     if (!inst || typeof inst !== typeofObject) {
         return inst;
-    } else if (inst['self'] === inst ||
-               inst['global'] === inst ||
-               inst['window'] === inst) {
-        return undefined;
+    } else if (inst === global) {
+        return {};
     }
 
     var count, total, f_meta, keys, key, xs;

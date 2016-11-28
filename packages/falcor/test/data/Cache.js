@@ -23,6 +23,11 @@ var Cache = function() {
             "12": { "$type": $path, "value": ["lists", "future-expired-list"] },
             "13": { "$type": $path, "value": ["missing", 12341234] },
             "inner-reference": { "$type": $path, "value": ['movies', 1234] },
+            "expires-now": {
+                "$expires": 0,
+                "$type": $path,
+                "value": ["lists", "abcd"]
+            },
             $atom: {
                 "$type": $path,
                 "value": ["lists", "to-atom-list"]
@@ -125,6 +130,11 @@ var Cache = function() {
             "to-error-list": { "$type": $path, "value": ["lists", "error-list-2"] },
             "to-missing-list": { "$type": $path, "value": ["lists", "missing-list-2"] },
             "to-expired-list": {
+                "$size": 52,
+                "$type": $path,
+                "value": ["lists", "expired-list"]
+            },
+            "to-immediately-expired-list": {
                 "$size": 52,
                 "$type": $path,
                 "value": ["lists", "expired-list"]

@@ -3,8 +3,7 @@ var Precedence = require('./../../Precedence');
 var cloneArray = require('./../../support/cloneArray');
 var specificMatcher = require('./specific');
 var pluckIntegers = require('./pluckIntergers');
-var pathUtils = require('@graphistry/falcor-path-utils');
-var collapse = pathUtils.collapse;
+var collapse = require('@graphistry/falcor-path-utils/lib/collapse');
 var isRoutedToken = require('./../../support/isRoutedToken');
 var CallNotFoundError = require('./../../errors/CallNotFoundError');
 

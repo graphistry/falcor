@@ -1,15 +1,15 @@
-import SocketIo from "socket.io";
-
 import Router from "./router";
+import SocketIOServer from "socket.io";
 import { FalcorPubSubDataSink } from "../source";
 
 export default class Server {
 
-    constructor(port = 8080, config = { path: "/" }, event = "falcor-operation", cancel = "cancel-falcor-operation") {
-
-        this.socket = new SocketIo();
+    constructor(event = "falcor-operation",
+                cancel = "cancel-falcor-operation") {
+        this.socket = new SocketIOServer({
+            path: `/socket.io`, serveClient: false
+        });
         this.socket.on("connection", (socket) => {
-
             const sink = new FalcorPubSubDataSink(
                 {
                     on: socket.on.bind(socket),
@@ -20,12 +20,5 @@ export default class Server {
 
             socket.on(event, sink.response);
         });
-
-        this.socket.listen(port, config);
     }
-
-    getUrl() {
-        return `ws://localhost:${this.socket.httpServer.address().port}`;
-    }
-
 }

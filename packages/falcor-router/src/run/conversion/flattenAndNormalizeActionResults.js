@@ -64,7 +64,9 @@ function flattenAndNormalizeActionOutput(match, optimized) {
             }];
         }
         else if (isPathValue(value)) {
-            value.path = normalizePath(value.path);
+            if (!value.invalidated) {
+                value.path = normalizePath(value.path);
+            }
             return [{
                 normalizedResult: value,
                 normalizedToken: normalizedToken

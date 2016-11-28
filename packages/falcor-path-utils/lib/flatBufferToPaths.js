@@ -6,7 +6,7 @@ function flatBufferToPaths(flatBuf, paths, path) {
     paths = paths || [];
 
     var leaf = [];
-    var keys = flatBuf.$keys;
+    var keys = flatBuf['$keys'];
     var keysLen = keys.length;
     var keysIndex = -1, key, len;
 

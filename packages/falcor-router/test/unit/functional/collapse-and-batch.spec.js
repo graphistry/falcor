@@ -14,9 +14,9 @@ describe('Collapse and Batch', function() {
         var videos = Routes().Videos.Integers.Summary(function(path) {
             expect(path.concat()).to.deep.equal(['videos', [0, 1], 'summary']);
         });
-        var genreLists = Routes().Genrelists.Integers(function(incomingPaths) {
+        var genreLists = Routes().Genrelists.Ranges(function(incomingPaths) {
             expect(incomingPaths.concat()).to.deep.equal(['genreLists', [{from: 0, to: 1}]]);
-        });
+        }, 0, true);
         var router = new R(videos.concat(genreLists));
         var obs = router.
             get([['genreLists', [0, 1], 'summary']]);
@@ -31,10 +31,10 @@ describe('Collapse and Batch', function() {
                         },
                         videos: {
                             0: {
-                                summary: $atom({title: 'Some Movie 0'})
+                                summary: 'Some Movie 0'
                             },
                             1: {
-                                summary: $atom({title: 'Some Movie 1'})
+                                summary: 'Some Movie 1'
                             }
                         }
                     }

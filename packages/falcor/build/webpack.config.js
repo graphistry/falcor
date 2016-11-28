@@ -49,10 +49,7 @@ function loaders(isDev) {
             exclude: /(node_modules(?!\/rxjs))/,
             loader: 'babel-loader',
             query: {
-                presets: [isDev ?
-                    require.resolve('babel-preset-es2015') :
-                    require.resolve('babel-preset-es2016')
-                ]
+                presets: [require.resolve('babel-preset-es2016')]
             }
         };
     }
@@ -102,11 +99,6 @@ function plugins(isDev) {
                 source_map_format: 'V3',
                 create_source_map: `${path.resolve('./dist')}/falcor.min.js.map`,
                 output_wrapper: `%output%\n//# sourceMappingURL=falcor.min.js.map`
-                // language_in: 'ECMASCRIPT6_STRICT',
-                // language_out: 'ECMASCRIPT5_STRICT',
-                // compilation_level: 'SIMPLE',
-                // create_source_map: path.resolve('./dist') + '/falcor.min.js.map',
-                // output_wrapper: '%output%\n//# sourceMappingURL=falcor.min.js.map'
             },
             concurrency: 3,
         }));

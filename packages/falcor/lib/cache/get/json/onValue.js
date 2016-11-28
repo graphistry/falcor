@@ -1,7 +1,7 @@
 var clone = require("../../clone");
 var onError = require("./onError");
-var $atom = require("../../../types/atom");
 var $error = require("../../../types/error");
+var materializedAtom = require('@graphistry/falcor-path-utils/lib/support/materializedAtom');
 
 module.exports = onJSONValue;
 
@@ -20,8 +20,9 @@ function onJSONValue(node, type, depth, seed, results,
 
     if (requiresMaterializedToReport) {
         if (materialized) {
+            debugger
             results.hasValue = true;
-            return { $type: $atom };
+            return materializedAtom;
         }
         return undefined;
     }

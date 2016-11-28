@@ -1,33 +1,38 @@
 var isArray = Array.isArray;
-var nullTerminator = require('./support/nullTerminator');
+var materializedAtom = require('./support/materializedAtom');
+
+module.exports = toTree;
+module.exports.pathToTree = pathToTree;
 
 /**
  * @param {Array} paths -
  * @returns {Object} -
  */
-module.exports = function toTree(paths, seed) {
+
+function toTree(paths, seed) {
     return paths.reduce(function(seed, path) {
-        return innerToTree(seed, path, 0, path.length);
+        return pathToTree(seed, path, 0, path.length, null);
     }, seed || {});
 };
 
-function innerToTree(seed, path, depth, length) {
+function pathToTree(seed, path, depth, length, value, branch) {
 
     if (depth === length) {
-        return true;
+        return true;//seed || value;
     }
 
-    var keyset, keysetIndex = -1, keysetLength = 0;
+    var seedKeySet, keyset, keysetIndex = -1, keysetLength = 0;
     var node, next, nextKey, nextDepth = depth + 1,
         keyIsRange, rangeEnd, keysOrRanges;
 
     keyset = path[depth];
 
     if (keyset === null) {
-        return nullTerminator;
+        return materializedAtom;
     }
 
-    seed = seed || {};
+    seedKeySet = keyset;
+    seed = seed ? seed : branch ? branch(path, depth, seed) : {};
 
     iteratingKeyset: do {
         // If the keyset is a primitive value, we've found our `nextKey`.
@@ -74,12 +79,15 @@ function innerToTree(seed, path, depth, length) {
 
         do {
             if (nextDepth === length) {
-                seed[nextKey] = null;
+                seed[nextKey] = value;
             } else {
-                node = seed[nextKey];
-                next = innerToTree(node, path, nextDepth, length);
+                node = seed[path[depth] = nextKey];
+                next = pathToTree(node, path, nextDepth, length, value);
+                // next = pathToTree(node ||
+                //     branch && branch(path, depth, seed) || {},
+                //     path, nextDepth, length, value);
                 if (!next) {
-                    seed[nextKey] = null;
+                    seed[nextKey] = value;
                 } else if (!node) {
                     seed[nextKey] = next;
                 }
@@ -99,6 +107,8 @@ function innerToTree(seed, path, depth, length) {
         // outer loop from the top.
         keyset = keysOrRanges[keysetIndex];
     } while (true);
+
+    path[depth] = seedKeySet;
 
     return seed;
 }

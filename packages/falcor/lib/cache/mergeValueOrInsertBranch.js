@@ -1,5 +1,6 @@
 var $ref = require("../types/ref");
 var $error = require("../types/error");
+var $now = require("../values/expires-now");
 var getType = require("../support/getType");
 var getSize = require("../support/getSize");
 var getTimestamp = require("../support/getTimestamp");
@@ -14,15 +15,20 @@ var updateNodeAncestors = require("./updateNodeAncestors");
 
 module.exports = function mergeValueOrInsertBranch(
     parent, node, key, value,
-    branch, reference, requestedPath, optimizedPath,
-    version, expired, lru, comparator, errorSelector) {
+    branch, reference, requestedPath, optimizedPath, version,
+    expired, lru, comparator, errorSelector, expireImmediate) {
 
     var type = getType(node, reference);
 
     if (branch || reference) {
-        if (type && isExpired(node)) {
-            type = "expired";
+        if (type && isExpired(node,
+            /* expireImmediate:
+             * force true so the node is marked as
+             * expired but keep using it for the merge if it expires immediately
+             */
+            true)) {
             expireNode(node, expired, lru);
+            type = node.$expires === $now ? type : 'expired';
         }
         if ((type && type !== $ref) || (!node || typeof node !== 'object')) {
             node = replaceNode(node, {}, parent, key, lru, version);

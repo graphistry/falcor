@@ -164,14 +164,23 @@ describe("Model", function() {
         done();
     });
 
-    it('Supports RxJS 5.', function(done) {
+    it('Supports RxJS 5 Observables and Schedulers.', function(done) {
+
+        var Observable = rxjs.Observable;
+        var Scheduler = rxjs.Scheduler.async;
         var onNextCalled = 0,
-            onErrorCalled = 0,
+            scheduleCalled = 0,
             onCompletedCalled = 0,
             unusubscribeCalled = 0,
             dataSourceGetCalled = 0;
 
         var model = new Model({
+            scheduler: {
+                schedule: function() {
+                    scheduleCalled++;
+                    return Scheduler.schedule.apply(Scheduler, arguments);
+                }
+            },
             cache: {
                 list: {
                     0: { name: "test" }
@@ -203,7 +212,7 @@ describe("Model", function() {
                             });
 
                             return {
-                                dispose: function() {
+                                unsubscribe: function() {
                                     unusubscribeCalled++;
                                     clearTimeout(handle);
                                 }
@@ -214,28 +223,15 @@ describe("Model", function() {
             }
         });
 
-        var subscription = rxjs.Observable
+        Observable
             .from(modelGet.call(model, fromPath("list[0,1].name")))
-            .subscribe(
-                function(value) {
-                    onNextCalled++;
-                },
-                function(error) {
-                    onErrorCalled++;
-                    done(error);
-                },
-                function() {
-                    onCompletedCalled++;
-                    if (onNextCalled === 0) {
-                        done('onNext wasn\'t called');
-                    } else {
-                        done();
-                    }
-                });
-
-        if (dataSourceGetCalled !== 1 || unusubscribeCalled) {
-            done(new Error("DataSource unsubscribe was called."));
-        }
+            .do(function(value) { onNextCalled++; }, null, function() {
+                expect(onNextCalled, 'onNext should have been called').to.equal(1);
+                expect(scheduleCalled, 'scheduleCalled should have been called').to.equal(1);
+                expect(unusubscribeCalled, 'unusubscribe should have been called').to.equal(1);
+                expect(dataSourceGetCalled, 'dataSource.get should have been called').to.equal(1);
+            })
+            .subscribe(null, done, done);
     });
 
     describe('JSON-Graph Specification', function() {

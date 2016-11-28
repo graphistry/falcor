@@ -3,7 +3,7 @@ var BoundJSONGraphModelError = require("../../../errors/BoundJSONGraphModelError
 
 module.exports = getJSONGraph;
 
-function getJSONGraph(model, paths, seed) {
+function getJSONGraph(model, paths, seed, progressive, expireImmediate) {
 
     var node, cache,
         boundPath = model._path,
@@ -40,9 +40,8 @@ function getJSONGraph(model, paths, seed) {
                             /* depth = */ 0, seed, results,
                                requestedPath, requestedLength,
                                optimizedPath, optimizedLength,
-              /* fromReference = */ false, modelRoot, expired,
-                               boxValues, materialized, hasDataSource,
-                               treatErrorsAsValues);
+              /* fromReference = */ false, modelRoot, expired, expireImmediate,
+                               boxValues, materialized, hasDataSource, treatErrorsAsValues);
     }
 
     results.args =

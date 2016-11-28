@@ -46,13 +46,13 @@ describe("an expired value", function() {
                     $expires: 0
                 })),
                 $pathValue("grid[0][0].title", "Pulp Fiction")
-            ]
-        );
+            ]);
 
         expect(expired.length).to.equal(1);
         expect(strip(cache)).to.deep.equal(strip({
             grid: $ref("grids['id']"),
-            grids: { id: { 0: { 0: { title: $atom("Pulp Fiction") } } } }
+            grids: { id: { 0: $ref("lists['id']") } },
+            lists: { id: { 0: { title: $atom("Pulp Fiction") } } }
         }));
     });
 

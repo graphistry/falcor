@@ -144,15 +144,14 @@ var connect = function connect(BaseComponent) {
             });
         }).distinctUntilKeyChanged('version').auditTime(0, _animationFrame.animationFrame);
     }), (0, _withContext2.default)(contextTypes, function (_ref4) {
-        var falcor = _ref4.falcor;
-        var dispatch = _ref4.dispatch;
+        var falcor = _ref4.falcor,
+            dispatch = _ref4.dispatch;
         return {
             falcor: falcor, dispatch: dispatch
         };
     }), (0, _lifecycle2.default)({
         componentDidUpdate: function componentDidUpdate() {
             this.props.dispatch({
-                // data: { ...this.props.data },
                 data: this.props.data,
                 type: 'falcor-react-redux/update'
             });

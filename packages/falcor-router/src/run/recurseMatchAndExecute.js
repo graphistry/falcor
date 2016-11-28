@@ -8,15 +8,15 @@ var pluckPath = require('./../support/pluckPath');
 var optimizePathSets = require('./../cache/optimizePathSets');
 var runByPrecedence = require('./precedence/runByPrecedence');
 var mCGRI = require('./mergeCacheAndGatherRefsAndInvalidations');
-var collapse = require('@graphistry/falcor-path-utils').collapse;
+var collapse = require('@graphistry/falcor-path-utils/lib/collapse');
 var CallNotFoundError = require('./../errors/CallNotFoundError');
 
 /**
  * The recurse and match function will async recurse as long as
  * there are still more paths to be executed.  The match function
  * will return a set of objects that have how much of the path that
- * is matched.  If there still is more, denoted by suffixes,
- * paths to be matched then the recurser will keep running.
+ * is matched.  If there are still more paths to be matched, denoted
+ * by suffixes, recurseMatchAndExecute will keep running.
  */
 module.exports = function recurseMatchAndExecute(
         match, actionRunner, paths, method,
@@ -51,15 +51,14 @@ function _recurseMatchAndExecute(
             method: method, requested: requestedPaths
         })
         .expand(matchPathsAndExecute)
-        .defaultIfEmpty({ unhandled: requestedPaths })
-        .scan(aggregateJSONGraphPaths, {
-            paths: optimizedPaths,
-            invalidated: invalidatedPaths
-        });
+        .defaultIfEmpty({ unhandled: requestedPaths });
 
     if (!routerSupportsStreaming) {
         return matchAllPathsAndRun
-            .takeLast(1)
+            .reduce(aggregateJSONGraphPaths, {
+                paths: optimizedPaths,
+                invalidated: invalidatedPaths
+            })
             .mergeMap(fetchUnhandledAndMaterialize(
                 router, jsonGraph, unhandledRunner,
                 requestedPaths, pathsToMaterialize, jsonGraphEnvelope
@@ -67,29 +66,41 @@ function _recurseMatchAndExecute(
             .map(mapToJSONGraphEnvelope);
     }
 
+    var streamingPaths = [];
     var streamingJSONGraph = {};
+    var streamingInvalidated = [];
 
-    return matchAllPathsAndRun
-        .filter(function(x) {
-            if (x.hasValues) {
-                streamingJSONGraph = {};
-                return true;
-            }
-            return false;
-        })
-        .multicast(
-            function() { return new Subject() },
-            function(streaming) {
-                return streaming.merge(streaming
-                    .takeLast(1)
-                    .mergeMap(fetchUnhandledAndMaterialize(
+    return matchAllPathsAndRun.multicast(
+        function() { return new Subject() },
+        function(streaming) {
+            return streaming
+                .filter(onlyEmitStreamingValues)
+                .merge(streaming
+                    .reduce(aggregateJSONGraphPaths, {
+                        paths: optimizedPaths,
+                        invalidated: invalidatedPaths
+                    })
+                    .mergeMap(fetchUnhandledAndMaterializeStreaming(
                         router, jsonGraph, unhandledRunner,
                         requestedPaths, pathsToMaterialize
                     ))
                 );
-            }
-        )
+        })
         .map(mapToJSONGraphEnvelope);
+
+    function onlyEmitStreamingValues(x) {
+        var shouldEmit = false;
+        if (x.paths) {
+            shouldEmit = true;
+            streamingPaths = [];
+            streamingJSONGraph = {};
+        }
+        if (x.invalidated) {
+            shouldEmit = true;
+            streamingInvalidated = [];
+        }
+        return shouldEmit;
+    }
 
     function matchPathsAndExecute(state) {
 
@@ -199,11 +210,6 @@ function _recurseMatchAndExecute(
             state.unhandled = unhandled;
         }
 
-        if (invalidated.length) {
-            state.invalidated = invalidated;
-            state.hasValues = routerSupportsStreaming;
-        }
-
         // Explodes and collapse the tree to remove
         // redundants and get optimized next set of
         // paths to evaluate.
@@ -213,26 +219,45 @@ function _recurseMatchAndExecute(
             ));
         }
 
-        if (references.length) {
-            if (suffixLen === 0) {
-                valuePaths = valuePaths.concat(references.map(pluckPath));
-            } else if (routerSupportsStreaming) {
-                jsongMerge(streamingJSONGraph, {
-                    jsonGraph: jsonGraph, paths: references.map(pluckPath)
-                });
+        if (!routerSupportsStreaming) {
+            if (reportedPaths.length) {
+                state.paths = reportedPaths;
             }
-        }
+            if (invalidated.length) {
+                state.invalidated = invalidated;
+            }
+        } else {
 
-        if (reportedPaths.length) {
-            state.paths = reportedPaths;
-        }
+            if (references.length) {
+                references = references.map(pluckPath);
+                if (suffixLen === 0) {
+                    valuePaths.push.apply(valuePaths, references);
+                } else {
+                    streamingPaths.push.apply(streamingPaths, references);
+                    jsongMerge(streamingJSONGraph, {
+                        jsonGraph: jsonGraph, paths: references
+                    });
+                }
+            }
 
-        if (routerSupportsStreaming) {
+            if (reportedPaths.length) {
+                streamingPaths.push.apply(streamingPaths, reportedPaths);
+            }
+
+            if (invalidated.length) {
+                debugger
+                state.invalidated = streamingInvalidated;
+                streamingInvalidated.push.apply(streamingInvalidated, invalidated);
+            }
+
             if (valuePaths.length || reportedPaths.length) {
-                state.hasValues = true;
+                if (valuePaths.length > 0) {
+                    debugger
+                    state.paths = streamingPaths;
+                    streamingPaths.push.apply(streamingPaths, valuePaths);
+                }
                 jsongMerge(state.jsonGraph = streamingJSONGraph, {
-                    jsonGraph: jsonGraph,
-                    paths: valuePaths.concat(reportedPaths)
+                    jsonGraph: jsonGraph, paths: valuePaths.concat(reportedPaths)
                 });
             }
         }
@@ -279,8 +304,9 @@ function aggregateJSONGraphPaths(seed, next) {
         paths: paths,
         unhandled: unhandled,
         invalidated: invalidated,
-        hasValues: next.hasValues,
-        jsonGraph: next.jsonGraph
+        jsonGraph:
+            next && next.jsonGraph ||
+            seed && seed.jsonGraph || {}
     };
 }
 
@@ -291,10 +317,9 @@ function fetchUnhandledAndMaterialize(
     return function(state) {
 
         var unhandled = state.unhandled;
-        var unhandledFetched = unhandledRunner && unhandled && unhandled.length;
-
+        var unhandledFetched = !!(unhandledRunner && unhandled && unhandled.length);
         var resultObs = !unhandledFetched ?
-            Observable.of(outerJSONGraphEnv || {}) :
+            Observable.of(outerJSONGraphEnv) :
             unhandledRunner(router, {
                     paths: unhandled,
                     jsonGraph: jsonGraph
@@ -302,32 +327,86 @@ function fetchUnhandledAndMaterialize(
             )
             .map(function(x) {
                 jsongMerge(jsonGraph, {
-                    paths: x.paths || unhandled, jsonGraph: x.jsonGraph
+                    paths: x.paths || unhandled,
+                    jsonGraph: x.jsonGraph || {}
                 });
-                return outerJSONGraphEnv || x;
+                return outerJSONGraphEnv;
             })
-            .defaultIfEmpty(outerJSONGraphEnv || {});
+            .defaultIfEmpty(outerJSONGraphEnv);
 
-        return resultObs.mergeMap(function(resultJSONGraphEnv) {
-            pathsToMaterialize = optimizePathSets(
-                jsonGraph, pathsToMaterialize, router.maxRefFollow
-            );
-            if (!pathsToMaterialize.length) {
-                if (!unhandledFetched && !outerJSONGraphEnv) {
-                    return !resultJSONGraphEnv.invalidated ||
-                           !resultJSONGraphEnv.invalidated.length ?
-                        Observable.empty() : Observable.of(resultJSONGraphEnv);
-                }
-            } else {
-                resultJSONGraphEnv = materialize(pathsToMaterialize, {
-                    paths: pathsToMaterialize,
-                    invalidated: resultJSONGraphEnv.invalidated,
-                    jsonGraph: resultJSONGraphEnv.jsonGraph || {}
+        return resultObs
+            .reduce(aggregateJSONGraphPaths, {
+                paths: [], invalidated: []
+            })
+            .mergeMap(materializeResult(
+                router, jsonGraph, pathsToMaterialize, outerJSONGraphEnv
+            ));
+    }
+}
+
+function fetchUnhandledAndMaterializeStreaming(
+    router, jsonGraph, unhandledRunner,
+    requestedPaths, pathsToMaterialize) {
+
+    return function(state) {
+
+        var unhandled = state.unhandled;
+        var unhandledFetched = !!(unhandledRunner && unhandled && unhandled.length);
+        var resultObs = !unhandledFetched ?
+            Observable.empty() :
+            unhandledRunner(router, {
+                    paths: unhandled,
+                    jsonGraph: jsonGraph
+                }, requestedPaths, unhandled
+            )
+            .do(function(x) {
+                jsongMerge(jsonGraph, {
+                    paths: x.paths || unhandled,
+                    jsonGraph: x.jsonGraph || {}
                 });
+            });
+
+        return resultObs.multicast(
+            function() { return new Subject() },
+            function(results) {
+                return results.merge(results
+                    .reduce(aggregateJSONGraphPaths, {
+                        paths: [], invalidated: []
+                    })
+                    .mergeMap(materializeResult(
+                        router, jsonGraph, pathsToMaterialize
+                    )));
+            }
+        );
+    }
+}
+
+function materializeResult(router, jsonGraph, pathsToMaterialize, outerJSONGraphEnv) {
+
+    return function innerMaterializeResult(resultJSONGraphEnv) {
+
+        pathsToMaterialize = optimizePathSets(
+            jsonGraph, pathsToMaterialize, router.maxRefFollow
+        );
+
+        if (!pathsToMaterialize.length) {
+            if (!outerJSONGraphEnv && (
+                !resultJSONGraphEnv.invalidated ||
+                !resultJSONGraphEnv.invalidated.length)) {
+                return Observable.empty();
+            }
+        } else {
+            resultJSONGraphEnv = materialize(pathsToMaterialize, {
+                paths: pathsToMaterialize,
+                invalidated: resultJSONGraphEnv.invalidated,
+                jsonGraph: resultJSONGraphEnv.jsonGraph || {}
+            });
+            if (outerJSONGraphEnv) {
                 resultJSONGraphEnv.paths = null;
             }
-            return Observable.of(resultJSONGraphEnv);
-        });
+        }
+
+        return Observable.of(resultJSONGraphEnv);
     }
 }
 
@@ -337,7 +416,11 @@ function mapToJSONGraphEnvelope(jsonGraphEnvelope) {
     var jsonGraph = jsonGraphEnvelope.jsonGraph;
     var invalidated = jsonGraphEnvelope.invalidated;
 
-    jsonGraphEnvelope = { jsonGraph: jsonGraph };
+    jsonGraphEnvelope = {};
+
+    if (jsonGraph) {
+        jsonGraphEnvelope.jsonGraph = jsonGraph;
+    }
 
     if (paths && paths.length) {
         jsonGraphEnvelope.paths = collapse(paths);

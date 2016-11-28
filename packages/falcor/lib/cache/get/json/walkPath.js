@@ -2,9 +2,9 @@ var isArray = Array.isArray;
 var onValue = require("./onValue");
 var $ref = require("../../../types/ref");
 var FalcorJSON = require("./FalcorJSON");
-var onMissing = require("../onMissing");
 var onValueType = require("../onValueType");
 var isExpired = require("../../isExpired");
+var originalOnMissing = require("../onMissing");
 var getReferenceTarget = require("./getReferenceTarget");
 var NullInPathError = require("../../../errors/NullInPathError");
 var InvalidKeySetError = require("../../../errors/InvalidKeySetError");
@@ -19,9 +19,10 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path,
                                 requestedPath, requestedLength,
                                 optimizedPath, optimizedLength,
                                 fromReference, referenceContainer,
-                                modelRoot, expired, branchSelector,
-                                boxValues, materialized, hasDataSource,
-                                treatErrorsAsValues, allowFromWhenceYouCame) {
+                                modelRoot, expired, expireImmediate,
+                                branchSelector, boxValues, materialized,
+                                hasDataSource, treatErrorsAsValues,
+                                allowFromWhenceYouCame) {
 
     var type, refTarget;
 
@@ -32,12 +33,12 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path,
     if (node === undefined || (
         type = node.$type) || (
         depth === requestedLength)) {
-        return onValueType(node, type,
+        return onValueType(node, type, json,
                            path, depth, seed, results,
                            requestedPath, requestedLength,
                            optimizedPath, optimizedLength,
-                           fromReference, modelRoot, expired,
-                           boxValues, materialized, hasDataSource,
+                           fromReference, modelRoot, expired, expireImmediate,
+                           branchSelector, boxValues, materialized, hasDataSource,
                            treatErrorsAsValues, onValue, onMissing);
     }
 
@@ -73,6 +74,17 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path,
     if (allowFromWhenceYouCame && referenceContainer) {
         refContainerRefPath = referenceContainer.value;
         refContainerAbsPath = referenceContainer[ƒ_abs_path];
+    }
+
+    if (json) {
+        if (typeof json !== 'object') {
+            json = undefined;
+        } else if (f_meta = json[ƒ_meta]) {
+            f_meta[ƒm_version] = node[ƒ_version];
+            f_meta[ƒm_abs_path] = node[ƒ_abs_path];
+            f_meta[ƒm_deref_to] = refContainerRefPath;
+            f_meta[ƒm_deref_from] = refContainerAbsPath;
+        }
     }
 
     // Iterate over every key in the keyset. This loop is perhaps a bit clever,
@@ -160,14 +172,14 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path,
                 nextDepth < requestedLength &&
                 // If the reference is expired, it will be invalidated and
                 // reported as missing in the next call to walkPath below.
-                next.$type === $ref && !isExpired(next)) {
+                next.$type === $ref && !isExpired(next, expireImmediate)) {
 
                 // Retrieve the reference target and next referenceContainer (if
                 // this reference points to other references) and continue
                 // following the path. If the reference resolves to a missing
                 // path or leaf node, it will be handled in the next call to
                 // walkPath.
-                refTarget = getReferenceTarget(cacheRoot, next, modelRoot);
+                refTarget = getReferenceTarget(cacheRoot, next, modelRoot, expireImmediate);
 
                 next = refTarget[0];
                 fromReference = true;
@@ -183,13 +195,9 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path,
                 cacheRoot, next, nextJSON, path, nextDepth, seed,
                 results, requestedPath, requestedLength, nextOptimizedPath,
                 nextOptimizedLength, fromReference, nextReferenceContainer,
-                modelRoot, expired, branchSelector, boxValues, materialized,
-                hasDataSource, treatErrorsAsValues, allowFromWhenceYouCame
+                modelRoot, expired, expireImmediate, branchSelector, boxValues,
+                materialized, hasDataSource, treatErrorsAsValues, allowFromWhenceYouCame
             );
-
-            if (!seed) {
-                continue;
-            }
 
             // Inspect the return value from the step and determine whether to
             // create or write into the JSON branch at this level.
@@ -209,20 +217,18 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path,
                 // The json value will initially be undefined. If we're here,
                 // then at least one leaf value was encountered, so create a
                 // branch to contain it.
-                if (undefined === json || null === json) {
+                if (f_meta === undefined) {
                     f_meta = {};
                     f_meta[ƒm_version] = node[ƒ_version];
                     f_meta[ƒm_abs_path] = node[ƒ_abs_path];
                     f_meta[ƒm_deref_to] = refContainerRefPath;
                     f_meta[ƒm_deref_from] = refContainerAbsPath;
-                    // Enable developers to instrument branch node creation by
+                    // Empower developers to instrument branch node creation by
                     // providing a custom function. If they do, delegate branch
                     // node creation to them.
-                    if (branchSelector) {
-                        json = branchSelector(new FalcorJSON(f_meta));
-                    } else {
-                        json = Object.create(new FalcorJSON(f_meta));
-                    }
+                    json = branchSelector && branchSelector({
+                        [ƒ_meta]: f_meta, __proto__: FalcorJSON.prototype }) || {
+                        [ƒ_meta]: f_meta, __proto__: FalcorJSON.prototype };
                 }
 
                 // Set the reported branch or leaf into this branch.
@@ -244,7 +250,37 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path,
         keyset = keysOrRanges[keysetIndex];
     } while (true);
 
-    // `json` will either be a branch, or undefined if all paths were cache misses
+    // `json` will be a branch if any cache hits, or undefined if all cache misses
     return json;
 }
 /* eslint-enable */
+
+function onMissing(path, depth, results,
+                   requestedPath, requestedLength, fromReference,
+                   optimizedPath, optimizedLength, reportMissing,
+                   json, reportMaterialized, branchSelector) {
+
+    var createMaterializedBranch = !branchSelector ?
+        createDefaultMaterializedBranch :
+        wrapMaterializedBranchSelector(branchSelector);
+
+    return originalOnMissing(path, depth, results,
+                             requestedPath, requestedLength, fromReference,
+                             optimizedPath, optimizedLength, reportMissing,
+                             json, reportMaterialized, createMaterializedBranch);
+}
+
+function wrapMaterializedBranchSelector(branchSelector) {
+    return function(path, _depth, node) {
+        return branchSelector(
+            node = createDefaultMaterializedBranch(path, _depth, node)
+        ) || node;
+    }
+}
+
+function createDefaultMaterializedBranch(path, _depth, node) {
+    f_meta = {};
+    f_meta[ƒm_version] = 0;
+    f_meta[ƒm_abs_path] = path.slice(0, _depth);
+    return { [ƒ_meta]: f_meta, __proto__: FalcorJSON.prototype };
+ }

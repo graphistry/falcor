@@ -2,7 +2,7 @@ var expect = require('chai').expect;
 var toPaths = require('../lib/toPaths');
 var toTree = require('../lib/toTree');
 var isSafeNumber = toPaths._isSafeNumber;
-var nullTerminator = require('../lib/support/nullTerminator');
+var materializedAtom = require('../lib/support/materializedAtom');
 
 describe('toPaths', function() {
     it('toPaths a pathmap that has overlapping branch and leaf nodes', function() {
@@ -198,12 +198,12 @@ describe('toPaths', function() {
         var input = {
             3: {
                 one: {
-                    three: nullTerminator,
-                    two: nullTerminator,
-                    0: nullTerminator,
-                    1: nullTerminator,
-                    2: nullTerminator,
-                    3: nullTerminator
+                    three: materializedAtom,
+                    two: materializedAtom,
+                    0: materializedAtom,
+                    1: materializedAtom,
+                    2: materializedAtom,
+                    3: materializedAtom
                 }
             }
         };

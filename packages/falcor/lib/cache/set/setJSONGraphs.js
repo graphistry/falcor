@@ -1,11 +1,11 @@
 var arr = new Array(5);
 var $ref = require("../../types/ref");
+var isExpired = require("../isExpired");
 var expireNode = require("../expireNode");
-var isExpired = require("../isAlreadyExpired");
 var createHardlink = require("../createHardlink");
 var mergeJSONGraphNode = require("../mergeJSONGraphNode");
 var NullInPathError = require("../../errors/NullInPathError");
-var iterateKeySet = require("@graphistry/falcor-path-utils").iterateKeySet;
+var iterateKeySet = require("@graphistry/falcor-path-utils/lib/iterateKeySet");
 
 /**
  * Merges a list of {@link JSONGraphEnvelope}s into a {@link JSONGraph}.
@@ -15,7 +15,7 @@ var iterateKeySet = require("@graphistry/falcor-path-utils").iterateKeySet;
  * @return {Array.<Array.<Path>>} - an Array of Arrays where each inner Array is a list of requested and optimized paths (respectively) for the successfully set values.
  */
 
-module.exports = function setJSONGraphs(model, jsonGraphEnvelopes, errorSelector, comparator) {
+module.exports = function setJSONGraphs(model, jsonGraphEnvelopes, errorSelector, comparator, expireImmediate) {
 
     var modelRoot = model._root;
     var lru = modelRoot;
@@ -50,7 +50,7 @@ module.exports = function setJSONGraphs(model, jsonGraphEnvelopes, errorSelector
                 cache, cache, cache,
                 jsonGraph, jsonGraph, jsonGraph,
                 requestedPaths, optimizedPaths, requestedPath, optimizedPath,
-                version, expired, lru, comparator, errorSelector
+                version, expired, lru, comparator, errorSelector, expireImmediate
             );
         }
     }
@@ -76,7 +76,7 @@ function setJSONGraphPathSet(
     path, depth, root, parent, node,
     messageRoot, messageParent, message,
     requestedPaths, optimizedPaths, requestedPath, optimizedPath,
-    version, expired, lru, comparator, errorSelector) {
+    version, expired, lru, comparator, errorSelector, expireImmediate) {
 
     var note = {};
     var branch = depth < path.length - 1;
@@ -90,8 +90,8 @@ function setJSONGraphPathSet(
 
         var results = setNode(
             root, parent, node, messageRoot, messageParent, message,
-            key, branch, false, requestedPath, optimizedPath,
-            version, expired, lru, comparator, errorSelector
+            key, branch, false, requestedPath, optimizedPath, version,
+            expired, lru, comparator, errorSelector, expireImmediate
         );
 
         requestedPath[depth] = key;
@@ -108,7 +108,7 @@ function setJSONGraphPathSet(
                     path, depth + 1, root, nextParent, nextNode,
                     messageRoot, results[3], results[2],
                     requestedPaths, optimizedPaths, requestedPath, nextOptimizedPath,
-                    version, expired, lru, comparator, errorSelector
+                    version, expired, lru, comparator, errorSelector, expireImmediate
                 );
             } else {
                 requestedPaths.push(requestedPath.slice(0, requestedPath.index + 1));
@@ -126,14 +126,14 @@ function setJSONGraphPathSet(
 
 function setReference(
     root, node, messageRoot, message, requestedPath, optimizedPath,
-    version, expired, lru, comparator, errorSelector) {
+    version, expired, lru, comparator, errorSelector, expireImmediate) {
 
     var parent;
     var messageParent;
     var reference = node.value;
     optimizedPath = reference.slice(0);
 
-    if (isExpired(node)) {
+    if (isExpired(node, expireImmediate)) {
         expireNode(node, expired, lru);
         node = undefined;
         parent = root;
@@ -154,8 +154,8 @@ function setReference(
 
             var results = setNode(
                 root, parent, node, messageRoot, messageParent, message,
-                key, branch, true, requestedPath, optimizedPath,
-                version, expired, lru, comparator, errorSelector
+                key, branch, true, requestedPath, optimizedPath, version,
+                expired, lru, comparator, errorSelector, expireImmediate
             );
             node = results[0];
             optimizedPath = results[4];
@@ -186,8 +186,8 @@ function setReference(
 
 function setNode(
     root, parent, node, messageRoot, messageParent, message,
-    key, branch, reference, requestedPath, optimizedPath,
-    version, expired, lru, comparator, errorSelector) {
+    key, branch, reference, requestedPath, optimizedPath, version,
+    expired, lru, comparator, errorSelector, expireImmediate) {
 
     var type = node.$type;
 
@@ -195,7 +195,7 @@ function setNode(
 
         var results = setReference(
             root, node, messageRoot, message, requestedPath, optimizedPath,
-            version, expired, lru, comparator, errorSelector
+            version, expired, lru, comparator, errorSelector, expireImmediate
         );
 
         node = results[0];
@@ -227,7 +227,7 @@ function setNode(
 
         node = mergeJSONGraphNode(
             parent, node, message, key, requestedPath, optimizedPath,
-            version, expired, lru, comparator, errorSelector
+            version, expired, lru, comparator, errorSelector, expireImmediate
         );
     }
 

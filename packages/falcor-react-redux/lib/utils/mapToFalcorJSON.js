@@ -34,9 +34,7 @@ function mapToFalcorJSON(data, falcor) {
         dataProto = new _falcor.FalcorJSON();
         data = (0, _create2.default)(dataProto);
     } else if (!(data instanceof _falcor.FalcorJSON)) {
-        dataProto = new _falcor.FalcorJSON(data[_falcorMetadataKey2.default]);
-        delete data[_falcorMetadataKey2.default];
-        data.__proto__ = dataProto;
+        data.__proto__ = _falcor.FalcorJSON.prototype;
     }
     if (falcor && falcor._recycleJSON) {
         falcor._seed = { json: data };

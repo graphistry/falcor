@@ -15,14 +15,13 @@ var removeNodeAndDescendants = require("../removeNodeAndDescendants");
  * @param {Array.<PathMapEnvelope>} pathMapEnvelopes - the a list of @PathMapEnvelopes to set.
  */
 
-module.exports = function invalidatePathMaps(model, pathMapEnvelopes) {
+module.exports = function invalidatePathMaps(model, pathMapEnvelopes, expireImmediate) {
 
     var modelRoot = model._root;
     var lru = modelRoot;
     var expired = modelRoot.expired;
     var version = modelRoot.version++;
     var comparator = modelRoot._comparator;
-    var errorSelector = modelRoot._errorSelector;
     var cache = modelRoot.cache;
     var node = getBoundCacheNode(model);
     var parent = node[ƒ_parent] || cache;
@@ -37,7 +36,7 @@ module.exports = function invalidatePathMaps(model, pathMapEnvelopes) {
 
         invalidatePathMap(
             pathMapEnvelope.json, 0, cache, parent, node,
-            version, expired, lru, comparator, errorSelector
+            version, expired, lru, comparator, expireImmediate
         );
     }
 
@@ -49,7 +48,9 @@ module.exports = function invalidatePathMaps(model, pathMapEnvelopes) {
     }
 };
 
-function invalidatePathMap(pathMap, depth, root, parent, node, version, expired, lru, comparator, errorSelector) {
+function invalidatePathMap(
+    pathMap, depth, root, parent, node, version,
+    expired, lru, comparator, expireImmediate) {
 
     if (!pathMap || typeof pathMap !== 'object' || pathMap.$type) {
         return;
@@ -61,8 +62,8 @@ function invalidatePathMap(pathMap, depth, root, parent, node, version, expired,
             var branch = !(!child || typeof child !== 'object') && !child.$type;
             var results = invalidateNode(
                 root, parent, node,
-                key, child, branch, false,
-                version, expired, lru, comparator, errorSelector
+                key, child, branch, false, version, expired,
+                lru, comparator, expireImmediate
             );
             var nextNode = results[0];
             var nextParent = results[1];
@@ -71,7 +72,7 @@ function invalidatePathMap(pathMap, depth, root, parent, node, version, expired,
                     invalidatePathMap(
                         child, depth + 1,
                         root, nextParent, nextNode,
-                        version, expired, lru, comparator, errorSelector
+                        version, expired, lru, comparator, expireImmediate
                     );
                 } else if (removeNodeAndDescendants(nextNode, nextParent, key, lru)) {
                     updateNodeAncestors(nextParent, getSize(nextNode), lru, version);
@@ -81,9 +82,11 @@ function invalidatePathMap(pathMap, depth, root, parent, node, version, expired,
     }
 }
 
-function invalidateReference(value, root, node, version, expired, lru, comparator, errorSelector) {
+function invalidateReference(
+    value, root, node, version,
+    expired, lru, comparator, expireImmediate) {
 
-    if (isExpired(node)) {
+    if (isExpired(node, expireImmediate)) {
         expireNode(node, expired, lru);
         return [undefined, root];
     }
@@ -110,8 +113,8 @@ function invalidateReference(value, root, node, version, expired, lru, comparato
             var branch = index < count;
             var results = invalidateNode(
                 root, parent, node,
-                key, value, branch, true,
-                version, expired, lru, comparator, errorSelector
+                key, value, branch, true, version,
+                expired, lru, comparator, expireImmediate
             );
             node = results[0];
             if (!node || typeof node !== 'object') {
@@ -130,14 +133,17 @@ function invalidateReference(value, root, node, version, expired, lru, comparato
 
 function invalidateNode(
     root, parent, node,
-    key, value, branch, reference,
-    version, expired, lru, comparator, errorSelector) {
+    key, value, branch, reference, version,
+    expired, lru, comparator, expireImmediate) {
 
     var type = node.$type;
 
     while (type === $ref) {
 
-        var results = invalidateReference(value, root, node, version, expired, lru, comparator, errorSelector);
+        var results = invalidateReference(
+            value, root, node, version, expired,
+            lru, comparator, expireImmediate
+        );
 
         node = results[0];
 

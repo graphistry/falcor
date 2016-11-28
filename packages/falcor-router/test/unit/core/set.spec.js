@@ -49,7 +49,7 @@ describe('Set', function() {
             }).
             subscribe(noOp, done, function() {
                 if (called === false) {
-                    done('Set handler wansn\'t called');
+                    done('Set handler wasn\'t called');
                 }
             });
     });
@@ -99,7 +99,7 @@ describe('Set', function() {
             }).
             subscribe(noOp, done, function() {
                 if (called === false) {
-                    done('Set handler wansn\'t called');
+                    done('Set handler wasn\'t called');
                 }
             });
     });
@@ -147,8 +147,6 @@ describe('Set', function() {
             subscribe(noOp, noOp, noOp);
     });
 
-
-
     it('should not transform set values before passing them to route. (0)', function(done) {
         var called = false
         var router = new R([{
@@ -194,7 +192,7 @@ describe('Set', function() {
             }).
             subscribe(noOp, done, function() {
                 if (called === false) {
-                    done('Set handler wansn\'t called');
+                    done('Set handler wasn\'t called');
                 }
             });
     });
@@ -244,7 +242,7 @@ describe('Set', function() {
             }).
             subscribe(noOp, done, function() {
                 if (called === false) {
-                    done('Set handler wansn\'t called');
+                    done('Set handler wasn\'t called');
                 }
             });
     });
@@ -291,7 +289,6 @@ describe('Set', function() {
             }).
             subscribe(noOp, done, done);
     });
-
 
     it('should perform a simple set.', function(done) {
         var did = false;
@@ -358,7 +355,77 @@ describe('Set', function() {
             });
     });
 
+    it('should perform a simple set and report invalidations.', function(done) {
+        var did = false;
+        var called = 0;
+        var router = new R([{
+            route: 'videos[{integers:id}].rating',
+            set: function(json) {
+                try {
+                    expect(json).to.deep.equals({
+                        videos: {
+                            1234: { rating: 5 },
+                            333: { rating: 5 }
+                        }
+                    });
+                } catch (e) {
+                    done(e);
+                    did = true;
+                }
+                return [{
+                    path: ['videos', 1234, 'rating'],
+                    value: 5
+                }, {
+                    path: ['videos', 333, 'rating'],
+                    value: 5
+                }, {
+                    invalidated: true,
+                    path: ['videos', 'top-rated']
+                }];
+            }
+        }]);
+        router.
+            set({
+                jsonGraph: {
+                    videos: {
+                        1234: {
+                            rating: 5
+                        },
+                        333: {
+                            rating: 5
+                        }
+                    }
+                },
+                paths: [
+                    ['videos', [1234, 333], 'rating']
+                ]
+            }).
+            do(function(result) {
+                expect(result).to.deep.equals({
+                    invalidated: [['videos', 'top-rated']],
+                    jsonGraph: {
+                        videos: {
+                            1234: {
+                                rating: 5
+                            },
+                            333: {
+                                rating: 5
+                            }
+                        }
+                    }
+                });
+                called++;
+            }).
+            subscribe(noOp, done, function() {
+                if (!did) {
+                    expect(called).to.equals(1);
+                    done();
+                }
+            });
+    });
+
     it('should ensure that set gets called with only the data it needs.', function(done) {
+
         var routerSet = sinon.spy(function (jsonGraph) {
             return {jsonGraph: jsonGraph};
         });
@@ -375,7 +442,6 @@ describe('Set', function() {
                 };
             }
         }]);
-
 
         var onNext = sinon.spy();
         router.

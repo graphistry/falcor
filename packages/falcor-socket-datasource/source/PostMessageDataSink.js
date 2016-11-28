@@ -14,7 +14,7 @@ export class PostMessageDataSink extends FalcorPubSubDataSink {
             return;
         }
         this.response(rest, new PostMessageEmitter(
-            window, event.source || parent, true
+            window, event.source || parent
         ));
     }
     unsubscribe() {

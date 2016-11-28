@@ -140,9 +140,9 @@ function container(fragmentDesc) {
                     return (0, _keys2.default)(actionCreators).reduce(function (dispatchers, key) {
                         var actionCreator = actionCreators[key];
                         dispatchers[key] = function () {
-                            var _container$state = container.state;
-                            var falcor = _container$state.falcor;
-                            var dispatch = _container$state.dispatch;
+                            var _container$state = container.state,
+                                falcor = _container$state.falcor,
+                                dispatch = _container$state.dispatch;
 
                             return dispatch(_extends({ falcor: falcor }, actionCreator.apply(undefined, arguments)));
                         };
@@ -190,8 +190,8 @@ var fragments = function fragments() {
 };
 
 function derefEachPropUpdate(update) {
-    var data = update.data;
-    var falcor = update.falcor;
+    var data = update.data,
+        falcor = update.falcor;
 
     update.data = data = (0, _mapToFalcorJSON2.default)(data);
     if (!falcor._seed || !falcor._seed.json || falcor._seed.json !== data) {
@@ -201,12 +201,12 @@ function derefEachPropUpdate(update) {
 }
 
 function fetchEachPropUpdate(_ref) {
-    var container = _ref.container;
-    var data = _ref.data;
-    var props = _ref.props;
-    var falcor = _ref.falcor;
-    var fragment = container.fragment;
-    var renderLoading = container.renderLoading;
+    var container = _ref.container,
+        data = _ref.data,
+        props = _ref.props,
+        falcor = _ref.falcor;
+    var fragment = container.fragment,
+        renderLoading = container.renderLoading;
 
     return (0, _fetchDataUntilSettled2.default)({
         data: data, props: props, falcor: falcor, fragment: fragment
@@ -216,13 +216,13 @@ function fetchEachPropUpdate(_ref) {
 }
 
 function mergeEachPropUpdate(_ref2, _ref3) {
-    var props = _ref2.props;
-    var falcor = _ref2.falcor;
-    var dispatch = _ref2.dispatch;
-    var data = _ref3.data;
-    var error = _ref3.error;
-    var version = _ref3.version;
-    var loading = _ref3.loading;
+    var props = _ref2.props,
+        falcor = _ref2.falcor,
+        dispatch = _ref2.dispatch;
+    var data = _ref3.data,
+        error = _ref3.error,
+        version = _ref3.version,
+        loading = _ref3.loading;
 
     return {
         data: data, error: error, loading: loading,
@@ -245,16 +245,16 @@ var FalcorContainer = function (_React$Component) {
         var _this3 = _possibleConstructorReturn(this, (FalcorContainer.__proto__ || (0, _getPrototypeOf2.default)(FalcorContainer)).call(this, props, context));
 
         var data = props.data;
-        var falcor = context.falcor;
-        var dispatch = context.dispatch;
-        var _this3$constructor = _this3.constructor;
-        var fragment = _this3$constructor.fragment;
-        var Component = _this3$constructor.Component;
-        var mapFragment = _this3$constructor.mapFragment;
-        var mapDispatch = _this3$constructor.mapDispatch;
-        var renderErrors = _this3$constructor.renderErrors;
-        var renderLoading = _this3$constructor.renderLoading;
-        var mapFragmentAndProps = _this3$constructor.mapFragmentAndProps;
+        var falcor = context.falcor,
+            dispatch = context.dispatch;
+        var _this3$constructor = _this3.constructor,
+            fragment = _this3$constructor.fragment,
+            Component = _this3$constructor.Component,
+            mapFragment = _this3$constructor.mapFragment,
+            mapDispatch = _this3$constructor.mapDispatch,
+            renderErrors = _this3$constructor.renderErrors,
+            renderLoading = _this3$constructor.renderLoading,
+            mapFragmentAndProps = _this3$constructor.mapFragmentAndProps;
 
 
         _this3.fragment = fragment;
@@ -281,19 +281,19 @@ var FalcorContainer = function (_React$Component) {
     _createClass(FalcorContainer, [{
         key: 'getChildContext',
         value: function getChildContext() {
-            var _state = this.state;
-            var falcor = _state.falcor;
-            var dispatch = _state.dispatch;
+            var _state = this.state,
+                falcor = _state.falcor,
+                dispatch = _state.dispatch;
 
             return { falcor: falcor, dispatch: dispatch };
         }
     }, {
         key: 'shouldComponentUpdate',
         value: function shouldComponentUpdate(nextProps, nextState, nextContext) {
-            var _props = this.props;
-            var currProps = _props === undefined ? {} : _props;
-            var _state2 = this.state;
-            var currState = _state2 === undefined ? {} : _state2;
+            var _props = this.props,
+                currProps = _props === undefined ? {} : _props,
+                _state2 = this.state,
+                currState = _state2 === undefined ? {} : _state2;
 
 
             if (this.renderLoading === true && currState.loading !== nextState.loading) {
@@ -306,17 +306,15 @@ var FalcorContainer = function (_React$Component) {
                 return true;
             }
 
-            var currData = currProps.data;
-            var _currProps$style = currProps.style;
-            var currStyle = _currProps$style === undefined ? {} : _currProps$style;
+            var currData = currProps.data,
+                _currProps$style = currProps.style,
+                currStyle = _currProps$style === undefined ? {} : _currProps$style,
+                restCurrProps = _objectWithoutProperties(currProps, ['data', 'style']);
 
-            var restCurrProps = _objectWithoutProperties(currProps, ['data', 'style']);
-
-            var nextData = nextProps.data;
-            var _nextProps$style = nextProps.style;
-            var nextStyle = _nextProps$style === undefined ? currStyle : _nextProps$style;
-
-            var restNextProps = _objectWithoutProperties(nextProps, ['data', 'style']);
+            var nextData = nextProps.data,
+                _nextProps$style = nextProps.style,
+                nextStyle = _nextProps$style === undefined ? currStyle : _nextProps$style,
+                restNextProps = _objectWithoutProperties(nextProps, ['data', 'style']);
 
             if (!(0, _shallowEqual2.default)(currData, nextData)) {
                 return true;
@@ -390,29 +388,28 @@ var FalcorContainer = function (_React$Component) {
     }, {
         key: 'render',
         value: function render() {
-            var Component = this.Component;
-            var dispatchers = this.dispatchers;
-            var mapFragment = this.mapFragment;
-            var renderErrors = this.renderErrors;
-            var renderLoading = this.renderLoading;
-            var mapFragmentAndProps = this.mapFragmentAndProps;
+            var Component = this.Component,
+                dispatchers = this.dispatchers,
+                mapFragment = this.mapFragment,
+                renderErrors = this.renderErrors,
+                renderLoading = this.renderLoading,
+                mapFragmentAndProps = this.mapFragmentAndProps;
 
 
             if (!Component) {
                 return null;
             }
 
-            var _props2 = this.props;
-            var outerData = _props2.data;
+            var _props2 = this.props,
+                outerData = _props2.data,
+                props = _objectWithoutProperties(_props2, ['data']);
 
-            var props = _objectWithoutProperties(_props2, ['data']);
-
-            var _state3 = this.state;
-            var data = _state3.data;
-            var error = _state3.error;
-            var loading = _state3.loading;
-            var falcor = _state3.falcor;
-            var dispatch = _state3.dispatch;
+            var _state3 = this.state,
+                data = _state3.data,
+                error = _state3.error,
+                loading = _state3.loading,
+                falcor = _state3.falcor,
+                dispatch = _state3.dispatch;
 
 
             var mappedFragment = mapFragment(data, props);

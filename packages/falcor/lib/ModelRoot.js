@@ -1,6 +1,6 @@
+var functionTypeof = 'function';
 var hasOwn = require("./support/hasOwn");
 var Requests = require("./request/Queue");
-var isFunction = require("./support/isFunction");
 
 function ModelRoot(o, model) {
 
@@ -25,27 +25,27 @@ function ModelRoot(o, model) {
         this.maxSize = options.maxSize;
     }
 
-    if (isFunction(options.comparator)) {
+    if (typeof options.comparator === functionTypeof) {
         this.comparator = options.comparator;
     }
 
-    if (isFunction(options.branchSelector)) {
+    if (typeof options.branchSelector === functionTypeof) {
         this.branchSelector = options.branchSelector;
     }
 
-    if (isFunction(options.errorSelector)) {
+    if (typeof options.errorSelector === functionTypeof) {
         this.errorSelector = options.errorSelector;
     }
 
-    if (isFunction(options.branchSelector)) {
+    if (typeof options.branchSelector === functionTypeof) {
         this.branchSelector = options.branchSelector;
     }
 
-    if (isFunction(options.onChange)) {
+    if (typeof options.onChange === functionTypeof) {
         this.onChange = options.onChange;
     }
 
-    if (isFunction(options.onChangesCompleted)) {
+    if (typeof options.onChangesCompleted === functionTypeof) {
         this.onChangesCompleted = options.onChangesCompleted;
     }
 }

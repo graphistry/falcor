@@ -1,6 +1,5 @@
-var $atom = require('./../support/types').$atom;
 var pathValueMerge = require('./../cache/pathValueMerge');
-var materializedAtom = { $type: $atom };
+var materializedAtom = require('@graphistry/falcor-path-utils/lib/support/materializedAtom');
 
 /**
  * given a set of paths and a jsonGraph envelope, materialize missing will

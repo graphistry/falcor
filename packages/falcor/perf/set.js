@@ -1,31 +1,29 @@
 var _ = require('lodash');
-var benchmark = require('benchmark');
-var TriggerDataSource = require("./TriggerDataSource");
-var createCacheWith100Videos = require('./createCacheWith100Videos');
-
-function noop() {}
+var Benchmark = require('benchmark');
 
 module.exports = _.zip(
-        runTestsWithModel(require('falcor/dist/falcor.browser.min').Model, '@netflix/falcor   ', 'falcor'),
-        runTestsWithModel(require('../dist/falcor.min').Model,             '@graphistry/falcor', '..')
+        netflixSetSuiteDescription(),
+        graphistrySetSuiteDescription()
     )
     .reduce(function(suite, tests) {
         return tests.reduce(function(suite, test) {
-            return test && suite.add(test.name, test.runner) || suite;
+            return test && suite.add(test) || suite;
         }, suite);
-    }, new benchmark.Suite('Set Tests'));
+    }, new Benchmark.Suite('Set Tests', { async: false }));
 
-function runTestsWithModel(ModelClass, ModelName, packagePath) {
+function netflixSetSuiteDescription() {
 
-    var memoizedModel = new ModelClass({ cache: createCacheWith100Videos() });
-    var allTitlesPath = ['lolomo', {from: 0, to: 9}, {from: 0, to: 9}, 'item', 'title'];
+    var head = require('falcor/lib/internal/head');
+    var tail = require('falcor/lib/internal/tail');
+    var Model = require('falcor/dist/falcor.browser.min').Model;
+    var TriggerDataSource = require("./TriggerDataSource");
+    var createCacheWith100Videos = require('./createCacheWith100Videos');
+    var memoizedModel = new Model({ cache: createCacheWith100Videos() });
+    var allTitlesPaths = [['lolomo', {from: 0, to: 9}, {from: 0, to: 9}, 'item', 'title']];
 
     // hard-link all refs in the memoized Model's cache.
     memoizedModel._root.cache.videos = {};
-    memoizedModel.get(allTitlesPath).subscribe(noop, noop, noop);
-
-    var head = require(packagePath + '/lib/internal/head');
-    var tail = require(packagePath + '/lib/internal/tail');
+    memoizedModel._getPathValuesAsPathMap(memoizedModel, allTitlesPaths, [{}]);
 
     function resetModelVideosState() {
         memoizedModel._root.cache.videos = {};
@@ -35,27 +33,82 @@ function runTestsWithModel(ModelClass, ModelName, packagePath) {
     }
 
     return [{
-        name: ModelName + ' setJSONGraph - 100 paths into Cache',
-        runner: function() {
+        async: false,
+        name: '   @netflix/falcor setJSONGraph - 100 paths into Cache',
+        fn: function() {
             resetModelVideosState();
             memoizedModel._setJSONGs(memoizedModel, [{
-                paths: [allTitlesPath],
+                paths: allTitlesPaths,
                 jsonGraph: createCacheWith100Videos().videos
             }]);
         }
     }, {
-        name: ModelName + ' setPathMaps - 100 paths into Cache',
-        runner: function() {
+        async: false,
+        name: '   @netflix/falcor setPathMaps - 100 paths into Cache',
+        fn: function() {
             resetModelVideosState();
             memoizedModel._setPathMaps(memoizedModel, [{
                 json: createCacheWith100Videos().videos
             }]);
         }
     }, {
-        name: ModelName + ' setPathValues - 100 paths into Cache',
-        runner: function() {
+        async: false,
+        name: '   @netflix/falcor setPathValues - 100 paths into Cache',
+        fn: function() {
             resetModelVideosState();
-            memoizedModel._setPathValues(memoizedModel, create100VideoPathValues());
+            memoizedModel._setPathValues(memoizedModel,
+                create100VideoPathValues());
+        }
+    }];
+}
+
+function graphistrySetSuiteDescription() {
+
+    var head = require('../internalKeyDefinitions')()['ƒ_head'];
+    var tail = require('../internalKeyDefinitions')()['ƒ_tail'];
+    var Model = require('../dist/falcor.min').Model;
+    var TriggerDataSource = require("./TriggerDataSource");
+    var createCacheWith100Videos = require('./createCacheWith100Videos');
+    var memoizedModel = new Model({ cache: createCacheWith100Videos() });
+    var allTitlesPaths = [['lolomo', {from: 0, to: 9}, {from: 0, to: 9}, 'item', 'title']];
+
+    // hard-link all refs in the memoized Model's cache.
+    memoizedModel._root.cache.videos = {};
+    memoizedModel._getPathValuesAsPathMap(memoizedModel, allTitlesPaths, {}, false, true);
+
+    function resetModelVideosState() {
+        memoizedModel._root.cache.videos = {};
+        memoizedModel._root[head] = null;
+        memoizedModel._root[tail] = null;
+        memoizedModel._root.expired = [];
+    }
+
+    return [{
+        async: false,
+        name: '@graphistry/falcor setJSONGraph - 100 paths into Cache',
+        fn: function() {
+            resetModelVideosState();
+            memoizedModel._setJSONGs(memoizedModel, [{
+                paths: allTitlesPaths,
+                jsonGraph: createCacheWith100Videos().videos
+            }]);
+        }
+    }, {
+        async: false,
+        name: '@graphistry/falcor setPathMaps - 100 paths into Cache',
+        fn: function() {
+            resetModelVideosState();
+            memoizedModel._setPathMaps(memoizedModel, [{
+                json: createCacheWith100Videos().videos
+            }]);
+        }
+    }, {
+        async: false,
+        name: '@graphistry/falcor setPathValues - 100 paths into Cache',
+        fn: function() {
+            resetModelVideosState();
+            memoizedModel._setPathValues(memoizedModel,
+                create100VideoPathValues());
         }
     }];
 }

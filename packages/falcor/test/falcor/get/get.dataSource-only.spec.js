@@ -1,12 +1,13 @@
 var falcor = require("./../../../lib/");
 var Model = falcor.Model;
-var Rx = require('rx');
+var Observable = require('rx').Observable;
 var noOp = function() {};
 var LocalDataSource = require('../../data/LocalDataSource');
 var ErrorDataSource = require('../../data/ErrorDataSource');
 var isPathValue = require("./../../../lib/support/isPathValue");
 var expect = require("chai").expect;
 var sinon = require('sinon');
+var TestCache = require('./../../data/Cache');
 var cacheGenerator = require('./../../CacheGenerator');
 var atom = require('@graphistry/falcor-json-graph').atom;
 var MaxRetryExceededError = require('./../../../lib/errors/MaxRetryExceededError');
@@ -214,8 +215,7 @@ describe('DataSource Only', function() {
             var onNext = sinon.spy();
             var secondOnNext = sinon.spy();
             toObservable(model.
-                preload(['videos', 0, 'title'],
-                    ['videos', 1, 'art'])).
+                preload(['videos', 0, 'title'], ['videos', 1, 'art'])).
                 doAction(onNext).
                 doAction(noOp, noOp, function() {
                     expect(onNext.callCount).to.equal(0);
@@ -246,6 +246,58 @@ describe('DataSource Only', function() {
                     });
                 }).
                 subscribe(noOp, done, done);
+        });
+        it('should persist immediately expired values until the next transaction.', function(done) {
+
+            var datasourceGetCount = 0;
+            var model = new Model({
+                source: new LocalDataSource(TestCache(), {
+                    onGet: function() {
+                        datasourceGetCount++;
+                    }
+                })
+            });
+
+            var getObs = toObservable(model.
+                get(['genreList', 'expires-now', [0, 1], 'summary']));
+
+            Observable.concat(
+                Observable.defer(function() {
+                    var onNextSpy = sinon.spy();
+                    return getObs.doAction(onNextSpy, noOp, validateOnCompleted(1, onNextSpy))
+                }),
+                Observable.defer(function() {
+                    var onNextSpy = sinon.spy();
+                    return getObs.doAction(onNextSpy, noOp, validateOnCompleted(2, onNextSpy))
+                })
+            ).
+            subscribe(noOp, done, done);
+
+            function validateOnCompleted(expectedGetCount, onNextSpy) {
+                return function() {
+                    expect(datasourceGetCount).to.equal(expectedGetCount);
+                    expect(strip(onNextSpy.getCall(0).args[0])).to.deep.equals({
+                        json: {
+                            genreList: {
+                                'expires-now': {
+                                    0: {
+                                        summary: {
+                                            "title": "House of Cards",
+                                            "url": "/movies/1234"
+                                        }
+                                    },
+                                    1: {
+                                        summary: {
+                                            "title": "Terminator 3",
+                                            "url": "/movies/766"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                };
+            }
         });
     });
     describe('_toJSONG', function() {

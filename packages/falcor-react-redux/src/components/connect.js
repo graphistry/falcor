@@ -73,7 +73,6 @@ const connect = (BaseComponent) => compose(
     lifecycle({
         componentDidUpdate() {
             this.props.dispatch({
-                // data: { ...this.props.data },
                 data: this.props.data,
                 type: 'falcor-react-redux/update'
             });

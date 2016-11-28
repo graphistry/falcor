@@ -8,7 +8,7 @@ var expireNode = require("../expireNode");
 var lruPromote = require("../../lru/promote");
 var getSize = require("../../support/getSize");
 var createHardlink = require("../createHardlink");
-var iterateKeySet = require("@graphistry/falcor-path-utils").iterateKeySet;
+var iterateKeySet = require("@graphistry/falcor-path-utils/lib/iterateKeySet");
 var updateNodeAncestors = require("../updateNodeAncestors");
 var removeNodeAndDescendants = require("../removeNodeAndDescendants");
 
@@ -19,7 +19,7 @@ var removeNodeAndDescendants = require("../removeNodeAndDescendants");
  * @param {Array.<PathValue>} paths - the PathValues to set.
  */
 
-module.exports = function invalidatePathSets(model, paths) {
+module.exports = function invalidatePathSets(model, paths, expireImmediate) {
 
     var modelRoot = model._root;
     var lru = modelRoot;
@@ -39,7 +39,7 @@ module.exports = function invalidatePathSets(model, paths) {
 
         invalidatePathSet(
             path, 0, cache, parent, node,
-            version, expired, lru
+            version, expired, lru, expireImmediate
         );
     }
 
@@ -56,7 +56,7 @@ module.exports = function invalidatePathSets(model, paths) {
 
 function invalidatePathSet(
     path, depth, root, parent, node,
-    version, expired, lru) {
+    version, expired, lru, expireImmediate) {
 
     var note = {};
     var branch = depth < path.length - 1;
@@ -66,8 +66,8 @@ function invalidatePathSet(
     do {
         arr = invalidateNode(
             root, parent, node,
-            key, branch, false,
-            version, expired, lru
+            key, branch, false, version,
+            expired, lru, expireImmediate
         );
         var nextNode = arr[0];
         var nextParent = arr[1];
@@ -76,7 +76,7 @@ function invalidatePathSet(
                 invalidatePathSet(
                     path, depth + 1,
                     root, nextParent, nextNode,
-                    version, expired, lru
+                    version, expired, lru, expireImmediate
                 );
             } else if (removeNodeAndDescendants(nextNode, nextParent, key, lru)) {
                 updateNodeAncestors(nextParent, getSize(nextNode), lru, version);
@@ -86,9 +86,9 @@ function invalidatePathSet(
     } while (!note.done);
 }
 
-function invalidateReference(root, node, version, expired, lru) {
+function invalidateReference(root, node, version, expired, lru, expireImmediate) {
 
-    if (isExpired(node)) {
+    if (isExpired(node, expireImmediate)) {
         expireNode(node, expired, lru);
         arr[0] = undefined;
         arr[1] = root;
@@ -117,8 +117,8 @@ function invalidateReference(root, node, version, expired, lru) {
             var branch = index < count;
             arr = invalidateNode(
                 root, parent, node,
-                key, branch, true,
-                version, expired, lru
+                key, branch, true, version,
+                expired, lru, expireImmediate
             );
             node = arr[0];
             if (!node && typeof node !== 'object') {
@@ -140,14 +140,14 @@ function invalidateReference(root, node, version, expired, lru) {
 
 function invalidateNode(
     root, parent, node,
-    key, branch, reference,
-    version, expired, lru) {
+    key, branch, reference, version,
+    expired, lru, expireImmediate) {
 
     var type = node.$type;
 
     while (type === $ref) {
 
-        arr = invalidateReference(root, node, version, expired, lru);
+        arr = invalidateReference(root, node, version, expired, lru, expireImmediate);
 
         node = arr[0];
 

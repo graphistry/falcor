@@ -1,9 +1,9 @@
 export class PostMessageEmitter {
-    constructor(source, target, once) {
-        this.once = once;
+    constructor(source, target) {
         this.source = source;
         this.target = target;
         this.listeners = {};
+        this.connected = true;
         this.onPostMessage = this.onPostMessage.bind(this);
         source.addEventListener('message', this.onPostMessage);
     }
@@ -18,9 +18,7 @@ export class PostMessageEmitter {
         if (!handlers) {
             return;
         }
-        handlers
-            .slice(0)
-            .forEach((handler) => handler && handler(rest));
+        handlers.slice(0).forEach((handler) => handler && handler(rest));
     }
     on(eventName, handler) {
         const { listeners } = this;
@@ -30,7 +28,7 @@ export class PostMessageEmitter {
             handlers.push(handler);
         }
     }
-    off(eventName, handler) {
+    removeListener(eventName, handler) {
         const { listeners } = this;
         const handlers = listeners[eventName];
         if (!handlers) {
@@ -44,15 +42,33 @@ export class PostMessageEmitter {
             delete listeners[eventName];
         }
     }
-    emit(eventName, data) {
-        const { source, target, once } = this;
-        if (once) {
-            this.once = null;
+    emit(eventName, { kind, value, error } = {}) {
+        let finalized = false, payload;
+        const { source, target } = this;
+        switch (kind) {
+            case 'N':
+                payload = { kind, value };
+                break;
+            case 'E':
+                payload = { kind, error };
+                finalized = true;
+                break;
+            case 'C':
+                payload = { kind };
+                finalized = true;
+                break;
+        }
+        if (finalized) {
             this.target = null;
             this.source = null;
             this.listeners = null;
-            source && source.removeEventListener('message', this.onPostMessage);
+            this.connected = false;
+            if (source) {
+                source.removeEventListener('message', this.onPostMessage);
+            }
         }
-        target && target.postMessage({ type: eventName, ...data }, '*');
+        if (payload && target) {
+            target.postMessage({ type: eventName, ...payload }, '*');
+        }
     }
 }

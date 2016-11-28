@@ -2,13 +2,14 @@ var isArray = Array.isArray;
 var clone = require("../../clone");
 var $ref = require("../../../types/ref");
 var onValue = require("./onValue");
-var onMissing = require("../onMissing");
 var inlineValue = require("./inlineValue");
 var onValueType = require("../onValueType");
 var isExpired = require("../../isExpired");
+var originalOnMissing = require("../onMissing");
 var getReferenceTarget = require("./getReferenceTarget");
 var NullInPathError = require("../../../errors/NullInPathError");
 var InvalidKeySetError = require("../../../errors/InvalidKeySetError");
+var materializedAtom = require('@graphistry/falcor-path-utils/lib/support/materializedAtom');
 
 module.exports = walkPathAndBuildOutput;
 
@@ -18,9 +19,8 @@ function walkPathAndBuildOutput(cacheRoot, node, path,
                                 depth, seed, results,
                                 requestedPath, requestedLength,
                                 optimizedPath, optimizedLength,
-                                fromReference, modelRoot, expired,
-                                boxValues, materialized, hasDataSource,
-                                treatErrorsAsValues) {
+                                fromReference, modelRoot, expired, expireImmediate,
+                                boxValues, materialized, hasDataSource, treatErrorsAsValues) {
 
     var type, refTarget;
 
@@ -31,12 +31,12 @@ function walkPathAndBuildOutput(cacheRoot, node, path,
     if (node === undefined || (
         type = node.$type) || (
         depth === requestedLength)) {
-        return onValueType(node, type,
+        return onValueType(node, type, seed,
                            path, depth, seed, results,
                            requestedPath, requestedLength,
                            optimizedPath, optimizedLength,
-                           fromReference, modelRoot, expired,
-                           boxValues, materialized, hasDataSource,
+                           fromReference, modelRoot, expired, expireImmediate,
+                           undefined, boxValues, materialized, hasDataSource,
                            treatErrorsAsValues, onValue, onMissing);
     }
 
@@ -148,7 +148,7 @@ function walkPathAndBuildOutput(cacheRoot, node, path,
                 nextDepth < requestedLength &&
                 // If the reference is expired, it will be invalidated and
                 // reported as missing in the next call to walkPath below.
-                next.$type === $ref && !isExpired(next)) {
+                next.$type === $ref && !isExpired(next, expireImmediate)) {
 
                 // Write the cloned ref value into the jsonGraph at the
                 // optimized path. JSONGraph must always clone references.
@@ -159,7 +159,8 @@ function walkPathAndBuildOutput(cacheRoot, node, path,
                 // following the path. If the reference resolves to a missing
                 // path or leaf node, it will be handled in the next call to
                 // walkPath.
-                refTarget = getReferenceTarget(cacheRoot, next, modelRoot, seed, boxValues, materialized);
+                refTarget = getReferenceTarget(cacheRoot, next, modelRoot, seed,
+                                               boxValues, materialized, expireImmediate);
 
                 next = refTarget[0];
                 fromReference = true;
@@ -171,7 +172,7 @@ function walkPathAndBuildOutput(cacheRoot, node, path,
             walkPathAndBuildOutput(
                 cacheRoot, next, path, nextDepth, seed,
                 results, requestedPath, requestedLength, nextOptimizedPath,
-                nextOptimizedLength, fromReference, modelRoot, expired,
+                nextOptimizedLength, fromReference, modelRoot, expired, expireImmediate,
                 boxValues, materialized, hasDataSource, treatErrorsAsValues
             );
         }
@@ -193,3 +194,30 @@ function walkPathAndBuildOutput(cacheRoot, node, path,
     return undefined;
 }
 /* eslint-enable */
+
+function onMissing(path, depth, results,
+                   requestedPath, requestedLength, fromReference,
+                   optimizedPath, optimizedLength, reportMissing,
+                   seed, reportMaterialized, branchSelector) {
+
+    var json, isLeaf;
+
+    if (seed && reportMaterialized) {
+
+        (seed.paths || (seed.paths = [])).push(
+            (isLeaf = 0 === requestedLength - depth) &&
+                                 // depth + 1 if fromReference === true
+                requestedPath.slice(0, depth + !!fromReference) ||
+                requestedPath.slice(0, depth).concat(path
+                    .slice(depth, requestedLength + !!fromReference))
+        );
+
+        json = inlineValue(isLeaf && materializedAtom || undefined,
+                           optimizedPath, optimizedLength, seed, !isLeaf);
+    }
+
+    return originalOnMissing(path, depth, results,
+                             requestedPath, requestedLength, fromReference,
+                             optimizedPath, optimizedLength, reportMissing,
+                             json, reportMaterialized);
+}

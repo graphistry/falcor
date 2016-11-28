@@ -1,6 +1,8 @@
 var util = require('util');
-var internalKeyMap = require('./../lib/internal');
-var internalKeys = Object.keys(internalKeyMap).concat(ƒ_meta);
+var internalKeyMap = require('./../internalKeyDefinitions')();
+var internalKeys = Object.keys(internalKeyMap).map(function(key) {
+    return internalKeyMap[key];
+});
 
 module.exports = {
     clean: clean,

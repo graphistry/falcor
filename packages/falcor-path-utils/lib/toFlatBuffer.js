@@ -1,5 +1,6 @@
 var isArray = Array.isArray;
 var nullBuffer = { '$keys': [null], '$keysMap': { 'null': 0 } };
+var flatBufferToPaths = require('./flatBufferToPaths');
 
 module.exports = toFlatBuffer;
 
@@ -17,13 +18,16 @@ var flatBuf = computeFlatBufferHash(toFlatBuffer([
 console.log(inspect(flatBuf, { depth: null }));
 */
 
-function toFlatBuffer(paths) {
+function toFlatBuffer(paths, seed) {
     return paths.reduce(function(seed, path) {
-        return _toFlatBuffer(seed, path, 0, path.length);
-    }, {});
+        if (isArray(path)) {
+            return pathToFlatBuffer(seed, path, 0, path.length);
+        }
+        return toFlatBuffer(flatBufferToPaths(path), seed);
+    }, seed || {});
 }
 
-function _toFlatBuffer(seed, path, depth, length) {
+function pathToFlatBuffer(seed, path, depth, length) {
 
     if (depth === length) {
         return undefined;
@@ -53,7 +57,7 @@ function _toFlatBuffer(seed, path, depth, length) {
             }
             keys[keysIndex] = nextKey;
             keysMap[nextKey] = keysIndex;
-            next = _toFlatBuffer(seed[keysIndex], path, nextDepth, length);
+            next = pathToFlatBuffer(seed[keysIndex], path, nextDepth, length);
             if (next !== undefined) {
                 seed[keysIndex] = next;
             }
@@ -98,7 +102,7 @@ function _toFlatBuffer(seed, path, depth, length) {
             }
             keys[keysIndex] = keyset;
             keysMap[nextKey] = keysIndex;
-            next = _toFlatBuffer(seed[keysIndex], path, nextDepth, length);
+            next = pathToFlatBuffer(seed[keysIndex], path, nextDepth, length);
             if (next !== undefined) {
                 seed[keysIndex] = next;
             }

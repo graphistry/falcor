@@ -29,7 +29,7 @@ describe('Values', function() {
     });
     it('should get a value of type atom when in materialized mode.', function() {
         getCoreRunner({
-            input: [['videos', {to:1}, 'title']],
+            input: [['videos', {to:2}, 'title']],
             materialize: true,
             stripMetadata: false,
             output: {
@@ -61,6 +61,13 @@ describe('Values', function() {
                                 [ƒm_abs_path]:    ['videos', 1],
                                 [ƒm_deref_from]:  undefined,
                                 [ƒm_deref_to]:    undefined,
+                                [ƒm_version]:     0
+                            },
+                            title: {$type: 'atom'}
+                        },
+                        2: {
+                            [ƒ_meta]: {
+                                [ƒm_abs_path]:    ['videos', 2],
                                 [ƒm_version]:     0
                             },
                             title: {$type: 'atom'}

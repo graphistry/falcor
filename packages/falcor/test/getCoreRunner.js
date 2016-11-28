@@ -25,8 +25,11 @@ module.exports = function(testConfig) {
     if (typeof cache === 'function') {
         cache = cache();
     }
-    var source = testConfig.source;
     var model;
+    var source = testConfig.source;
+    if (typeof source === 'undefined') {
+        source = true;
+    }
     if (testConfig.model) {
         model = testConfig.model;
     }
@@ -71,12 +74,12 @@ module.exports = function(testConfig) {
     var out, seed = {};
 
     if (testConfig.input) {
-        out = fn(model, testConfig.input, seed);
+        out = fn(model, testConfig.input, seed, true, true);
     }
 
     else {
         testConfig.inputs.forEach(function(input) {
-            out = fn(model, input, seed);
+            out = fn(model, input, seed, true, true);
         });
     }
 

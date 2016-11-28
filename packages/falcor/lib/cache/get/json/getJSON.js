@@ -3,12 +3,12 @@ var walkPathAndBuildOutput = require("./walkPath");
 var walkFlatBufferAndBuildOutput = require("./walkFlatBuffer");
 var getBoundCacheNode = require("../../getBoundCacheNode");
 var InvalidModelError = require("../../../errors/InvalidModelError");
-var toFlatBuffer = require("@graphistry/falcor-path-utils").toFlatBuffer;
-var computeFlatBufferHash = require("@graphistry/falcor-path-utils").computeFlatBufferHash;
+var toFlatBuffer = require("@graphistry/falcor-path-utils/lib/toFlatBuffer");
+var computeFlatBufferHash = require("@graphistry/falcor-path-utils/lib/computeFlatBufferHash");
 
 module.exports = getJSON;
 
-function getJSON(model, paths, seed, progressive, forceUsePathWalk) {
+function getJSON(model, paths, seed, progressive, expireImmediate) {
 
     var node,
         referenceContainer,
@@ -40,7 +40,7 @@ function getJSON(model, paths, seed, progressive, forceUsePathWalk) {
 
     requestedPath = [];
 
-    var hasFlatBuffer = false,
+    var isFlatBuffer = false,
         json = seed && seed.json,
         results = { data: seed },
         boxValues = model._boxed,
@@ -52,40 +52,46 @@ function getJSON(model, paths, seed, progressive, forceUsePathWalk) {
         treatErrorsAsValues = model._treatErrorsAsValues,
         allowFromWhenceYouCame = model._allowFromWhenceYouCame;
 
-    if (recycleJSON && forceUsePathWalk !== true && isArray(paths[0])) {
-        paths = [computeFlatBufferHash(toFlatBuffer(paths))];
-    }
+    var arr, path, pathsIndex = 0, pathsCount = paths.length;
 
-    var pathsIndex = -1, pathsCount = paths.length;
-    while (++pathsIndex < pathsCount) {
-        var path = paths[pathsIndex];
-        if (isArray(path)) {
-            requestedLength = path.length;
-            json = walkPathAndBuildOutput(cache, node, json, path,
-                                       /* depth = */ 0, seed, results,
-                                          requestedPath, requestedLength,
-                                          optimizedPath, optimizedLength,
-                                          /* fromReference = */ false, referenceContainer,
-                                          modelRoot, expired, branchSelector,
-                                          boxValues, materialized, hasDataSource,
-                                          treatErrorsAsValues, allowFromWhenceYouCame);
-        } else {
-            hasFlatBuffer = true;
-            var arr = walkFlatBufferAndBuildOutput(cache, node, json, path, 0, seed, results,
+    if (pathsCount > 0) {
+        if (recycleJSON) {
+            pathsCount = 1;
+            isFlatBuffer = true;
+            if (!paths[0].$keys || paths.length > 1) {
+                paths = [computeFlatBufferHash(toFlatBuffer(paths, {}))];
+            }
+            do {
+                path = paths[pathsIndex];
+                arr = walkFlatBufferAndBuildOutput(cache, node, json, path, 0, seed, results,
                                                    requestedPath, optimizedPath, optimizedLength,
                                                    /* fromReference = */ false, referenceContainer,
-                                                   modelRoot, expired, branchSelector,
+                                                   modelRoot, expired, expireImmediate, branchSelector,
                                                    boxValues, materialized, hasDataSource,
                                                    treatErrorsAsValues, allowFromWhenceYouCame);
-            json = arr[0];
-            arr[0] = undefined;
-            arr[1] = undefined;
+                json = arr[0];
+                arr[0] = undefined;
+                arr[1] = undefined;
+            } while (++pathsIndex < pathsCount)
+        } else {
+            do {
+                path = paths[pathsIndex];
+                requestedLength = path.length;
+                json = walkPathAndBuildOutput(cache, node, json, path,
+                                           /* depth = */ 0, seed, results,
+                                              requestedPath, requestedLength,
+                                              optimizedPath, optimizedLength,
+                                              /* fromReference = */ false, referenceContainer,
+                                              modelRoot, expired, expireImmediate, branchSelector,
+                                              boxValues, materialized, hasDataSource,
+                                              treatErrorsAsValues, allowFromWhenceYouCame);
+            } while (++pathsIndex < pathsCount)
         }
     }
 
     var requested = results.requested;
 
-    results.args = hasFlatBuffer && paths || requested;
+    results.args = isFlatBuffer && paths || requested;
 
     if (requested && requested.length) {
         results.relative = results.args;//requested;

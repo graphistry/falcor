@@ -1,7 +1,7 @@
 var Source = require('./Source');
 var Subscriber = require('./Subscriber');
 var lruCollect = require('../lru/collect');
-var collapse = require("@graphistry/falcor-path-utils").collapse;
+var collapse = require("@graphistry/falcor-path-utils/lib/collapse");
 var InvalidSourceError = require("../errors/InvalidSourceError");
 var MaxRetryExceededError = require('../errors/MaxRetryExceededError');
 
@@ -34,8 +34,9 @@ Call.prototype.operator = function(subscriber) {
 
 Call.prototype._subscribe = function(subscriber) {
     subscriber.onNext({
+        type: this.type,
+        args: this._args,
         model: this.model,
-        type: this.type, args: this._args,
         version: this.model._root.version
     });
     subscriber.onCompleted();
@@ -46,7 +47,9 @@ Call.prototype._toJSON = function(data, errors) {
     return this.lift(new CallOperator(
         this.operator.data || data,
         this.operator.errors || errors,
-        'json', this.operator.progressive
+        'json',
+        this.operator.progressive,
+        this.operator.maxRetryCount
     ), this.source);
 }
 
@@ -54,7 +57,9 @@ Call.prototype._toJSONG = function(data, errors) {
     return this.lift(new CallOperator(
         this.operator.data || data,
         this.operator.errors || errors,
-        'jsonGraph', this.operator.progressive
+        'jsonGraph',
+        this.operator.progressive,
+        this.operator.maxRetryCount
     ), this.source);
 }
 
@@ -73,7 +78,8 @@ Call.prototype.progressively = function() {
         this.operator.data,
         this.operator.errors,
         this.operator.operation,
-        true
+        true,
+        this.operator.maxRetryCount
     ), this.source);
 }
 
@@ -112,6 +118,135 @@ CallSubscriber.prototype.operations = {
     call: require('../cache/call'),
     invalidate: require('../cache/invalidate')
 };
+
+CallSubscriber.prototype.next =
+CallSubscriber.prototype.onNext = function(seed) {
+
+    if (!this.started) {
+        this.args = seed.args;
+        this.type = seed.type;
+        this.model = seed.model;
+        this.version = seed.version;
+        this.maxRetryCount = this.maxRetryCount || this.model._root.maxRetryCount;
+        return;
+    }
+
+    var missing, fragments;
+    var type = seed.type;
+    var args = seed.args || seed.paths;
+
+    var data = this.data;
+    var model = this.model;
+    var errors = this.errors;
+    var results = this.results;
+    var version = this.version;
+    var hasValue = this.hasValue;
+    var operation = this.operation;
+    var progressive = this.progressive;
+
+    var seedIsImmutable = progressive && data && !model._recycleJSON;
+
+    // If we request paths as JSON in progressive mode, ensure each progressive
+    // valueNode is immutable. If not in progressive mode, we can write into the
+    // same JSON tree until the request is completed.
+    if (seedIsImmutable) {
+        data = {};
+    }
+
+    if (args && args.length) {
+
+        results = this.operations[type]
+            [operation](model, args, data,
+                        progressive || !model._source,
+                        this.retryCount === -1);
+
+        // We must communicate critical errors from get, such as bound path is
+        // broken or this is a JSONGraph request with a bound path.
+        if (results.error) {
+            throw results.error;
+        }
+
+        errors && results.errors &&
+            errors.push.apply(errors, results.errors);
+
+        if (fragments = results.fragments) {
+            args = results.args;
+            this.fragments = fragments;
+        }
+
+        this.relative = results.relative;
+        this.requested = results.requested;
+        this.missing = missing = results.missing;
+        this.hasValue = hasValue || (hasValue = results.hasValue);
+    }
+
+    // We are done when there are no missing paths or
+    // the model does not have a dataSource to fetch from.
+    this.completed = !missing || !model._source;
+
+    if (type !== 'set') {
+        this.args = args;// || this.args;
+        if (seedIsImmutable) {
+            this.data = mergeInto(data, this.data);
+        }
+    }
+
+    if (progressive && hasValue && data && (data.json || data.jsonGraph)) {
+        tryOnNext(data, operation, model._root, this.destination);
+    }
+}
+
+CallSubscriber.prototype.error =
+CallSubscriber.prototype.onError = function(error) {
+    if (error instanceof InvalidSourceError) {
+        return Subscriber.prototype.onError.call(this, error);
+    }
+    this.errored = true;
+    this.onCompleted(error);
+}
+
+CallSubscriber.prototype.complete =
+CallSubscriber.prototype.onCompleted = function(error) {
+
+    var data, type, errors, errored;
+
+    if (!this.started && (this.started = true)) {
+        this.onNext(this);
+    } else if (errored = this.errored) {
+        this.onNext({ type: 'get', paths: this.relative });
+    }
+
+    if (errored || this.completed) {
+        if (!this.progressive && this.hasValue && (
+            (data = this.data) && data.json || data.jsonGraph)) {
+            tryOnNext(data, this.operation, this.model._root, this.destination);
+        }
+        errors = this.errors;
+        if (errored || error || errors && errors.length) {
+            return Subscriber.prototype.onError.call(
+                this,  errors.length && errors || error
+            );
+        }
+
+        return Subscriber.prototype.onCompleted.call(this);
+    }
+
+    if (++this.retryCount >= this.maxRetryCount) {
+        return Subscriber.prototype.onError.call(this, new MaxRetryExceededError(
+            this.retryCount,
+            this.requested,
+            this.relative,
+            this.missing
+        ));
+    }
+
+    this.request = this.model._root.requests[this.type](
+        this.model,
+        this.missing,
+        this.relative,
+        this.fragments
+    ).subscribe(this);
+}
 
 CallSubscriber.prototype.dispose =
 CallSubscriber.prototype.unsubscribe = function() {
@@ -162,136 +297,6 @@ CallSubscriber.prototype.unsubscribe = function() {
             }
         }
     }
-}
-
-CallSubscriber.prototype.next =
-CallSubscriber.prototype.onNext = function(seed) {
-
-    if (!this.started) {
-        this.args = seed.args;
-        this.type = seed.type;
-        this.model = seed.model;
-        this.version = seed.version;
-        this.maxRetryCount = this.maxRetryCount || this.model._root.maxRetryCount;
-        return;
-    }
-
-    var missing, fragments;
-    var type = seed.type;
-    var args = seed.args || seed.paths;
-
-    var data = this.data;
-    var model = this.model;
-    var errors = this.errors;
-    var results = this.results;
-    var version = this.version;
-    var hasValue = this.hasValue;
-    var operation = this.operation;
-    var progressive = this.progressive;
-
-    var seedIsImmutable = progressive && data && !model._recycleJSON;
-
-    // If we request paths as JSON in progressive mode, ensure each progressive
-    // valueNode is immutable. If not in progressive mode, we can write into the
-    // same JSON tree until the request is completed.
-    if (seedIsImmutable) {
-        data = {};
-    }
-
-    if (args && args.length) {
-
-        results = this.operations[type]
-            [operation](model, args, data, progressive || !model._source);
-
-        // We must communicate critical errors from get, such as bound path is
-        // broken or this is a JSONGraph request with a bound path.
-        if (results.error) {
-            throw results.error;
-        }
-
-        errors && results.errors &&
-            errors.push.apply(errors, results.errors);
-
-        if (fragments = results.fragments) {
-            this.fragments = fragments;
-        }
-
-        this.relative = results.relative;
-        this.requested = results.requested;
-        this.missing = missing = results.missing;
-        this.hasValue = hasValue || (hasValue = results.hasValue);
-    }
-
-    // We are done when there are no missing paths or
-    // the model does not have a dataSource to fetch from.
-    this.completed = !missing || !missing.length || !model._source;
-
-    if (type !== 'set') {
-        this.args = args || this.args;
-        if (seedIsImmutable) {
-            this.data = mergeInto(data, this.data);
-        }
-    }
-
-    if (progressive && hasValue && data && (data.json || data.jsonGraph)) {
-
-        tryOnNext(data, operation, model._root, this.destination);
-    }
-}
-
-CallSubscriber.prototype.error =
-CallSubscriber.prototype.onError = function(error) {
-    if (error instanceof InvalidSourceError) {
-        return Subscriber.prototype.onError.call(this, error);
-    }
-    this.errored = true;
-    this.onCompleted(error);
-}
-
-CallSubscriber.prototype.complete =
-CallSubscriber.prototype.onCompleted = function(error) {
-
-    var data, type, errors, errored;
-
-    if (!this.started && (this.started = true)) {
-
-        this.onNext(this);
-    } else if (errored = this.errored) {
-        this.onNext({ type: 'get', paths: this.relative });
-    }
-
-    if (errored || this.completed) {
-        if (!this.progressive && this.hasValue && (
-            (data = this.data) && data.json || data.jsonGraph)) {
-
-            tryOnNext(data, this.operation, this.model._root, this.destination);
-        }
-        errors = this.errors;
-        if (errored || error || errors && errors.length) {
-
-            return Subscriber.prototype.onError.call(
-                this,  errors.length && errors || error
-            );
-        }
-
-        return Subscriber.prototype.onCompleted.call(this);
-    }
-
-    if (++this.retryCount >= this.maxRetryCount) {
-        return Subscriber.prototype.onError.call(this, new MaxRetryExceededError(
-            this.retryCount,
-            this.requested,
-            this.relative,
-            this.missing
-        ));
-    }
-
-    this.request = this.model._root.requests[this.type](
-        this.model,
-        this.missing,
-        this.relative,
-        this.fragments
-    ).subscribe(this);
 }
 
 function tryOnNext(data, operation, modelRoot, destination) {

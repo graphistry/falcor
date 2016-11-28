@@ -5,5 +5,5 @@ describe('Functional', function() {
     require('./materialized.spec');
     require('./unhandled.spec');
     require('./precedence.spec');
-    require('./streaming');
+    require('./streaming.spec');
 });

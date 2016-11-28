@@ -2,13 +2,12 @@ var Subject = require('./Subject');
 var $error = require('../types/error');
 var Subscriber = require('./Subscriber');
 var Subscription = require('./Subscription');
-var util = require('@graphistry/falcor-path-utils');
 var InvalidSourceError = require("../errors/InvalidSourceError");
 
-var toPaths = util.toPaths;
-var toCollapseMap = util.toCollapseMap;
-var toCollapseTrees = util.toCollapseTrees;
-var hasIntersection = util.hasIntersection;
+var toPaths = require("@graphistry/falcor-path-utils/lib/toPaths");
+var toCollapseMap = require("@graphistry/falcor-path-utils/lib/toCollapseMap");
+var toCollapseTrees = require("@graphistry/falcor-path-utils/lib/toCollapseTrees");
+var hasIntersection = require("@graphistry/falcor-path-utils/lib/hasIntersection");
 
 var setJSONGraphs = require('../cache/set/setJSONGraphs');
 var setPathValues = require('../cache/set/setPathValues');
@@ -23,6 +22,7 @@ function Request(type, queue, source, scheduler) {
     this.type = type;
     this.data = null;
     this.active = false;
+    this.responded = false;
     this.requested = [];
     this.optimized = [];
     this.disposable = null;
@@ -41,6 +41,7 @@ Request.prototype.onNext = function(env) {
         return;
     }
 
+    this.responded = true;
 
     var jsonGraph = env.jsonGraph;
     var requested = this.requested;
@@ -48,20 +49,22 @@ Request.prototype.onNext = function(env) {
     var invalidated = env.invalidated;
     var paths = env.paths || this.paths;
 
-    // Then run invalidations.
+    // Run invalidations first.
     if (invalidated && invalidated.length) {
-        invalidatePaths({ _root: modelRoot, _path: [] }, invalidated);
+        invalidatePaths({ _root: modelRoot, _path: [] }, invalidated, false);
     }
 
-    setJSONGraphs({ _root: modelRoot }, [{
-        paths: paths, jsonGraph: jsonGraph
-    }], null, modelRoot.comparator);
+    if (paths && paths.length && !(!jsonGraph || typeof jsonGraph !== 'object')) {
+        setJSONGraphs(
+            { _root: modelRoot },
+            [{ paths: paths, jsonGraph: jsonGraph }],
+            modelRoot.errorSelector, modelRoot.comparator, false
+        );
+    }
 
     this.observers.slice(0).forEach(function(observer, index) {
         observer.onNext({
-            type: 'get',
-            jsonGraph: env.jsonGraph,
-            paths: requested[index] || paths
+            type: 'get', paths: requested[index] || paths
         });
     });
 }
@@ -74,6 +77,8 @@ Request.prototype.onError = function(error) {
     if (!queue) {
         return;
     }
+
+    this.responded = true;
 
     error = error || {};
 
@@ -96,16 +101,24 @@ Request.prototype.onError = function(error) {
     ))
     .map(function(path) { return { path: path, value: error }; });
 
-    setPathValues(
-        {_root: modelRoot, _path: []}, errorPathValues,
-        modelRoot.errorSelector, modelRoot.comparator
-    );
+    if (errorPathValues.length) {
+        setPathValues(
+            { _root: modelRoot, _path: [] },
+            errorPathValues,
+            modelRoot.errorSelector,
+            modelRoot.comparator,
+            false
+        );
+    }
 
     Subject.prototype.onError.call(this, error);
 }
 
 Request.prototype.complete =
 Request.prototype.onCompleted = function() {
+    if (this.responded === false) {
+        this.onNext({});
+    }
     Subject.prototype.onCompleted.call(this);
 }
 
@@ -198,11 +211,10 @@ function flush() {
                 obs = this.dataSource.get(paths);
                 break;
             case 'set':
-                obs = this.dataSource.set({
-                    paths: paths, jsonGraph: this.data });
+                obs = this.dataSource.set({ paths: paths, jsonGraph: this.data });
                 break;
             case 'call':
-                obs = this.dataSource.call(...this.data);
+                obs = this.dataSource.call.apply(this.dataSource, this.data);
                 break;
         }
         this.disposable = obs.subscribe(this);

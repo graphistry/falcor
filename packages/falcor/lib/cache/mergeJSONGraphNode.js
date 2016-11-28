@@ -13,7 +13,7 @@ var updateNodeAncestors = require("./updateNodeAncestors");
 
 module.exports = function mergeJSONGraphNode(
     parent, node, message, key, requestedPath, optimizedPath,
-    version, expired, lru, comparator, errorSelector) {
+    version, expired, lru, comparator, errorSelector, expireImmediate) {
 
     var sizeOffset;
 
@@ -87,7 +87,7 @@ module.exports = function mergeJSONGraphNode(
         if (message == null) {
             // ...unless the cache is an expired reference. In that case, expire
             // the cache node and return undefined.
-            if (isExpired(node)) {
+            if (isExpired(node, expireImmediate)) {
                 expireNode(node, expired, lru);
                 return void 0;
             }
@@ -121,7 +121,9 @@ module.exports = function mergeJSONGraphNode(
                     //   reference with the message reference.
                     // - If the message reference is older than the cache
                     //   reference, short-circuit.
-                    if (!isExpired(node) && !isExpired(message) && mTimestamp < cTimestamp) {
+                    if (!isExpired(node, expireImmediate) &&
+                        !isExpired(message, expireImmediate) &&
+                        mTimestamp < cTimestamp) {
                         return void 0;
                     }
                 }
@@ -159,7 +161,7 @@ module.exports = function mergeJSONGraphNode(
             var isDistinct = true;
             // If the cache is a branch, but the message is a leaf, replace the
             // cache branch with the message leaf.
-            if ((cType && !isExpired(node)) || !cIsObject) {
+            if ((cType && !isExpired(node, expireImmediate)) || !cIsObject) {
                 // Compare the current cache value with the new value. If either of
                 // them don't have a timestamp, or the message's timestamp is newer,
                 // replace the cache value with the message value. If a comparator
@@ -182,7 +184,12 @@ module.exports = function mergeJSONGraphNode(
         }
 
         // Promote the message edge in the LRU.
-        if (isExpired(node)) {
+        if (isExpired(node,
+            /* expireImmediate:
+             * force true so the node is marked as
+             * expired but keep using it for the merge.
+             */
+            true)) {
             expireNode(node, expired, lru);
         }
     }

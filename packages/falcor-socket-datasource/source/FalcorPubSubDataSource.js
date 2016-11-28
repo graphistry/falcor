@@ -7,8 +7,12 @@ export class FalcorPubSubDataSource {
         this.cancel = cancel;
         this.socket = socket;
     }
-    call(functionPath, args, refSuffixes, thisPaths) {
-        return this.operation('call', { args, functionPath, refSuffixes, thisPaths });
+    call(callPath, callArgs, suffixes, thisPaths) {
+        if (!Array.isArray(callPath)) { callPath = [callPath]; }
+        if (!Array.isArray(callArgs)) { callArgs = [callArgs]; }
+        if (!Array.isArray(suffixes)) { suffixes = [suffixes]; }
+        if (!Array.isArray(thisPaths)) { thisPaths = [thisPaths]; }
+        return this.operation('call', { callPath, callArgs, suffixes, thisPaths });
     }
     get(pathSets) {
         return this.operation('get', { pathSets });
@@ -23,94 +27,71 @@ export class FalcorPubSubDataSource {
     }
 }
 
-function request(method, parameters, observerOrNext, ...rest) {
-    let observer = observerOrNext;
+function request(method, parameters, observer, ...rest) {
 
-    if (typeof observerOrNext === 'function') {
-        // Falcor internals still expect DataSources to conform to the Rx4 Observer spec.
-        observer = {
-            onCompleted: rest[1],
-            onError: rest[0],
-            onNext: observerOrNext
-        };
+    if (typeof observer === 'function') {
+        observer = { onNext: observer, onError: rest[0], onCompleted: rest[1] };
     }
 
     const { event, cancel, model, socket } = this;
 
-    if (socket.connected === false && model) {
+    if (socket.connected !== false) {
 
-        let thisPath, functionPath,
-            pathSets, jsonGraphEnvelope;
+        let finalized = false;
+        const id = simpleflake().toJSON();
+        const responseToken = `${event}-${id}`;
+        const cancellationToken = `${cancel}-${id}`;
 
+        socket.on(responseToken, handler);
+        socket.emit(event, { id, method, ...parameters });
+
+        return {
+            unsubscribe() { this.dispose(); },
+            dispose() {
+                socket.removeListener(responseToken, handler);
+                if (!finalized) {
+                    socket.emit(cancellationToken);
+                }
+            }
+        };
+
+        function handler({ kind, value, error }) {
+            switch (kind) {
+                case 'N':
+                    observer.onNext && observer.onNext(value);
+                    break;
+                case 'E':
+                    finalized = true;
+                    observer.onError && observer.onError(error);
+                    break;
+                case 'C':
+                    finalized = true;
+                    observer.onCompleted && observer.onCompleted();
+                    break;
+            }
+        }
+    } else if (model) {
+        let thisPath, callPath, pathSets, jsonGraphEnvelope;
         if (method === 'set') {
             jsonGraphEnvelope = parameters.jsonGraphEnvelope;
         } else if (method === 'get' || method === 'call') {
-
             jsonGraphEnvelope = {};
             pathSets = parameters.pathSets;
-
             if (method === 'call') {
+                callPath = parameters.callPath;
+                thisPath = callPath.slice(0, -1);
                 pathSets = parameters.thisPaths || [];
-                functionPath = parameters.functionPath;
-                thisPath = functionPath.slice(0, -1);
                 pathSets = pathSets.map((path) => thisPath.concat(path));
             }
-
             model._getPathValuesAsJSONG(
                 model
-                    .boxValues()
                     ._materialize()
                     .withoutDataSource()
                     .treatErrorsAsValues(),
-                pathSets,
-                [jsonGraphEnvelope]
-            );
+                pathSets, jsonGraphEnvelope, false, false);
         }
-        observer.onNext(jsonGraphEnvelope);
-        observer.onCompleted && observer.onCompleted();
-        return { dispose() {} };
+        observer.onNext && observer.onNext(jsonGraphEnvelope);
     }
-
-    let acknowledged = false;
-
-    const id = simpleflake().toJSON();
-
-    const responseToken = `${event}-${id}`;
-    const cancellationToken = `${cancel}-${id}`;
-
-    socket.on(responseToken, handler);
-    socket.emit(event, { id, method, ...parameters });
-
-    return {
-        dispose() {
-            socket.off(responseToken, handler);
-            if (!acknowledged) {
-                socket.emit(cancellationToken);
-            }
-        }
-    };
-
-    function handler({ error, ...rest }) {
-        // Don't emit the cancelation event if the subscription is
-        // disposed as a result of `error` or `complete`.
-        acknowledged = true;
-        if (typeof error !== 'undefined') {
-            // If there's at least one own-property key in ...rest,
-            // notify the subscriber of the data before erroring.
-            for (const restKey in rest) {
-                if (!rest.hasOwnProperty(restKey)) {
-                    continue;
-                }
-                observer.onNext(rest);
-                break;
-            }
-            observer.onError && observer.onError(error);
-        } else {
-            observer.onNext(rest);
-            // todo: update falcor client and router to support
-            // streaming, then update socket datasource with `nextEvent`
-            // 'errorEvent', and `completeEvent` constructor args.
-            observer.onCompleted && observer.onCompleted();
-        }
-    }
+    observer.onCompleted && observer.onCompleted();
+    return { unsubscribe() {}, dispose() {} };
 }

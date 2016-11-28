@@ -1,8 +1,8 @@
 var clone = require("../../clone");
 var $ref = require("../../../types/ref");
-var $atom = require("../../../types/atom");
 var $error = require("../../../types/error");
 var inlineValue = require("./inlineValue");
+var materializedAtom = require('@graphistry/falcor-path-utils/lib/support/materializedAtom');
 
 module.exports = onJSONGraphValue;
 
@@ -15,7 +15,7 @@ function onJSONGraphValue(node, type, depth, seed, results,
 
     if (requiresMaterializedToReport) {
         if (materialized) {
-            value = { $type: $atom };
+            value = materializedAtom;
         } else {
             return undefined;
         }
@@ -33,10 +33,9 @@ function onJSONGraphValue(node, type, depth, seed, results,
         value = clone(node);
     }
 
-    if (results && requestedPath) {
+    if (seed) {
         results.hasValue = true;
-        inlineValue(value, optimizedPath, optimizedLength,
-                    seed, boxValues, materialized);
+        inlineValue(value, optimizedPath, optimizedLength, seed);
         (seed.paths || (seed.paths = [])).push(
             requestedPath.slice(0, depth + !!fromReference) // depth + 1 if fromReference === true
         );

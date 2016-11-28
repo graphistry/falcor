@@ -8,7 +8,7 @@ Object.keys(internalKeys).forEach(function(key) {
 });
 
 describe("Falcor", function() {
-    require("./Model.spec.js");
+    require("./Model.spec");
     require("./integration");
 });
 

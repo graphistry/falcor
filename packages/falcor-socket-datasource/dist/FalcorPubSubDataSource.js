@@ -91,10 +91,10 @@ function request(method, parameters, observerOrNext) {
         };
     }
 
-    var event = this.event;
-    var cancel = this.cancel;
-    var model = this.model;
-    var socket = this.socket;
+    var event = this.event,
+        cancel = this.cancel,
+        model = this.model,
+        socket = this.socket;
 
 
     if (socket.connected === false && model) {
@@ -155,9 +155,8 @@ function request(method, parameters, observerOrNext) {
     };
 
     function handler(_ref) {
-        var error = _ref.error;
-
-        var rest = _objectWithoutProperties(_ref, ['error']);
+        var error = _ref.error,
+            rest = _objectWithoutProperties(_ref, ['error']);
 
         // Don't emit the cancelation event if the subscription is
         // disposed as a result of `error` or `complete`.
