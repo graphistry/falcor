@@ -182,13 +182,3 @@ describe('fromWhenceYouCame', function() {
         expect(lolomoModel._hasValidParentReference()).to.not.be.ok;
     });
 });
-
-function log(model) {
-    var root = model._root;
-    var node = root[ƒ_head];
-    console.log('------------------');
-    while (node) {
-        console.log(node[ƒ_key]);
-        node = node[ƒ_next];
-    }
-}

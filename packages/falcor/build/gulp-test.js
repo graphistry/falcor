@@ -8,7 +8,7 @@ gulp.task('test-coverage', function (cb) {
     // .pipe(istanbul.hookRequire())
     .on('finish', function () {
       gulp.src(['./test/index.js'])
-        .pipe(mocha())
+        .pipe(mocha({ reporter: 'progress' }))
         .pipe(istanbul.writeReports())
         .on('end', cb);
     });

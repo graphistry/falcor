@@ -162,11 +162,10 @@ describe('References', function() {
         }
     });
 
-    xit('should warn in debug mode if we follow at least 50 references', function() {
+    xit('should log in debug mode if we follow at least 50 references', function() {
 
         runTestWithConsoleFn(null, false);
         runTestWithConsoleFn('log', true);
-        runTestWithConsoleFn('warn', true);
 
         function runTestWithConsoleFn(reportFnName, hasConsole) {
 
@@ -176,8 +175,7 @@ describe('References', function() {
                 global.console = undefined;
             } else {
                 var realConsoleLog = console.log;
-                var realConsoleWarn = console.warn;
-                console.log = console.warn = undefined;
+                console.log = undefined;
 
                 var reportSpy = sinon.spy();
                 console[reportFnName] = reportSpy;
@@ -217,7 +215,6 @@ describe('References', function() {
                 global.console = realConsole;
             } else {
                 console.log = realConsoleLog;
-                console.warn = realConsoleWarn;
 
                 expect(reportSpy.callCount).to.equal(1);
                 expect(reportSpy.getCall(0).args[0]).to.equal(new Error(
@@ -233,7 +230,6 @@ describe('References', function() {
 
         runTestWithConsoleFn(null, false);
         runTestWithConsoleFn('log', true);
-        runTestWithConsoleFn('warn', true);
 
         function runTestWithConsoleFn(reportFnName, hasConsole) {
 
@@ -243,8 +239,7 @@ describe('References', function() {
                 global.console = undefined;
             } else {
                 var realConsoleLog = console.log;
-                var realConsoleWarn = console.warn;
-                console.log = console.warn = undefined;
+                console.log = undefined;
 
                 var reportSpy = sinon.spy();
                 console[reportFnName] = reportSpy;
@@ -277,7 +272,6 @@ describe('References', function() {
                 global.console = realConsole;
             } else {
                 console.log = realConsoleLog;
-                console.warn = realConsoleWarn;
 
                 expect(reportSpy.callCount).to.equal(1);
                 expect(reportSpy.getCall(0).args[0]).to.equal(new Error(

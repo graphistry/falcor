@@ -35,8 +35,6 @@ function getModel() {
 }
 
 function testLRU(model) {
-    function log(x) { console.log(JSON.stringify(x, null, 4)) }
-
     expect(model._root[ƒ_head].value).to.equal('overwrite');
     expect(model._root[ƒ_head].value).to.deep.equal(model._root[ƒ_tail].value);
     expect(model._root[ƒ_head][ƒ_next]).to.be.not.ok;
