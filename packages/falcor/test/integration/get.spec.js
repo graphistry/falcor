@@ -1,7 +1,7 @@
 // This file starts the server and exposes the Router at /model.json
 var express = require('express');
 var FalcorServer = require('falcor-express');
-var falcor = require('./../../lib');
+var falcor = require('./../../falcor.js');
 var Model = falcor.Model;
 var HttpDataSource = require('falcor-http-datasource');
 var expect = require('chai').expect;

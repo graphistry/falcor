@@ -1,5 +1,5 @@
-var NAME = "InvalidSourceError";
-var MESSAGE = "An exception was thrown when making a request.";
+var NAME = 'InvalidSourceError';
+var MESSAGE = 'An exception was thrown when making a request';
 
 /**
  * InvalidSourceError happens when a dataSource syncronously throws
@@ -9,7 +9,7 @@ var MESSAGE = "An exception was thrown when making a request.";
  * @private
  */
 function InvalidSourceError(error) {
-    var err = Error.call(this, MESSAGE);
+    var err = Error.call(this, MESSAGE + ':\n\t' + error);
     err.name = NAME;
     this.stack = err.stack;
     this.message = err.message;

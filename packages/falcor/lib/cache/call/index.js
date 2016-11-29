@@ -8,18 +8,16 @@ function json(model, _args, data, progressive) {
     if (!_args) {
         return { missing: false, hasValue: false };
     }
-    args = [].concat(_args[1] || []);
-    suffixes = [].concat(_args[2] || []);
-    thisPaths = [].concat(_args[3] || []);
-    path = (model._path || []).concat(_args[0] || []);
+    var args = [].concat(_args[1] || []);
+    var suffixes = [].concat(_args[2] || []);
+    var thisPaths = [].concat(_args[3] || []);
+    var path = (model._path || []).concat(_args[0] || []);
     if (progressive && thisPaths && thisPaths.length) {
         hasValue =  getJSON(model, thisPaths, data, progressive, true).hasValue;
     }
     return {
-        args: null,
         data: data,
-        missing: [],
-        relative: [],
+        missing: true,
         hasValue: hasValue,
         fragments: [
             path, args, suffixes, thisPaths
@@ -32,10 +30,10 @@ function jsonGraph(model, _args, data, progressive) {
     if (!_args) {
         return { missing: false, hasValue: false };
     }
-    args = [].concat(_args[1] || []);
-    suffixes = [].concat(_args[2] || []);
-    thisPaths = [].concat(_args[3] || []);
-    path = (model._path || []).concat(_args[0] || []);
+    var args = [].concat(_args[1] || []);
+    var suffixes = [].concat(_args[2] || []);
+    var thisPaths = [].concat(_args[3] || []);
+    var path = (model._path || []).concat(_args[0] || []);
     if (progressive && thisPaths && thisPaths.length) {
         hasValue = getJSONGraph({
             _root: model._root,
@@ -45,10 +43,8 @@ function jsonGraph(model, _args, data, progressive) {
         }, thisPaths, data, true, true).hasValue;
     }
     return {
-        args: null,
         data: data,
-        missing: [],
-        relative: [],
+        missing: true,
         hasValue: hasValue,
         fragments: [
             path, args, suffixes, thisPaths

@@ -1,4 +1,4 @@
-var clone = require("../../clone");
+var clone = require('../../clone');
 
 module.exports = onError;
 

@@ -1,6 +1,6 @@
-var Rx = require("rx");
+var Rx = require('rx');
 var Observable = Rx.Observable;
-var _ = require("lodash");
+var _ = require('lodash');
 var noOp = function() {};
 
 var ErrorDataSource = module.exports = function(errorCode, errorMessage, errorData) {
@@ -15,7 +15,7 @@ ErrorDataSource.prototype = {
             $type: 'error',
             value: _.assign({
                 status: this.errorCode,
-                "message": this.errorMessage
+                'message': this.errorMessage
             }, this.errorData)
         });
     },
@@ -24,7 +24,7 @@ ErrorDataSource.prototype = {
             $type: 'error',
             value: _.assign({
                 status: this.errorCode,
-                "message": this.errorMessage
+                'message': this.errorMessage
             }, this.errorData)
         });
     }

@@ -1,6 +1,6 @@
-var falcor = require("./../../lib/");
+var falcor = require('./../../falcor.js');
 var Model = falcor.Model;
-var chai = require("chai");
+var chai = require('chai');
 var expect = chai.expect;
 var noOp = function() {};
 
@@ -35,10 +35,10 @@ function getModel() {
 }
 
 function testLRU(model) {
-    expect(model._root[ƒ_head].value).to.equal('overwrite');
-    expect(model._root[ƒ_head].value).to.deep.equal(model._root[ƒ_tail].value);
-    expect(model._root[ƒ_head][ƒ_next]).to.be.not.ok;
-    expect(model._root[ƒ_head][ƒ_prev]).to.be.not.ok;
-    expect(model._root[ƒ_tail][ƒ_next]).to.be.not.ok;
-    expect(model._root[ƒ_tail][ƒ_prev]).to.be.not.ok;
+    expect(model._root[f_head].value).to.equal('overwrite');
+    expect(model._root[f_head].value).to.deep.equal(model._root[f_tail].value);
+    expect(model._root[f_head][f_next]).to.be.not.ok;
+    expect(model._root[f_head][f_prev]).to.be.not.ok;
+    expect(model._root[f_tail][f_next]).to.be.not.ok;
+    expect(model._root[f_tail][f_prev]).to.be.not.ok;
 }

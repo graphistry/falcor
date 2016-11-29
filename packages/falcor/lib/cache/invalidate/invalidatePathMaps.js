@@ -1,12 +1,13 @@
-var $ref = require("../../types/ref");
-var isExpired = require("../isExpired");
-var expireNode = require("../expireNode");
-var lruPromote = require("../../lru/promote");
-var getSize = require("../../support/getSize");
-var createHardlink = require("../createHardlink");
-var getBoundCacheNode = require("../getBoundCacheNode");
-var updateNodeAncestors = require("../updateNodeAncestors");
-var removeNodeAndDescendants = require("../removeNodeAndDescendants");
+var $ref = require('../../types/ref');
+var isExpired = require('../isExpired');
+var expireNode = require('../expireNode');
+var lruPromote = require('../../lru/promote');
+var getSize = require('../../support/getSize');
+var createHardlink = require('../createHardlink');
+var getBoundCacheNode = require('../getBoundCacheNode');
+var isInternalKey = require('../../support/isInternalKey');
+var updateNodeAncestors = require('../updateNodeAncestors');
+var removeNodeAndDescendants = require('../removeNodeAndDescendants');
 
 /**
  * Sets a list of PathMaps into a JSON Graph.
@@ -24,8 +25,8 @@ module.exports = function invalidatePathMaps(model, pathMapEnvelopes, expireImme
     var comparator = modelRoot._comparator;
     var cache = modelRoot.cache;
     var node = getBoundCacheNode(model);
-    var parent = node[ƒ_parent] || cache;
-    var initialVersion = cache[ƒ_version];
+    var parent = node[f_parent] || cache;
+    var initialVersion = cache[f_version];
 
     var pathMapIndex = -1;
     var pathMapCount = pathMapEnvelopes.length;
@@ -40,7 +41,7 @@ module.exports = function invalidatePathMaps(model, pathMapEnvelopes, expireImme
         );
     }
 
-    var newVersion = cache[ƒ_version];
+    var newVersion = cache[f_version];
     var rootChangeHandler = modelRoot.onChange;
 
     if (rootChangeHandler && initialVersion !== newVersion) {
@@ -57,7 +58,7 @@ function invalidatePathMap(
     }
 
     for (var key in pathMap) {
-        if (key[0] !== ƒ_ && key[0] !== "$") {
+        if (!isInternalKey(key)) {
             var child = pathMap[key];
             var branch = !(!child || typeof child !== 'object') && !child.$type;
             var results = invalidateNode(
@@ -97,10 +98,10 @@ function invalidateReference(
     var reference = node.value;
     var parent = root;
 
-    node = node[ƒ_context];
+    node = node[f_context];
 
     if (node != null) {
-        parent = node[ƒ_parent] || root;
+        parent = node[f_parent] || root;
     } else {
 
         var index = 0;
@@ -123,7 +124,7 @@ function invalidateReference(
             parent = results[1];
         } while (index++ < count);
 
-        if (container[ƒ_context] !== node) {
+        if (container[f_context] !== node) {
             createHardlink(container, node);
         }
     }
@@ -161,9 +162,9 @@ function invalidateNode(
 
     if (key == null) {
         if (branch) {
-            throw new Error("`null` is not allowed in branch key positions.");
+            throw new Error('`null` is not allowed in branch key positions.');
         } else if (node) {
-            key = node[ƒ_key];
+            key = node[f_key];
         }
     } else {
         parent = node;

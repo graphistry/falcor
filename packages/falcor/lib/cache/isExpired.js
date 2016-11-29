@@ -1,6 +1,6 @@
-var now = require("../support/now");
-var $now = require("../values/expires-now");
-var $never = require("../values/expires-never");
+var now = require('../support/now');
+var $now = require('../values/expires-now');
+var $never = require('../values/expires-never');
 
 module.exports = function isExpired(node, expireImmediate) {
     var exp = node.$expires;

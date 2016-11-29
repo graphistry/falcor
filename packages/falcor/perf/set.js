@@ -34,7 +34,7 @@ function netflixSetSuiteDescription() {
 
     return [{
         async: false,
-        name: '   @netflix/falcor setJSONGraph - 100 paths into Cache',
+        name: '   @netflix/falcor setJSONGraph - 100 paths into cache',
         fn: function() {
             resetModelVideosState();
             memoizedModel._setJSONGs(memoizedModel, [{
@@ -44,7 +44,7 @@ function netflixSetSuiteDescription() {
         }
     }, {
         async: false,
-        name: '   @netflix/falcor setPathMaps - 100 paths into Cache',
+        name: '   @netflix/falcor setPathMaps - 100 paths into cache',
         fn: function() {
             resetModelVideosState();
             memoizedModel._setPathMaps(memoizedModel, [{
@@ -53,7 +53,7 @@ function netflixSetSuiteDescription() {
         }
     }, {
         async: false,
-        name: '   @netflix/falcor setPathValues - 100 paths into Cache',
+        name: '   @netflix/falcor setPathValues - 100 paths into cache',
         fn: function() {
             resetModelVideosState();
             memoizedModel._setPathValues(memoizedModel,
@@ -64,9 +64,9 @@ function netflixSetSuiteDescription() {
 
 function graphistrySetSuiteDescription() {
 
-    var head = require('../internalKeyDefinitions')()['ƒ_head'];
-    var tail = require('../internalKeyDefinitions')()['ƒ_tail'];
-    var Model = require('../dist/falcor.min').Model;
+    var head = require('../lib/internal/f_head');
+    var tail = require('../lib/internal/f_tail');
+    var Model = require('../dist/falcor.all.min').Model;
     var TriggerDataSource = require("./TriggerDataSource");
     var createCacheWith100Videos = require('./createCacheWith100Videos');
     var memoizedModel = new Model({ cache: createCacheWith100Videos() });
@@ -85,7 +85,7 @@ function graphistrySetSuiteDescription() {
 
     return [{
         async: false,
-        name: '@graphistry/falcor setJSONGraph - 100 paths into Cache',
+        name: '@graphistry/falcor setJSONGraph - 100 paths into cache',
         fn: function() {
             resetModelVideosState();
             memoizedModel._setJSONGs(memoizedModel, [{
@@ -95,7 +95,7 @@ function graphistrySetSuiteDescription() {
         }
     }, {
         async: false,
-        name: '@graphistry/falcor setPathMaps - 100 paths into Cache',
+        name: '@graphistry/falcor setPathMaps - 100 paths into cache',
         fn: function() {
             resetModelVideosState();
             memoizedModel._setPathMaps(memoizedModel, [{
@@ -104,7 +104,7 @@ function graphistrySetSuiteDescription() {
         }
     }, {
         async: false,
-        name: '@graphistry/falcor setPathValues - 100 paths into Cache',
+        name: '@graphistry/falcor setPathValues - 100 paths into cache',
         fn: function() {
             resetModelVideosState();
             memoizedModel._setPathValues(memoizedModel,

@@ -2,7 +2,7 @@ var Source = require('./Source');
 var Request = require('./Request');
 var Subscriber = require('./Subscriber');
 var Subscription = require('./Subscription');
-var ImmediateScheduler = require("../schedulers/ImmediateScheduler");
+var ImmediateScheduler = require('../schedulers/ImmediateScheduler');
 
 module.exports = Queue;
 
@@ -26,7 +26,9 @@ function isolateSet(model, optimized, requested, env) {
 
         var subscriber = request.subscribe(new Subscriber(destination, request));
 
-        queue.add(request.connect());
+        queue.add(request);
+
+        request.connect();
 
         return subscriber;
     });
@@ -41,7 +43,9 @@ function isolateCall(model, optimized, requested, env) {
 
         var subscriber = request.subscribe(new Subscriber(destination, request));
 
-        queue.add(request.connect());
+        queue.add(request);
+
+        request.connect();
 
         return subscriber;
     });

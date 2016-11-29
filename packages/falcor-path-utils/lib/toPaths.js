@@ -1,7 +1,7 @@
 var isArray = Array.isArray;
-var typeOfObject = "object";
-var typeOfString = "string";
-var typeOfNumber = "number";
+var typeOfObject = 'object';
+var typeOfString = 'string';
+var typeOfNumber = 'number';
 var MAX_SAFE_INTEGER = 9007199254740991; // Number.MAX_SAFE_INTEGER in es6
 var MAX_SAFE_INTEGER_DIGITS = 16; // String(Number.MAX_SAFE_INTEGER).length
 var MIN_SAFE_INTEGER_DIGITS = 17; // String(Number.MIN_SAFE_INTEGER).length (including sign)
@@ -145,7 +145,7 @@ function collapsePathSetIndexes(pathset) {
  * Collapse range indexers, e.g. when there is a continuous
  * range in an array, turn it into an object instead:
  *
- * [1,2,3,4,5,6] => {"from":1, "to":6}
+ * [1,2,3,4,5,6] => {'from':1, 'to':6}
  *
  * @private
  */
@@ -177,12 +177,9 @@ function collapseIndex(keyset) {
         var from = keyset[0];
         var to = keyset[keyCount];
 
-        // If we re-introduce deduped integer indexers, change this comparson to "===".
+        // If we re-introduce deduped integer indexers, change this comparson to '==='.
         if (to - from <= keyCount) {
-            return {
-                from: from,
-                to: to
-            };
+            return { from: from, to: to };
         }
     }
 

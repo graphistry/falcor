@@ -7,7 +7,8 @@
     "test": "test"
   },
   "scripts": {
-    "test": "mocha test/index.js"
+    "test": "mocha --reporter dot --colors --full-trace --timeout 2000 test/index.js",
+    "prepublish": "npm test"
   },
   "repository": {
     "type": "git",

@@ -1,4 +1,4 @@
-var falcor = require('./../../../lib');
+var falcor = require('./../../../falcor.js');
 var InvalidModelError = require('./../../../lib/errors/InvalidModelError');
 var InvalidDerefInputError = require('./../../../lib/errors/InvalidDerefInputError');
 var Model = falcor.Model;

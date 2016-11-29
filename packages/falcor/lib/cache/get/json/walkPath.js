@@ -1,13 +1,13 @@
 var isArray = Array.isArray;
-var onValue = require("./onValue");
-var $ref = require("../../../types/ref");
-var FalcorJSON = require("./FalcorJSON");
-var onValueType = require("../onValueType");
-var isExpired = require("../../isExpired");
-var originalOnMissing = require("../onMissing");
-var getReferenceTarget = require("./getReferenceTarget");
-var NullInPathError = require("../../../errors/NullInPathError");
-var InvalidKeySetError = require("../../../errors/InvalidKeySetError");
+var onValue = require('./onValue');
+var $ref = require('../../../types/ref');
+var FalcorJSON = require('./FalcorJSON');
+var onValueType = require('../onValueType');
+var isExpired = require('../../isExpired');
+var originalOnMissing = require('../onMissing');
+var getReferenceTarget = require('./getReferenceTarget');
+var NullInPathError = require('../../../errors/NullInPathError');
+var InvalidKeySetError = require('../../../errors/InvalidKeySetError');
 
 module.exports = walkPathAndBuildOutput;
 
@@ -73,17 +73,17 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path,
 
     if (allowFromWhenceYouCame && referenceContainer) {
         refContainerRefPath = referenceContainer.value;
-        refContainerAbsPath = referenceContainer[ƒ_abs_path];
+        refContainerAbsPath = referenceContainer[f_abs_path];
     }
 
     if (json) {
         if (typeof json !== 'object') {
             json = undefined;
-        } else if (f_meta = json[ƒ_meta]) {
-            f_meta[ƒm_version] = node[ƒ_version];
-            f_meta[ƒm_abs_path] = node[ƒ_abs_path];
-            f_meta[ƒm_deref_to] = refContainerRefPath;
-            f_meta[ƒm_deref_from] = refContainerAbsPath;
+        } else if (f_meta = json[f_meta_data]) {
+            f_meta[f_meta_version] = node[f_version];
+            f_meta[f_meta_abs_path] = node[f_abs_path];
+            f_meta[f_meta_deref_to] = refContainerRefPath;
+            f_meta[f_meta_deref_from] = refContainerAbsPath;
         }
     }
 
@@ -113,7 +113,7 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path,
     iteratingKeyset: do {
 
         // If the keyset is a primitive value, we've found our `nextKey`.
-        if ("object" !== typeof keyset) {
+        if ('object' !== typeof keyset) {
             nextKey = keyset;
             rangeEnd = undefined;
             keyIsRange = false;
@@ -145,7 +145,7 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path,
         else {
             rangeEnd = keyset.to;
             nextKey = keyset.from || 0;
-            if ("number" !== typeof rangeEnd) {
+            if ('number' !== typeof rangeEnd) {
                 rangeEnd = nextKey + (keyset.length || 0) - 1;
             }
             if ((rangeEnd - nextKey) < 0) {
@@ -219,16 +219,16 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path,
                 // branch to contain it.
                 if (f_meta === undefined) {
                     f_meta = {};
-                    f_meta[ƒm_version] = node[ƒ_version];
-                    f_meta[ƒm_abs_path] = node[ƒ_abs_path];
-                    f_meta[ƒm_deref_to] = refContainerRefPath;
-                    f_meta[ƒm_deref_from] = refContainerAbsPath;
+                    f_meta[f_meta_version] = node[f_version];
+                    f_meta[f_meta_abs_path] = node[f_abs_path];
+                    f_meta[f_meta_deref_to] = refContainerRefPath;
+                    f_meta[f_meta_deref_from] = refContainerAbsPath;
                     // Empower developers to instrument branch node creation by
                     // providing a custom function. If they do, delegate branch
                     // node creation to them.
                     json = branchSelector && branchSelector({
-                        [ƒ_meta]: f_meta, __proto__: FalcorJSON.prototype }) || {
-                        [ƒ_meta]: f_meta, __proto__: FalcorJSON.prototype };
+                        [f_meta_data]: f_meta, __proto__: FalcorJSON.prototype }) || {
+                        [f_meta_data]: f_meta, __proto__: FalcorJSON.prototype };
                 }
 
                 // Set the reported branch or leaf into this branch.
@@ -279,8 +279,8 @@ function wrapMaterializedBranchSelector(branchSelector) {
 }
 
 function createDefaultMaterializedBranch(path, _depth, node) {
-    f_meta = {};
-    f_meta[ƒm_version] = 0;
-    f_meta[ƒm_abs_path] = path.slice(0, _depth);
-    return { [ƒ_meta]: f_meta, __proto__: FalcorJSON.prototype };
+    var f_meta = {};
+    f_meta[f_meta_version] = 0;
+    f_meta[f_meta_abs_path] = path.slice(0, _depth);
+    return { [f_meta_data]: f_meta, __proto__: FalcorJSON.prototype };
  }

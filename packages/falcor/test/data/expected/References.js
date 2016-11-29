@@ -6,7 +6,7 @@ module.exports = function() {
         simpleReference0: {
             getPathValues: {
                 query: [
-                    ["genreList", "0", "0", "summary"]
+                    ['genreList', '0', '0', 'summary']
                 ]
             },
 
@@ -25,16 +25,16 @@ module.exports = function() {
             },
 
             optimizedPaths: [
-                ["videos", "1234", "summary"]
+                ['videos', '1234', 'summary']
             ],
 
             AsValues: {
                 values: [
                     {
-                        path: ["genreList", "0", "0", "summary"],
-                        "value": {
-                            "title": "House of Cards",
-                            "url": "/movies/1234"
+                        path: ['genreList', '0', '0', 'summary'],
+                        'value': {
+                            'title': 'House of Cards',
+                            'url': '/movies/1234'
                         }
                     }
                 ]
@@ -43,8 +43,8 @@ module.exports = function() {
             AsJSON: {
                 values: [{
                     json: {
-                        "title": "House of Cards",
-                        "url": "/movies/1234"
+                        'title': 'House of Cards',
+                        'url': '/movies/1234'
                     }
                 }]
             },
@@ -54,34 +54,34 @@ module.exports = function() {
                     jsonGraph: {
                         genreList: {
                             0: {
-                                "$size": 52,
-                                "$type": $path,
-                                "value": ["lists", "abcd"]
+                                '$size': 52,
+                                '$type': $path,
+                                'value': ['lists', 'abcd']
                             }
                         },
                         lists: {
                             abcd: {
                                 0: {
-                                    "$size": 52,
-                                    "$type": $path,
-                                    "value": ["videos", "1234"]
+                                    '$size': 52,
+                                    '$type': $path,
+                                    'value': ['videos', '1234']
                                 }
                             }
                         },
                         videos: {
                             1234: {
                                 summary: {
-                                    "$size": 51,
-                                    "$type": $atom,
-                                    "value": {
-                                        "title": "House of Cards",
-                                        "url": "/movies/1234"
+                                    '$size': 51,
+                                    '$type': $atom,
+                                    'value': {
+                                        'title': 'House of Cards',
+                                        'url': '/movies/1234'
                                     }
                                 }
                             }
                         }
                     },
-                    paths: [["genreList", "0", "0", "summary"]]
+                    paths: [['genreList', '0', '0', 'summary']]
                 }]
             },
 
@@ -92,8 +92,8 @@ module.exports = function() {
                             0: {
                                 0: {
                                     summary: {
-                                        "title": "House of Cards",
-                                        "url": "/movies/1234"
+                                        'title': 'House of Cards',
+                                        'url': '/movies/1234'
                                     }
                                 }
                             }
@@ -105,17 +105,17 @@ module.exports = function() {
         simpleReference1: {
             getPathValues: {
                 query: [
-                    ["genreList", "0", "1", "summary"]
+                    ['genreList', '0', '1', 'summary']
                 ]
             },
 
             setPathValues: {
                 query: [
                     {
-                        path: ["genreList", "0", "1", "summary"],
-                        "value": {
-                            "title": "Terminator 3",
-                            "url": "/movies/766"
+                        path: ['genreList', '0', '1', 'summary'],
+                        'value': {
+                            'title': 'Terminator 3',
+                            'url': '/movies/766'
                         }
                     }
                 ]
@@ -124,23 +124,23 @@ module.exports = function() {
                 query: [{
                     jsonGraph: {
                         genreList: {
-                            0: ["lists", "abcd"]
+                            0: ['lists', 'abcd']
                         },
                         lists: {
                             abcd: {
-                                1: ["videos", "766"]
+                                1: ['videos', '766']
                             }
                         },
                         videos: {
                             766: {
                                 summary: {
-                                    "title": "Terminator 3",
-                                    "url": "/movies/766"
+                                    'title': 'Terminator 3',
+                                    'url': '/movies/766'
                                 }
                             }
                         }
                     },
-                    paths: [["genreList", "0", "1", "summary"]]
+                    paths: [['genreList', '0', '1', 'summary']]
                 }]
             },
 
@@ -159,16 +159,16 @@ module.exports = function() {
             },
 
             optimizedPaths: [
-                ["videos", "766", "summary"]
+                ['videos', '766', 'summary']
             ],
 
             AsValues: {
                 values: [
                     {
-                        path: ["genreList", "0", "1", "summary"],
-                        "value": {
-                            "title": "Terminator 3",
-                            "url": "/movies/766"
+                        path: ['genreList', '0', '1', 'summary'],
+                        'value': {
+                            'title': 'Terminator 3',
+                            'url': '/movies/766'
                         }
                     }
                 ]
@@ -177,8 +177,8 @@ module.exports = function() {
             AsJSON: {
                 values: [{
                     json: {
-                        "title": "Terminator 3",
-                        "url": "/movies/766"
+                        'title': 'Terminator 3',
+                        'url': '/movies/766'
                     }
                 }]
             },
@@ -188,34 +188,34 @@ module.exports = function() {
                     jsonGraph: {
                         genreList: {
                             0: {
-                                "$size": "52",
-                                "$type": $path,
-                                "value": ["lists", "abcd"]
+                                '$size': '52',
+                                '$type': $path,
+                                'value': ['lists', 'abcd']
                             }
                         },
                         lists: {
                             abcd: {
                                 1: {
-                                    "$size": "52",
-                                    "$type": $path,
-                                    "value": ["videos", "766"]
+                                    '$size': '52',
+                                    '$type': $path,
+                                    'value': ['videos', '766']
                                 }
                             }
                         },
                         videos: {
                             766: {
                                 summary: {
-                                    "$size": 51,
-                                    "$type": $atom,
-                                    "value": {
-                                        "title": "Terminator 3",
-                                        "url": "/movies/766"
+                                    '$size': 51,
+                                    '$type': $atom,
+                                    'value': {
+                                        'title': 'Terminator 3',
+                                        'url': '/movies/766'
                                     }
                                 }
                             }
                         }
                     },
-                    paths: [["genreList", "0", "1", "summary"]]
+                    paths: [['genreList', '0', '1', 'summary']]
                 }]
             },
 
@@ -226,8 +226,8 @@ module.exports = function() {
                             0: {
                                 1: {
                                     summary: {
-                                        "title": "Terminator 3",
-                                        "url": "/movies/766"
+                                        'title': 'Terminator 3',
+                                        'url': '/movies/766'
                                     }
                                 }
                             }
@@ -239,17 +239,17 @@ module.exports = function() {
         simpleReference2: {
             getPathValues: {
                 query: [
-                    ["genreList", "0", "2", "summary"]
+                    ['genreList', '0', '2', 'summary']
                 ]
             },
 
             setPathValues: {
                 query: [
                     {
-                        path: ["genreList", "0", "2", "summary"],
-                        "value": {
-                            "title": "Kindergarten Cop",
-                            "url": "/movies/7531"
+                        path: ['genreList', '0', '2', 'summary'],
+                        'value': {
+                            'title': 'Kindergarten Cop',
+                            'url': '/movies/7531'
                         }
                     }
                 ]
@@ -259,30 +259,30 @@ module.exports = function() {
                     jsonGraph: {
                         genreList: {
                             0: {
-                                "$size": "52",
-                                "$type": $path,
-                                "value": ["lists", "abcd"]
+                                '$size': '52',
+                                '$type': $path,
+                                'value': ['lists', 'abcd']
                             }
                         },
                         lists: {
                             abcd: {
                                 2: {
-                                    "$size": "52",
-                                    "$type": $path,
-                                    "value": ["videos", "7531"]
+                                    '$size': '52',
+                                    '$type': $path,
+                                    'value': ['videos', '7531']
                                 }
                             }
                         },
                         videos: {
                             7531: {
                                 summary: {
-                                    "title": "Kindergarten Cop",
-                                    "url": "/movies/7531"
+                                    'title': 'Kindergarten Cop',
+                                    'url': '/movies/7531'
                                 }
                             }
                         }
                     },
-                    paths: [["genreList", "0", "2", "summary"]]
+                    paths: [['genreList', '0', '2', 'summary']]
                 }]
             },
 
@@ -301,16 +301,16 @@ module.exports = function() {
             },
 
             optimizedPaths: [
-                ["videos", "7531", "summary"]
+                ['videos', '7531', 'summary']
             ],
 
             AsValues: {
                 values: [
                     {
-                        path: ["genreList", "0", "2", "summary"],
-                        "value": {
-                            "title": "Kindergarten Cop",
-                            "url": "/movies/7531"
+                        path: ['genreList', '0', '2', 'summary'],
+                        'value': {
+                            'title': 'Kindergarten Cop',
+                            'url': '/movies/7531'
                         }
                     }
                 ]
@@ -319,8 +319,8 @@ module.exports = function() {
             AsJSON: {
                 values: [{
                     json: {
-                        "title": "Kindergarten Cop",
-                        "url": "/movies/7531"
+                        'title': 'Kindergarten Cop',
+                        'url': '/movies/7531'
                     }
                 }]
             },
@@ -330,34 +330,34 @@ module.exports = function() {
                     jsonGraph: {
                         genreList: {
                             0: {
-                                "$size": "52",
-                                "$type": $path,
-                                "value": ["lists", "abcd"]
+                                '$size': '52',
+                                '$type': $path,
+                                'value': ['lists', 'abcd']
                             }
                         },
                         lists: {
                             abcd: {
                                 2: {
-                                    "$size": "52",
-                                    "$type": $path,
-                                    "value": ["videos", "7531"]
+                                    '$size': '52',
+                                    '$type': $path,
+                                    'value': ['videos', '7531']
                                 }
                             }
                         },
                         videos: {
                             7531: {
                                 summary: {
-                                    "$size": 51,
-                                    "$type": $atom,
-                                    "value": {
-                                        "title": "Kindergarten Cop",
-                                        "url": "/movies/7531"
+                                    '$size': 51,
+                                    '$type': $atom,
+                                    'value': {
+                                        'title': 'Kindergarten Cop',
+                                        'url': '/movies/7531'
                                     }
                                 }
                             }
                         }
                     },
-                    paths: [["genreList", "0", "2", "summary"]]
+                    paths: [['genreList', '0', '2', 'summary']]
                 }]
             },
 
@@ -368,8 +368,8 @@ module.exports = function() {
                             0: {
                                 2: {
                                     summary: {
-                                        "title": "Kindergarten Cop",
-                                        "url": "/movies/7531"
+                                        'title': 'Kindergarten Cop',
+                                        'url': '/movies/7531'
                                     }
                                 }
                             }
@@ -381,17 +381,17 @@ module.exports = function() {
         simpleReference3: {
             getPathValues: {
                 query: [
-                    ["genreList", "0", "3", "summary"]
+                    ['genreList', '0', '3', 'summary']
                 ]
             },
 
             setPathValues: {
                 query: [
                     {
-                        path: ["genreList", "0", "3", "summary"],
-                        "value": {
-                            "title": "Commando",
-                            "url": "/movies/6420"
+                        path: ['genreList', '0', '3', 'summary'],
+                        'value': {
+                            'title': 'Commando',
+                            'url': '/movies/6420'
                         }
                     }
                 ]
@@ -401,30 +401,30 @@ module.exports = function() {
                     jsonGraph: {
                         genreList: {
                             0: {
-                                "$size": "52",
-                                "$type": $path,
-                                "value": ["lists", "abcd"]
+                                '$size': '52',
+                                '$type': $path,
+                                'value': ['lists', 'abcd']
                             }
                         },
                         lists: {
                             abcd: {
                                 3: {
-                                    "$size": "52",
-                                    "$type": $path,
-                                    "value": ["videos", "6420"]
+                                    '$size': '52',
+                                    '$type': $path,
+                                    'value': ['videos', '6420']
                                 }
                             }
                         },
                         videos: {
                             6420: {
                                 summary: {
-                                    "title": "Commando",
-                                    "url": "/movies/6420"
+                                    'title': 'Commando',
+                                    'url': '/movies/6420'
                                 }
                             }
                         }
                     },
-                    paths: [["genreList", "0", "3", "summary"]]
+                    paths: [['genreList', '0', '3', 'summary']]
                 }]
             },
 
@@ -443,16 +443,16 @@ module.exports = function() {
             },
 
             optimizedPaths: [
-                ["videos", "6420", "summary"]
+                ['videos', '6420', 'summary']
             ],
 
             AsValues: {
                 values: [
                     {
-                        path: ["genreList", "0", "3", "summary"],
-                        "value": {
-                            "title": "Commando",
-                            "url": "/movies/6420"
+                        path: ['genreList', '0', '3', 'summary'],
+                        'value': {
+                            'title': 'Commando',
+                            'url': '/movies/6420'
                         }
                     }
                 ]
@@ -461,8 +461,8 @@ module.exports = function() {
             AsJSON: {
                 values: [{
                     json: {
-                        "title": "Commando",
-                        "url": "/movies/6420"
+                        'title': 'Commando',
+                        'url': '/movies/6420'
                     }
                 }]
             },
@@ -472,34 +472,34 @@ module.exports = function() {
                     jsonGraph: {
                         genreList: {
                             0: {
-                                "$size": "52",
-                                "$type": $path,
-                                "value": ["lists", "abcd"]
+                                '$size': '52',
+                                '$type': $path,
+                                'value': ['lists', 'abcd']
                             }
                         },
                         lists: {
                             abcd: {
                                 3: {
-                                    "$size": "52",
-                                    "$type": $path,
-                                    "value": ["videos", "6420"]
+                                    '$size': '52',
+                                    '$type': $path,
+                                    'value': ['videos', '6420']
                                 }
                             }
                         },
                         videos: {
                             6420: {
                                 summary: {
-                                    "$size": 51,
-                                    "$type": $atom,
-                                    "value": {
-                                        "title": "Commando",
-                                        "url": "/movies/6420"
+                                    '$size': 51,
+                                    '$type': $atom,
+                                    'value': {
+                                        'title': 'Commando',
+                                        'url': '/movies/6420'
                                     }
                                 }
                             }
                         }
                     },
-                    paths: [["genreList", "0", "3", "summary"]]
+                    paths: [['genreList', '0', '3', 'summary']]
                 }]
             },
 
@@ -510,8 +510,8 @@ module.exports = function() {
                             0: {
                                 3: {
                                     summary: {
-                                        "title": "Commando",
-                                        "url": "/movies/6420"
+                                        'title': 'Commando',
+                                        'url': '/movies/6420'
                                     }
                                 }
                             }
@@ -523,16 +523,16 @@ module.exports = function() {
         referenceLeafNode: {
             getPathValues: {
                 query: [
-                    ["genreList", "10", null]
+                    ['genreList', '10', null]
                 ]
             },
 
             getPathMaps: {
                 query: [{
                     json: {
-                        "genreList": {
+                        'genreList': {
                             10: {
-                                "__null": null
+                                '__null': null
                             }
                         }
                     }
@@ -540,16 +540,16 @@ module.exports = function() {
             },
 
             optimizedPaths: [
-                ["videos", "1234", "summary"]
+                ['videos', '1234', 'summary']
             ],
 
             AsValues: {
                 values: [
                     {
-                        path: ["genreList", "10", null],
-                        "value": {
-                            "title": "House of Cards",
-                            "url": "/movies/1234"
+                        path: ['genreList', '10', null],
+                        'value': {
+                            'title': 'House of Cards',
+                            'url': '/movies/1234'
                         }
                     }
                 ]
@@ -558,8 +558,8 @@ module.exports = function() {
             AsJSON: {
                 values: [{
                     json: {
-                        "title": "House of Cards",
-                        "url": "/movies/1234"
+                        'title': 'House of Cards',
+                        'url': '/movies/1234'
                     }
                 }]
             },
@@ -569,26 +569,26 @@ module.exports = function() {
                     jsonGraph: {
                         genreList: {
                             10: {
-                                "$size": "53",
-                                "$type": $path,
-                                "value": ["videos", "1234", "summary"]
+                                '$size': '53',
+                                '$type': $path,
+                                'value': ['videos', '1234', 'summary']
                             }
                         },
                         videos: {
                             1234: {
                                 summary: {
-                                    "$size": 51,
-                                    "$type": $atom,
-                                    "value": {
-                                        "title": "House of Cards",
-                                        "url": "/movies/1234"
+                                    '$size': 51,
+                                    '$type': $atom,
+                                    'value': {
+                                        'title': 'House of Cards',
+                                        'url': '/movies/1234'
                                     }
                                 }
                             }
                         }
                     },
                     paths: [
-                        ["genreList", "10", null]
+                        ['genreList', '10', null]
                     ]
                 }]
             },
@@ -598,8 +598,8 @@ module.exports = function() {
                     json: {
                         genreList: {
                             10: {
-                                "title": "House of Cards",
-                                "url": "/movies/1234"
+                                'title': 'House of Cards',
+                                'url': '/movies/1234'
                             }
                         }
                     }
@@ -609,7 +609,7 @@ module.exports = function() {
         referenceToValue: {
             getPathValues: {
                 query: [
-                    ["genreList", "1", "0", "summary"]
+                    ['genreList', '1', '0', 'summary']
                 ]
             },
 
@@ -628,15 +628,15 @@ module.exports = function() {
             },
 
             optimizedPaths: [
-                ["videos", "553", "summary"]
+                ['videos', '553', 'summary']
             ],
 
             AsValues: {
                 values: [{
-                    path: ["genreList", "1", "0", "summary"],
-                    "value": {
-                        "title": "Running Man",
-                        "url": "/movies/553"
+                    path: ['genreList', '1', '0', 'summary'],
+                    'value': {
+                        'title': 'Running Man',
+                        'url': '/movies/553'
                     }
                 }]
             },
@@ -644,8 +644,8 @@ module.exports = function() {
             AsJSON: {
                 values: [{
                     json: {
-                        "title": "Running Man",
-                        "url": "/movies/553"
+                        'title': 'Running Man',
+                        'url': '/movies/553'
                     }
                 }]
             },
@@ -655,40 +655,40 @@ module.exports = function() {
                     jsonGraph: {
                         genreList: {
                             1: {
-                                "$size": "52",
-                                "$type": $path,
-                                "value": ["lists", "my-list"]
+                                '$size': '52',
+                                '$type': $path,
+                                'value': ['lists', 'my-list']
                             }
                         },
                         lists: {
-                            "1x5x": {
+                            '1x5x': {
                                 0: {
-                                    "$size": "52",
-                                    "$type": $path,
-                                    "value": ["videos", "553"]
+                                    '$size': '52',
+                                    '$type': $path,
+                                    'value': ['videos', '553']
                                 }
                             },
-                            "my-list": {
-                                "$size": "52",
-                                "$type": $path,
-                                "value": ["lists", "1x5x"]
+                            'my-list': {
+                                '$size': '52',
+                                '$type': $path,
+                                'value': ['lists', '1x5x']
                             }
                         },
                         videos: {
                             553: {
                                 summary: {
-                                    "$size": 51,
-                                    "$type": $atom,
-                                    "value": {
-                                        "title": "Running Man",
-                                        "url": "/movies/553"
+                                    '$size': 51,
+                                    '$type': $atom,
+                                    'value': {
+                                        'title': 'Running Man',
+                                        'url': '/movies/553'
                                     }
                                 }
                             }
                         }
                     },
                     paths: [
-                        ["genreList", "1", "0", "summary"]
+                        ['genreList', '1', '0', 'summary']
                     ]
                 }]
             },
@@ -700,8 +700,8 @@ module.exports = function() {
                             1: {
                                 0: {
                                     summary: {
-                                        "title": "Running Man",
-                                        "url": "/movies/553"
+                                        'title': 'Running Man',
+                                        'url': '/movies/553'
                                     }
                                 }
                             }
@@ -713,7 +713,7 @@ module.exports = function() {
         referenceToReferenceComplete: {
             getPathValues: {
                 query: [
-                    ["genreList", "1", "0", "summary"]
+                    ['genreList', '1', '0', 'summary']
                 ]
             },
 
@@ -732,16 +732,16 @@ module.exports = function() {
             },
 
             optimizedPaths: [
-                ["videos", "553", "summary"]
+                ['videos', '553', 'summary']
             ],
 
             AsValues: {
                 values: [
                     {
-                        path: ["genreList", "1", "0", "summary"],
-                        "value": {
-                            "title": "Running Man",
-                            "url": "/movies/553"
+                        path: ['genreList', '1', '0', 'summary'],
+                        'value': {
+                            'title': 'Running Man',
+                            'url': '/movies/553'
                         }
                     }
                 ]
@@ -750,8 +750,8 @@ module.exports = function() {
             AsJSON: {
                 values: [{
                     json: {
-                        "title": "Running Man",
-                        "url": "/movies/553"
+                        'title': 'Running Man',
+                        'url': '/movies/553'
                     }
                 }]
             },
@@ -761,40 +761,40 @@ module.exports = function() {
                     jsonGraph: {
                         genreList: {
                             1: {
-                                "$size": "52",
-                                "$type": $path,
-                                "value": ["lists", "my-list"]
+                                '$size': '52',
+                                '$type': $path,
+                                'value': ['lists', 'my-list']
                             }
                         },
                         lists: {
-                            "my-list": {
-                                "$size": "52",
-                                "$type": $path,
-                                "value": ["lists", "1x5x"]
+                            'my-list': {
+                                '$size': '52',
+                                '$type': $path,
+                                'value': ['lists', '1x5x']
                             },
-                            "1x5x": {
+                            '1x5x': {
                                 0: {
-                                    "$size": "52",
-                                    "$type": $path,
-                                    "value": ["videos", "553"]
+                                    '$size': '52',
+                                    '$type': $path,
+                                    'value': ['videos', '553']
                                 }
                             }
                         },
                         videos: {
                             553: {
                                 summary: {
-                                    "$size": 51,
-                                    "$type": $atom,
-                                    "value": {
-                                        "title": "Running Man",
-                                        "url": "/movies/553"
+                                    '$size': 51,
+                                    '$type': $atom,
+                                    'value': {
+                                        'title': 'Running Man',
+                                        'url': '/movies/553'
                                     }
                                 }
                             }
                         }
                     },
                     paths: [
-                        ["genreList", "1", "0", "summary"]
+                        ['genreList', '1', '0', 'summary']
                     ]
                 }]
             },
@@ -806,8 +806,8 @@ module.exports = function() {
                             1: {
                                 0: {
                                     summary: {
-                                        "title": "Running Man",
-                                        "url": "/movies/553"
+                                        'title': 'Running Man',
+                                        'url': '/movies/553'
                                     }
                                 }
                             }
@@ -819,15 +819,15 @@ module.exports = function() {
         referenceToReference: {
             getPathValues: {
                 query: [
-                    ["genreList", "1", "0"]
+                    ['genreList', '1', '0']
                 ]
             },
 
 //            setPathValues: {
 //                query: [
 //                    {
-//                        path: ["genreList", "1", "0"],
-//                        "value": ["videos", "553"]
+//                        path: ['genreList', '1', '0'],
+//                        'value': ['videos', '553']
 //                    }
 //                ]
 //            },
@@ -845,21 +845,21 @@ module.exports = function() {
             },
 
             optimizedPaths: [
-                ["lists", "1x5x", "0"]
+                ['lists', '1x5x', '0']
             ],
 
             AsValues: {
                 values: [
                     {
-                        path: ["genreList", "1", "0"],
-                        "value": ["videos", "553"]
+                        path: ['genreList', '1', '0'],
+                        'value': ['videos', '553']
                     }
                 ]
             },
 
             AsJSON: {
                 values: [{
-                    json: ["videos", "553"]
+                    json: ['videos', '553']
                 }]
             },
 
@@ -868,28 +868,28 @@ module.exports = function() {
                     jsonGraph: {
                         genreList: {
                             1: {
-                                "$size": "52",
-                                "$type": $path,
-                                "value": ["lists", "my-list"]
+                                '$size': '52',
+                                '$type': $path,
+                                'value': ['lists', 'my-list']
                             }
                         },
                         lists: {
-                            "my-list": {
-                                "$size": "52",
-                                "$type": $path,
-                                "value": ["lists", "1x5x"]
+                            'my-list': {
+                                '$size': '52',
+                                '$type': $path,
+                                'value': ['lists', '1x5x']
                             },
-                            "1x5x": {
+                            '1x5x': {
                                 0: {
-                                    "$size": "52",
-                                    "$type": $path,
-                                    "value": ["videos", "553"]
+                                    '$size': '52',
+                                    '$type': $path,
+                                    'value': ['videos', '553']
                                 }
                             }
                         }
                     },
                     paths: [
-                        ["genreList", "1", "0"]
+                        ['genreList', '1', '0']
                     ]
                 }]
             },
@@ -899,7 +899,7 @@ module.exports = function() {
                     json: {
                         genreList: {
                             1: {
-                                0: ["videos", "553"]
+                                0: ['videos', '553']
                             }
                         }
                     }
@@ -909,16 +909,16 @@ module.exports = function() {
         toErrorReference: {
             getPathValues: {
                 query: [
-                    ["genreList", "5", null]
+                    ['genreList', '5', null]
                 ]
             },
 
             getPathMaps: {
                 query: [{
                     json: {
-                        "genreList": {
+                        'genreList': {
                             5: {
-                                "__null": null
+                                '__null': null
                             }
                         }
                     }
@@ -927,39 +927,39 @@ module.exports = function() {
 
             AsValues: {
                 errors: [{
-                    path: ["genreList", "5", null],
-                    "value": "House of Pain"
+                    path: ['genreList', '5', null],
+                    'value': 'House of Pain'
                 }]
             },
 
             AsJSON: {
                 errors: [{
-                    path: ["genreList", "5", null],
-                    "value": "House of Pain"
+                    path: ['genreList', '5', null],
+                    'value': 'House of Pain'
                 }]
             },
 
             AsJSONG: {
                 values: [{
-                    paths: [["genreList", "5", null]],
+                    paths: [['genreList', '5', null]],
                     jsonGraph: {
-                        "genreList": {
-                            "5": {
-                                "$size": "52",
-                                "$type": $path,
-                                "value": ["lists", "to-error-list"]
+                        'genreList': {
+                            '5': {
+                                '$size': '52',
+                                '$type': $path,
+                                'value': ['lists', 'to-error-list']
                             }
                         },
-                        "lists": {
-                            "error-list-2": {
-                                "$size": 51,
-                                "$type": $error,
-                                "value": "House of Pain"
+                        'lists': {
+                            'error-list-2': {
+                                '$size': 51,
+                                '$type': $error,
+                                'value': 'House of Pain'
                             },
-                            "to-error-list": {
-                                "$size": "52",
-                                "$type": $path,
-                                "value": ["lists", "error-list-2"]
+                            'to-error-list': {
+                                '$size': '52',
+                                '$type': $path,
+                                'value': ['lists', 'error-list-2']
                             }
                         }
                     }
@@ -968,8 +968,8 @@ module.exports = function() {
 
             AsPathMap: {
                 errors: [{
-                    path: ["genreList", "5", null],
-                    "value": "House of Pain"
+                    path: ['genreList', '5', null],
+                    'value': 'House of Pain'
                 }]
             }
         },
@@ -977,7 +977,7 @@ module.exports = function() {
             getPathMaps: {
                 query: [{
                     json: {
-                        "genreList": {
+                        'genreList': {
                             2: {
                                 0: {
                                     summary: null
@@ -990,52 +990,52 @@ module.exports = function() {
 
             getPathValues: {
                 query: [
-                    ["genreList", "2", "0", "summary"]
+                    ['genreList', '2', '0', 'summary']
                 ]
             },
 
             AsValues: {
                 errors: [{
-                    path: ["genreList", "2", null],
-                    "value": "Red is the new Black"
+                    path: ['genreList', '2', null],
+                    'value': 'Red is the new Black'
                 }]
             },
 
             AsJSON: {
                 errors: [{
-                    path: ["genreList", "2", null],
-                    "value": "Red is the new Black"
+                    path: ['genreList', '2', null],
+                    'value': 'Red is the new Black'
                 }]
             },
 
             AsJSONG: {
                 values: [{
                     jsonGraph: {
-                        "genreList": {
-                            "2": {
-                                "$size": "52",
-                                "$type": $path,
-                                "value": ["lists", "error-list"]
+                        'genreList': {
+                            '2': {
+                                '$size': '52',
+                                '$type': $path,
+                                'value': ['lists', 'error-list']
                             }
                         },
-                        "lists": {
-                            "error-list": {
-                                "$size": 51,
-                                "$type": $error,
-                                "value": "Red is the new Black"
+                        'lists': {
+                            'error-list': {
+                                '$size': 51,
+                                '$type': $error,
+                                'value': 'Red is the new Black'
                             }
                         }
                     },
-                    "paths": [
-                        ["genreList", "2", null]
+                    'paths': [
+                        ['genreList', '2', null]
                     ]
                 }]
             },
 
             AsPathMap: {
                 errors: [{
-                    path: ["genreList", "2", null],
-                    "value": "Red is the new Black"
+                    path: ['genreList', '2', null],
+                    'value': 'Red is the new Black'
                 }]
             }
         },
@@ -1043,9 +1043,9 @@ module.exports = function() {
             getPathMaps: {
                 query: [{
                     json: {
-                        "genreList": {
+                        'genreList': {
                             'inner-reference': {
-                                "summary": null
+                                'summary': null
                             }
                         }
                     }
@@ -1054,14 +1054,14 @@ module.exports = function() {
             optimizedPaths: [['movies']],
             getPathValues: {
                 query: [
-                    ["genreList", "inner-reference", 'summary']
+                    ['genreList', 'inner-reference', 'summary']
                 ]
             },
 
             AsValues: {
                 values: [{
-                    path: ["genreList", "inner-reference", null],
-                    "value": ['videos']
+                    path: ['genreList', 'inner-reference', null],
+                    'value': ['videos']
                 }]
             },
 
@@ -1076,18 +1076,18 @@ module.exports = function() {
                     jsonGraph: {
                         genreList: {
                             'inner-reference': {
-                                "$size": "52",
-                                "$type": $path,
-                                "value": ['movies', 1234]
+                                '$size': '52',
+                                '$type': $path,
+                                'value': ['movies', 1234]
                             }
                         },
                         movies: {
-                            "$size": "51",
-                            "$type": $path,
+                            '$size': '51',
+                            '$type': $path,
                             value: ['videos']
                         }
                     },
-                    paths: [["genreList", "inner-reference", null]]
+                    paths: [['genreList', 'inner-reference', null]]
                 }]
             },
 
@@ -1105,9 +1105,9 @@ module.exports = function() {
             getPathMaps: {
                 query: [{
                     json: {
-                        "genreList": {
+                        'genreList': {
                             2: {
-                                "__null": null
+                                '__null': null
                             }
                         }
                     }
@@ -1116,67 +1116,67 @@ module.exports = function() {
 
             getPathValues: {
                 query: [
-                    ["genreList", "2", null]
+                    ['genreList', '2', null]
                 ]
             },
 
             AsValues: {
                 errors: [{
-                    path: ["genreList", "2", null],
-                    "value": "Red is the new Black"
+                    path: ['genreList', '2', null],
+                    'value': 'Red is the new Black'
                 }]
             },
 
             AsJSON: {
                 errors: [{
-                    path: ["genreList", "2", null],
-                    "value": "Red is the new Black"
+                    path: ['genreList', '2', null],
+                    'value': 'Red is the new Black'
                 }]
             },
 
             AsJSONG: {
                 values: [{
                     jsonGraph: {
-                        "genreList": {
-                            "2": {
-                                "$size": "52",
-                                "$type": $path,
-                                "value": ["lists", "error-list"]
+                        'genreList': {
+                            '2': {
+                                '$size': '52',
+                                '$type': $path,
+                                'value': ['lists', 'error-list']
                             }
                         },
-                        "lists": {
-                            "error-list": {
-                                "$size": 51,
-                                "$type": $error,
-                                "value": "Red is the new Black"
+                        'lists': {
+                            'error-list': {
+                                '$size': 51,
+                                '$type': $error,
+                                'value': 'Red is the new Black'
                             }
                         }
                     },
-                    "paths": [
-                        ["genreList", "2", null]
+                    'paths': [
+                        ['genreList', '2', null]
                     ]
                 }]
             },
 
             AsPathMap: {
                 errors: [{
-                    path: ["genreList", "2", null],
-                    "value": "Red is the new Black"
+                    path: ['genreList', '2', null],
+                    'value': 'Red is the new Black'
                 }]
             }
         },
         missingReference: {
             requestedMissingPaths: [
-                ["genreList", "4", "0", "summary"]
+                ['genreList', '4', '0', 'summary']
             ],
 
             getPathMaps: {
                 query: [{
                     json: {
-                        "genreList": {
+                        'genreList': {
                             4: {
                                 0: {
-                                    "summary": null
+                                    'summary': null
                                 }
                             }
                         }
@@ -1185,12 +1185,12 @@ module.exports = function() {
             },
 
             optimizedMissingPaths: [
-                ["lists", "missing-list", "0", "summary"]
+                ['lists', 'missing-list', '0', 'summary']
             ],
 
             getPathValues: {
                 query: [
-                    ["genreList", "4", "0", "summary"]
+                    ['genreList', '4', '0', 'summary']
                 ]
             },
 
@@ -1224,17 +1224,17 @@ module.exports = function() {
         toMissingReference: {
             getPathValues: {
                 query: [
-                    ["genreList", "6", "0", "summary"]
+                    ['genreList', '6', '0', 'summary']
                 ]
             },
 
             getPathMaps: {
                 query: [{
                     json: {
-                        "genreList": {
+                        'genreList': {
                             6: {
                                 0: {
-                                    "summary": null
+                                    'summary': null
                                 }
                             }
                         }
@@ -1243,11 +1243,11 @@ module.exports = function() {
             },
 
             requestedMissingPaths: [
-                ["genreList", "6", "0", "summary"]
+                ['genreList', '6', '0', 'summary']
             ],
 
             optimizedMissingPaths: [
-                ["lists", "missing-list-2", "0", "summary"]
+                ['lists', 'missing-list-2', '0', 'summary']
             ],
 
             AsValues: {
@@ -1287,17 +1287,17 @@ module.exports = function() {
         referenceBranchIsMissing: {
             getPathValues: {
                 query: [
-                    ["genreList", "11", "0", null]
+                    ['genreList', '11', '0', null]
                 ]
             },
 
             getPathMaps: {
                 query: [{
                     json: {
-                        "genreList": {
+                        'genreList': {
                             11: {
                                 0: {
-                                    "__null": null
+                                    '__null': null
                                 }
                             }
                         }
@@ -1306,11 +1306,11 @@ module.exports = function() {
             },
 
             requestedMissingPaths: [
-                ["genreList", "11", "0", null]
+                ['genreList', '11', '0', null]
             ],
 
             optimizedMissingPaths: [
-                ["lists", "missing-branch-link", "summary", "0"]
+                ['lists', 'missing-branch-link', 'summary', '0']
             ],
 
             AsValues: {
@@ -1343,17 +1343,17 @@ module.exports = function() {
         referenceExpired: {
             getPathValues: {
                 query: [
-                    ["genreList", "9", "0", "summary"]
+                    ['genreList', '9', '0', 'summary']
                 ]
             },
 
             getPathMaps: {
                 query: [{
                     json: {
-                        "genreList": {
+                        'genreList': {
                             9: {
                                 0: {
-                                    "summary": null
+                                    'summary': null
                                 }
                             }
                         }
@@ -1361,11 +1361,11 @@ module.exports = function() {
                 }]
             },
             requestedMissingPaths: [
-                ["genreList", "9", "0", "summary"]
+                ['genreList', '9', '0', 'summary']
             ],
 
             optimizedMissingPaths: [
-                ["lists", "expired-list", "0", "summary"]
+                ['lists', 'expired-list', '0', 'summary']
             ],
 
             AsValues: {
@@ -1405,17 +1405,17 @@ module.exports = function() {
         referenceMissingBranch: {
             getPathValues: {
                 query: [
-                    ["genreList", "branch-missing", "0", "summary"]
+                    ['genreList', 'branch-missing', '0', 'summary']
                 ]
             },
 
             getPathMaps: {
                 query: [{
                     json: {
-                        "genreList": {
-                            "branch-missing": {
+                        'genreList': {
+                            'branch-missing': {
                                 0: {
-                                    "summary": null
+                                    'summary': null
                                 }
                             }
                         }
@@ -1423,11 +1423,11 @@ module.exports = function() {
                 }]
             },
             requestedMissingPaths: [
-                ["genreList", "branch-missing", "0", "summary"]
+                ['genreList', 'branch-missing', '0', 'summary']
             ],
 
             optimizedMissingPaths: [
-                ["does", "not", "exist", "0", "summary"]
+                ['does', 'not', 'exist', '0', 'summary']
             ],
 
             AsValues: {
@@ -1449,17 +1449,17 @@ module.exports = function() {
         futureExpiredReference: {
             getPathValues: {
                 query: [
-                    ["genreList", "12", "0", "summary"]
+                    ['genreList', '12', '0', 'summary']
                 ]
             },
 
             getPathMaps: {
                 query: [{
                     json: {
-                        "genreList": {
+                        'genreList': {
                             12: {
                                 0: {
-                                    "summary": null
+                                    'summary': null
                                 }
                             }
                         }
@@ -1468,11 +1468,11 @@ module.exports = function() {
             },
 
             requestedMissingPaths: [
-                ["genreList", "12", "0", "summary"]
+                ['genreList', '12', '0', 'summary']
             ],
 
             optimizedMissingPaths: [
-                ["lists", "future-expired-list", "0", "summary"]
+                ['lists', 'future-expired-list', '0', 'summary']
             ],
 
             AsValues: {
@@ -1494,12 +1494,12 @@ module.exports = function() {
         missingFirstKey: {
             getPathValues: {
                 query: [
-                    ["genreList", 13, "summary"]
+                    ['genreList', 13, 'summary']
                 ]
             },
 
             optimizedMissingPaths: [
-                ["missing", 12341234, "summary"]
+                ['missing', 12341234, 'summary']
             ],
 
             AsValues: {

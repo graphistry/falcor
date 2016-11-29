@@ -1,8 +1,8 @@
-var Rx = require("rx");
-var rxjs = require("rxjs");
+var Rx = require('rx');
+var rxjs = require('rxjs');
 
-var falcor = require("../lib");
-var Model = falcor.Model;
+var falcor = require('../falcor.js');
+var Model = require('../falcor.js').Model;
 var $ref = require('@graphistry/falcor-json-graph').ref;
 var $atom = require('@graphistry/falcor-json-graph').atom;
 var $error = require('@graphistry/falcor-json-graph').error;
@@ -12,11 +12,11 @@ var fromPaths = require('@graphistry/falcor-path-syntax').fromPathsOrPathValues;
 var modelGet = Model.prototype.get;
 var modelSet = Model.prototype.set;
 var modelCall = Model.prototype.call;
-var modelInvalidate = Model.prototype.invalidate;
-var modelGetVersion = Model.prototype.getVersion;
 var modelPreload = Model.prototype.preload;
 var modelGetValue = Model.prototype.getValue;
 var modelSetValue = Model.prototype.setValue;
+var modelInvalidate = Model.prototype.invalidate;
+var modelGetVersion = Model.prototype.getVersion;
 
 Model.prototype.get = function() {
     return modelGet.apply(this, fromPaths(Array.prototype.slice.call(arguments)));
@@ -57,21 +57,21 @@ Model.prototype.setValue = function(path, value) {
 };
 
 var testRunner = require('./testRunner');
-var chai = require("chai");
+var chai = require('chai');
 var expect = chai.expect;
 var $ref = require('./../lib/types/ref');
 var $error = require('./../lib/types/error');
 var $atom = require('./../lib/types/atom');
 global.toObservable = require('./toObs');
 
-describe("Model", function() {
+describe('Model', function() {
 
-    it("should construct a new Model", function() {
+    it('should construct a new Model', function() {
         new Model();
     });
 
-    it("should construct a new Model when calling the falcor module function", function() {
-        expect(falcor() instanceof falcor.Model).to.equal(true);
+    it('should construct a new Model when calling the falcor module function', function() {
+        expect(falcor() instanceof Model).to.equal(true);
     });
 
     xit('should have access to static helper methods.', function() {
@@ -101,7 +101,7 @@ describe("Model", function() {
         var model = new Model({
             cache: {
                 list: {
-                    0: { name: "test" }
+                    0: { name: 'test' }
                 }
             },
             source: {
@@ -113,13 +113,13 @@ describe("Model", function() {
                                 var response = {
                                     jsonGraph: {
                                         list: {
-                                            1: { name: "another test" }
+                                            1: { name: 'another test' }
                                         }
                                     },
-                                    paths: ["list", 1, "name"]
+                                    paths: ['list', 1, 'name']
                                 };
 
-                                if (typeof observerOrOnNext === "function") {
+                                if (typeof observerOrOnNext === 'function') {
                                     observerOrOnNext(response);
                                     onCompleted();
                                 }
@@ -141,7 +141,7 @@ describe("Model", function() {
             }
         });
 
-        var subscription = model.get("list[0,1].name").
+        var subscription = model.get('list[0,1].name').
             subscribe(
                 function(value) {
                     onNextCalled++;
@@ -183,7 +183,7 @@ describe("Model", function() {
             },
             cache: {
                 list: {
-                    0: { name: "test" }
+                    0: { name: 'test' }
                 }
             },
             source: {
@@ -195,13 +195,13 @@ describe("Model", function() {
                                 var response = {
                                     jsonGraph: {
                                         list: {
-                                            1: { name: "another test" }
+                                            1: { name: 'another test' }
                                         }
                                     },
-                                    paths: [["list", 1, "name"]]
+                                    paths: [['list', 1, 'name']]
                                 };
 
-                                if (typeof observerOrOnNext === "function") {
+                                if (typeof observerOrOnNext === 'function') {
                                     observerOrOnNext(response);
                                     onCompleted();
                                 }
@@ -224,7 +224,7 @@ describe("Model", function() {
         });
 
         Observable
-            .from(modelGet.call(model, fromPath("list[0,1].name")))
+            .from(modelGet.call(model, fromPath('list[0,1].name')))
             .do(function(value) { onNextCalled++; }, null, function() {
                 expect(onNextCalled, 'onNext should have been called').to.equal(1);
                 expect(scheduleCalled, 'scheduleCalled should have been called').to.equal(1);
@@ -237,12 +237,12 @@ describe("Model", function() {
     describe('JSON-Graph Specification', function() {
         require('./get-core');
 
-        describe("#set", function() {
-            require("./set")();
+        describe('#set', function() {
+            require('./set')();
         });
 
-        describe("#invalidate", function() {
-            require("./invalidate")();
+        describe('#invalidate', function() {
+            require('./invalidate')();
         });
     });
 

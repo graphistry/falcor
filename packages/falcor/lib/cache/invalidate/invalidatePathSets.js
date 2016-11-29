@@ -1,16 +1,16 @@
 var arr = new Array(2);
-var $ref = require("../../types/ref");
+var $ref = require('../../types/ref');
 
-var getBoundCacheNode = require("../getBoundCacheNode");
+var getBoundCacheNode = require('../getBoundCacheNode');
 
-var isExpired = require("../isExpired");
-var expireNode = require("../expireNode");
-var lruPromote = require("../../lru/promote");
-var getSize = require("../../support/getSize");
-var createHardlink = require("../createHardlink");
-var iterateKeySet = require("@graphistry/falcor-path-utils/lib/iterateKeySet");
-var updateNodeAncestors = require("../updateNodeAncestors");
-var removeNodeAndDescendants = require("../removeNodeAndDescendants");
+var isExpired = require('../isExpired');
+var expireNode = require('../expireNode');
+var lruPromote = require('../../lru/promote');
+var getSize = require('../../support/getSize');
+var createHardlink = require('../createHardlink');
+var iterateKeySet = require('@graphistry/falcor-path-utils/lib/iterateKeySet');
+var updateNodeAncestors = require('../updateNodeAncestors');
+var removeNodeAndDescendants = require('../removeNodeAndDescendants');
 
 /**
  * Invalidates a list of Paths in a JSON Graph.
@@ -27,8 +27,8 @@ module.exports = function invalidatePathSets(model, paths, expireImmediate) {
     var version = modelRoot.version++;
     var cache = modelRoot.cache;
     var node = getBoundCacheNode(model);
-    var parent = node[ƒ_parent] || cache;
-    var initialVersion = cache[ƒ_version];
+    var parent = node[f_parent] || cache;
+    var initialVersion = cache[f_version];
 
     var pathIndex = -1;
     var pathCount = paths.length;
@@ -46,7 +46,7 @@ module.exports = function invalidatePathSets(model, paths, expireImmediate) {
     arr[0] = undefined;
     arr[1] = undefined;
 
-    var newVersion = cache[ƒ_version];
+    var newVersion = cache[f_version];
     var rootChangeHandler = modelRoot.onChange;
 
     if (rootChangeHandler && initialVersion !== newVersion) {
@@ -101,10 +101,10 @@ function invalidateReference(root, node, version, expired, lru, expireImmediate)
     var reference = node.value;
     var parent = root;
 
-    node = node[ƒ_context];
+    node = node[f_context];
 
     if (node != null) {
-        parent = node[ƒ_parent] || root;
+        parent = node[f_parent] || root;
     } else {
 
         var index = 0;
@@ -127,7 +127,7 @@ function invalidateReference(root, node, version, expired, lru, expireImmediate)
             parent = arr[1];
         } while (index++ < count);
 
-        if (container[ƒ_context] !== node) {
+        if (container[f_context] !== node) {
             createHardlink(container, node);
         }
     }
@@ -165,9 +165,9 @@ function invalidateNode(
 
     if (key == null) {
         if (branch) {
-            throw new Error("`null` is not allowed in branch key positions.");
+            throw new Error('`null` is not allowed in branch key positions.');
         } else if (node) {
-            key = node[ƒ_key];
+            key = node[f_key];
         }
     } else {
         parent = node;

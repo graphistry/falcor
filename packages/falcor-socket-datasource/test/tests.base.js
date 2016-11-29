@@ -6,8 +6,8 @@ export const cancelName = 'cancel-falcor-operation';
 
 export default function tests({ Observable }, context, runBefore, runAfter) {
 
-    beforeEach(runBefore);
-    afterEach(runAfter);
+    before(runBefore);
+    after(runAfter);
 
     it('should get data from the server', function(done) {
         const { model } = context;
@@ -31,7 +31,7 @@ export default function tests({ Observable }, context, runBefore, runAfter) {
         const { model } = context;
         Observable
             .defer(() => model.call('bar', ['foo']))
-            .do((data) => { // eslint-disable-line prefer-reflect
+            .do((data) => {
                 expect(data.json.foo.bar).to.equal('foo');
             })
             .subscribe(() => {}, done, done);
@@ -56,7 +56,9 @@ export default function tests({ Observable }, context, runBefore, runAfter) {
 
         Observable
             .create((observer) => {
-                const disposable = model.get(['long', 'running', 'operation']).subscribe(observer);
+                const disposable = model
+                    .get(['long', 'running', 'operation'])
+                    .subscribe(observer);
                 if (!disposable.unsubscribe) {
                     disposable.unsubscribe = disposable.dispose.bind(disposable);
                 } else if (!disposable.dispose) {
@@ -64,10 +66,10 @@ export default function tests({ Observable }, context, runBefore, runAfter) {
                 }
                 return disposable;
             })
-            .timeout(500)
+            .timeout(25)
             .catch((e) => {
                 // delay forwarding the timeout so the stack has time to unwind to unsubscribe
-                return Observable.of(e).delay(100);
+                return Observable.of(e).delay(10);
             })
             .do(() => {
                 expect(messages.length).to.equal(2);
@@ -102,8 +104,7 @@ export default function tests({ Observable }, context, runBefore, runAfter) {
                 .get(['streaming', keys])
                 .progressively())
             .do((data) => {
-                data = JSON.parse(JSON.stringify(data));
-                expect(data).to.deep.equal(expected.shift());
+                expect(data.toJSON()).to.deep.equal(expected.shift());
             })
             .subscribe(() => {}, done, done);
     });
@@ -129,8 +130,7 @@ export default function tests({ Observable }, context, runBefore, runAfter) {
                 .set(...pathValues)
                 .progressively())
             .do((data) => {
-                data = JSON.parse(JSON.stringify(data));
-                expect(data).to.deep.equal(expected.shift());
+                expect(data.toJSON()).to.deep.equal(expected.shift());
             })
             .subscribe(() => {}, done, done);
     });
@@ -157,7 +157,7 @@ export default function tests({ Observable }, context, runBefore, runAfter) {
         Observable
             .defer(() => model.call(['streaming', 'call'], keys))
             .do((data) => {
-                expect(data.json.foo.bar).to.equal('foo');
+                expect(data.toJSON()).to.deep.equal(expected.shift());
             })
             .subscribe(() => {}, done, done);
     });

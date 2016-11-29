@@ -1,11 +1,11 @@
-var falcor = require("./../../../lib/");
+var falcor = require('./../../../falcor.js');
 var Model = falcor.Model;
 var Observable = require('rx').Observable;
 var cacheGenerator = require('../../CacheGenerator');
 var noOp = function() {};
 var LocalDataSource = require('../../data/LocalDataSource');
 var ErrorDataSource = require('../../data/ErrorDataSource');
-var isPathValue = require("./../../../lib/support/isPathValue");
+var isPathValue = require('./../../../lib/support/isPathValue');
 var sinon = require('sinon');
 var expect = require('chai').expect;
 var strip = require('../../cleanData').stripDerefAndVersionKeys;

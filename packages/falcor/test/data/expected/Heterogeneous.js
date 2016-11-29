@@ -6,7 +6,7 @@ module.exports = function() {
         errorWithBoxedAndTreatErrorAsValues: {
             getPathValues: {
                 query: [
-                    ["videos", "errorBranch", "summary"]
+                    ['videos', 'errorBranch', 'summary']
                 ]
             },
             getPathMaps: {
@@ -23,11 +23,11 @@ module.exports = function() {
             AsValues: {
                 values: [
                     {
-                        path: ["videos", "errorBranch"],
-                        "value": {
-                            "$size": 51,
-                            "$type": $error,
-                            value: "I am yelling timber."
+                        path: ['videos', 'errorBranch'],
+                        'value': {
+                            '$size': 51,
+                            '$type': $error,
+                            value: 'I am yelling timber.'
                         }
                     }
                 ]
@@ -36,9 +36,9 @@ module.exports = function() {
                 values: [
                     {
                         json: {
-                            "$size": 51,
-                            "$type": $error,
-                            value: "I am yelling timber."
+                            '$size': 51,
+                            '$type': $error,
+                            value: 'I am yelling timber.'
                         }
                     }
                 ]
@@ -47,14 +47,14 @@ module.exports = function() {
                 values: [
                     {
                         paths: [
-                            ["videos", "errorBranch"]
+                            ['videos', 'errorBranch']
                         ],
                         jsonGraph: {
-                            "videos": {
-                                "errorBranch": {
-                                    "$size": 51,
-                                    "$type": $error,
-                                    "value": "I am yelling timber."
+                            'videos': {
+                                'errorBranch': {
+                                    '$size': 51,
+                                    '$type': $error,
+                                    'value': 'I am yelling timber.'
                                 }
                             }
                         }
@@ -66,9 +66,9 @@ module.exports = function() {
                     json: {
                         videos: {
                             errorBranch: {
-                                "$size": 51,
-                                "$type": $error,
-                                value: "I am yelling timber."
+                                '$size': 51,
+                                '$type': $error,
+                                value: 'I am yelling timber.'
                             }
                         }
                     }

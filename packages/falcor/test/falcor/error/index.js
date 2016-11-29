@@ -1,8 +1,8 @@
-var ErrorDataSource = require("../../data/ErrorDataSource");
-var clean = require("../../cleanData").clean;
-var falcor = require("./../../../lib/");
+var ErrorDataSource = require('../../data/ErrorDataSource');
+var clean = require('../../cleanData').clean;
+var falcor = require('./../../../falcor.js');
 var Model = falcor.Model;
-var chai = require("chai");
+var chai = require('chai');
 var expect = chai.expect;
 var sinon = require('sinon');
 var noOp = function() {};
@@ -10,13 +10,13 @@ var InvalidSourceError = require('../../../lib/errors/InvalidSourceError');
 var errorOnCompleted = require('./../../errorOnCompleted');
 var doneOnError = require('./../../doneOnError');
 
-describe("Error", function() {
-    it("should get a hard error from the DataSource.", function(done) {
+describe('Error', function() {
+    it('should get a hard error from the DataSource.', function(done) {
         var model = new Model({
-            source: new ErrorDataSource(503, "Timeout")
+            source: new ErrorDataSource(503, 'Timeout')
         });
         toObservable(model.
-            get(["test", {to: 5}, "summary"])).
+            get(['test', {to: 5}, 'summary'])).
             doAction(noOp, function(err) {
                 expect(err.length).to.equal(6);
                 // not in boxValue mode
@@ -24,11 +24,11 @@ describe("Error", function() {
                     path: [],
                     value: {
                         status: 503,
-                        message: "Timeout"
+                        message: 'Timeout'
                     }
                 };
                 err.forEach(function(e, i) {
-                    expected.path = ["test", i, "summary"];
+                    expected.path = ['test', i, 'summary'];
                     expect(e).to.deep.equals(expected);
                 });
             }).
@@ -47,23 +47,23 @@ describe("Error", function() {
             });
     });
 
-    it("should get a hard error from the DataSource with some data found in the cache.", function(done) {
+    it('should get a hard error from the DataSource with some data found in the cache.', function(done) {
         var model = new Model({
-            source: new ErrorDataSource(503, "Timeout"),
+            source: new ErrorDataSource(503, 'Timeout'),
             cache: {
                 test: {
                     0: {
-                        summary: "in cache"
+                        summary: 'in cache'
                     },
                     5: {
-                        summary: "in cache"
+                        summary: 'in cache'
                     }
                 }
             }
         });
         var onNext = sinon.spy();
         toObservable(model.
-            get(["test", {to: 5}, "summary"])).
+            get(['test', {to: 5}, 'summary'])).
             doAction(onNext, function(err) {
 
                 // Ensure onNext is called correctly
@@ -71,8 +71,8 @@ describe("Error", function() {
                 expect(clean(onNext.getCall(0).args[0]), 'json from onNext').to.deep.equals({
                     json: {
                         test: {
-                            0: {summary: "in cache"},
-                            5: {summary: "in cache"}
+                            0: {summary: 'in cache'},
+                            5: {summary: 'in cache'}
                         }
                     }
                 });
@@ -83,11 +83,11 @@ describe("Error", function() {
                     path: [],
                     value: {
                         status: 503,
-                        message: "Timeout"
+                        message: 'Timeout'
                     }
                 };
                 err.forEach(function(e, i) {
-                    expected.path = ["test", i + 1, "summary"];
+                    expected.path = ['test', i + 1, 'summary'];
                     expect(e).to.deep.equals(expected);
                 });
             }).

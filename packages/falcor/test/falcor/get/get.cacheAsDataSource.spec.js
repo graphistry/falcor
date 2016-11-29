@@ -1,10 +1,10 @@
-var falcor = require("./../../../lib/");
+var falcor = require('./../../../falcor.js');
 var Model = falcor.Model;
 var noOp = function() {};
 var LocalDataSource = require('../../data/LocalDataSource');
 var ErrorDataSource = require('../../data/ErrorDataSource');
-var isPathValue = require("./../../../lib/support/isPathValue");
-var expect = require("chai").expect;
+var isPathValue = require('./../../../lib/support/isPathValue');
+var expect = require('chai').expect;
 var sinon = require('sinon');
 var clean = require('./../../cleanData').stripDerefAndVersionKeys;
 var cacheGenerator = require('./../../CacheGenerator');
@@ -94,31 +94,31 @@ describe('Cache as DataSource', function() {
                      'OnError should have been called.');
             });
     });
-    it("should get all missing paths in a single request", function(done) {
+    it('should get all missing paths in a single request', function(done) {
         var serviceCalls = 0;
         var cacheModel = new Model({
             cache: {
                 lolomo: {
                     summary: {
-                        $type: "atom",
-                        value: "hello"
+                        $type: 'atom',
+                        value: 'hello'
                     },
                     0: {
                         summary: {
-                            $type: "atom",
-                            value: "hello-0"
+                            $type: 'atom',
+                            value: 'hello-0'
                         }
                     },
                     1: {
                         summary: {
-                            $type: "atom",
-                            value: "hello-1"
+                            $type: 'atom',
+                            value: 'hello-1'
                         }
                     },
                     2: {
                         summary: {
-                            $type: "atom",
-                            value: "hello-2"
+                            $type: 'atom',
+                            value: 'hello-2'
                         }
                     }
                 }
@@ -134,7 +134,7 @@ describe('Cache as DataSource', function() {
 
         var onNext = sinon.spy();
         toObservable(model.
-            get("lolomo.summary", "lolomo[0..2].summary")).
+            get('lolomo.summary', 'lolomo[0..2].summary')).
             doAction(onNext).
             doAction(noOp, noOp, function() {
                 var data = onNext.getCall(0).args[0];

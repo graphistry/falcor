@@ -1,15 +1,15 @@
 var arr = new Array(2);
-var onValue = require("./onValue");
-var $ref = require("../../../types/ref");
-var FalcorJSON = require("./FalcorJSON");
-var onValueType = require("../onValueType");
-var isExpired = require("../../isExpired");
-var originalOnMissing = require("../onMissing");
-var getReferenceTarget = require("./getReferenceTarget");
-var NullInPathError = require("../../../errors/NullInPathError");
-var InvalidKeySetError = require("../../../errors/InvalidKeySetError");
-var getHashCode = require("@graphistry/falcor-path-utils/lib/getHashCode");
-var flatBufferToPaths = require("@graphistry/falcor-path-utils/lib/flatBufferToPaths");
+var onValue = require('./onValue');
+var $ref = require('../../../types/ref');
+var FalcorJSON = require('./FalcorJSON');
+var onValueType = require('../onValueType');
+var isExpired = require('../../isExpired');
+var originalOnMissing = require('../onMissing');
+var getReferenceTarget = require('./getReferenceTarget');
+var NullInPathError = require('../../../errors/NullInPathError');
+var InvalidKeySetError = require('../../../errors/InvalidKeySetError');
+var getHashCode = require('@graphistry/falcor-path-utils/lib/getHashCode');
+var flatBufferToPaths = require('@graphistry/falcor-path-utils/lib/flatBufferToPaths');
 
 module.exports = walkPathAndBuildOutput;
 
@@ -43,11 +43,11 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
         return arr;
     }
 
-    var f_meta, f_old_keys, f_new_keys, f_code = "";
+    var f_meta, f_old_keys, f_new_keys, f_code = '';
 
     var next, nextKey,
         keyset, keyIsRange,
-        keys = path["$keys"],
+        keys = path['$keys'],
         nextDepth = depth + 1, rangeEnd,
         nextJSON, nextReferenceContainer,
         nextOptimizedLength, nextOptimizedPath,
@@ -56,29 +56,29 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
 
     if (allowFromWhenceYouCame && referenceContainer) {
         refContainerRefPath = referenceContainer.value;
-        refContainerAbsPath = referenceContainer[ƒ_abs_path];
+        refContainerAbsPath = referenceContainer[f_abs_path];
     }
 
     if (json) {
         if (typeof json !== 'object') {
             json = undefined;
-        } else if (f_meta = json[ƒ_meta]) {
+        } else if (f_meta = json[f_meta_data]) {
             if (!branchSelector && !(json instanceof FalcorJSON)) {
-                json = { [ƒ_meta]: f_meta, __proto__: FalcorJSON.prototype };
+                json = { [f_meta_data]: f_meta, __proto__: FalcorJSON.prototype };
             } else if (
-                f_meta[ƒm_version]  === node[ƒ_version] &&
-                f_meta["$code"]     === path["$code"] &&
-                f_meta[ƒm_abs_path] === node[ƒ_abs_path]) {
+                f_meta[f_meta_version]  === node[f_version] &&
+                f_meta['$code']         === path['$code'] &&
+                f_meta[f_meta_abs_path] === node[f_abs_path]) {
                 results.hasValue = true;
                 arr[0] = json;
                 arr[1] = false;
                 return arr;
             }
-            f_old_keys = f_meta[ƒm_keys];
-            f_meta[ƒm_version] = node[ƒ_version];
-            f_meta[ƒm_abs_path] = node[ƒ_abs_path];
-            f_meta[ƒm_deref_to] = refContainerRefPath;
-            f_meta[ƒm_deref_from] = refContainerAbsPath;
+            f_old_keys = f_meta[f_meta_keys];
+            f_meta[f_meta_version] = node[f_version];
+            f_meta[f_meta_abs_path] = node[f_abs_path];
+            f_meta[f_meta_deref_to] = refContainerRefPath;
+            f_meta[f_meta_deref_from] = refContainerAbsPath;
         }
     }
 
@@ -110,11 +110,11 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
             if (nextPath !== undefined) {
                 throw new NullInPathError();
             }
-            f_code = "" + getHashCode("" + f_code + "null");
+            f_code = '' + getHashCode('' + f_code + 'null');
             continue;
         }
         // If the keyset is a primitive value, we've found our `nextKey`.
-        else if ("object" !== typeof keyset) {
+        else if ('object' !== typeof keyset) {
             nextKey = keyset;
             rangeEnd = undefined;
             keyIsRange = false;
@@ -124,14 +124,14 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
         else {
             rangeEnd = keyset.to;
             nextKey = keyset.from || 0;
-            if ("number" !== typeof rangeEnd) {
+            if ('number' !== typeof rangeEnd) {
                 rangeEnd = nextKey + (keyset.length || 0) - 1;
             }
             if ((rangeEnd - nextKey) < 0) {
                 break iteratingKeyset;
             }
             keyIsRange = true;
-            nextPathKey = "{from:" + nextKey + ",length:" + (rangeEnd - nextKey + 1) + "}";
+            nextPathKey = '{from:' + nextKey + ',length:' + (rangeEnd - nextKey + 1) + '}';
         }
 
         // Now that we have the next key, step down one level in the cache.
@@ -206,16 +206,16 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
                 // branch to contain it.
                 if (f_meta === undefined) {
                     f_meta = {};
-                    f_meta[ƒm_version] = node[ƒ_version];
-                    f_meta[ƒm_abs_path] = node[ƒ_abs_path];
-                    f_meta[ƒm_deref_to] = refContainerRefPath;
-                    f_meta[ƒm_deref_from] = refContainerAbsPath;
+                    f_meta[f_meta_version] = node[f_version];
+                    f_meta[f_meta_abs_path] = node[f_abs_path];
+                    f_meta[f_meta_deref_to] = refContainerRefPath;
+                    f_meta[f_meta_deref_from] = refContainerAbsPath;
                     // Empower developers to instrument branch node creation by
                     // providing a custom function. If they do, delegate branch
                     // node creation to them.
                     json = branchSelector && branchSelector({
-                        [ƒ_meta]: f_meta, __proto__: FalcorJSON.prototype }) || {
-                        [ƒ_meta]: f_meta, __proto__: FalcorJSON.prototype };
+                        [f_meta_data]: f_meta, __proto__: FalcorJSON.prototype }) || {
+                        [f_meta_data]: f_meta, __proto__: FalcorJSON.prototype };
                 }
 
                 f_new_keys[nextKey] = true;
@@ -237,20 +237,20 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
 
         if (!hasMissingPath) {
             if (undefined === nextPath) {
-                f_code = "" + getHashCode("" + f_code + nextPathKey);
+                f_code = '' + getHashCode('' + f_code + nextPathKey);
             } else {
-                f_code = "" + getHashCode("" + f_code + nextPathKey + nextPath["$code"]);
+                f_code = '' + getHashCode('' + f_code + nextPathKey + nextPath['$code']);
             }
         }
     }
 
     if (hasMissingPath) {
-        f_code = "__incomplete__";
+        f_code = '__incomplete__';
     }
 
     if (f_meta) {
-        f_meta["$code"] = f_code;
-        f_meta[ƒm_keys] = f_new_keys;
+        f_meta['$code'] = f_code;
+        f_meta[f_meta_keys] = f_new_keys;
         if (f_old_keys) {
             for (nextKey in f_old_keys) {
                 if (f_old_keys[nextKey]) {
@@ -299,8 +299,8 @@ function wrapMaterializedBranchSelector(branchSelector) {
 }
 
 function createDefaultMaterializedBranch(path, _depth, node) {
-    f_meta = {};
-    f_meta[ƒm_version] = 0;
-    f_meta[ƒm_abs_path] = path.slice(0, _depth);
-    return { [ƒ_meta]: f_meta, __proto__: FalcorJSON.prototype };
+    var f_meta = {};
+    f_meta[f_meta_version] = 0;
+    f_meta[f_meta_abs_path] = path.slice(0, _depth);
+    return { [f_meta_data]: f_meta, __proto__: FalcorJSON.prototype };
  }

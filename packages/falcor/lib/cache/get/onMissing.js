@@ -87,7 +87,7 @@ function onMissing(path, depth, results,
 function isEmptyKeySet(keyset) {
 
     // false if the keyset is a primitive
-    if ("object" !== typeof keyset) {
+    if ('object' !== typeof keyset) {
         return false;
     } else if (keyset === null) {
         return false;
@@ -100,7 +100,7 @@ function isEmptyKeySet(keyset) {
 
     var rangeEnd = keyset.to,
         from = keyset.from || 0;
-    if ("number" !== typeof rangeEnd) {
+    if ('number' !== typeof rangeEnd) {
         rangeEnd = from + (keyset.length || 0);
     }
 

@@ -55,7 +55,7 @@ function removeIntersection(tree, path, depth, length) {
         else {
             rangeEnd = keyset.to;
             nextKey = keyset.from || 0;
-            if ("number" !== typeof rangeEnd) {
+            if ('number' !== typeof rangeEnd) {
                 rangeEnd = nextKey + (keyset.length || 0) - 1;
             }
             if ((rangeEnd - nextKey) < 0) {

@@ -1,5 +1,5 @@
-var walkPathAndBuildOutput = require("./walkPath");
-var BoundJSONGraphModelError = require("../../../errors/BoundJSONGraphModelError");
+var walkPathAndBuildOutput = require('./walkPath');
+var BoundJSONGraphModelError = require('../../../errors/BoundJSONGraphModelError');
 
 module.exports = getJSONGraph;
 

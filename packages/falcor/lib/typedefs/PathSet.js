@@ -3,5 +3,5 @@
  * @typedef {Array.<KeySet>} PathSet
  * @example
  // Points to the name and price of products 1234 and 5678
- ["productsById", ["1234", "5678"], ["name", "price"]]
+ ['productsById', ['1234', '5678'], ['name', 'price']]
  */

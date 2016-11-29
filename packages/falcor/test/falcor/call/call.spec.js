@@ -1,10 +1,10 @@
-var Observable = require("rx").Observable;
-var falcor = require("./../../../lib/");
+var Observable = require('rx').Observable;
+var falcor = require('./../../../falcor.js');
 var Model = falcor.Model;
-var LocalDataSource = require("../../data/LocalDataSource");
-var strip = require("../../cleanData").stripDerefAndVersionKeys;
-var chai = require("chai");
-var sinon = require("sinon");
+var LocalDataSource = require('../../data/LocalDataSource');
+var strip = require('../../cleanData').stripDerefAndVersionKeys;
+var chai = require('chai');
+var sinon = require('sinon');
 var expect = chai.expect;
 var noOp = function() {};
 
@@ -17,26 +17,24 @@ function getModel(newModel, cache) {
 }
 
 describe('JSON', function() {
-    it("should execute a remote call on a bound Model and sends the call and extra paths relative to the root", function(done) {
+    it('should execute a remote call on a bound Model and sends the call and extra paths relative to the root', function(done) {
         var model = new Model({
             source: {
                 call: function(callPath, args, suffixes, extraPaths) {
-                    expect(callPath).to.deep.equal(["lists", "add"]);
-                    expect(extraPaths).to.deep.equal([[0, "summary"]]);
-                    done();
-
-                    return {subscribe: noOp};
+                    expect(callPath).to.deep.equal(['lists', 'add']);
+                    expect(extraPaths).to.deep.equal([[0, 'summary']]);
+                    return Observable.empty();
                 }
             }
         });
 
         toObservable(model.
-            _clone({ _path: ["lists"] }).
-            call(["add"], [], [], [[0, "summary"]])).
-            subscribe(noOp, noOp, noOp);
+            _clone({ _path: ['lists'] }).
+            call(['add'], [], [], [[0, 'summary']])).
+            subscribe(noOp, done, done);
     });
 
-    it("should run invalidations.", function(done) {
+    it('should run invalidations.', function(done) {
         var model = new Model({
             source: {
                 call: function(callPath, args, suffixes, extraPaths) {
@@ -58,7 +56,7 @@ describe('JSON', function() {
         var onNext = sinon.spy();
         var onNext2 = sinon.spy();
         toObservable(model.
-            call(["test"], [])).
+            call(['test'], [])).
             doAction(onNext, noOp, function() {
                 expect(onNext.calledOnce).to.be.ok;
                 expect(strip(onNext.getCall(0).args[0])).to.deep.equals({
@@ -123,7 +121,7 @@ describe('JSON', function() {
             subscribe(noOp, done, done);
     });
 
-    it("should not re-execute a call on multiple thens", function(done) {
+    it('should not re-execute a call on multiple thens', function(done) {
         var call = sinon.spy(function() {
             return Observable.return({
                 jsonGraph: { a: 'test' },
@@ -135,7 +133,7 @@ describe('JSON', function() {
             source: { call: call }
         });
 
-        var response = model.call(["add"], [], [], [[0, "summary"]]);
+        var response = model.call(['add'], [], [], [[0, 'summary']]);
         response.then();
         response.then(function() {
           expect(call.calledOnce).to.be.ok;
@@ -143,7 +141,7 @@ describe('JSON', function() {
         }).catch(done);
     });
 
-    it("should not retry empty calls", function(done) {
+    it('should not retry empty calls', function(done) {
         var call = sinon.spy(function() {
             return Observable.empty();
         });
@@ -152,8 +150,8 @@ describe('JSON', function() {
         });
 
         toObservable(model.
-            _clone({ _path: ["lists"] }).
-            call(["add"], [], [], [[0, "summary"]])).
+            _clone({ _path: ['lists'] }).
+            call(['add'], [], [], [[0, 'summary']])).
             subscribe(
                 function() {
                     throw new Error('onNext should not have been called.')
@@ -167,12 +165,12 @@ describe('JSON', function() {
 });
 
 describe('JSONGraph', function() {
-    it("should execute a remote call on a bound Model and sends the call and extra paths relative to the root", function(done) {
+    it('should execute a remote call on a bound Model and sends the call and extra paths relative to the root', function(done) {
         var model = new Model({
             source: {
                 call: function(callPath, args, suffixes, extraPaths) {
-                    expect(callPath).to.deep.equal(["lists", "add"]);
-                    expect(extraPaths).to.deep.equal([[0, "summary"]]);
+                    expect(callPath).to.deep.equal(['lists', 'add']);
+                    expect(extraPaths).to.deep.equal([[0, 'summary']]);
                     done();
 
                     return {subscribe: noOp};
@@ -181,13 +179,13 @@ describe('JSONGraph', function() {
         });
 
         toObservable(model.
-            _clone({ _path: ["lists"] }).
-            call(["add"], [], [], [[0, "summary"]]).
+            _clone({ _path: ['lists'] }).
+            call(['add'], [], [], [[0, 'summary']]).
             _toJSONG()).
             subscribe(noOp, noOp, noOp);
     });
 
-    it("should run invalidations.", function(done) {
+    it('should run invalidations.', function(done) {
         var model = new Model({
             source: {
                 call: function(callPath, args, suffixes, extraPaths) {
@@ -209,7 +207,7 @@ describe('JSONGraph', function() {
         var onNext = sinon.spy();
         var onNext2 = sinon.spy();
         toObservable(model.
-            call(["test"], []).
+            call(['test'], []).
             _toJSONG()).
             doAction(onNext, noOp, function() {
                 expect(onNext.calledOnce).to.be.ok;

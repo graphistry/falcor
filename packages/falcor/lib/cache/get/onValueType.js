@@ -1,6 +1,6 @@
-var isExpired = require("../isExpired");
-var expireNode = require("../expireNode");
-var lruPromote = require("../../lru/promote");
+var isExpired = require('../isExpired');
+var expireNode = require('../expireNode');
+var lruPromote = require('../../lru/promote');
 
 module.exports = onValueType;
 
@@ -24,7 +24,7 @@ function onValueType(node, type, json,
                          optimizedPath, optimizedLength, reportMissing,
                          json, reportMaterialized, branchSelector);
     } else if (isExpired(node, expireImmediate)) {
-        if (!node[ƒ_invalidated]) {
+        if (!node[f_invalidated]) {
             expireNode(node, expired, modelRoot);
         }
         return onMissing(path, depth, results,

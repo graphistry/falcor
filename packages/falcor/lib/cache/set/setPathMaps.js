@@ -1,12 +1,13 @@
 var arr = new Array(3);
 var isArray = Array.isArray;
-var $ref = require("../../types/ref");
-var isExpired = require("../isExpired");
-var expireNode = require("../expireNode");
-var createHardlink = require("../createHardlink");
-var getCachePosition = require("../getCachePosition");
-var NullInPathError = require("../../errors/NullInPathError");
-var mergeValueOrInsertBranch = require("../mergeValueOrInsertBranch");
+var $ref = require('../../types/ref');
+var isExpired = require('../isExpired');
+var expireNode = require('../expireNode');
+var createHardlink = require('../createHardlink');
+var getCachePosition = require('../getCachePosition');
+var isInternalKey = require('../../support/isInternalKey');
+var NullInPathError = require('../../errors/NullInPathError');
+var mergeValueOrInsertBranch = require('../mergeValueOrInsertBranch');
 
 /**
  * Sets a list of {@link PathMapEnvelope}s into a {@link JSONGraph}.
@@ -25,8 +26,8 @@ module.exports = function setPathMaps(model, pathMapEnvelopes, errorSelector, co
     var bound = model._path;
     var cache = modelRoot.cache;
     var node = getCachePosition(cache, bound);
-    var parent = node[ƒ_parent] || cache;
-    var initialVersion = cache[ƒ_version];
+    var parent = node[f_parent] || cache;
+    var initialVersion = cache[f_version];
 
     var requestedPath = [];
     var requestedPaths = [];
@@ -52,7 +53,7 @@ module.exports = function setPathMaps(model, pathMapEnvelopes, errorSelector, co
     arr[1] = undefined;
     arr[2] = undefined;
 
-    var newVersion = cache[ƒ_version];
+    var newVersion = cache[f_version];
     var rootChangeHandler = modelRoot.onChange;
 
     if (rootChangeHandler && initialVersion !== newVersion) {
@@ -136,10 +137,10 @@ function setReference(
         var container = node;
         parent = root;
 
-        node = node[ƒ_context];
+        node = node[f_context];
 
         if (node != null) {
-            parent = node[ƒ_parent] || root;
+            parent = node[f_parent] || root;
             optimizedPath.index = reference.length;
         } else {
 
@@ -168,7 +169,7 @@ function setReference(
 
             optimizedPath.index = index;
 
-            if (container[ƒ_context] !== node) {
+            if (container[f_context] !== node) {
                 createHardlink(container, node);
             }
         }
@@ -210,7 +211,7 @@ function setNode(
             if (branch) {
                 throw new NullInPathError();
             } else if (node) {
-                key = node[ƒ_key];
+                key = node[f_key];
             }
         } else {
             parent = node;
@@ -237,10 +238,10 @@ function getKeys(pathMap) {
         var keys = [];
         var itr = 0;
         if (isArray(pathMap)) {
-            keys[itr++] = "length";
+            keys[itr++] = 'length';
         }
         for (var key in pathMap) {
-            if (key[0] === ƒ_ || key[0] === "$") {
+            if (isInternalKey(key)) {
                 continue;
             }
             keys[itr++] = key;

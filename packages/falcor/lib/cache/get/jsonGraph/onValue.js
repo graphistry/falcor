@@ -1,7 +1,7 @@
-var clone = require("../../clone");
-var $ref = require("../../../types/ref");
-var $error = require("../../../types/error");
-var inlineValue = require("./inlineValue");
+var clone = require('../../clone');
+var $ref = require('../../../types/ref');
+var $error = require('../../../types/error');
+var inlineValue = require('./inlineValue');
 var materializedAtom = require('@graphistry/falcor-path-utils/lib/support/materializedAtom');
 
 module.exports = onJSONGraphValue;
@@ -28,8 +28,8 @@ function onJSONGraphValue(node, type, depth, seed, results,
              */
              $ref === type ||
              $error === type ||
-             !node[ƒ_wrapped_value] ||
-             "object" === typeof value) {
+             !node[f_wrapped_value] ||
+             'object' === typeof value) {
         value = clone(node);
     }
 

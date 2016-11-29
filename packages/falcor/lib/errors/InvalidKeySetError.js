@@ -1,5 +1,5 @@
-var NAME = "InvalidKeySetError";
-var MESSAGE = "Keysets can only contain Keys or Ranges";
+var NAME = 'InvalidKeySetError';
+var MESSAGE = 'Keysets can only contain Keys or Ranges';
 
 /**
  * InvalidKeySetError happens when a dataSource syncronously throws
@@ -10,8 +10,8 @@ var MESSAGE = "Keysets can only contain Keys or Ranges";
  */
 function InvalidKeySetError(path, keysOrRanges) {
     var err = Error.call(this,
-        "The KeySet " + JSON.stringify(keysOrRanges) +
-        " in path " + JSON.stringify(path) + " contains a KeySet. " + MESSAGE);
+        'The KeySet ' + JSON.stringify(keysOrRanges) +
+        ' in path ' + JSON.stringify(path) + ' contains a KeySet. ' + MESSAGE);
     err.name = NAME;
     this.stack = err.stack;
     this.message = err.message;

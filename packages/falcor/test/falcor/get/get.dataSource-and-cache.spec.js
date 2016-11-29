@@ -1,6 +1,6 @@
 var $ref = require('@graphistry/falcor-json-graph').ref;
 var $atom = require('@graphistry/falcor-json-graph').atom;
-var falcor = require("./../../../lib/");
+var falcor = require('./../../../falcor.js');
 var Model = falcor.Model;
 var Rx = require('rx');
 var noOp = function() {};
@@ -434,79 +434,79 @@ describe('DataSource and Cache', function() {
                 get(['lolomo', 0, 0, 'item', 'title'], ['lolomo', 0, 1, 'item', 'title'])).
                 doAction(function(x) {
                     count++;
-                    x.json[ƒ_meta] = x.json[ƒ_meta];
-                    x.json['lolomo'][ƒ_meta] = x.json['lolomo'][ƒ_meta];
-                    x.json['lolomo'][0][ƒ_meta] = x.json['lolomo'][0][ƒ_meta];
-                    x.json['lolomo'][0][0][ƒ_meta] = x.json['lolomo'][0][0][ƒ_meta];
-                    x.json['lolomo'][0][1][ƒ_meta] = x.json['lolomo'][0][1][ƒ_meta];
-                    x.json['lolomo'][0][0]['item'][ƒ_meta] = x.json['lolomo'][0][0]['item'][ƒ_meta];
-                    x.json['lolomo'][0][1]['item'][ƒ_meta] = x.json['lolomo'][0][1]['item'][ƒ_meta];
+                    x.json[f_meta_data] = x.json[f_meta_data];
+                    x.json['lolomo'][f_meta_data] = x.json['lolomo'][f_meta_data];
+                    x.json['lolomo'][0][f_meta_data] = x.json['lolomo'][0][f_meta_data];
+                    x.json['lolomo'][0][0][f_meta_data] = x.json['lolomo'][0][0][f_meta_data];
+                    x.json['lolomo'][0][1][f_meta_data] = x.json['lolomo'][0][1][f_meta_data];
+                    x.json['lolomo'][0][0]['item'][f_meta_data] = x.json['lolomo'][0][0]['item'][f_meta_data];
+                    x.json['lolomo'][0][1]['item'][f_meta_data] = x.json['lolomo'][0][1]['item'][f_meta_data];
                     expect(x).to.deep.equals({
                         json: {
-                            [ƒ_meta]: {
+                            [f_meta_data]: {
                                 '$code':          '350990479',
-                                [ƒm_keys]:        { lolomo: true },
-                                [ƒm_abs_path]:    undefined,
-                                [ƒm_deref_from]:  undefined,
-                                [ƒm_deref_to]:    undefined,
-                                [ƒm_version]:     1
+                                [f_meta_keys]:        { lolomo: true },
+                                [f_meta_abs_path]:    undefined,
+                                [f_meta_deref_from]:  undefined,
+                                [f_meta_deref_to]:    undefined,
+                                [f_meta_version]:     1
                             },
                             lolomo: {
-                                [ƒ_meta]: {
+                                [f_meta_data]: {
                                     '$code':          '1437563678',
-                                    [ƒm_keys]:        { 0: true },
-                                    [ƒm_abs_path]:    ['lolomos', '1234'],
-                                    [ƒm_deref_from]:  undefined,
-                                    [ƒm_deref_to]:    undefined,
-                                    [ƒm_version]:     1
+                                    [f_meta_keys]:        { 0: true },
+                                    [f_meta_abs_path]:    ['lolomos', '1234'],
+                                    [f_meta_deref_from]:  undefined,
+                                    [f_meta_deref_to]:    undefined,
+                                    [f_meta_version]:     1
                                 },
                                 0: {
-                                    [ƒ_meta]: {
+                                    [f_meta_data]: {
                                         '$code':          '2823858104',
-                                        [ƒm_keys]:        { 0: true, 1: true },
-                                        [ƒm_abs_path]:    ['lists', 'A'],
-                                        [ƒm_deref_from]:  undefined,
-                                        [ƒm_deref_to]:    undefined,
-                                        [ƒm_version]:     1
+                                        [f_meta_keys]:        { 0: true, 1: true },
+                                        [f_meta_abs_path]:    ['lists', 'A'],
+                                        [f_meta_deref_from]:  undefined,
+                                        [f_meta_deref_to]:    undefined,
+                                        [f_meta_version]:     1
                                     },
                                     0: {
-                                        [ƒ_meta]: {
+                                        [f_meta_data]: {
                                             '$code':          '3681981706',
-                                            [ƒm_keys]:        { item: true },
-                                            [ƒm_abs_path]:    ['lists', 'A', '0'],
-                                            [ƒm_deref_from]:  undefined,
-                                            [ƒm_deref_to]:    undefined,
-                                            [ƒm_version]:     0
+                                            [f_meta_keys]:        { item: true },
+                                            [f_meta_abs_path]:    ['lists', 'A', '0'],
+                                            [f_meta_deref_from]:  undefined,
+                                            [f_meta_deref_to]:    undefined,
+                                            [f_meta_version]:     0
                                         },
                                         item: {
-                                            [ƒ_meta]: {
+                                            [f_meta_data]: {
                                                 '$code':          '165499941',
-                                                [ƒm_keys]:        { title: true },
-                                                [ƒm_abs_path]:    ['videos', '0'],
-                                                [ƒm_deref_from]:  undefined,
-                                                [ƒm_deref_to]:    undefined,
-                                                [ƒm_version]:     0
+                                                [f_meta_keys]:        { title: true },
+                                                [f_meta_abs_path]:    ['videos', '0'],
+                                                [f_meta_deref_from]:  undefined,
+                                                [f_meta_deref_to]:    undefined,
+                                                [f_meta_version]:     0
                                             },
                                             title: 'Video 0'
                                         }
                                     },
                                     1: {
-                                        [ƒ_meta]: {
+                                        [f_meta_data]: {
                                             '$code':          '3681981706',
-                                            [ƒm_keys]:        { item: true },
-                                            [ƒm_abs_path]:    ['lists', 'A', 1],
-                                            [ƒm_deref_from]:  undefined,
-                                            [ƒm_deref_to]:    undefined,
-                                            [ƒm_version]:     1
+                                            [f_meta_keys]:        { item: true },
+                                            [f_meta_abs_path]:    ['lists', 'A', 1],
+                                            [f_meta_deref_from]:  undefined,
+                                            [f_meta_deref_to]:    undefined,
+                                            [f_meta_version]:     1
                                         },
                                         item: {
-                                            [ƒ_meta]: {
+                                            [f_meta_data]: {
                                                 '$code':          '165499941',
-                                                [ƒm_keys]:        { title: true },
-                                                [ƒm_abs_path]:    ['videos', '1'],
-                                                [ƒm_deref_from]:  undefined,
-                                                [ƒm_deref_to]:    undefined,
-                                                [ƒm_version]:     1
+                                                [f_meta_keys]:        { title: true },
+                                                [f_meta_abs_path]:    ['videos', '1'],
+                                                [f_meta_deref_from]:  undefined,
+                                                [f_meta_deref_to]:    undefined,
+                                                [f_meta_version]:     1
                                             },
                                             title: 'Video 1'
                                         }
@@ -534,79 +534,79 @@ describe('DataSource and Cache', function() {
                 get(['lolomo', 0, 0, 'item', 'title'], ['lolomo', 0, 1, 'item', 'title'])).
                 doAction(function(x) {
                     count++;
-                    x.json[ƒ_meta] = x.json[ƒ_meta];
-                    x.json['lolomo'][ƒ_meta] = x.json['lolomo'][ƒ_meta];
-                    x.json['lolomo'][0][ƒ_meta] = x.json['lolomo'][0][ƒ_meta];
-                    x.json['lolomo'][0][0][ƒ_meta] = x.json['lolomo'][0][0][ƒ_meta];
-                    x.json['lolomo'][0][1][ƒ_meta] = x.json['lolomo'][0][1][ƒ_meta];
-                    x.json['lolomo'][0][0]['item'][ƒ_meta] = x.json['lolomo'][0][0]['item'][ƒ_meta];
-                    x.json['lolomo'][0][1]['item'][ƒ_meta] = x.json['lolomo'][0][1]['item'][ƒ_meta];
+                    x.json[f_meta_data] = x.json[f_meta_data];
+                    x.json['lolomo'][f_meta_data] = x.json['lolomo'][f_meta_data];
+                    x.json['lolomo'][0][f_meta_data] = x.json['lolomo'][0][f_meta_data];
+                    x.json['lolomo'][0][0][f_meta_data] = x.json['lolomo'][0][0][f_meta_data];
+                    x.json['lolomo'][0][1][f_meta_data] = x.json['lolomo'][0][1][f_meta_data];
+                    x.json['lolomo'][0][0]['item'][f_meta_data] = x.json['lolomo'][0][0]['item'][f_meta_data];
+                    x.json['lolomo'][0][1]['item'][f_meta_data] = x.json['lolomo'][0][1]['item'][f_meta_data];
                     expect(x).to.deep.equals({
                         json: {
-                            [ƒ_meta]: {
+                            [f_meta_data]: {
                                 '$code':          '350990479',
-                                [ƒm_keys]:        { lolomo: true },
-                                [ƒm_abs_path]:    undefined,
-                                [ƒm_deref_from]:  undefined,
-                                [ƒm_deref_to]:    undefined,
-                                [ƒm_version]:     1
+                                [f_meta_keys]:        { lolomo: true },
+                                [f_meta_abs_path]:    undefined,
+                                [f_meta_deref_from]:  undefined,
+                                [f_meta_deref_to]:    undefined,
+                                [f_meta_version]:     1
                             },
                             lolomo: {
-                                [ƒ_meta]: {
+                                [f_meta_data]: {
                                     '$code':          '1437563678',
-                                    [ƒm_keys]:        { 0: true },
-                                    [ƒm_abs_path]:    ['lolomos', '1234'],
-                                    [ƒm_deref_from]:  undefined,
-                                    [ƒm_deref_to]:    undefined,
-                                    [ƒm_version]:     0
+                                    [f_meta_keys]:        { 0: true },
+                                    [f_meta_abs_path]:    ['lolomos', '1234'],
+                                    [f_meta_deref_from]:  undefined,
+                                    [f_meta_deref_to]:    undefined,
+                                    [f_meta_version]:     0
                                 },
                                 0: {
-                                    [ƒ_meta]: {
+                                    [f_meta_data]: {
                                         '$code':          '2823858104',
-                                        [ƒm_keys]:        { 0: true, 1: true },
-                                        [ƒm_abs_path]:    ['lists', 'A'],
-                                        [ƒm_deref_from]:  undefined,
-                                        [ƒm_deref_to]:    undefined,
-                                        [ƒm_version]:     0
+                                        [f_meta_keys]:        { 0: true, 1: true },
+                                        [f_meta_abs_path]:    ['lists', 'A'],
+                                        [f_meta_deref_from]:  undefined,
+                                        [f_meta_deref_to]:    undefined,
+                                        [f_meta_version]:     0
                                     },
                                     0: {
-                                        [ƒ_meta]: {
+                                        [f_meta_data]: {
                                             '$code':          '3681981706',
-                                            [ƒm_keys]:        { item: true },
-                                            [ƒm_abs_path]:    ['lists', 'A', '0'],
-                                            [ƒm_deref_from]:  undefined,
-                                            [ƒm_deref_to]:    undefined,
-                                            [ƒm_version]:     0
+                                            [f_meta_keys]:        { item: true },
+                                            [f_meta_abs_path]:    ['lists', 'A', '0'],
+                                            [f_meta_deref_from]:  undefined,
+                                            [f_meta_deref_to]:    undefined,
+                                            [f_meta_version]:     0
                                         },
                                         item: {
-                                            [ƒ_meta]: {
+                                            [f_meta_data]: {
                                                 '$code':          '165499941',
-                                                [ƒm_keys]:        { title: true },
-                                                [ƒm_abs_path]:    ['videos', '0'],
-                                                [ƒm_deref_from]:  undefined,
-                                                [ƒm_deref_to]:    undefined,
-                                                [ƒm_version]:     0
+                                                [f_meta_keys]:        { title: true },
+                                                [f_meta_abs_path]:    ['videos', '0'],
+                                                [f_meta_deref_from]:  undefined,
+                                                [f_meta_deref_to]:    undefined,
+                                                [f_meta_version]:     0
                                             },
                                             title: 'Video 0'
                                         }
                                     },
                                     1: {
-                                        [ƒ_meta]: {
+                                        [f_meta_data]: {
                                             '$code':          '3681981706',
-                                            [ƒm_keys]:        { item: true },
-                                            [ƒm_abs_path]:    ['lists', 'A', '1'],
-                                            [ƒm_deref_from]:  undefined,
-                                            [ƒm_deref_to]:    undefined,
-                                            [ƒm_version]:     0
+                                            [f_meta_keys]:        { item: true },
+                                            [f_meta_abs_path]:    ['lists', 'A', '1'],
+                                            [f_meta_deref_from]:  undefined,
+                                            [f_meta_deref_to]:    undefined,
+                                            [f_meta_version]:     0
                                         },
                                         item: {
-                                            [ƒ_meta]: {
+                                            [f_meta_data]: {
                                                 '$code':          '165499941',
-                                                [ƒm_keys]:        { title: true },
-                                                [ƒm_abs_path]:    ['videos', 1],
-                                                [ƒm_deref_from]:  undefined,
-                                                [ƒm_deref_to]:    undefined,
-                                                [ƒm_version]:     1
+                                                [f_meta_keys]:        { title: true },
+                                                [f_meta_abs_path]:    ['videos', 1],
+                                                [f_meta_deref_from]:  undefined,
+                                                [f_meta_deref_to]:    undefined,
+                                                [f_meta_version]:     1
                                             },
                                             title: 'Video 1'
                                         }
@@ -767,7 +767,7 @@ describe('DataSource and Cache', function() {
                 );
         });
     });
-    describe("Cached data with timestamp", function() {
+    describe('Cached data with timestamp', function() {
         var t0 = Date.parse('2000/01/01');
         var t1 = t0 + 1;
 
@@ -784,7 +784,7 @@ describe('DataSource and Cache', function() {
             };
         }
 
-        it("should not be replaced by data with an older timestamp", function(done) {
+        it('should not be replaced by data with an older timestamp', function(done) {
             var cache = {
                 videos: {
                     1: {
@@ -804,7 +804,7 @@ describe('DataSource and Cache', function() {
                 });
         });
 
-        it("when expired should be replaced by data with an older timestamp", function(done) {
+        it('when expired should be replaced by data with an older timestamp', function(done) {
             var cache = {
                 videos: {
                     1: {

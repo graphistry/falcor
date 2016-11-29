@@ -1,5 +1,5 @@
-var NAME = "InvalidModelError";
-var MESSAGE = "The boundPath of the model is not valid since a value or error was found before the path end.";
+var NAME = 'InvalidModelError';
+var MESSAGE = 'The boundPath of the model is not valid since a value or error was found before the path end.';
 
 /**
  * An InvalidModelError can only happen when a user binds, whether sync

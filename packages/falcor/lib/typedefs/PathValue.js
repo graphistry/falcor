@@ -5,7 +5,7 @@
  * @property {?*} value - the value of that path
  * @example
  {
-	path: ["productsById", "1234", "name"],
-	value: "ABC"
+	path: ['productsById', '1234', 'name'],
+	value: 'ABC'
  }
  */

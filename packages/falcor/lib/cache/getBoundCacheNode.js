@@ -1,11 +1,11 @@
-var getCachePosition = require("./getCachePosition");
+var getCachePosition = require('./getCachePosition');
 
 module.exports = getBoundCacheNode;
 
 function getBoundCacheNode(model, path) {
     path = path || model._path;
     var node = model._node;
-    if (!node || node[ƒ_parent] === undefined || node[ƒ_invalidated]) {
+    if (!node || node[f_parent] === undefined || node[f_invalidated]) {
         model._node = null;
         if (path.length === 0) {
             node = model._root.cache;

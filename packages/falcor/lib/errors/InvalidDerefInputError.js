@@ -1,5 +1,5 @@
-var NAME = "InvalidDerefInputError";
-var MESSAGE = "Deref can only be used with a non-primitive object from get, set, or call.";
+var NAME = 'InvalidDerefInputError';
+var MESSAGE = 'Deref can only be used with a non-primitive object from get, set, or call.';
 
 /**
  * An invalid deref input is when deref is used with input that is not generated

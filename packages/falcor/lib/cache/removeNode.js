@@ -1,7 +1,7 @@
-var $ref = require("../types/ref");
-var lruSplice = require("../lru/splice");
-var unlinkBackReferences = require("./unlinkBackReferences");
-var unlinkForwardReference = require("./unlinkForwardReference");
+var $ref = require('../types/ref');
+var lruSplice = require('../lru/splice');
+var unlinkBackReferences = require('./unlinkBackReferences');
+var unlinkForwardReference = require('./unlinkForwardReference');
 
 module.exports = function removeNode(node, parent, key, lru) {
     if (!(!node || typeof node !== 'object')) {
@@ -13,7 +13,7 @@ module.exports = function removeNode(node, parent, key, lru) {
             lruSplice(lru, node);
         }
         unlinkBackReferences(node);
-        parent[key] = node[ƒ_parent] = void 0;
+        parent[key] = node[f_parent] = void 0;
         return true;
     }
     return false;

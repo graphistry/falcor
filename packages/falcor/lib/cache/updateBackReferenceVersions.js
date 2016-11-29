@@ -3,13 +3,13 @@ module.exports = function updateBackReferenceVersions(nodeArg, version) {
     var count = 0;
     do {
         var node = stack[count];
-        if (node && node[ƒ_version] !== version) {
-            node[ƒ_version] = version;
-            stack[count++] = node[ƒ_parent];
+        if (node && node[f_version] !== version) {
+            node[f_version] = version;
+            stack[count++] = node[f_parent];
             var i = -1;
-            var n = node[ƒ_refs_length] || 0;
+            var n = node[f_refs_length] || 0;
             while (++i < n) {
-                stack[count++] = node[ƒ_ref + i];
+                stack[count++] = node[f_ref + i];
             }
         }
     } while (--count > -1);

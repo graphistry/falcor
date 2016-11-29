@@ -1,4 +1,4 @@
-var isInternalKey = require("../support/isInternalKey");
+var isInternalKey = require('../support/isInternalKey');
 
 /**
  * decends and copies the cache.
@@ -21,7 +21,7 @@ function cloneBoxedValue(boxedValue) {
     for (i = 0, l = keys.length; i < l; i++) {
         key = keys[i];
 
-        if (!isInternalKey(key)) {
+        if (key === '$type' || !isInternalKey(key)) {
             clonedValue[key] = boxedValue[key];
         }
     }
@@ -33,20 +33,20 @@ function _copyCache(node, out, fromKey) {
     // copy and return
 
     // only copy objects
-    if (!node || typeof node !== "object") {
+    if (!node || typeof node !== 'object') {
         return;
     }
 
     Object.
         keys(node).
-        filter(function(k) {
+        filter(function(key) {
             // Its not an internal key and the node has a value.  In the cache
             // there are 3 possibilities for values.
             // 1: A branch node.
             // 2: A $type-value node.
             // 3: undefined
             // We will strip out 3
-            return !isInternalKey(k) && node[k] !== undefined;
+            return (key === '$type' || !isInternalKey(key)) && node[key] !== undefined;
         }).
         forEach(function(key) {
             var cacheNext = node[key];
@@ -58,8 +58,8 @@ function _copyCache(node, out, fromKey) {
 
             // Paste the node into the out cache.
             if (cacheNext.$type) {
-                var isObject = cacheNext.value && typeof cacheNext.value === "object";
-                var isUserCreatedcacheNext = !cacheNext[ƒ_wrapped_value];
+                var isObject = cacheNext.value && typeof cacheNext.value === 'object';
+                var isUserCreatedcacheNext = !cacheNext[f_wrapped_value];
                 var value;
                 if (isObject || isUserCreatedcacheNext) {
                     value = cloneBoxedValue(cacheNext);

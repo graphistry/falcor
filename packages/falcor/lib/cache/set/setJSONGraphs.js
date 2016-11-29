@@ -1,11 +1,11 @@
 var arr = new Array(5);
-var $ref = require("../../types/ref");
-var isExpired = require("../isExpired");
-var expireNode = require("../expireNode");
-var createHardlink = require("../createHardlink");
-var mergeJSONGraphNode = require("../mergeJSONGraphNode");
-var NullInPathError = require("../../errors/NullInPathError");
-var iterateKeySet = require("@graphistry/falcor-path-utils/lib/iterateKeySet");
+var $ref = require('../../types/ref');
+var isExpired = require('../isExpired');
+var expireNode = require('../expireNode');
+var createHardlink = require('../createHardlink');
+var mergeJSONGraphNode = require('../mergeJSONGraphNode');
+var NullInPathError = require('../../errors/NullInPathError');
+var iterateKeySet = require('@graphistry/falcor-path-utils/lib/iterateKeySet');
 
 /**
  * Merges a list of {@link JSONGraphEnvelope}s into a {@link JSONGraph}.
@@ -22,7 +22,7 @@ module.exports = function setJSONGraphs(model, jsonGraphEnvelopes, errorSelector
     var expired = modelRoot.expired;
     var version = modelRoot.version++;
     var cache = modelRoot.cache;
-    var initialVersion = cache[ƒ_version];
+    var initialVersion = cache[f_version];
 
     var requestedPath = [];
     var optimizedPath = [];
@@ -61,7 +61,7 @@ module.exports = function setJSONGraphs(model, jsonGraphEnvelopes, errorSelector
     arr[3] = undefined;
     arr[4] = undefined;
 
-    var newVersion = cache[ƒ_version];
+    var newVersion = cache[f_version];
     var rootChangeHandler = modelRoot.onChange;
 
     if (rootChangeHandler && initialVersion !== newVersion) {
@@ -170,7 +170,7 @@ function setReference(
 
         optimizedPath.index = index;
 
-        if (container[ƒ_context] !== node) {
+        if (container[f_context] !== node) {
             createHardlink(container, node);
         }
     }
@@ -216,7 +216,7 @@ function setNode(
             if (branch) {
                 throw new NullInPathError();
             } else if (node) {
-                key = node[ƒ_key];
+                key = node[f_key];
             }
         } else {
             parent = node;

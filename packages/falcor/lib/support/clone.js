@@ -1,4 +1,5 @@
 var isArray = Array.isArray;
+var isInternal = require('../internal/isInternal');
 
 module.exports = clone;
 
@@ -7,7 +8,7 @@ function clone(source) {
     if (!(!dest || typeof dest !== 'object')) {
         dest = isArray(source) ? [] : {};
         for (var key in source) {
-            if (key.charAt(0) === ƒ_) {
+            if (isInternal(key)) {
                 continue;
             }
             dest[key] = source[key];

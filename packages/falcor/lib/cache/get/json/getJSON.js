@@ -1,10 +1,10 @@
 var isArray = Array.isArray;
-var walkPathAndBuildOutput = require("./walkPath");
-var walkFlatBufferAndBuildOutput = require("./walkFlatBuffer");
-var getBoundCacheNode = require("../../getBoundCacheNode");
-var InvalidModelError = require("../../../errors/InvalidModelError");
-var toFlatBuffer = require("@graphistry/falcor-path-utils/lib/toFlatBuffer");
-var computeFlatBufferHash = require("@graphistry/falcor-path-utils/lib/computeFlatBufferHash");
+var walkPathAndBuildOutput = require('./walkPath');
+var walkFlatBufferAndBuildOutput = require('./walkFlatBuffer');
+var getBoundCacheNode = require('../../getBoundCacheNode');
+var InvalidModelError = require('../../../errors/InvalidModelError');
+var toFlatBuffer = require('@graphistry/falcor-path-utils/lib/toFlatBuffer');
+var computeFlatBufferHash = require('@graphistry/falcor-path-utils/lib/computeFlatBufferHash');
 
 module.exports = getJSON;
 

@@ -49,18 +49,18 @@ describe('References', function() {
             input: [['toReference', 'title']],
             output: {
                 json: {
-                    [ƒ_meta]: {
-                        [ƒm_abs_path]:    undefined,
-                        [ƒm_deref_from]:  undefined,
-                        [ƒm_deref_to]:    undefined,
-                        [ƒm_version]:     0
+                    [f_meta_data]: {
+                        [f_meta_abs_path]:    undefined,
+                        [f_meta_deref_from]:  undefined,
+                        [f_meta_deref_to]:    undefined,
+                        [f_meta_version]:     0
                     },
                     toReference: {
-                        [ƒ_meta]: {
-                            [ƒm_abs_path]:    ['too'],
-                            [ƒm_deref_from]:  undefined,
-                            [ƒm_deref_to]:    undefined,
-                            [ƒm_version]:     0
+                        [f_meta_data]: {
+                            [f_meta_abs_path]:    ['too'],
+                            [f_meta_deref_from]:  undefined,
+                            [f_meta_deref_to]:    undefined,
+                            [f_meta_version]:     0
                         },
                         title: 'Title'
                     }
@@ -189,18 +189,18 @@ describe('References', function() {
                 input: [['ref-0', 'title']],
                 output: {
                     json: {
-                        [ƒ_meta]: {
-                            [ƒm_abs_path]:    undefined,
-                            [ƒm_deref_from]:  undefined,
-                            [ƒm_deref_to]:    undefined,
-                            [ƒm_version]:     0
+                        [f_meta_data]: {
+                            [f_meta_abs_path]:    undefined,
+                            [f_meta_deref_from]:  undefined,
+                            [f_meta_deref_to]:    undefined,
+                            [f_meta_version]:     0
                         },
                         'ref-0': {
-                            [ƒ_meta]: {
-                                [ƒm_abs_path]:    ['too'],
-                                [ƒm_deref_from]:  undefined,
-                                [ƒm_deref_to]:    undefined,
-                                [ƒm_version]:     0
+                            [f_meta_data]: {
+                                [f_meta_abs_path]:    ['too'],
+                                [f_meta_deref_from]:  undefined,
+                                [f_meta_deref_to]:    undefined,
+                                [f_meta_version]:     0
                             },
                             title: 'Title'
                         }
@@ -218,9 +218,9 @@ describe('References', function() {
 
                 expect(reportSpy.callCount).to.equal(1);
                 expect(reportSpy.getCall(0).args[0]).to.equal(new Error(
-                    "Followed 50 references. " +
-                    "This might indicate the presence of an indirect " +
-                    "circular reference chain."
+                    'Followed 50 references. ' +
+                    'This might indicate the presence of an indirect ' +
+                    'circular reference chain.'
                 ).toString());
             }
         }
@@ -275,9 +275,9 @@ describe('References', function() {
 
                 expect(reportSpy.callCount).to.equal(1);
                 expect(reportSpy.getCall(0).args[0]).to.equal(new Error(
-                    "Followed 50 references. " +
-                    "This might indicate the presence of an indirect " +
-                    "circular reference chain."
+                    'Followed 50 references. ' +
+                    'This might indicate the presence of an indirect ' +
+                    'circular reference chain.'
                 ).toString());
             }
         }
@@ -291,26 +291,26 @@ describe('References', function() {
             ],
             output: {
                 json: {
-                    [ƒ_meta]: {
-                        [ƒm_abs_path]:    undefined,
-                        [ƒm_deref_from]:  undefined,
-                        [ƒm_deref_to]:    undefined,
-                        [ƒm_version]:     0
+                    [f_meta_data]: {
+                        [f_meta_abs_path]:    undefined,
+                        [f_meta_deref_from]:  undefined,
+                        [f_meta_deref_to]:    undefined,
+                        [f_meta_version]:     0
 
                     },
                     to: {
-                        [ƒ_meta]: {
-                            [ƒm_abs_path]:    ['to'],
-                            [ƒm_deref_from]:  undefined,
-                            [ƒm_deref_to]:    undefined,
-                            [ƒm_version]:     0
+                        [f_meta_data]: {
+                            [f_meta_abs_path]:    ['to'],
+                            [f_meta_deref_from]:  undefined,
+                            [f_meta_deref_to]:    undefined,
+                            [f_meta_version]:     0
                         },
                         reference: {
-                            [ƒ_meta]: {
-                                [ƒm_abs_path]:    ['too'],
-                                [ƒm_deref_from]:  undefined,
-                                [ƒm_deref_to]:    undefined,
-                                [ƒm_version]:     0
+                            [f_meta_data]: {
+                                [f_meta_abs_path]:    ['too'],
+                                [f_meta_deref_from]:  undefined,
+                                [f_meta_deref_to]:    undefined,
+                                [f_meta_version]:     0
                             },
                             title: 'Title'
                         },
@@ -331,39 +331,39 @@ describe('References', function() {
             fromWhenceYouCame: true,
             output: {
                 json: {
-                    [ƒ_meta]: {
-                        [ƒm_abs_path]:    undefined,
-                        [ƒm_deref_from]:  undefined,
-                        [ƒm_deref_to]:    undefined,
-                        [ƒm_version]:     0
+                    [f_meta_data]: {
+                        [f_meta_abs_path]:    undefined,
+                        [f_meta_deref_from]:  undefined,
+                        [f_meta_deref_to]:    undefined,
+                        [f_meta_version]:     0
                     },
                     lolomo: {
-                        [ƒ_meta]: {
-                            [ƒm_abs_path]:    ['lolomos', 1234],
-                            [ƒm_deref_from]:  ['lolomo'],
-                            [ƒm_deref_to]:    ['lolomos', 1234],
-                            [ƒm_version]:     0
+                        [f_meta_data]: {
+                            [f_meta_abs_path]:    ['lolomos', 1234],
+                            [f_meta_deref_from]:  ['lolomo'],
+                            [f_meta_deref_to]:    ['lolomos', 1234],
+                            [f_meta_version]:     0
                         },
                         0: {
-                            [ƒ_meta]: {
-                                [ƒm_abs_path]:    ['lists', 'A'],
-                                [ƒm_deref_from]:  ['lolomos', 1234, 0],
-                                [ƒm_deref_to]:    ['lists', 'A'],
-                                [ƒm_version]:     0
+                            [f_meta_data]: {
+                                [f_meta_abs_path]:    ['lists', 'A'],
+                                [f_meta_deref_from]:  ['lolomos', 1234, 0],
+                                [f_meta_deref_to]:    ['lists', 'A'],
+                                [f_meta_version]:     0
                             },
                             0: {
-                                [ƒ_meta]: {
-                                    [ƒm_abs_path]:    ['lists', 'A', 0],
-                                    [ƒm_deref_from]:  ['lolomos', 1234, 0],
-                                    [ƒm_deref_to]:    ['lists', 'A'],
-                                    [ƒm_version]:     0
+                                [f_meta_data]: {
+                                    [f_meta_abs_path]:    ['lists', 'A', 0],
+                                    [f_meta_deref_from]:  ['lolomos', 1234, 0],
+                                    [f_meta_deref_to]:    ['lists', 'A'],
+                                    [f_meta_version]:     0
                                 },
                                 item: {
-                                    [ƒ_meta]: {
-                                        [ƒm_abs_path]:    ['videos', 0],
-                                        [ƒm_deref_from]:  ['lists', 'A', 0, 'item'],
-                                        [ƒm_deref_to]:    ['videos', 0],
-                                        [ƒm_version]:     0
+                                    [f_meta_data]: {
+                                        [f_meta_abs_path]:    ['videos', 0],
+                                        [f_meta_deref_from]:  ['lists', 'A', 0, 'item'],
+                                        [f_meta_deref_to]:    ['videos', 0],
+                                        [f_meta_version]:     0
                                     },
                                     title: 'Video 0'
                                 }

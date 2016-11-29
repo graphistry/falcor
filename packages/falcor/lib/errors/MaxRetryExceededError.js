@@ -1,5 +1,5 @@
-var NAME = "MaxRetryExceededError";
-var MESSAGE = "The allowed number of retries have been exceeded.";
+var NAME = 'MaxRetryExceededError';
+var MESSAGE = 'The allowed number of retries have been exceeded.';
 
 /**
  * A request can only be retried up to a specified limit.  Once that
@@ -9,13 +9,13 @@ var MESSAGE = "The allowed number of retries have been exceeded.";
  */
 function MaxRetryExceededError(maxRetryCount, absolute, relative, optimized) {
     var err = Error.call(this,
-        "Exceeded the max retry count (" + maxRetryCount + ") for these paths: \n" +
+        'Exceeded the max retry count (' + maxRetryCount + ') for these paths: \n' +
         (absolute &&
-        "absolute: [\n\t" + printPaths(absolute) + "\n]\n" || "") +
+        'absolute: [\n\t' + printPaths(absolute) + '\n]\n' || '') +
         (relative &&
-        "relative: [\n\t" + printPaths(relative) + "\n]\n" || "") +
+        'relative: [\n\t' + printPaths(relative) + '\n]\n' || '') +
         (optimized &&
-        "optimized: [\n\t" + printPaths(optimized) + "\n]\n" || "")
+        'optimized: [\n\t' + printPaths(optimized) + '\n]\n' || '')
     );
     err.name = NAME;
     this.stack = err.stack;

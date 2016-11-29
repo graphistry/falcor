@@ -1,15 +1,15 @@
-var $ref = require("../types/ref");
-var $error = require("../types/error");
-var getSize = require("../support/getSize");
-var getTimestamp = require("../support/getTimestamp");
+var $ref = require('../types/ref');
+var $error = require('../types/error');
+var getSize = require('../support/getSize');
+var getTimestamp = require('../support/getTimestamp');
 
-var wrapNode = require("./wrapNode");
-var isExpired = require("./isExpired");
-var insertNode = require("./insertNode");
-var expireNode = require("./expireNode");
-var replaceNode = require("./replaceNode");
-var reconstructPath = require("./reconstructPath");
-var updateNodeAncestors = require("./updateNodeAncestors");
+var wrapNode = require('./wrapNode');
+var isExpired = require('./isExpired');
+var insertNode = require('./insertNode');
+var expireNode = require('./expireNode');
+var replaceNode = require('./replaceNode');
+var reconstructPath = require('./reconstructPath');
+var updateNodeAncestors = require('./updateNodeAncestors');
 
 module.exports = function mergeJSONGraphNode(
     parent, node, message, key, requestedPath, optimizedPath,
@@ -53,7 +53,7 @@ module.exports = function mergeJSONGraphNode(
                 if (cType == null) {
                     // Has the branch been introduced to the cache yet? If not,
                     // give it a parent, key, and absolute path.
-                    if (node[ƒ_parent] == null) {
+                    if (node[f_parent] == null) {
                         insertNode(node, parent, key, version, optimizedPath);
                     }
                     return node;
@@ -105,7 +105,7 @@ module.exports = function mergeJSONGraphNode(
                     // grandparents. If we've previously graphed this
                     // reference, break early. Otherwise, continue to
                     // leaf insertion below.
-                    if (node[ƒ_parent] != null) {
+                    if (node[f_parent] != null) {
                         return node;
                     }
                 } else {
@@ -147,7 +147,7 @@ module.exports = function mergeJSONGraphNode(
         }
 
         if (mType && node === message) {
-            if (node[ƒ_parent] == null) {
+            if (node[f_parent] == null) {
                 node = wrapNode(node, cType, node.value);
                 parent = updateNodeAncestors(parent, -node.$size, lru, version);
                 node = insertNode(node, parent, key, version, optimizedPath);

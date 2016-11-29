@@ -1,6 +1,7 @@
+require('babel-register');
+
 var gulp = require('gulp');
 var mocha = require('gulp-mocha');
-var bump = require('gulp-bump');
 var eslint = require('gulp-eslint');
 var istanbul = require('gulp-istanbul');
 
@@ -27,11 +28,15 @@ gulp.task('lint-root', function() {
         pipe(eslint.failAfterError());
 });
 
-gulp.task('bump', function() {
-    return gulp.
-        src('package.json').
-        pipe(bump({type: 'patch'})).
-        pipe(gulp.dest('./'));
+gulp.task('test', function (cb) {
+  gulp.src(['./test/index.js'])
+    .pipe(mocha({
+        timeout: 2000,
+        useColors: true,
+        fullTrace: false,
+        reporter: 'dot'
+    }))
+    .on('end', cb);
 });
 
 gulp.task('test-coverage', function (cb) {
@@ -40,16 +45,15 @@ gulp.task('test-coverage', function (cb) {
         pipe(istanbul.hookRequire()).
         on('finish', function () {
             gulp.src(['./test/index.js']).
-                pipe(mocha()).
+                pipe(mocha({
+                    timeout: 2000,
+                    useColors: true,
+                    fullTrace: false,
+                    reporter: 'dot'
+                })).
                 pipe(istanbul.writeReports()).
                 on('end', cb);
         });
-});
-
-gulp.task('test', function (cb) {
-  gulp.src(['./test/index.js'])
-    .pipe(mocha())
-    .on('end', cb);
 });
 
 gulp.task('dist', ['lint', 'test-coverage']);

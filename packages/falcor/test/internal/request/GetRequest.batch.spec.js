@@ -4,7 +4,7 @@ var Request = require('./../../../lib/request/Request');
 var TimeoutScheduler = require('./../../../lib/schedulers/TimeoutScheduler');
 var ImmediateScheduler = require('./../../../lib/schedulers/ImmediateScheduler');
 var Rx = require('rx');
-var Model = require('./../../../lib').Model;
+var Model = require('./../../../falcor.js').Model;
 var LocalDataSource = require('./../../data/LocalDataSource');
 var zipSpy = require('./../../zipSpy');
 

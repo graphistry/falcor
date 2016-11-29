@@ -1,14 +1,14 @@
 var isArray = Array.isArray;
-var clone = require("../../clone");
-var $ref = require("../../../types/ref");
-var onValue = require("./onValue");
-var inlineValue = require("./inlineValue");
-var onValueType = require("../onValueType");
-var isExpired = require("../../isExpired");
-var originalOnMissing = require("../onMissing");
-var getReferenceTarget = require("./getReferenceTarget");
-var NullInPathError = require("../../../errors/NullInPathError");
-var InvalidKeySetError = require("../../../errors/InvalidKeySetError");
+var clone = require('../../clone');
+var $ref = require('../../../types/ref');
+var onValue = require('./onValue');
+var inlineValue = require('./inlineValue');
+var onValueType = require('../onValueType');
+var isExpired = require('../../isExpired');
+var originalOnMissing = require('../onMissing');
+var getReferenceTarget = require('./getReferenceTarget');
+var NullInPathError = require('../../../errors/NullInPathError');
+var InvalidKeySetError = require('../../../errors/InvalidKeySetError');
 var materializedAtom = require('@graphistry/falcor-path-utils/lib/support/materializedAtom');
 
 module.exports = walkPathAndBuildOutput;
@@ -91,7 +91,7 @@ function walkPathAndBuildOutput(cacheRoot, node, path,
     iteratingKeyset: do {
 
         // If the keyset is a primitive value, we've found our `nextKey`.
-        if ("object" !== typeof keyset) {
+        if ('object' !== typeof keyset) {
             nextKey = keyset;
             rangeEnd = undefined;
             keyIsRange = false;
@@ -123,7 +123,7 @@ function walkPathAndBuildOutput(cacheRoot, node, path,
         else {
             rangeEnd = keyset.to;
             nextKey = keyset.from || 0;
-            if ("number" !== typeof rangeEnd) {
+            if ('number' !== typeof rangeEnd) {
                 rangeEnd = nextKey + (keyset.length || 0) - 1;
             }
             if ((rangeEnd - nextKey) < 0) {

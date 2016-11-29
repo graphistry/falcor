@@ -2,7 +2,7 @@ var sinon = require('sinon');
 var expect = require('chai').expect;
 var TimeoutScheduler = require('./../../../lib/schedulers/TimeoutScheduler');
 var Rx = require('rx');
-var Model = require('./../../../lib').Model;
+var Model = require('./../../../falcor.js').Model;
 
 describe('GetRequest', function() {
     require('./GetRequest.batch.spec');
@@ -15,13 +15,13 @@ describe('GetRequest', function() {
                 var response = {
                     jsonGraph: {
                         list: {
-                            1: { name: "another test" }
+                            1: { name: 'another test' }
                         }
                     },
-                    paths: ["list", 1, "name"]
+                    paths: ['list', 1, 'name']
                 };
 
-                if (typeof observerOrOnNext === "function") {
+                if (typeof observerOrOnNext === 'function') {
                     observerOrOnNext(response);
                     onCompleted();
                 }
@@ -43,7 +43,7 @@ describe('GetRequest', function() {
         var model = new Model({
             cache: {
                 list: {
-                    0: { name: "test" }
+                    0: { name: 'test' }
                 }
             },
             source: {
@@ -59,20 +59,20 @@ describe('GetRequest', function() {
         var onError = sinon.spy();
         var onCompleted = sinon.spy();
 
-        var subscription = model.get("list[0,1].name").
+        var subscription = model.get('list[0,1].name').
             subscribe(onNext, onError, onCompleted);
 
         subscription.dispose();
 
         if (!subscribeSpy.calledOnce) {
-            throw new Error("subscribe not called.");
+            throw new Error('subscribe not called.');
         }
         if (!unsubscribeSpy.calledOnce) {
-            throw new Error("DataSource unsubscribe not called.");
+            throw new Error('DataSource unsubscribe not called.');
         }
 
         if (onNext.callCount + onError.callCount + onCompleted.callCount !== 0) {
-            throw new Error("onNext, onError, or onCompleted was called.");
+            throw new Error('onNext, onError, or onCompleted was called.');
         }
     });
 
@@ -82,13 +82,13 @@ describe('GetRequest', function() {
                 var response = {
                     jsonGraph: {
                         list: {
-                            1: { name: "another test" }
+                            1: { name: 'another test' }
                         }
                     },
-                    paths: ["list", 1, "name"]
+                    paths: ['list', 1, 'name']
                 };
 
-                if (typeof observerOrOnNext === "function") {
+                if (typeof observerOrOnNext === 'function') {
                     observerOrOnNext(response);
                     onCompleted();
                 }
@@ -108,7 +108,7 @@ describe('GetRequest', function() {
             scheduler: new TimeoutScheduler(16),
             cache: {
                 list: {
-                    0: { name: "test" }
+                    0: { name: 'test' }
                 }
             },
             source: {
@@ -124,17 +124,17 @@ describe('GetRequest', function() {
         var onError = sinon.spy();
         var onCompleted = sinon.spy();
 
-        var subscription = model.get("list[0,1].name").
+        var subscription = model.get('list[0,1].name').
             subscribe(onNext, onError, onCompleted);
 
         subscription.dispose();
 
         if (subscribeSpy.callCount !== 0) {
-            throw new Error("subscribe called at least once.");
+            throw new Error('subscribe called at least once.');
         }
 
         if (onNext.callCount + onError.callCount + onCompleted.callCount !== 0) {
-            throw new Error("onNext, onError, or onCompleted was called.");
+            throw new Error('onNext, onError, or onCompleted was called.');
         }
     });
 
@@ -145,13 +145,13 @@ describe('GetRequest', function() {
                 var response = {
                     jsonGraph: {
                         list: {
-                            1: { name: "another test" }
+                            1: { name: 'another test' }
                         }
                     },
-                    paths: ["list", 1, "name"]
+                    paths: ['list', 1, 'name']
                 };
 
-                if (typeof observerOrOnNext === "function") {
+                if (typeof observerOrOnNext === 'function') {
                     observerOrOnNext(response);
                     onCompleted();
                 }
@@ -173,7 +173,7 @@ describe('GetRequest', function() {
         var model = new Model({
             cache: {
                 list: {
-                    0: { name: "test" }
+                    0: { name: 'test' }
                 }
             },
             source: {
@@ -189,7 +189,7 @@ describe('GetRequest', function() {
         var onError = sinon.spy();
         var onCompleted = sinon.spy();
 
-        var subscription = model.get("list[0,1].name").
+        var subscription = model.get('list[0,1].name').
             subscribe(onNext, onError, onCompleted);
 
         function waitOrExpect() {
@@ -200,14 +200,14 @@ describe('GetRequest', function() {
             subscription.dispose();
 
             if (!subscribeSpy.calledOnce) {
-                return done(new Error("subscribe not called."));
+                return done(new Error('subscribe not called.'));
             }
             if (!unsubscribeSpy.calledOnce) {
-                return done(new Error("DataSource unsubscribe not called."));
+                return done(new Error('DataSource unsubscribe not called.'));
             }
 
             if (onNext.callCount + onError.callCount + onCompleted.callCount !== 0) {
-                return done(new Error("onNext, onError, or onCompleted was called."));
+                return done(new Error('onNext, onError, or onCompleted was called.'));
             }
             return done();
         }

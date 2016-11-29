@@ -6,7 +6,7 @@ var atom = jsonGraph.atom;
 var _ = require('lodash');
 var error = jsonGraph.error;
 var expect = require('chai').expect;
-var Model = require('./../../lib').Model;
+var Model = require('./../../falcor.js').Model;
 var BoundJSONGraphModelError = require('./../../lib/errors/BoundJSONGraphModelError');
 var sinon = require('sinon');
 var noOp = function() {};
@@ -31,7 +31,7 @@ describe('Deref', function() {
 
         // Cheating in how we are creating the output.  'path' key should not exist
         // at the top level of output.
-        delete output[ƒ_meta];
+        delete output[f_meta_data];
 
         getCoreRunner({
             input: [
@@ -98,15 +98,15 @@ describe('Deref', function() {
                 var json = onNext.getCall(0).args[0].json;
 
                 // Top level
-                expect(json[ƒ_meta][ƒm_abs_path]).to.be.not.ok;
+                expect(json[f_meta_data][f_meta_abs_path]).to.be.not.ok;
 
                 // a
                 var a = json.a;
-                expect(a[ƒ_meta][ƒm_abs_path]).to.deep.equals(['a']);
+                expect(a[f_meta_data][f_meta_abs_path]).to.deep.equals(['a']);
 
                 // b
                 var b = a.b;
-                expect(b[ƒ_meta][ƒm_abs_path]).to.deep.equals(['a', 'b']);
+                expect(b[f_meta_data][f_meta_abs_path]).to.deep.equals(['a', 'b']);
 
                 // e
                 var e = b.e;
@@ -139,15 +139,15 @@ describe('Deref', function() {
             get(['e'])).
             doAction(onNext, noOp, function() {
                 var x = onNext.getCall(0).args[0];
-                x.json[ƒ_meta] = x.json[ƒ_meta];
+                x.json[f_meta_data] = x.json[f_meta_data];
                 expect(onNext.calledOnce).to.be.ok;
                 expect(onNext.getCall(0).args[0]).to.deep.equals({
                     json: {
-                        [ƒ_meta]: {
-                            [ƒm_abs_path]:   ['a', 'b'],
-                            [ƒm_deref_from]: undefined,
-                            [ƒm_deref_to]:   undefined,
-                            [ƒm_version]:    0
+                        [f_meta_data]: {
+                            [f_meta_abs_path]:   ['a', 'b'],
+                            [f_meta_deref_from]: undefined,
+                            [f_meta_deref_to]:   undefined,
+                            [f_meta_version]:    0
                         },
                         e: '&'
                     }

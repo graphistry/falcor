@@ -1,4 +1,4 @@
-var MESSAGE = "Maximum number of paths exceeded.";
+var MESSAGE = 'Maximum number of paths exceeded.';
 
 var MaxPathsExceededError = function MaxPathsExceededError(message) {
     var err = Error.call(this, message || MESSAGE);

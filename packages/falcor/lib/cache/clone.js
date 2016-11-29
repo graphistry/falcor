@@ -1,3 +1,5 @@
+var isInternal = require('../internal/isInternal');
+
 module.exports = clone;
 
 function clone(node) {
@@ -7,7 +9,7 @@ function clone(node) {
 
     while (++index < length) {
         key = keys[index];
-        if (key.charAt(0) === ƒ_) {
+        if (isInternal(key)) {
             continue;
         }
         json[key] = node[key];

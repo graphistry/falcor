@@ -1,9 +1,9 @@
 var arr = new Array(3);
-var $ref = require("../../../types/ref");
-var promote = require("../../../lru/promote");
-var isExpired = require("../../isExpired");
-var createHardlink = require("../../createHardlink");
-var CircularReferenceError = require("../../../errors/CircularReferenceError");
+var $ref = require('../../../types/ref');
+var promote = require('../../../lru/promote');
+var isExpired = require('../../isExpired');
+var createHardlink = require('../../createHardlink');
+var CircularReferenceError = require('../../../errors/CircularReferenceError');
 
 module.exports = getReferenceTarget;
 
@@ -22,7 +22,7 @@ function getReferenceTarget(root, ref, modelRoot, expireImmediate) {
         copy = path, length = path.length;
 
     do {
-        if (depth === 0 && undefined !== (context = ref[ƒ_context])) {
+        if (depth === 0 && undefined !== (context = ref[f_context])) {
             node = context;
             depth = length;
         } else {
@@ -68,13 +68,13 @@ function getReferenceTarget(root, ref, modelRoot, expireImmediate) {
                 //     if (++followedRefsCount % 50 === 0) {
                 //         try {
                 //             throw new Error(
-                //                 "Followed " + followedRefsCount + " references. " +
-                //                 "This might indicate the presence of an indirect " +
-                //                 "circular reference chain."
+                //                 'Followed ' + followedRefsCount + ' references. ' +
+                //                 'This might indicate the presence of an indirect ' +
+                //                 'circular reference chain.'
                 //             );
                 //         } catch (e) {
                 //             if (console) {
-                //                 var reportFn = typeof console.log === "function" && console.log;
+                //                 var reportFn = typeof console.log === 'function' && console.log;
                 //                 if (reportFn) {
                 //                     reportFn.call(console, e.toString());
                 //                 }

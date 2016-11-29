@@ -1,6 +1,6 @@
-var clone = require("../../clone");
-var onError = require("./onError");
-var $error = require("../../../types/error");
+var clone = require('../../clone');
+var onError = require('./onError');
+var $error = require('../../../types/error');
 var materializedAtom = require('@graphistry/falcor-path-utils/lib/support/materializedAtom');
 
 module.exports = onJSONValue;

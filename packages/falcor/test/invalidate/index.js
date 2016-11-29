@@ -1,13 +1,13 @@
 var sinon = require('sinon');
 var expect = require('chai').expect;
 var noOp = function() {};
-var falcor = require('./../../lib');
+var falcor = require('./../../falcor.js');
 var Model = falcor.Model;
-var strip = require("./../cleanData").stripDerefAndVersionKeys;
+var strip = require('./../cleanData').stripDerefAndVersionKeys;
 
 module.exports = function() {
-    require("./pathMaps");
-    require("./pathSets");
+    require('./pathMaps');
+    require('./pathSets');
     it('should invalidate with pathSyntax', function(done) {
         var model = new Model({
             cache: {

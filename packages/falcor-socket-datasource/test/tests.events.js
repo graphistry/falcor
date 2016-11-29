@@ -1,8 +1,8 @@
-import Router from "./router";
+import Router from './router';
 import EventEmitter from 'events';
 import Falcor from '@graphistry/falcor';
-import { FalcorPubSubDataSink } from "../source";
-import { FalcorPubSubDataSource } from '../source';
+import { FalcorPubSubDataSink } from '../src';
+import { FalcorPubSubDataSource } from '../src';
 import tests, { eventName, cancelName } from './tests.base';
 
 export default function eventEmitterDataSourceTests(Rx, recycleJSON) {

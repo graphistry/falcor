@@ -1,12 +1,12 @@
-var falcor = require("./../lib/");
+var falcor = require('./../falcor.js');
 var Model = falcor.Model;
-var chai = require("chai");
+var chai = require('chai');
 var expect = chai.expect;
-var _ = require("lodash");
+var _ = require('lodash');
 var noOp = function() {};
-var Cache = require("./data/Cache");
+var Cache = require('./data/Cache');
 var cache = Cache();
-var testRunner = require("./testRunner");
+var testRunner = require('./testRunner');
 
 function getModel(newModel, cache) {
     return newModel ? testRunner.getModel(null, cache) : model;
@@ -14,7 +14,7 @@ function getModel(newModel, cache) {
 
 function followReference(cache, path) {
     path.forEach(function(v) {
-        cache = cache && cache[v] && (cache[v].$type === "atom" ? cache[v].value : cache[v]);
+        cache = cache && cache[v] && (cache[v].$type === 'atom' ? cache[v].value : cache[v]);
     });
     return cache;
 }
@@ -22,7 +22,7 @@ function followReference(cache, path) {
 function removeLeafs(root) {
     Object.keys(root).forEach(function(k) {
         var node = root[k];
-        if (typeof node === "object" && !Array.isArray(node)) {
+        if (typeof node === 'object' && !Array.isArray(node)) {
             removeLeafs(node);
         } else {
             root[k] = {};
@@ -52,7 +52,7 @@ function fillInReferences(model, pathTo, prefix) {
         // no complex keys yet.
         var k = pathTo[i];
         value = c[k];
-        c = c[k] && (c[k].$type === "atom" ? c[k].value : c[k]);
+        c = c[k] && (c[k].$type === 'atom' ? c[k].value : c[k]);
         modelC = modelC && modelC[k] || undefined;
 
         // TODO: Does this work with intentional missing items from c (lists, missing-list)
@@ -72,13 +72,13 @@ function fillInReferences(model, pathTo, prefix) {
     }
 
     // Finally put in the final object into the cache so that we can set it while following references.
-    // since a reference that points to an empty spot in the cache will be considered a "miss"
+    // since a reference that points to an empty spot in the cache will be considered a 'miss'
     // If something is there then it will put nothing there.
-    (followReference(cache, prefix.concat(followed)) === undefined) && model._setPathValuesAsValues(model, [{path: prefix.concat(followed), value: {$type: "atom", value: null}}]);
+    (followReference(cache, prefix.concat(followed)) === undefined) && model._setPathValuesAsValues(model, [{path: prefix.concat(followed), value: {$type: 'atom', value: null}}]);
 }
 
 function setTestRunner(data, options) {
-    it("perform _set*", function() {
+    it('perform _set*', function() {
         var model;
         options = _.extend({
             fillReferences: true
@@ -94,12 +94,12 @@ function setTestRunner(data, options) {
         var countOrFunction;
         prefixesAndSuffixes[0].
             filter(function (prefix) {
-                return ~prefix.indexOf("setPathValues");
+                return ~prefix.indexOf('setPathValues');
             }).
             map(function (prefix) {
                 prefixesAndSuffixes[1].map(function (suffix) {
                     var query = data[prefix].query;
-                    var op = "_" + prefix + suffix;
+                    var op = '_' + prefix + suffix;
                     model = thisModel || getModel(clearModel, _.cloneDeep(modelCache));
 
                     // Primes the cache with the appropriate references.
@@ -133,7 +133,7 @@ function setTestRunner(data, options) {
                     query = data['getPaths'];
                     if (query) {
                         var suffixMessage = 'Confirming that ' + op + ' has correctly taken place.';
-                        op = "_getPathValues" + suffix;
+                        op = '_getPathValues' + suffix;
                         countOrFunction = getCountArrayOrFunction(data[prefix], suffix, expected, testRunner);
                         actual = model[op](model, _.cloneDeep(query), countOrFunction, model._errorSelector);
 
@@ -173,7 +173,7 @@ function getCountArrayOrFunction(data, suffix, expected, testRunner) {
         };
     }
     var count = data.count === undefined ? 1 : 0;
-    return Array(count).join(",").split(",").map(function() { return {}; });
+    return Array(count).join(',').split(',').map(function() { return {}; });
 }
 
 /**
@@ -187,7 +187,7 @@ function pathmapToPathsets(pathmap, pathmapKey) {
 
     var key;
     var subs = Object.create(null);
-    var subKeys = "";
+    var subKeys = '';
     var pathsets = [];
     var pathsetsLength = 0;
 
@@ -214,7 +214,7 @@ function pathmapToPathsets(pathmap, pathmapKey) {
                 keys: [],
                 sets: subPath.sets
             });
-            subPathValues.key = key + ", " + subPathValues.key;
+            subPathValues.key = key + ', ' + subPathValues.key;
             subPathValues.keys.push(isNumber(key) ? parseInt(key, 10) : key);
         }
     }
@@ -230,7 +230,7 @@ function pathmapToPathsets(pathmap, pathmapKey) {
 
         if(subPathKeysCount > 0) {
 
-            subKeys += (subKeys ? ", " : "") + "[" + subPath.key + "]";
+            subKeys += (subKeys ? ', ' : '') + '[' + subPath.key + ']';
             subPathValues = subPath.sets;
             subPathValuesIndex = -1;
             subPathValuesCount = subPathValues.length;
@@ -256,7 +256,7 @@ function pathmapToPathsets(pathmap, pathmapKey) {
                 pathsets[pathsetsLength++] = pathsetClone;
             }
         } else {
-            subKeys += subKeys ? ", []" : "[]";
+            subKeys += subKeys ? ', []' : '[]';
             pathsets[pathsetsLength++] = empty_array;
         }
     }
@@ -266,7 +266,7 @@ function pathmapToPathsets(pathmap, pathmapKey) {
     }
 
     return {
-        key: subKeys || "[]",
+        key: subKeys || '[]',
         sets: pathsets
     };
 }

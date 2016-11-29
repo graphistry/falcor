@@ -7,7 +7,7 @@ function sentinel(type, value, props) {
             copy[key] = props[key];
         }
 
-        copy["$type"] = type;
+        copy['$type'] = type;
         copy.value = value;
         return copy;
     }
@@ -18,16 +18,16 @@ function sentinel(type, value, props) {
 
 module.exports = {
     ref: function ref(path, props) {
-        return sentinel("ref", fromPath(path), props);
+        return sentinel('ref', fromPath(path), props);
     },
     atom: function atom(value, props) {
-        return sentinel("atom", value, props);
+        return sentinel('atom', value, props);
     },
     undefined: function() {
-        return sentinel("atom");
+        return sentinel('atom');
     },
     error: function error(errorValue, props) {
-        return sentinel("error", errorValue, props);
+        return sentinel('error', errorValue, props);
     },
     pathValue: function pathValue(path, value) {
         return { path: fromPath(path), value: value };

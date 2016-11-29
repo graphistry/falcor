@@ -2,16 +2,16 @@ var Subject = require('./Subject');
 var $error = require('../types/error');
 var Subscriber = require('./Subscriber');
 var Subscription = require('./Subscription');
-var InvalidSourceError = require("../errors/InvalidSourceError");
-
-var toPaths = require("@graphistry/falcor-path-utils/lib/toPaths");
-var toCollapseMap = require("@graphistry/falcor-path-utils/lib/toCollapseMap");
-var toCollapseTrees = require("@graphistry/falcor-path-utils/lib/toCollapseTrees");
-var hasIntersection = require("@graphistry/falcor-path-utils/lib/hasIntersection");
+var InvalidSourceError = require('../errors/InvalidSourceError');
 
 var setJSONGraphs = require('../cache/set/setJSONGraphs');
 var setPathValues = require('../cache/set/setPathValues');
 var invalidatePaths = require('../cache/invalidate/invalidatePathSets');
+
+var toPaths = require('@graphistry/falcor-path-utils/lib/toPaths');
+var toCollapseMap = require('@graphistry/falcor-path-utils/lib/toCollapseMap');
+var toCollapseTrees = require('@graphistry/falcor-path-utils/lib/toCollapseTrees');
+var hasIntersection = require('@graphistry/falcor-path-utils/lib/hasIntersection');
 
 module.exports = Request;
 
@@ -41,7 +41,13 @@ Request.prototype.onNext = function(env) {
         return;
     }
 
-    this.responded = true;
+    if (this.responded === false) {
+        this.responded = true;
+        // Remove this request from the request queue as soon as we get
+        // at least one response back. This ensures we won't be the target
+        // of in-flight batch requests.
+        queue.remove(this);
+    }
 
     var jsonGraph = env.jsonGraph;
     var requested = this.requested;
@@ -78,12 +84,17 @@ Request.prototype.onError = function(error) {
         return;
     }
 
-    this.responded = true;
+    if (this.responded === false) {
+        this.responded = true;
+        // Remove this request from the request queue as soon as we get
+        // at least one response back. This ensures we won't be the target
+        // of in-flight batch requests.
+        queue.remove(this);
+    }
 
     error = error || {};
 
-    // Converts errors to objects, a more friendly storage
-    // of errors.
+    // Converts errors to object we can insert into the cache.
     error = !(error instanceof Error) ?
         // if it's $type error, use it raw
         error.$type === $error && error ||
@@ -219,7 +230,7 @@ function flush() {
         }
         this.disposable = obs.subscribe(this);
     } catch (e) {
-        this.disposable = null;
+        this.disposable = {};
         Subject.prototype.onError.call(this, new InvalidSourceError(e));
     }
 }
@@ -232,39 +243,22 @@ function findIntersections(tree,
                            optimizedIntersection) {
 
     var index = -1;
-    var complementIndex = 0;
-    var intersectionIndex = 0;
+    var complementIndex = -1;
+    var intersectionIndex = -1;
     var total = optimized.length;
-    var intersectionFound = false;
 
     while (++index < total) {
-        // If this does not intersect then add it to the output.
         var path = optimized[index];
         var pathLen = path.length;
         var subTree = tree[pathLen];
-
-        // If there is no subtree to look into or there is no intersection.
-        if (!subTree || !hasIntersection(subTree, path, 0, pathLen)) {
-            if (intersectionFound) {
-                requestedComplements[complementIndex] = requested[index];
-                optimizedComplements[complementIndex++] = path;
-            }
-        } else {
-            // If there has been no intersection yet and index is larger than 0
-            // (meaning we have had only complements), then we need to update
-            // our complements to match the current reality.
-            if (!intersectionFound) {
-                while (complementIndex < index) {
-                    requestedComplements[complementIndex] = requested[complementIndex];
-                    optimizedComplements[complementIndex] = optimized[complementIndex++];
-                }
-            }
-
-            intersectionFound = true;
+        if (subTree && hasIntersection(subTree, path, 0, pathLen)) {
+            optimizedIntersection[++intersectionIndex] = path;
             requestedIntersection[intersectionIndex] = requested[index];
-            optimizedIntersection[intersectionIndex++] = optimized[index];
+        } else {
+            optimizedComplements[++complementIndex] = path;
+            requestedComplements[complementIndex] = requested[index];
         }
     }
 
-    return intersectionFound;
+    return ~intersectionIndex;
 }

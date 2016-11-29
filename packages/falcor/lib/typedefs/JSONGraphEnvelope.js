@@ -9,20 +9,20 @@ var $ref = falcor.ref;
 var model = new falcor.Model();
 model.set({
   paths: [
-    ["todos", [0,1], ["name","done"]]
+    ['todos', [0,1], ['name','done']]
   ],
   jsonGraph: {
     todos: [
-      $ref("todosById[12]"),
-      $ref("todosById[15]")
+      $ref('todosById[12]'),
+      $ref('todosById[15]')
     ],
     todosById: {
       12: {
-        name: "go to the ATM",
+        name: 'go to the ATM',
         done: false
       },
       15: {
-        name: "buy milk",
+        name: 'buy milk',
         done: false
       }
     }
@@ -36,11 +36,11 @@ model.set({
 //   json: {
 //     todos: {
 //       0: {
-//         name: "go to the ATM",
+//         name: 'go to the ATM',
 //         done: false
 //       },
 //       1: {
-//         name: "buy milk",
+//         name: 'buy milk',
 //         done: false
 //       }
 //     }

@@ -1,7 +1,7 @@
-var Rx = require("rx");
+var Rx = require('rx');
 var Observable = Rx.Observable;
-var falcor = require("./../../lib/");
-var _ = require("lodash");
+var falcor = require('./../../falcor.js');
+var _ = require('lodash');
 var noOp = function(a, b, c) { return c; };
 
 var LocalSource = module.exports = function(cache, options) {

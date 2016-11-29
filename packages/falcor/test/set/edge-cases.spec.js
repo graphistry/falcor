@@ -1,20 +1,20 @@
-var falcor = require("./../../lib/");
+var falcor = require('./../../falcor.js');
 var Model = falcor.Model;
 var expect = require('chai').expect;
-var $path = require("./../../lib/types/ref");
-var $atom = require("./../../lib/types/atom");
+var $path = require('./../../lib/types/ref');
+var $atom = require('./../../lib/types/atom');
 var sinon = require('sinon');
 var noOp = function() {};
 var Rx = require('rx');
 var Observable = Rx.Observable;
 
-var strip = require("./support/strip");
-var $ref = require("@graphistry/falcor-json-graph").ref;
-var $atom = require("@graphistry/falcor-json-graph").atom;
-var $error = require("@graphistry/falcor-json-graph").error;
-var cleanStrip = require("./../cleanData").stripDerefAndVersionKeys;
+var strip = require('./support/strip');
+var $ref = require('@graphistry/falcor-json-graph').ref;
+var $atom = require('@graphistry/falcor-json-graph').atom;
+var $error = require('@graphistry/falcor-json-graph').error;
+var cleanStrip = require('./../cleanData').stripDerefAndVersionKeys;
 
-describe("Special Cases", function() {
+describe('Special Cases', function() {
     it('should set in an array and the length should be set in.', function(done) {
         var model = new Model();
         var onNext = sinon.spy();
@@ -42,8 +42,8 @@ describe("Special Cases", function() {
         var edgeCaseCache = {
             jsonGraph: {
                 user: {
-                    name: "Jim",
-                    location: {$type: "error", value: "Something broke!"},
+                    name: 'Jim',
+                    location: {$type: 'error', value: 'Something broke!'},
                     age: {$type: $atom}
                 }
             },
@@ -55,42 +55,42 @@ describe("Special Cases", function() {
         model._setJSONGs(model, [edgeCaseCache]);
         expect(strip(cache)).to.deep.equal(strip(edgeCaseCache.jsonGraph));
     });
-    it("set blows away the cache.", function() {
+    it('set blows away the cache.', function() {
         var model = new Model({});
-        var paths = [["genreList", 1, 0, "summary"]];
+        var paths = [['genreList', 1, 0, 'summary']];
 
         // this mimicks the server setting cycle from the router.
         var set = [
             {
-                jsonGraph: {"genreList": {
-                    "0": { "$type": $path, "value": ["lists", "abcd"] },
-                    "1": { "$type": $path, "value": ["lists", "my-list"] }
+                jsonGraph: {'genreList': {
+                    '0': { '$type': $path, 'value': ['lists', 'abcd'] },
+                    '1': { '$type': $path, 'value': ['lists', 'my-list'] }
                 }},
                 paths: [['genreList', {to:1}, 0, 'summary']]
             },
             {
-                jsonGraph: {"lists": {
-                    "abcd": { "0": { "$type": $path, "value": ["videos", 1234] } },
-                    "my-list": { "$type": $path, "value": ["lists", "1x5x"] }
+                jsonGraph: {'lists': {
+                    'abcd': { '0': { '$type': $path, 'value': ['videos', 1234] } },
+                    'my-list': { '$type': $path, 'value': ['lists', '1x5x'] }
                 }},
-                paths: [["genreList", 1, 0, "summary"]]
+                paths: [['genreList', 1, 0, 'summary']]
             },
             {
-                jsonGraph: {"lists": {"1x5x": {
-                    "0": { "$type": $path, "value": ["videos", 553] }
+                jsonGraph: {'lists': {'1x5x': {
+                    '0': { '$type': $path, 'value': ['videos', 553] }
                 }}},
-                paths: [["genreList", 1, 0, "summary"]]
+                paths: [['genreList', 1, 0, 'summary']]
             },
             {
-                jsonGraph: {"videos": {"553": {"summary": {
-                    "$size": 10,
-                    "$type": $atom,
-                    "value": {
-                        "title": "Running Man",
-                        "url": "/movies/553"
+                jsonGraph: {'videos': {'553': {'summary': {
+                    '$size': 10,
+                    '$type': $atom,
+                    'value': {
+                        'title': 'Running Man',
+                        'url': '/movies/553'
                     }
                 }}}},
-                paths: [["genreList", 1, 0, "summary"]]
+                paths: [['genreList', 1, 0, 'summary']]
             }
         ];
 
@@ -104,8 +104,8 @@ describe("Special Cases", function() {
         model.get(paths).subscribe({
             onNext: function(x) {
                 expect(x).to.deep.equals({ json: { genreList: { 1: { 0: { summary: {
-                        "title": "Running Man",
-                        "url": "/movies/553"
+                        'title': 'Running Man',
+                        'url': '/movies/553'
                     } } } } }
                 });
             },

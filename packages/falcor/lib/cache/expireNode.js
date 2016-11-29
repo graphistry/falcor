@@ -1,8 +1,8 @@
-var splice = require("./../lru/splice");
+var splice = require('./../lru/splice');
 
 module.exports = function expireNode(node, expired, lru) {
-    if (!node[ƒ_invalidated]) {
-        node[ƒ_invalidated] = true;
+    if (!node[f_invalidated]) {
+        node[f_invalidated] = true;
         expired.push(node);
         splice(lru, node);
     }

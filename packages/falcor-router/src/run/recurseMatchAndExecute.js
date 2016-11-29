@@ -245,14 +245,12 @@ function _recurseMatchAndExecute(
             }
 
             if (invalidated.length) {
-                debugger
                 state.invalidated = streamingInvalidated;
                 streamingInvalidated.push.apply(streamingInvalidated, invalidated);
             }
 
             if (valuePaths.length || reportedPaths.length) {
                 if (valuePaths.length > 0) {
-                    debugger
                     state.paths = streamingPaths;
                     streamingPaths.push.apply(streamingPaths, valuePaths);
                 }

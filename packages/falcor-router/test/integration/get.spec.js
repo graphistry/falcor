@@ -1,5 +1,5 @@
 var falcor = require('@graphistry/falcor');
-var Rx = require('rxjs');
+var Observable = require('rxjs').Observable;
 var R = require('./../../src/Router');
 var Routes = require('./../data');
 var noOp = function() {};
@@ -8,18 +8,18 @@ var expect = chai.expect;
 
 describe('Get', function() {
     it('should take in a falcor model and get a value out.', function(done) {
+
         var router = new R(Routes().Videos.Summary());
         var model = new falcor.Model({
             source: router
         });
         var called = false;
 
-        Rx.Observable.
-            from(model.get(['videos', 'summary'])).
-            do(function(x) {
+        Observable
+            .from(model.get(['videos', 'summary']))
+            .do(function(x) {
                 called = true;
-                x = JSON.parse(JSON.stringify({ json: x.json.toProps() }));
-                expect(x).to.deep.equals({
+                expect(x.toJSON()).to.deep.equals({
                     json: {
                         videos: {
                             summary: 75
@@ -42,12 +42,11 @@ describe('Get', function() {
         });
         var called = false;
 
-        Rx.Observable.
+        Observable.
             from(model.get(['genreLists', '0', 'summary'])).
             do(function(x) {
                 called = true;
-                x = JSON.parse(JSON.stringify({ json: x.json.toProps() }));
-                expect(x).to.deep.equals({
+                expect(x.toJSON()).to.deep.equals({
                     json: {
                         genreLists: {
                             0: {

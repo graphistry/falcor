@@ -5,8 +5,11 @@
  * @private
  * @returns {Boolean}
  */
-module.exports = function isInternalKey(x) {
-    return x === "$size" ||
-        x === ƒ_wrapped_value ||
-        x.charAt(0) === ƒ_;
-};
+
+module.exports = isInternalKey;
+
+var isInternal = require('../internal/isInternal');
+
+function isInternalKey(key) {
+    return key && key[0] === '$' || isInternal(key);
+}

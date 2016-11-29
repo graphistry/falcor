@@ -1,11 +1,11 @@
-var falcor = require("./../../../lib/");
+var falcor = require('./../../../falcor.js');
 var Model = falcor.Model;
 var Observable = require('rx').Observable;
 var noOp = function() {};
 var LocalDataSource = require('../../data/LocalDataSource');
 var ErrorDataSource = require('../../data/ErrorDataSource');
-var isPathValue = require("./../../../lib/support/isPathValue");
-var expect = require("chai").expect;
+var isPathValue = require('./../../../lib/support/isPathValue');
+var expect = require('chai').expect;
 var sinon = require('sinon');
 var TestCache = require('./../../data/Cache');
 var cacheGenerator = require('./../../CacheGenerator');
@@ -16,31 +16,31 @@ var strip = require('./../../cleanData').stripDerefAndVersionKeys;
 describe('DataSource Only', function() {
     var dataSource = new LocalDataSource(cacheGenerator(0, 2, ['title', 'art'], false));
 
-    it("should get all missing paths in a single request", function(done) {
+    it('should get all missing paths in a single request', function(done) {
         var serviceCalls = 0;
         var cacheModel = new Model({
             cache: {
                 lolomo: {
                     summary: {
-                        $type: "atom",
-                        value: "hello"
+                        $type: 'atom',
+                        value: 'hello'
                     },
                     0: {
                         summary: {
-                            $type: "atom",
-                            value: "hello-0"
+                            $type: 'atom',
+                            value: 'hello-0'
                         }
                     },
                     1: {
                         summary: {
-                            $type: "atom",
-                            value: "hello-1"
+                            $type: 'atom',
+                            value: 'hello-1'
                         }
                     },
                     2: {
                         summary: {
-                            $type: "atom",
-                            value: "hello-2"
+                            $type: 'atom',
+                            value: 'hello-2'
                         }
                     }
                 }
@@ -56,7 +56,7 @@ describe('DataSource Only', function() {
 
         var onNext = sinon.spy();
         toObservable(model.
-            get("lolomo.summary", "lolomo[0..2].summary")).
+            get('lolomo.summary', 'lolomo[0..2].summary')).
             doAction(onNext, noOp, function() {
                 var data = onNext.getCall(0).args[0];
                 var json = data.json;
@@ -282,14 +282,14 @@ describe('DataSource Only', function() {
                                 'expires-now': {
                                     0: {
                                         summary: {
-                                            "title": "House of Cards",
-                                            "url": "/movies/1234"
+                                            'title': 'House of Cards',
+                                            'url': '/movies/1234'
                                         }
                                     },
                                     1: {
                                         summary: {
-                                            "title": "Terminator 3",
-                                            "url": "/movies/766"
+                                            'title': 'Terminator 3',
+                                            'url': '/movies/766'
                                         }
                                     }
                                 }

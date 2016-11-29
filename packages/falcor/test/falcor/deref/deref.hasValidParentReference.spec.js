@@ -1,5 +1,5 @@
 var $ref = require('@graphistry/falcor-json-graph').ref;
-var falcor = require('./../../../lib');
+var falcor = require('./../../../falcor.js');
 var Model = falcor.Model;
 var sinon = require('sinon');
 var expect = require('chai').expect;
@@ -161,19 +161,19 @@ describe('fromWhenceYouCame', function() {
             }).
             subscribe();
 
-        var node = model._root[ƒ_head];
+        var node = model._root[f_head];
         while (node) {
-            expect(node[ƒ_key]).to.not.equals('lolomo');
-            node = node[ƒ_next];
+            expect(node[f_key]).to.not.equals('lolomo');
+            node = node[f_next];
         }
 
         var foundA, foundB, foundC;
-        var node = model._root[ƒ_head];
+        var node = model._root[f_head];
         while (node) {
             foundA = foundA || node.value[1] === 'A';
             foundB = foundB || node.value[1] === 'B';
             foundC = foundC || node.value[1] === 'C';
-            node = node[ƒ_next];
+            node = node[f_next];
         }
         expect(foundA, 'List A does not exist').to.be.ok;
         expect(foundB, 'List B does not exist').to.be.ok;

@@ -1,7 +1,7 @@
 var getCoreRunner = require('./../getCoreRunner');
 var cacheGenerator = require('./../CacheGenerator');
 var jsonGraph = require('@graphistry/falcor-json-graph');
-var Model = require('./../../lib').Model;
+var Model = require('./../../falcor.js').Model;
 var atom = jsonGraph.atom;
 var ref = jsonGraph.ref;
 var _ = require('lodash');
@@ -200,59 +200,59 @@ describe('Missing', function() {
                     {}
                 ).data;
 
-                x.json[ƒ_meta] = x.json[ƒ_meta];
-                x.json[0][ƒ_meta] = x.json[0][ƒ_meta];
-                x.json[0][0][ƒ_meta] = x.json[0][0][ƒ_meta];
-                x.json[0][0][0][ƒ_meta] = x.json[0][0][0][ƒ_meta];
-                x.json[0][0][1][ƒ_meta] = x.json[0][0][1][ƒ_meta];
+                x.json[f_meta_data] = x.json[f_meta_data];
+                x.json[0][f_meta_data] = x.json[0][f_meta_data];
+                x.json[0][0][f_meta_data] = x.json[0][0][f_meta_data];
+                x.json[0][0][0][f_meta_data] = x.json[0][0][0][f_meta_data];
+                x.json[0][0][1][f_meta_data] = x.json[0][0][1][f_meta_data];
 
                 expect(x).to.deep.equals({
                     json: {
-                        [ƒ_meta]: {
+                        [f_meta_data]: {
                             '$code':          '__incomplete__',
-                            [ƒm_keys]:        { 0: true },
-                            [ƒm_abs_path]:    undefined,
-                            [ƒm_deref_from]:  undefined,
-                            [ƒm_deref_to]:    undefined,
-                            [ƒm_version]:     0
+                            [f_meta_keys]:        { 0: true },
+                            [f_meta_abs_path]:    undefined,
+                            [f_meta_deref_from]:  undefined,
+                            [f_meta_deref_to]:    undefined,
+                            [f_meta_version]:     0
                         },
                         0: {
-                            [ƒ_meta]: {
+                            [f_meta_data]: {
                                 '$code':          '__incomplete__',
-                                [ƒm_keys]:        { 0: true },
-                                [ƒm_abs_path]:    ['0'],
-                                [ƒm_deref_from]:  undefined,
-                                [ƒm_deref_to]:    undefined,
-                                [ƒm_version]:     0
+                                [f_meta_keys]:        { 0: true },
+                                [f_meta_abs_path]:    ['0'],
+                                [f_meta_deref_from]:  undefined,
+                                [f_meta_deref_to]:    undefined,
+                                [f_meta_version]:     0
                             },
                             0: {
-                                [ƒ_meta]: {
+                                [f_meta_data]: {
                                     '$code':          '__incomplete__',
-                                    [ƒm_keys]:        { 0: true, 1: true },
-                                    [ƒm_abs_path]:    ['0', '0'],
-                                    [ƒm_deref_from]:  undefined,
-                                    [ƒm_deref_to]:    undefined,
-                                    [ƒm_version]:     0
+                                    [f_meta_keys]:        { 0: true, 1: true },
+                                    [f_meta_abs_path]:    ['0', '0'],
+                                    [f_meta_deref_from]:  undefined,
+                                    [f_meta_deref_to]:    undefined,
+                                    [f_meta_version]:     0
                                 },
                                 0: {
-                                    [ƒ_meta]: {
+                                    [f_meta_data]: {
                                         '$code':          '__incomplete__',
-                                        [ƒm_keys]:        { title: true },
-                                        [ƒm_abs_path]:    ['0', '0', '0'],
-                                        [ƒm_deref_from]:  undefined,
-                                        [ƒm_deref_to]:    undefined,
-                                        [ƒm_version]:     0
+                                        [f_meta_keys]:        { title: true },
+                                        [f_meta_abs_path]:    ['0', '0', '0'],
+                                        [f_meta_deref_from]:  undefined,
+                                        [f_meta_deref_to]:    undefined,
+                                        [f_meta_version]:     0
                                     },
                                     title: '0'
                                 },
                                 1: {
-                                    [ƒ_meta]: {
+                                    [f_meta_data]: {
                                         '$code':          '__incomplete__',
-                                        [ƒm_keys]:        { title: true },
-                                        [ƒm_abs_path]:    ['0', '0', '1'],
-                                        [ƒm_deref_from]:  undefined,
-                                        [ƒm_deref_to]:    undefined,
-                                        [ƒm_version]:     0
+                                        [f_meta_keys]:        { title: true },
+                                        [f_meta_abs_path]:    ['0', '0', '1'],
+                                        [f_meta_deref_from]:  undefined,
+                                        [f_meta_deref_to]:    undefined,
+                                        [f_meta_version]:     0
                                     },
                                     title: '1'
                                 }

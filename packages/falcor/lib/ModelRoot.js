@@ -1,6 +1,6 @@
 var functionTypeof = 'function';
-var hasOwn = require("./support/hasOwn");
-var Requests = require("./request/Queue");
+var hasOwn = require('./support/hasOwn');
+var Requests = require('./request/Queue');
 
 function ModelRoot(o, model) {
 
@@ -55,7 +55,7 @@ ModelRoot.prototype.errorSelector = function errorSelector(x, y) {
 };
 
 ModelRoot.prototype.comparator = function comparator(cacheNode, messageNode) {
-    if (hasOwn(cacheNode, "value") && hasOwn(messageNode, "value")) {
+    if (hasOwn(cacheNode, 'value') && hasOwn(messageNode, 'value')) {
         // They are the same only if the following fields are the same.
         return cacheNode.value === messageNode.value &&
             cacheNode.$type === messageNode.$type &&

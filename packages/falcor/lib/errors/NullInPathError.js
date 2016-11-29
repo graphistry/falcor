@@ -1,5 +1,5 @@
-var NAME = "NullInPathError";
-var MESSAGE = "`null` is not allowed in branch key positions.";
+var NAME = 'NullInPathError';
+var MESSAGE = '`null` is not allowed in branch key positions.';
 
 /**
  * Does not allow null in path

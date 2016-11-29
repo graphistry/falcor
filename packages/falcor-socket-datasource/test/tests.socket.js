@@ -1,10 +1,10 @@
 import http from 'http';
-import Router from "./router";
+import Router from './router';
 import Falcor from '@graphistry/falcor';
 import SocketIO from 'socket.io-client';
-import SocketIOServer from "socket.io";
-import { FalcorPubSubDataSink } from "../source";
-import { FalcorPubSubDataSource } from '../source';
+import SocketIOServer from 'socket.io';
+import { FalcorPubSubDataSink } from '../src';
+import { FalcorPubSubDataSource } from '../src';
 import tests, { eventName, cancelName } from './tests.base';
 
 export default function socketDataSourceTests(Rx, recycleJSON) {

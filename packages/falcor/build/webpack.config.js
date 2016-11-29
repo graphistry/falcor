@@ -1,40 +1,62 @@
 var path = require('path');
 var webpack = require('webpack');
+var internalKeys = require('../lib/internal');
 var WebpackVisualizer = require('webpack-visualizer-plugin');
-var internalKeyDefinitions = require('../internalKeyDefinitions');
 var ClosureCompilerPlugin = require('webpack-closure-compiler');
 
-module.exports = webpackConfig();
+module.exports = [
+    nodeConfig(process.env.NODE_ENV === 'development'),
+    browserConfig(process.env.NODE_ENV === 'development')
+];
 
-function webpackConfig(isDev = process.env.NODE_ENV === 'development') {
+function browserConfig(isDev) {
+    var config = baseConfig(isDev);
+    config.output = {
+        path: path.resolve('./dist'),
+        filename: `falcor.all${isDev ? '' : '.min'}.js`,
+        library: 'falcor',
+        libraryTarget: 'umd',
+        umdNamedDefine: true
+    };
+    config.plugins = plugins(config, isDev);
+    return config;
+}
+
+function nodeConfig(isDev) {
+    var config = baseConfig(isDev);
+    config.externals = [/\@graphistry\/falcor-path-utils/];
+    config.output = {
+        path: path.resolve('./dist'),
+        filename: `falcor.node${isDev ? '' : '.min'}.js`,
+        library: 'falcor',
+        libraryTarget: 'commonjs2'
+    };
+    config.plugins = plugins(config, isDev);
+    return config;
+}
+
+function baseConfig(isDev) {
     return {
         amd: false,
         // Create Sourcemaps for the bundle
         devtool: isDev ? 'source-map' : 'hidden-source-map',
         resolve: {
-            unsafeCache: true
+            unsafeCache: true,
+            alias: {
+                'falcor': path.resolve('./lib')
+            }
         },
-        entry: {
-            falcor: ['./lib/index.js']
-        },
-        output: {
-            path: path.resolve('./dist'),
-            filename: `falcor${isDev ? '' : '.min'}.js`,
-            library: 'falcor',
-            libraryTarget: 'umd',
-            umdNamedDefine: true
-        },
+        entry: { falcor: ['./lib/index.js'] },
         module: {
-            loaders: loaders(isDev),
+            loaders: [], //loaders(isDev),
             noParse: [
                 /\@graphistry\/falcor-query-syntax\/lib\/paths\-parser\.js$/,
                 /\@graphistry\/falcor-query-syntax\/lib\/route\-parser\.js$/
             ]
         },
-        plugins: plugins(isDev),
         stats: {
-            // Nice colored output
-            colors: true
+            'errors-only': true,
+            colors: true /* Nice colored output */
         }
     };
 }
@@ -49,42 +71,50 @@ function loaders(isDev) {
             exclude: /(node_modules(?!\/rxjs))/,
             loader: 'babel-loader',
             query: {
-                presets: [require.resolve('babel-preset-es2016')]
+                plugins: [
+                   [require.resolve('babel-plugin-transform-es2015-template-literals'), { loose: true }],
+                    require.resolve('babel-plugin-transform-es2015-literals'),
+                    require.resolve('babel-plugin-transform-es2015-shorthand-properties'),
+                    require.resolve('babel-plugin-transform-es2015-unicode-regex'),
+                    require.resolve('babel-plugin-check-es2015-constants'),
+                   [require.resolve('babel-plugin-transform-es2015-spread'), { loose: true }],
+                    require.resolve('babel-plugin-transform-es2015-parameters'),
+                    require.resolve('babel-plugin-transform-es2015-block-scoping')
+                ]
             }
         };
     }
 }
 
-function plugins(isDev) {
-    var internalKeys = internalKeyDefinitions();
-    var internalKeysAsStrings = Object
+function plugins(config, isDev) {
+
+    var internalKeyDefinitions = Object
         .keys(internalKeys)
-        .reduce(function(xs, key) {
-            xs[key] = JSON.stringify(internalKeys[key]);
-            return xs;
+        .reduce((keys, key) => {
+            keys[key] = `"${internalKeys[key]}"`;
+            return keys;
         }, {});
 
     var plugins = [
         license(),
         new webpack.NoErrorsPlugin(),
-        new webpack.DefinePlugin(Object.assign(
-            { DEBUG: isDev },
-            internalKeysAsStrings
-        )),
+        new webpack.DefinePlugin({ DEBUG: isDev }),
+        new webpack.DefinePlugin(internalKeyDefinitions),
         new webpack.ProvidePlugin({ 'Promise': 'es6-promise' }),
+        new webpack.optimize.DedupePlugin(),
         new webpack.optimize.AggressiveMergingPlugin(),
         new webpack.optimize.OccurrenceOrderPlugin(true),
         new webpack.LoaderOptionsPlugin({
             debug: isDev,
             queit: true,
-            minimize: !isDev,
+            silent: true,
+            minimize: false,
             progress: false,
         }),
     ];
     if (isDev) {
         plugins.push(new WebpackVisualizer());
-    }
-    else {
+    } else {
         plugins.push(new ClosureCompilerPlugin({
             compiler: {
                 language_in: 'ECMASCRIPT6',
@@ -97,8 +127,8 @@ function plugins(isDev) {
                 jscomp_off: '*',
                 jscomp_warning: '*',
                 source_map_format: 'V3',
-                create_source_map: `${path.resolve('./dist')}/falcor.min.js.map`,
-                output_wrapper: `%output%\n//# sourceMappingURL=falcor.min.js.map`
+                create_source_map: `${config.output.path}/${config.output.filename}.map`,
+                output_wrapper: `%output%\n//# sourceMappingURL=${config.output.filename}.map`
             },
             concurrency: 3,
         }));
@@ -124,36 +154,4 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
 or implied. See the License for the specific language governing
 permissions and limitations under the License.`
     });
-}
-
-function internalKeyDefinitions() {
-
-    const ƒ_ = String.fromCharCode(30);
-
-    return {
-        'ƒ_':              `'${ƒ_}'`,
-        'ƒ_meta':          `'${ƒ_}m'`,
-
-        'ƒm_path':         `'path'`,
-        'ƒm_version':      `'version'`,
-        'ƒm_abs_path':     `'abs_path'`,
-        'ƒm_deref_to':     `'deref_to'`,
-        'ƒm_deref_from':   `'deref_from'`,
-
-        'ƒ_key':           `'${ƒ_}key'`,
-        'ƒ_ref':           `'${ƒ_}ref'`,
-        'ƒ_head':          `'${ƒ_}head'`,
-        'ƒ_next':          `'${ƒ_}next'`,
-        'ƒ_path':          `'${ƒ_}path'`,
-        'ƒ_prev':          `'${ƒ_}prev'`,
-        'ƒ_tail':          `'${ƒ_}tail'`,
-        'ƒ_parent':        `'${ƒ_}parent'`,
-        'ƒ_context':       `'${ƒ_}context'`,
-        'ƒ_version':       `'${ƒ_}version'`,
-        'ƒ_abs_path':      `'${ƒ_}abs_path'`,
-        'ƒ_ref_index':     `'${ƒ_}ref_index'`,
-        'ƒ_refs_length':   `'${ƒ_}refs_length'`,
-        'ƒ_invalidated':   `'${ƒ_}invalidated'`,
-        'ƒ_wrapped_value': `'${ƒ_}wrapped_value'`,
-    };
 }

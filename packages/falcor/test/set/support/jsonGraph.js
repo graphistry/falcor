@@ -1,6 +1,6 @@
-var strip = require("./strip");
-var getModel = require("./getModel");
-var setPathValues = require("../../../lib/cache/set/setPathValues");
+var strip = require('./strip');
+var getModel = require('./getModel');
+var setPathValues = require('../../../lib/cache/set/setPathValues');
 
 module.exports = function jsonGraphEnvelope(pathValues) {
 
@@ -8,5 +8,5 @@ module.exports = function jsonGraphEnvelope(pathValues) {
 
     setPathValues(getModel({ cache: jsonGraph }), pathValues);
 
-    return strip(jsonGraph, ["$type", "$expires", "$timestamp"]);
+    return strip(jsonGraph, ['$type', '$expires', '$timestamp']);
 }

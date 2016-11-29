@@ -1,7 +1,7 @@
 var isArray = Array.isArray;
-var isPathValue = require("../support/isPathValue");
-var isJSONEnvelope = require("../support/isJSONEnvelope");
-var isJSONGraphEnvelope = require("../support/isJSONGraphEnvelope");
+var isPathValue = require('../support/isPathValue');
+var isJSONEnvelope = require('../support/isJSONEnvelope');
+var isJSONGraphEnvelope = require('../support/isJSONGraphEnvelope');
 
 module.exports = groupCacheArguments;
 
@@ -16,13 +16,13 @@ function groupCacheArguments(args) {
         arg = args[argIndex];
         if (isArray(arg)) {
             arg = { path: arg };
-            argType = "PathValues";
+            argType = 'PathValues';
         } else if (isPathValue(arg)) {
-            argType = "PathValues";
+            argType = 'PathValues';
         } else if (isJSONGraphEnvelope(arg)) {
-            argType = "JSONGraphs";
+            argType = 'JSONGraphs';
         } else if (isJSONEnvelope(arg)) {
-            argType = "PathMaps";
+            argType = 'PathMaps';
         }
 
         if (groupType !== argType) {

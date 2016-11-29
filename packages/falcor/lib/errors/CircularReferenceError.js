@@ -1,10 +1,10 @@
-var NAME = "CircularReferenceError";
+var NAME = 'CircularReferenceError';
 
 /**
  * Does not allow null in path
  */
 function CircularReferenceError(referencePath) {
-    var err = Error.call(this, "Encountered circular reference " +
+    var err = Error.call(this, 'Encountered circular reference ' +
         JSON.stringify(referencePath));
     err.name = NAME;
     this.stack = err.stack;

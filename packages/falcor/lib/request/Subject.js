@@ -10,11 +10,12 @@ function Subject(observers, parent) {
 
 Subject.prototype = Object.create(Subscriber.prototype);
 
-Subject.prototype.onNext = function(value) {
-    this.observers.slice(0).forEach(function(observer) {
-        observer.onNext(value);
-    });
-}
+// Unused
+// Subject.prototype.onNext = function(value) {
+//     this.observers.slice(0).forEach(function(observer) {
+//         observer.onNext(value);
+//     });
+// }
 
 Subject.prototype.onError = function(error) {
     var observers = this.observers.slice(0);

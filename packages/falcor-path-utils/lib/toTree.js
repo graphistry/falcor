@@ -18,7 +18,7 @@ function toTree(paths, seed) {
 function pathToTree(seed, path, depth, length, value, branch) {
 
     if (depth === length) {
-        return true;//seed || value;
+        return true;
     }
 
     var seedKeySet, keyset, keysetIndex = -1, keysetLength = 0;
@@ -68,7 +68,7 @@ function pathToTree(seed, path, depth, length, value, branch) {
         else {
             rangeEnd = keyset.to;
             nextKey = keyset.from || 0;
-            if ("number" !== typeof rangeEnd) {
+            if ('number' !== typeof rangeEnd) {
                 rangeEnd = nextKey + (keyset.length || 0) - 1;
             }
             if ((rangeEnd - nextKey) < 0) {
@@ -83,9 +83,6 @@ function pathToTree(seed, path, depth, length, value, branch) {
             } else {
                 node = seed[path[depth] = nextKey];
                 next = pathToTree(node, path, nextDepth, length, value);
-                // next = pathToTree(node ||
-                //     branch && branch(path, depth, seed) || {},
-                //     path, nextDepth, length, value);
                 if (!next) {
                     seed[nextKey] = value;
                 } else if (!node) {

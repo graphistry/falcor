@@ -14,17 +14,8 @@
  * or implied. See the License for the specific language governing
  * permissions and limitations under the License.
  */
-(function webpackUniversalModuleDefinition(root, factory) {
-	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory();
-	else if(typeof define === 'function' && define.amd)
-		define("falcor", [], factory);
-	else if(typeof exports === 'object')
-		exports["falcor"] = factory();
-	else
-		root["falcor"] = factory();
-})(this, function() {
-return /******/ (function(modules) { // webpackBootstrap
+module.exports =
+/******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
 /******/
@@ -87,22 +78,23 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 108);
+/******/ 	return __webpack_require__(__webpack_require__.s = 110);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
 /***/ function(module, exports) {
 
-module.exports = "ref";
+module.exports = 'ref';
+
 
 /***/ },
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
-var now = __webpack_require__(58);
-var $now = __webpack_require__(32);
-var $never = __webpack_require__(59);
+var now = __webpack_require__(54);
+var $now = __webpack_require__(31);
+var $never = __webpack_require__(55);
 
 module.exports = function isExpired(node, expireImmediate) {
     var exp = node.$expires;
@@ -114,58 +106,208 @@ module.exports = function isExpired(node, expireImmediate) {
     return exp < now();
 };
 
+
 /***/ },
 /* 2 */
 /***/ function(module, exports) {
 
-var objTypeof = "object";
+var objTypeof = 'object';
 module.exports = function isObject(value) {
     return value !== null && typeof value === objTypeof;
 };
+
 
 /***/ },
 /* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
-var splice = __webpack_require__(52);
+var splice = __webpack_require__(48);
 
 module.exports = function expireNode(node, expired, lru) {
-    if (!node["\u001ef_invalidated"]) {
-        node["\u001ef_invalidated"] = true;
+    if (!node["ƒ_invalidated"]) {
+        node["ƒ_invalidated"] = true;
         expired.push(node);
         splice(lru, node);
     }
     return node;
 };
 
+
 /***/ },
 /* 4 */
-/***/ function(module, exports) {
-
-module.exports = { $type: 'atom' };
-
-/***/ },
-/* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
 module.exports = function createHardlink(from, to) {
 
     // create a back reference
-    var backRefs = to["\u001ef_refs_length"] || 0;
-    to["\u001ef_ref" + backRefs] = from;
-    to["\u001ef_refs_length"] = backRefs + 1;
+    var backRefs = to["ƒ_refs_length"] || 0;
+    to["ƒ_ref" + backRefs] = from;
+    to["ƒ_refs_length"] = backRefs + 1;
 
     // create a hard reference
-    from["\u001ef_ref_index"] = backRefs;
-    from["\u001ef_context"] = to;
+    from["ƒ_ref_index"] = backRefs;
+    from["ƒ_context"] = to;
 };
+
+
+/***/ },
+/* 5 */
+/***/ function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(global) {function FalcorJSON(f_meta) {
+    this["ƒ_meta"] = f_meta || {};
+}
+
+FalcorJSON.prototype = Object.create(Object.prototype, Object.assign({
+        toJSON: { value: toJSON },
+        toProps: { value: toProps },
+        toString: { value: toString },
+        $__hash: {
+            enumerable: false,
+            get() {
+                var f_meta = this["ƒ_meta"];
+                return f_meta && f_meta['$code'] || '';
+            }
+        },
+        $__version: {
+            enumerable: false,
+            get() {
+                var f_meta = this["ƒ_meta"];
+                return f_meta && f_meta["version"] || 0;
+            }
+        }
+    },
+    arrayProtoMethods().reduce(function (falcorJSONProto, methodName) {
+        var method = Array.prototype[methodName];
+        falcorJSONProto[methodName] = {
+            writable: true, enumerable: false, value() {
+                return method.apply(this, arguments);
+            }
+        };
+        return falcorJSONProto;
+    }, {}))
+);
+
+function arrayProtoMethods() {
+    return [
+        'concat', 'copyWithin', 'entries', 'every', 'fill', 'filter', 'find',
+        'findIndex', 'forEach', 'includes', 'indexOf', 'join', 'keys',
+        'lastIndexOf', 'map', 'pop', 'push', 'reduce', 'reduceRight',
+        'reverse', 'shift', 'slice', 'some', 'sort', 'splice', 'unshift', 'values'
+    ];
+}
+
+var isArray = Array.isArray;
+var typeofObject = 'object';
+var typeofString = 'string';
+
+function getInst(inst) {
+    var typeofInst = typeof inst;
+    var argsLen = arguments.length;
+    if (argsLen === 0) {
+        inst = this;
+    } else if (typeofInst !== typeofString) {
+        if (!inst || typeofInst !== typeofObject) {
+            return inst;
+        }
+    } else if (argsLen !== 1) {
+        return inst;
+    } else {
+        inst = this;
+    }
+    return inst === global ? undefined : inst;
+}
+
+function toJSON() {
+    return serialize(
+        getInst.apply(this, arguments), toJSON, false
+    );
+}
+
+function toString(includeMetadata) {
+    return JSON.stringify(serialize(
+        getInst.call(this, this), serialize, includeMetadata === true
+    ));
+}
+
+function toProps(inst) {
+
+    inst = getInst.apply(this, arguments);
+
+    var f_meta_inst, f_meta_json, version = 0;
+    var json = serialize(inst, toProps, true);
+
+    if (inst && (f_meta_inst = inst["ƒ_meta"])) {
+        version = f_meta_inst["version"];
+    }
+
+    if (!(!json || typeof json !== typeofObject)) {
+        json.__proto__ = FalcorJSON.prototype;
+        if (f_meta_json = json["ƒ_meta"]) {
+            f_meta_json["version"] = version;
+        }
+    }
+
+    return json;
+}
+
+function serialize(inst, serializer, includeMetadata) {
+
+    if (!inst || typeof inst !== typeofObject) {
+        return inst;
+    }
+
+    var count, total, f_meta, keys, key, xs;
+
+    if (isArray(inst)) {
+        xs = inst;
+        // count = -1;
+        // total = inst.length;
+        // xs = new Array(total);
+        // while (++count < total) {
+        //     xs[count] = inst[count];
+        // }
+    } else {
+
+        xs = {};
+        count = -1;
+        keys = Object.keys(inst);
+        total = keys.length;
+
+        if (includeMetadata && (f_meta = inst["ƒ_meta"])) {
+
+            var $code = f_meta['$code'];
+            var abs_path = f_meta["abs_path"];
+            var deref_to = f_meta["deref_to"];
+            var deref_from = f_meta["deref_from"];
+
+            f_meta = xs["ƒ_meta"] = {};
+            $code && (f_meta['$code'] = $code);
+            abs_path && (f_meta["abs_path"] = abs_path);
+            deref_to && (f_meta["deref_to"] = deref_to);
+            deref_from && (f_meta["deref_from"] = deref_from);
+        }
+
+        while (++count < total) {
+            if ((key = keys[count]) !== "ƒ_meta") {
+                xs[key] = serializer(inst[key], serializer, includeMetadata);
+            }
+        }
+    }
+
+    return xs;
+}
+
+module.exports = FalcorJSON;
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(32)))
 
 /***/ },
 /* 6 */
 /***/ function(module, exports) {
 
-var NAME = "NullInPathError";
-var MESSAGE = "`null` is not allowed in branch key positions.";
+var NAME = 'NullInPathError';
+var MESSAGE = '`null` is not allowed in branch key positions.';
 
 /**
  * Does not allow null in path
@@ -185,6 +327,7 @@ NullInPathError.message = MESSAGE;
 
 module.exports = NullInPathError;
 
+
 /***/ },
 /* 7 */
 /***/ function(module, exports, __webpack_require__) {
@@ -194,23 +337,23 @@ module.exports = function getSize(node) {
     return isObject(node) && node.$size || 0;
 };
 
+
 /***/ },
 /* 8 */
 /***/ function(module, exports, __webpack_require__) {
+
+var isInternal = __webpack_require__(30);
 
 module.exports = clone;
 
 function clone(node) {
 
-    var key,
-        keys = Object.keys(node),
-        json = {},
-        index = -1,
-        length = keys.length;
+    var key, keys = Object.keys(node),
+        json = {}, index = -1, length = keys.length;
 
     while (++index < length) {
         key = keys[index];
-        if (key.charAt(0) === "\u001e") {
+        if (isInternal(key)) {
             continue;
         }
         json[key] = node[key];
@@ -218,6 +361,7 @@ function clone(node) {
 
     return json;
 }
+
 
 /***/ },
 /* 9 */
@@ -239,8 +383,7 @@ module.exports = getCachePosition;
 function getCachePosition(cache, path) {
 
     var node = cache;
-    var type,
-        depth = 0;
+    var type, depth = 0;
     var maxDepth = path.length;
 
     if (maxDepth > 0) {
@@ -256,21 +399,22 @@ function getCachePosition(cache, path) {
     return node;
 };
 
+
 /***/ },
 /* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
-var removeNode = __webpack_require__(28);
-var updateBackReferenceVersions = __webpack_require__(47);
+var removeNode = __webpack_require__(26);
+var updateBackReferenceVersions = __webpack_require__(43);
 
 module.exports = function updateNodeAncestors(nodeArg, offset, lru, version) {
     var child = nodeArg;
     do {
-        var node = child["\u001ef_parent"];
+        var node = child["ƒ_parent"];
         var size = child.$size = (child.$size || 0) - offset;
         if (size <= 0 && node != null) {
-            removeNode(child, node, child["\u001ef_key"], lru);
-        } else if (child["\u001ef_version"] !== version) {
+            removeNode(child, node, child["ƒ_key"], lru);
+        } else if (child["ƒ_version"] !== version) {
             updateBackReferenceVersions(child, version);
         }
         child = node;
@@ -278,11 +422,12 @@ module.exports = function updateNodeAncestors(nodeArg, offset, lru, version) {
     return nodeArg;
 };
 
+
 /***/ },
 /* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
-var EXPIRES_NEVER = __webpack_require__(59);
+var EXPIRES_NEVER = __webpack_require__(55);
 
 // [H] -> Next -> ... -> [T]
 // [T] -> Prev -> ... -> [H]
@@ -292,11 +437,11 @@ module.exports = function lruPromote(root, object) {
         return;
     }
 
-    var head = root["\u001ef_head"];
+    var head = root["ƒ_head"];
 
     // Nothing is in the cache.
     if (!head) {
-        root["\u001ef_head"] = root["\u001ef_tail"] = object;
+        root["ƒ_head"] = root["ƒ_tail"] = object;
         return;
     }
 
@@ -306,26 +451,27 @@ module.exports = function lruPromote(root, object) {
 
     // The item always exist in the cache since to get anything in the
     // cache it first must go through set.
-    var prev = object["\u001ef_prev"];
-    var next = object["\u001ef_next"];
+    var prev = object["ƒ_prev"];
+    var next = object["ƒ_next"];
     if (next) {
-        next["\u001ef_prev"] = prev;
+        next["ƒ_prev"] = prev;
     }
     if (prev) {
-        prev["\u001ef_next"] = next;
+        prev["ƒ_next"] = next;
     }
-    object["\u001ef_prev"] = undefined;
+    object["ƒ_prev"] = undefined;
 
     // Insert into head position
-    root["\u001ef_head"] = object;
-    object["\u001ef_next"] = head;
-    head["\u001ef_prev"] = object;
+    root["ƒ_head"] = object;
+    object["ƒ_next"] = head;
+    head["ƒ_prev"] = object;
 
     // If the item we promoted was the tail, then set prev to tail.
-    if (object === root["\u001ef_tail"]) {
-        root["\u001ef_tail"] = prev;
+    if (object === root["ƒ_tail"]) {
+        root["ƒ_tail"] = prev;
     }
 };
+
 
 /***/ },
 /* 12 */
@@ -336,7 +482,9 @@ var Subscription = __webpack_require__(13);
 module.exports = Subscriber;
 
 function Subscriber(destination, parent, onCompleted) {
-    if (typeof destination === 'function' || typeof parent === 'function' || typeof onCompleted === 'function') {
+    if (typeof destination === 'function' ||
+             typeof parent === 'function' ||
+        typeof onCompleted === 'function') {
         Subscription.call(this, []);
         this.destination = {
             error: parent,
@@ -345,7 +493,7 @@ function Subscriber(destination, parent, onCompleted) {
             onNext: destination,
             complete: onCompleted,
             onCompleted: onCompleted
-        };
+        }
     } else {
         Subscription.call(this, [], parent);
         this.parent = parent;
@@ -355,7 +503,8 @@ function Subscriber(destination, parent, onCompleted) {
 
 Subscriber.prototype = Object.create(Subscription.prototype);
 
-Subscriber.prototype.next = Subscriber.prototype.onNext = function onNext(value) {
+Subscriber.prototype.next =
+Subscriber.prototype.onNext = function onNext(value) {
     var dest = this.destination;
     if (dest) {
         if (dest.onNext) {
@@ -364,9 +513,10 @@ Subscriber.prototype.next = Subscriber.prototype.onNext = function onNext(value)
             dest.next(value);
         }
     }
-};
+}
 
-Subscriber.prototype.error = Subscriber.prototype.onError = function onError(error) {
+Subscriber.prototype.error =
+Subscriber.prototype.onError = function onError(error) {
     var dest = this.destination;
     if (dest) {
         if (dest.onError) {
@@ -379,9 +529,10 @@ Subscriber.prototype.error = Subscriber.prototype.onError = function onError(err
         this.dispose();
         throw error;
     }
-};
+}
 
-Subscriber.prototype.complete = Subscriber.prototype.onCompleted = function onCompleted() {
+Subscriber.prototype.complete =
+Subscriber.prototype.onCompleted = function onCompleted() {
     var dest = this.destination;
     if (dest) {
         if (dest.onCompleted) {
@@ -391,12 +542,14 @@ Subscriber.prototype.complete = Subscriber.prototype.onCompleted = function onCo
         }
         this.dispose();
     }
-};
+}
 
-Subscriber.prototype.dispose = Subscriber.prototype.unsubscribe = function () {
+Subscriber.prototype.dispose =
+Subscriber.prototype.unsubscribe = function () {
     this.destination = null;
     Subscription.prototype.dispose.call(this);
-};
+}
+
 
 /***/ },
 /* 13 */
@@ -409,36 +562,41 @@ function Subscription(subscriptions, parent) {
     this.subscriptions = subscriptions || [];
 }
 
-Subscription.prototype.add = function (subscription) {
+Subscription.prototype.add = function(subscription) {
     return this.subscriptions.push(subscription) && this || this;
-};
+}
 
-Subscription.prototype.remove = function (subscription) {
+Subscription.prototype.remove = function(subscription) {
     var index = this.subscriptions.indexOf(subscription);
     if (~index) {
         this.subscriptions.splice(index, 1);
     }
     return this;
-};
+}
 
-Subscription.prototype.dispose = Subscription.prototype.unsubscribe = function () {
-    var subscription,
-        subscriptions = this.subscriptions;
+Subscription.prototype.dispose =
+Subscription.prototype.unsubscribe = function () {
+    var subscription, subscriptions = this.subscriptions;
     while (subscriptions.length) {
-        (subscription = subscriptions.pop()) && subscription.dispose && subscription.dispose();
+        (subscription = subscriptions.pop()) &&
+            subscription.dispose &&
+            subscription.dispose();
     }
     var parent = this.parent;
     if (parent) {
         this.parent = null;
         parent.remove && parent.remove(this);
     }
-};
+}
+
+
 
 /***/ },
 /* 14 */
 /***/ function(module, exports) {
 
-module.exports = "error";
+module.exports = 'error';
+
 
 /***/ },
 /* 15 */
@@ -451,7 +609,7 @@ module.exports = getBoundCacheNode;
 function getBoundCacheNode(model, path) {
     path = path || model._path;
     var node = model._node;
-    if (!node || node["\u001ef_parent"] === undefined || node["\u001ef_invalidated"]) {
+    if (!node || node["ƒ_parent"] === undefined || node["ƒ_invalidated"]) {
         model._node = null;
         if (path.length === 0) {
             node = model._root.cache;
@@ -465,6 +623,7 @@ function getBoundCacheNode(model, path) {
     return node;
 }
 
+
 /***/ },
 /* 16 */
 /***/ function(module, exports, __webpack_require__) {
@@ -473,10 +632,10 @@ var arr = new Array(5);
 var $ref = __webpack_require__(0);
 var isExpired = __webpack_require__(1);
 var expireNode = __webpack_require__(3);
-var createHardlink = __webpack_require__(5);
-var mergeJSONGraphNode = __webpack_require__(80);
+var createHardlink = __webpack_require__(4);
+var mergeJSONGraphNode = __webpack_require__(72);
 var NullInPathError = __webpack_require__(6);
-var iterateKeySet = __webpack_require__(20);
+var iterateKeySet = __webpack_require__(33);
 
 /**
  * Merges a list of {@link JSONGraphEnvelope}s into a {@link JSONGraph}.
@@ -493,7 +652,7 @@ module.exports = function setJSONGraphs(model, jsonGraphEnvelopes, errorSelector
     var expired = modelRoot.expired;
     var version = modelRoot.version++;
     var cache = modelRoot.cache;
-    var initialVersion = cache["\u001ef_version"];
+    var initialVersion = cache["ƒ_version"];
 
     var requestedPath = [];
     var optimizedPath = [];
@@ -516,7 +675,13 @@ module.exports = function setJSONGraphs(model, jsonGraphEnvelopes, errorSelector
             var path = paths[pathIndex];
             optimizedPath.index = 0;
 
-            setJSONGraphPathSet(path, 0, cache, cache, cache, jsonGraph, jsonGraph, jsonGraph, requestedPaths, optimizedPaths, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector, expireImmediate);
+            setJSONGraphPathSet(
+                path, 0,
+                cache, cache, cache,
+                jsonGraph, jsonGraph, jsonGraph,
+                requestedPaths, optimizedPaths, requestedPath, optimizedPath,
+                version, expired, lru, comparator, errorSelector, expireImmediate
+            );
         }
     }
 
@@ -526,7 +691,7 @@ module.exports = function setJSONGraphs(model, jsonGraphEnvelopes, errorSelector
     arr[3] = undefined;
     arr[4] = undefined;
 
-    var newVersion = cache["\u001ef_version"];
+    var newVersion = cache["ƒ_version"];
     var rootChangeHandler = modelRoot.onChange;
 
     if (rootChangeHandler && initialVersion !== newVersion) {
@@ -537,7 +702,11 @@ module.exports = function setJSONGraphs(model, jsonGraphEnvelopes, errorSelector
 };
 
 /* eslint-disable no-constant-condition */
-function setJSONGraphPathSet(path, depth, root, parent, node, messageRoot, messageParent, message, requestedPaths, optimizedPaths, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector, expireImmediate) {
+function setJSONGraphPathSet(
+    path, depth, root, parent, node,
+    messageRoot, messageParent, message,
+    requestedPaths, optimizedPaths, requestedPath, optimizedPath,
+    version, expired, lru, comparator, errorSelector, expireImmediate) {
 
     var note = {};
     var branch = depth < path.length - 1;
@@ -549,7 +718,11 @@ function setJSONGraphPathSet(path, depth, root, parent, node, messageRoot, messa
 
         requestedPath.depth = depth;
 
-        var results = setNode(root, parent, node, messageRoot, messageParent, message, key, branch, false, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector, expireImmediate);
+        var results = setNode(
+            root, parent, node, messageRoot, messageParent, message,
+            key, branch, false, requestedPath, optimizedPath, version,
+            expired, lru, comparator, errorSelector, expireImmediate
+        );
 
         requestedPath[depth] = key;
         requestedPath.index = depth;
@@ -561,7 +734,12 @@ function setJSONGraphPathSet(path, depth, root, parent, node, messageRoot, messa
 
         if (nextNode) {
             if (branch) {
-                setJSONGraphPathSet(path, depth + 1, root, nextParent, nextNode, messageRoot, results[3], results[2], requestedPaths, optimizedPaths, requestedPath, nextOptimizedPath, version, expired, lru, comparator, errorSelector, expireImmediate);
+                setJSONGraphPathSet(
+                    path, depth + 1, root, nextParent, nextNode,
+                    messageRoot, results[3], results[2],
+                    requestedPaths, optimizedPaths, requestedPath, nextOptimizedPath,
+                    version, expired, lru, comparator, errorSelector, expireImmediate
+                );
             } else {
                 requestedPaths.push(requestedPath.slice(0, requestedPath.index + 1));
                 optimizedPaths.push(nextOptimizedPath.slice(0, nextOptimizedPath.index));
@@ -576,7 +754,9 @@ function setJSONGraphPathSet(path, depth, root, parent, node, messageRoot, messa
 }
 /* eslint-enable */
 
-function setReference(root, node, messageRoot, message, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector, expireImmediate) {
+function setReference(
+    root, node, messageRoot, message, requestedPath, optimizedPath,
+    version, expired, lru, comparator, errorSelector, expireImmediate) {
 
     var parent;
     var messageParent;
@@ -602,7 +782,11 @@ function setReference(root, node, messageRoot, message, requestedPath, optimized
             var branch = index < count;
             optimizedPath.index = index;
 
-            var results = setNode(root, parent, node, messageRoot, messageParent, message, key, branch, true, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector, expireImmediate);
+            var results = setNode(
+                root, parent, node, messageRoot, messageParent, message,
+                key, branch, true, requestedPath, optimizedPath, version,
+                expired, lru, comparator, errorSelector, expireImmediate
+            );
             node = results[0];
             optimizedPath = results[4];
             if (!node || typeof node !== 'object') {
@@ -616,7 +800,7 @@ function setReference(root, node, messageRoot, message, requestedPath, optimized
 
         optimizedPath.index = index;
 
-        if (container["\u001ef_context"] !== node) {
+        if (container["ƒ_context"] !== node) {
             createHardlink(container, node);
         }
     }
@@ -630,13 +814,19 @@ function setReference(root, node, messageRoot, message, requestedPath, optimized
     return arr;
 }
 
-function setNode(root, parent, node, messageRoot, messageParent, message, key, branch, reference, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector, expireImmediate) {
+function setNode(
+    root, parent, node, messageRoot, messageParent, message,
+    key, branch, reference, requestedPath, optimizedPath, version,
+    expired, lru, comparator, errorSelector, expireImmediate) {
 
     var type = node.$type;
 
     while (type === $ref) {
 
-        var results = setReference(root, node, messageRoot, message, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector, expireImmediate);
+        var results = setReference(
+            root, node, messageRoot, message, requestedPath, optimizedPath,
+            version, expired, lru, comparator, errorSelector, expireImmediate
+        );
 
         node = results[0];
 
@@ -656,7 +846,7 @@ function setNode(root, parent, node, messageRoot, messageParent, message, key, b
             if (branch) {
                 throw new NullInPathError();
             } else if (node) {
-                key = node["\u001ef_key"];
+                key = node["ƒ_key"];
             }
         } else {
             parent = node;
@@ -665,7 +855,10 @@ function setNode(root, parent, node, messageRoot, messageParent, message, key, b
             message = messageParent && messageParent[key];
         }
 
-        node = mergeJSONGraphNode(parent, node, message, key, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector, expireImmediate);
+        node = mergeJSONGraphNode(
+            parent, node, message, key, requestedPath, optimizedPath,
+            version, expired, lru, comparator, errorSelector, expireImmediate
+        );
     }
 
     arr[0] = node;
@@ -677,6 +870,7 @@ function setNode(root, parent, node, messageRoot, messageParent, message, key, b
     return arr;
 }
 
+
 /***/ },
 /* 17 */
 /***/ function(module, exports, __webpack_require__) {
@@ -686,10 +880,11 @@ var isArray = Array.isArray;
 var $ref = __webpack_require__(0);
 var isExpired = __webpack_require__(1);
 var expireNode = __webpack_require__(3);
-var createHardlink = __webpack_require__(5);
+var createHardlink = __webpack_require__(4);
 var getCachePosition = __webpack_require__(9);
+var isInternalKey = __webpack_require__(18);
 var NullInPathError = __webpack_require__(6);
-var mergeValueOrInsertBranch = __webpack_require__(44);
+var mergeValueOrInsertBranch = __webpack_require__(40);
 
 /**
  * Sets a list of {@link PathMapEnvelope}s into a {@link JSONGraph}.
@@ -708,8 +903,8 @@ module.exports = function setPathMaps(model, pathMapEnvelopes, errorSelector, co
     var bound = model._path;
     var cache = modelRoot.cache;
     var node = getCachePosition(cache, bound);
-    var parent = node["\u001ef_parent"] || cache;
-    var initialVersion = cache["\u001ef_version"];
+    var parent = node["ƒ_parent"] || cache;
+    var initialVersion = cache["ƒ_version"];
 
     var requestedPath = [];
     var requestedPaths = [];
@@ -724,14 +919,18 @@ module.exports = function setPathMaps(model, pathMapEnvelopes, errorSelector, co
         var optimizedPath = bound.slice(0);
         optimizedPath.index = optimizedIndex;
 
-        setPathMap(pathMapEnvelope.json, 0, cache, parent, node, requestedPaths, optimizedPaths, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector, expireImmediate);
+        setPathMap(
+            pathMapEnvelope.json, 0, cache, parent, node,
+            requestedPaths, optimizedPaths, requestedPath, optimizedPath,
+            version, expired, lru, comparator, errorSelector, expireImmediate
+        );
     }
 
     arr[0] = undefined;
     arr[1] = undefined;
     arr[2] = undefined;
 
-    var newVersion = cache["\u001ef_version"];
+    var newVersion = cache["ƒ_version"];
     var rootChangeHandler = modelRoot.onChange;
 
     if (rootChangeHandler && initialVersion !== newVersion) {
@@ -742,7 +941,10 @@ module.exports = function setPathMaps(model, pathMapEnvelopes, errorSelector, co
 };
 
 /* eslint-disable no-constant-condition */
-function setPathMap(pathMap, depth, root, parent, node, requestedPaths, optimizedPaths, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector, expireImmediate) {
+function setPathMap(
+    pathMap, depth, root, parent, node,
+    requestedPaths, optimizedPaths, requestedPath, optimizedPath,
+    version, expired, lru, comparator, errorSelector, expireImmediate) {
 
     var keys = getKeys(pathMap);
 
@@ -759,7 +961,11 @@ function setPathMap(pathMap, depth, root, parent, node, requestedPaths, optimize
 
             requestedPath.depth = depth;
 
-            var results = setNode(root, parent, node, key, child, branch, false, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector, expireImmediate);
+            var results = setNode(
+                root, parent, node, key, child,
+                branch, false, requestedPath, optimizedPath, version,
+                expired, lru, comparator, errorSelector, expireImmediate
+            );
 
             requestedPath[depth] = key;
             requestedPath.index = depth;
@@ -771,7 +977,12 @@ function setPathMap(pathMap, depth, root, parent, node, requestedPaths, optimize
 
             if (nextNode) {
                 if (branch) {
-                    setPathMap(child, depth + 1, root, nextParent, nextNode, requestedPaths, optimizedPaths, requestedPath, nextOptimizedPath, version, expired, lru, comparator, errorSelector, expireImmediate);
+                    setPathMap(
+                        child, depth + 1,
+                        root, nextParent, nextNode,
+                        requestedPaths, optimizedPaths, requestedPath, nextOptimizedPath,
+                        version, expired, lru, comparator, errorSelector, expireImmediate
+                    );
                 } else {
                     requestedPaths.push(requestedPath.slice(0, requestedPath.index + 1));
                     optimizedPaths.push(nextOptimizedPath.slice(0, nextOptimizedPath.index));
@@ -786,7 +997,9 @@ function setPathMap(pathMap, depth, root, parent, node, requestedPaths, optimize
 }
 /* eslint-enable */
 
-function setReference(value, root, node, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector, expireImmediate) {
+function setReference(
+    value, root, node, requestedPath, optimizedPath, version,
+    expired, lru, comparator, errorSelector, expireImmediate) {
 
     var parent;
     var reference = node.value;
@@ -801,10 +1014,10 @@ function setReference(value, root, node, requestedPath, optimizedPath, version, 
         var container = node;
         parent = root;
 
-        node = node["\u001ef_context"];
+        node = node["ƒ_context"];
 
         if (node != null) {
-            parent = node["\u001ef_parent"] || root;
+            parent = node["ƒ_parent"] || root;
             optimizedPath.index = reference.length;
         } else {
 
@@ -817,7 +1030,11 @@ function setReference(value, root, node, requestedPath, optimizedPath, version, 
             do {
                 var key = reference[index];
                 var branch = index < count;
-                var results = setNode(root, parent, node, key, value, branch, true, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector, expireImmediate);
+                var results = setNode(
+                    root, parent, node, key, value,
+                    branch, true, requestedPath, optimizedPath, version,
+                    expired, lru, comparator, errorSelector, expireImmediate
+                );
                 node = results[0];
                 optimizedPath = results[2];
                 if (!node || typeof node !== 'object') {
@@ -829,7 +1046,7 @@ function setReference(value, root, node, requestedPath, optimizedPath, version, 
 
             optimizedPath.index = index;
 
-            if (container["\u001ef_context"] !== node) {
+            if (container["ƒ_context"] !== node) {
                 createHardlink(container, node);
             }
         }
@@ -842,13 +1059,18 @@ function setReference(value, root, node, requestedPath, optimizedPath, version, 
     return arr;
 }
 
-function setNode(root, parent, node, key, value, branch, reference, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector, expireImmediate) {
+function setNode(
+    root, parent, node, key, value,
+    branch, reference, requestedPath, optimizedPath, version,
+    expired, lru, comparator, errorSelector, expireImmediate) {
 
     var type = node.$type;
 
     while (type === $ref) {
 
-        var results = setReference(value, root, node, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector, expireImmediate);
+        var results = setReference(
+            value, root, node, requestedPath, optimizedPath, version,
+            expired, lru, comparator, errorSelector, expireImmediate);
 
         node = results[0];
 
@@ -866,14 +1088,18 @@ function setNode(root, parent, node, key, value, branch, reference, requestedPat
             if (branch) {
                 throw new NullInPathError();
             } else if (node) {
-                key = node["\u001ef_key"];
+                key = node["ƒ_key"];
             }
         } else {
             parent = node;
             node = parent[key];
         }
 
-        node = mergeValueOrInsertBranch(parent, node, key, value, branch, reference, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector, expireImmediate);
+        node = mergeValueOrInsertBranch(
+            parent, node, key, value,
+            branch, reference, requestedPath, optimizedPath, version,
+            expired, lru, comparator, errorSelector, expireImmediate
+        );
     }
 
     arr[0] = node;
@@ -889,10 +1115,10 @@ function getKeys(pathMap) {
         var keys = [];
         var itr = 0;
         if (isArray(pathMap)) {
-            keys[itr++] = "length";
+            keys[itr++] = 'length';
         }
         for (var key in pathMap) {
-            if (key[0] === "\u001e" || key[0] === "$") {
+            if (isInternalKey(key)) {
                 continue;
             }
             keys[itr++] = key;
@@ -903,319 +1129,50 @@ function getKeys(pathMap) {
     return void 0;
 }
 
+
 /***/ },
 /* 18 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
-module.exports = flatBufferToPaths;
+/**
+ * Determined if the key passed in is an internal key.
+ *
+ * @param {String} x The key
+ * @private
+ * @returns {Boolean}
+ */
 
-function flatBufferToPaths(flatBuf, paths, path) {
+module.exports = isInternalKey;
 
-    path = path || [];
-    paths = paths || [];
+var isInternal = __webpack_require__(30);
 
-    var leaf = [];
-    var keys = flatBuf['$keys'];
-    var keysLen = keys.length;
-    var keysIndex = -1,
-        key,
-        len;
-
-    while (++keysIndex < keysLen) {
-
-        var rest = flatBuf[keysIndex];
-        var keyset = keys[keysIndex];
-
-        if (!rest) {
-            leaf.push(keyset);
-        } else {
-            flatBufferToPaths(rest, paths, path.concat([keyset]));
-        }
-    }
-
-    if (leaf.length === 1) {
-        paths.push(path.concat(leaf));
-    } else if (leaf.length > 1) {
-        paths.push(path.concat([leaf]));
-    }
-
-    return paths;
+function isInternalKey(key) {
+    return key && key[0] === '$' || isInternal(key);
 }
+
 
 /***/ },
 /* 19 */
 /***/ function(module, exports) {
 
-module.exports = getHashCode;
-
-function getHashCode(str) {
-    var hash = 5381,
-        i = str.length;
-    while (i) {
-        hash = hash * 33 ^ str.charCodeAt(--i);
-    }
-    // JavaScript does bitwise operations (like XOR, above) on 32-bit signed
-    // integers. Since we want the results to be always positive, convert the
-    // signed int to an unsigned by doing an unsigned bitshift.
-    return hash >>> 0;
-}
+module.exports = require("@graphistry/falcor-path-utils/lib/support/materializedAtom");
 
 /***/ },
 /* 20 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
-var isArray = Array.isArray;
+module.exports = __webpack_require__(34);
 
-/**
- * Takes in a keySet and a note attempts to iterate over it.
- * If the value is a primitive, the key will be returned and the note will
- * be marked done
- * If the value is an object, then each value of the range will be returned
- * and when finished the note will be marked done.
- * If the value is an array, each value will be iterated over, if any of the
- * inner values are ranges, those will be iterated over.  When fully done,
- * the note will be marked done.
- *
- * @param {Object|Array|String|Number} keySet -
- * @param {Object} note - The non filled note
- * @returns {String|Number|undefined} - The current iteration value.
- * If undefined, then the keySet is empty
- * @public
- */
-module.exports = function iterateKeySet(keySet, note) {
-    if (note.isArray === undefined) {
-        initializeNote(keySet, note);
-    }
-
-    // Array iteration
-    if (note.isArray) {
-        var nextValue;
-
-        // Cycle through the array and pluck out the next value.
-        do {
-            if (note.loaded && note.rangeOffset > note.to) {
-                ++note.arrayOffset;
-                note.loaded = false;
-            }
-
-            var idx = note.arrayOffset,
-                length = keySet.length;
-            if (idx >= length) {
-                note.done = true;
-                break;
-            }
-
-            var el = keySet[note.arrayOffset];
-            var type = typeof el;
-
-            // Inner range iteration.
-            if (type === 'object') {
-                if (!note.loaded) {
-                    initializeRange(el, note);
-                }
-
-                // Empty to/from
-                if (note.empty) {
-                    continue;
-                }
-
-                nextValue = note.rangeOffset++;
-            }
-
-            // Primitive iteration in array.
-            else {
-                    ++note.arrayOffset;
-                    nextValue = el;
-                }
-        } while (nextValue === undefined);
-
-        return nextValue;
-    }
-
-    // Range iteration
-    else if (note.isObject) {
-            if (!note.loaded) {
-                initializeRange(keySet, note);
-            }
-            if (note.rangeOffset > note.to) {
-                note.done = true;
-                return undefined;
-            }
-
-            return note.rangeOffset++;
-        }
-
-        // Primitive value
-        else {
-                note.done = true;
-                return keySet;
-            }
-};
-
-function initializeRange(key, memo) {
-    var from = memo.from = key.from || 0;
-    var to = memo.to = key.to || typeof key.length === 'number' && memo.from + key.length - 1 || 0;
-    memo.rangeOffset = memo.from;
-    memo.loaded = true;
-    if (from > to) {
-        memo.empty = true;
-    }
-}
-
-function initializeNote(key, note) {
-    note.done = false;
-    var isObject = note.isObject = !!(key && typeof key === 'object');
-    note.isArray = isObject && isArray(key);
-    note.arrayOffset = 0;
-}
 
 /***/ },
 /* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(global) {function FalcorJSON(f_meta) {
-    this["\u001ef_metadata"] = f_meta || {};
-}
+module.exports = __webpack_require__(37);
 
-FalcorJSON.prototype = Object.create(Object.prototype, Object.assign({
-    toJSON: { value: toJSON },
-    toProps: { value: toProps },
-    serialize: { value: serialize },
-    $__hash: {
-        enumerable: false,
-        get() {
-            var f_meta = this["\u001ef_metadata"];
-            return f_meta && f_meta["$code"] || '';
-        }
-    },
-    $__version: {
-        enumerable: false,
-        get() {
-            var f_meta = this["\u001ef_metadata"];
-            return f_meta && f_meta["version"] || 0;
-        }
-    }
-}, arrayProtoMethods().reduce((falcorJSONProto, methodName) => {
-    var method = Array.prototype[methodName];
-    falcorJSONProto[methodName] = {
-        writable: true, enumerable: false, value() {
-            return method.apply(this, arguments);
-        }
-    };
-    return falcorJSONProto;
-}, {})));
-
-function arrayProtoMethods() {
-    return ['concat', 'copyWithin', 'entries', 'every', 'fill', 'filter', 'find', 'findIndex', 'forEach', 'includes', 'indexOf', 'join', 'keys', 'lastIndexOf', 'map', 'pop', 'push', 'reduce', 'reduceRight', 'reverse', 'shift', 'slice', 'some', 'sort', 'splice', 'unshift', 'values'];
-}
-
-var isArray = Array.isArray;
-var typeofObject = 'object';
-var typeofString = 'string';
-
-function toJSON(inst) {
-    if (typeof inst === typeofString) {
-        if (arguments.length !== 1) {
-            return inst;
-        }
-        inst = this;
-    } else if (!inst) {
-        inst = this;
-    } else if (inst === global) {
-        return undefined;
-    }
-    var json = serialize(inst, toJSON);
-    if (json["\u001ef_metadata"]) {
-        delete json["\u001ef_metadata"];
-    }
-    return json;
-}
-
-function toProps(inst, serializer) {
-    var argsLen = arguments.length;
-    inst = argsLen === 0 ? this : inst;
-    if (!inst || typeof inst !== typeofObject) {
-        return inst;
-    } else if (inst === global) {
-        return {};
-    }
-    var json = serialize(inst, argsLen > 0 && serializer || toProps);
-    var f_meta = json["\u001ef_metadata"];
-    if (f_meta) {
-        delete json["\u001ef_metadata"];
-        f_meta["version"] = inst["\u001ef_metadata"]["version"];
-        json.__proto__ = new FalcorJSON(f_meta);
-    }
-    return json;
-}
-
-function serialize(inst, serializer) {
-
-    var argsLen = arguments.length;
-    inst = argsLen === 0 ? this : inst;
-
-    if (!inst || typeof inst !== typeofObject) {
-        return inst;
-    } else if (inst === global) {
-        return {};
-    }
-
-    var count, total, f_meta, keys, key, xs;
-
-    serializer = argsLen > 0 && serializer || serialize;
-
-    if (isArray(inst)) {
-        count = -1;
-        total = inst.length;
-        xs = new Array(total);
-        while (++count < total) {
-            xs[count] = inst[count];
-        }
-    } else {
-        xs = {};
-        count = -1;
-        f_meta = inst["\u001ef_metadata"];
-        keys = Object.keys(inst);
-        total = keys.length;
-        if (f_meta) {
-            var $code = f_meta["$code"],
-                fm_abs_path = f_meta["abs_path"],
-                fm_deref_to = f_meta["deref_to"],
-                fm_deref_from = f_meta["deref_from"];
-            xs["\u001ef_metadata"] = f_meta = {};
-            $code && (f_meta["$code"] = $code);
-            fm_abs_path && (f_meta["abs_path"] = fm_abs_path);
-            fm_deref_to && (f_meta["deref_to"] = fm_deref_to);
-            fm_deref_from && (f_meta["deref_from"] = fm_deref_from);
-        }
-        while (++count < total) {
-            key = keys[count];
-            if (key !== "\u001ef_metadata") {
-                xs[key] = serializer(inst[key], serializer);
-            }
-        }
-    }
-
-    return xs;
-}
-
-module.exports = FalcorJSON;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(33)))
 
 /***/ },
 /* 22 */
-/***/ function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__(38);
-
-/***/ },
-/* 23 */
-/***/ function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__(41);
-
-/***/ },
-/* 24 */
 /***/ function(module, exports) {
 
 module.exports = inlineJSONGraphValue;
@@ -1223,9 +1180,7 @@ module.exports = inlineJSONGraphValue;
 /* eslint-disable no-constant-condition */
 function inlineJSONGraphValue(node, path, length, seed, branch) {
 
-    var key,
-        depth = 0,
-        prev,
+    var key, depth = 0, prev,
         curr = seed.jsonGraph;
 
     if (!curr) {
@@ -1246,18 +1201,22 @@ function inlineJSONGraphValue(node, path, length, seed, branch) {
 }
 /* eslint-enable */
 
+
 /***/ },
-/* 25 */
+/* 23 */
 /***/ function(module, exports, __webpack_require__) {
 
 var isArray = Array.isArray;
-var pathToTree = __webpack_require__(37).pathToTree;
-var materializedAtom = __webpack_require__(4);
+var pathToTree = __webpack_require__(109).pathToTree;
+var materializedAtom = __webpack_require__(19);
 
 module.exports = onMissing;
 
 /* eslint-disable no-constant-condition */
-function onMissing(path, depth, results, requestedPath, requestedLength, fromReference, optimizedPath, optimizedLength, reportMissing, json, reportMaterialized, createMaterializedBranch) {
+function onMissing(path, depth, results,
+                   requestedPath, requestedLength, fromReference,
+                   optimizedPath, optimizedLength, reportMissing,
+                   json, reportMaterialized, createMaterializedBranch) {
 
     if (!reportMissing && !reportMaterialized) {
         return;
@@ -1275,6 +1234,7 @@ function onMissing(path, depth, results, requestedPath, requestedLength, fromRef
         }
         restPath[restPathIndex] = keyset;
     }
+
 
     var index, count, mPath;
     var lastKeyIsNull = keyset === null;
@@ -1326,7 +1286,8 @@ function onMissing(path, depth, results, requestedPath, requestedLength, fromRef
         if (restPathCount === 0) {
             return materializedAtom;
         }
-        return pathToTree(json, mPath, missDepth, missTotal, materializedAtom, createMaterializedBranch);
+        return pathToTree(json, mPath, missDepth, missTotal,
+                          materializedAtom, createMaterializedBranch);
     }
 }
 /* eslint-enable */
@@ -1334,7 +1295,7 @@ function onMissing(path, depth, results, requestedPath, requestedLength, fromRef
 function isEmptyKeySet(keyset) {
 
     // false if the keyset is a primitive
-    if ("object" !== typeof keyset) {
+    if ('object' !== typeof keyset) {
         return false;
     } else if (keyset === null) {
         return false;
@@ -1347,7 +1308,7 @@ function isEmptyKeySet(keyset) {
 
     var rangeEnd = keyset.to,
         from = keyset.from || 0;
-    if ("number" !== typeof rangeEnd) {
+    if ('number' !== typeof rangeEnd) {
         rangeEnd = from + (keyset.length || 0);
     }
 
@@ -1356,8 +1317,9 @@ function isEmptyKeySet(keyset) {
     return from >= rangeEnd;
 }
 
+
 /***/ },
-/* 26 */
+/* 24 */
 /***/ function(module, exports, __webpack_require__) {
 
 var isExpired = __webpack_require__(1);
@@ -1366,7 +1328,13 @@ var lruPromote = __webpack_require__(11);
 
 module.exports = onValueType;
 
-function onValueType(node, type, json, path, depth, seed, results, requestedPath, requestedLength, optimizedPath, optimizedLength, fromReference, modelRoot, expired, expireImmediate, branchSelector, boxValues, materialized, reportMissing, treatErrorsAsValues, onValue, onMissing) {
+function onValueType(node, type, json,
+                     path, depth, seed, results,
+                     requestedPath, requestedLength,
+                     optimizedPath, optimizedLength,
+                     fromReference, modelRoot, expired, expireImmediate,
+                     branchSelector, boxValues, materialized, reportMissing,
+                     treatErrorsAsValues, onValue, onMissing) {
 
     var reportMaterialized = materialized;
 
@@ -1375,12 +1343,18 @@ function onValueType(node, type, json, path, depth, seed, results, requestedPath
             reportMaterialized = true;
             seed && (results.hasValue = true);
         }
-        return onMissing(path, depth, results, requestedPath, requestedLength, fromReference, optimizedPath, optimizedLength, reportMissing, json, reportMaterialized, branchSelector);
+        return onMissing(path, depth, results,
+                         requestedPath, requestedLength, fromReference,
+                         optimizedPath, optimizedLength, reportMissing,
+                         json, reportMaterialized, branchSelector);
     } else if (isExpired(node, expireImmediate)) {
-        if (!node["\u001ef_invalidated"]) {
+        if (!node["ƒ_invalidated"]) {
             expireNode(node, expired, modelRoot);
         }
-        return onMissing(path, depth, results, requestedPath, requestedLength, fromReference, optimizedPath, optimizedLength, reportMissing, json, reportMaterialized, branchSelector);
+        return onMissing(path, depth, results,
+                         requestedPath, requestedLength, fromReference,
+                         optimizedPath, optimizedLength, reportMissing,
+                         json, reportMaterialized, branchSelector);
     }
 
     lruPromote(modelRoot, node);
@@ -1389,14 +1363,17 @@ function onValueType(node, type, json, path, depth, seed, results, requestedPath
         if (fromReference) {
             requestedPath[depth] = null;
         }
-        return onValue(node, type, depth, seed, results, requestedPath, optimizedPath, optimizedLength, fromReference, boxValues, materialized, treatErrorsAsValues);
+        return onValue(node, type, depth, seed, results,
+                       requestedPath, optimizedPath, optimizedLength,
+                       fromReference, boxValues, materialized, treatErrorsAsValues);
     }
 
     return undefined;
 }
 
+
 /***/ },
-/* 27 */
+/* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
 var arr = new Array(2);
@@ -1408,10 +1385,10 @@ var isExpired = __webpack_require__(1);
 var expireNode = __webpack_require__(3);
 var lruPromote = __webpack_require__(11);
 var getSize = __webpack_require__(7);
-var createHardlink = __webpack_require__(5);
-var iterateKeySet = __webpack_require__(20);
+var createHardlink = __webpack_require__(4);
+var iterateKeySet = __webpack_require__(33);
 var updateNodeAncestors = __webpack_require__(10);
-var removeNodeAndDescendants = __webpack_require__(29);
+var removeNodeAndDescendants = __webpack_require__(27);
 
 /**
  * Invalidates a list of Paths in a JSON Graph.
@@ -1428,8 +1405,8 @@ module.exports = function invalidatePathSets(model, paths, expireImmediate) {
     var version = modelRoot.version++;
     var cache = modelRoot.cache;
     var node = getBoundCacheNode(model);
-    var parent = node["\u001ef_parent"] || cache;
-    var initialVersion = cache["\u001ef_version"];
+    var parent = node["ƒ_parent"] || cache;
+    var initialVersion = cache["ƒ_version"];
 
     var pathIndex = -1;
     var pathCount = paths.length;
@@ -1438,13 +1415,16 @@ module.exports = function invalidatePathSets(model, paths, expireImmediate) {
 
         var path = paths[pathIndex];
 
-        invalidatePathSet(path, 0, cache, parent, node, version, expired, lru, expireImmediate);
+        invalidatePathSet(
+            path, 0, cache, parent, node,
+            version, expired, lru, expireImmediate
+        );
     }
 
     arr[0] = undefined;
     arr[1] = undefined;
 
-    var newVersion = cache["\u001ef_version"];
+    var newVersion = cache["ƒ_version"];
     var rootChangeHandler = modelRoot.onChange;
 
     if (rootChangeHandler && initialVersion !== newVersion) {
@@ -1452,7 +1432,9 @@ module.exports = function invalidatePathSets(model, paths, expireImmediate) {
     }
 };
 
-function invalidatePathSet(path, depth, root, parent, node, version, expired, lru, expireImmediate) {
+function invalidatePathSet(
+    path, depth, root, parent, node,
+    version, expired, lru, expireImmediate) {
 
     var note = {};
     var branch = depth < path.length - 1;
@@ -1460,12 +1442,20 @@ function invalidatePathSet(path, depth, root, parent, node, version, expired, lr
     var key = iterateKeySet(keySet, note);
 
     do {
-        arr = invalidateNode(root, parent, node, key, branch, false, version, expired, lru, expireImmediate);
+        arr = invalidateNode(
+            root, parent, node,
+            key, branch, false, version,
+            expired, lru, expireImmediate
+        );
         var nextNode = arr[0];
         var nextParent = arr[1];
         if (nextNode) {
             if (branch) {
-                invalidatePathSet(path, depth + 1, root, nextParent, nextNode, version, expired, lru, expireImmediate);
+                invalidatePathSet(
+                    path, depth + 1,
+                    root, nextParent, nextNode,
+                    version, expired, lru, expireImmediate
+                );
             } else if (removeNodeAndDescendants(nextNode, nextParent, key, lru)) {
                 updateNodeAncestors(nextParent, getSize(nextNode), lru, version);
             }
@@ -1489,10 +1479,10 @@ function invalidateReference(root, node, version, expired, lru, expireImmediate)
     var reference = node.value;
     var parent = root;
 
-    node = node["\u001ef_context"];
+    node = node["ƒ_context"];
 
     if (node != null) {
-        parent = node["\u001ef_parent"] || root;
+        parent = node["ƒ_parent"] || root;
     } else {
 
         var index = 0;
@@ -1503,7 +1493,11 @@ function invalidateReference(root, node, version, expired, lru, expireImmediate)
         do {
             var key = reference[index];
             var branch = index < count;
-            arr = invalidateNode(root, parent, node, key, branch, true, version, expired, lru, expireImmediate);
+            arr = invalidateNode(
+                root, parent, node,
+                key, branch, true, version,
+                expired, lru, expireImmediate
+            );
             node = arr[0];
             if (!node && typeof node !== 'object') {
                 return arr;
@@ -1511,7 +1505,7 @@ function invalidateReference(root, node, version, expired, lru, expireImmediate)
             parent = arr[1];
         } while (index++ < count);
 
-        if (container["\u001ef_context"] !== node) {
+        if (container["ƒ_context"] !== node) {
             createHardlink(container, node);
         }
     }
@@ -1522,7 +1516,10 @@ function invalidateReference(root, node, version, expired, lru, expireImmediate)
     return arr;
 }
 
-function invalidateNode(root, parent, node, key, branch, reference, version, expired, lru, expireImmediate) {
+function invalidateNode(
+    root, parent, node,
+    key, branch, reference, version,
+    expired, lru, expireImmediate) {
 
     var type = node.$type;
 
@@ -1546,9 +1543,9 @@ function invalidateNode(root, parent, node, key, branch, reference, version, exp
 
     if (key == null) {
         if (branch) {
-            throw new Error("`null` is not allowed in branch key positions.");
+            throw new Error('`null` is not allowed in branch key positions.');
         } else if (node) {
-            key = node["\u001ef_key"];
+            key = node["ƒ_key"];
         }
     } else {
         parent = node;
@@ -1561,14 +1558,15 @@ function invalidateNode(root, parent, node, key, branch, reference, version, exp
     return arr;
 }
 
+
 /***/ },
-/* 28 */
+/* 26 */
 /***/ function(module, exports, __webpack_require__) {
 
 var $ref = __webpack_require__(0);
-var lruSplice = __webpack_require__(52);
-var unlinkBackReferences = __webpack_require__(83);
-var unlinkForwardReference = __webpack_require__(84);
+var lruSplice = __webpack_require__(48);
+var unlinkBackReferences = __webpack_require__(75);
+var unlinkForwardReference = __webpack_require__(76);
 
 module.exports = function removeNode(node, parent, key, lru) {
     if (!(!node || typeof node !== 'object')) {
@@ -1580,23 +1578,25 @@ module.exports = function removeNode(node, parent, key, lru) {
             lruSplice(lru, node);
         }
         unlinkBackReferences(node);
-        parent[key] = node["\u001ef_parent"] = void 0;
+        parent[key] = node["ƒ_parent"] = void 0;
         return true;
     }
     return false;
 };
 
+
 /***/ },
-/* 29 */
+/* 27 */
 /***/ function(module, exports, __webpack_require__) {
 
-var removeNode = __webpack_require__(28);
+var removeNode = __webpack_require__(26);
+var isInternalKey = __webpack_require__(18);
 
 module.exports = function removeNodeAndDescendants(node, parent, key, lru) {
     if (removeNode(node, parent, key, lru)) {
         if (node.$type == null) {
             for (var key2 in node) {
-                if (key2[0] !== "\u001e" && key2[0] !== "$") {
+                if (!isInternalKey(key2)) {
                     removeNodeAndDescendants(node[key2], node, key2, lru);
                 }
             }
@@ -1606,19 +1606,20 @@ module.exports = function removeNodeAndDescendants(node, parent, key, lru) {
     return false;
 };
 
+
 /***/ },
-/* 30 */
+/* 28 */
 /***/ function(module, exports, __webpack_require__) {
 
 var arr = new Array(3);
 var $ref = __webpack_require__(0);
 var isExpired = __webpack_require__(1);
 var expireNode = __webpack_require__(3);
-var createHardlink = __webpack_require__(5);
+var createHardlink = __webpack_require__(4);
 var getCachePosition = __webpack_require__(9);
 var NullInPathError = __webpack_require__(6);
-var iterateKeySet = __webpack_require__(20);
-var mergeValueOrInsertBranch = __webpack_require__(44);
+var iterateKeySet = __webpack_require__(33);
+var mergeValueOrInsertBranch = __webpack_require__(40);
 
 /**
  * Sets a list of {@link PathValue}s into a {@link JSONGraph}.
@@ -1637,8 +1638,8 @@ module.exports = function setPathValues(model, pathValues, errorSelector, compar
     var bound = model._path;
     var cache = modelRoot.cache;
     var node = getCachePosition(cache, bound);
-    var parent = node["\u001ef_parent"] || cache;
-    var initialVersion = cache["\u001ef_version"];
+    var parent = node["ƒ_parent"] || cache;
+    var initialVersion = cache["ƒ_version"];
 
     var requestedPath = [];
     var requestedPaths = [];
@@ -1655,14 +1656,18 @@ module.exports = function setPathValues(model, pathValues, errorSelector, compar
         var optimizedPath = bound.slice(0);
         optimizedPath.index = optimizedIndex;
 
-        setPathSet(value, path, 0, cache, parent, node, requestedPaths, optimizedPaths, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector, expireImmediate);
+        setPathSet(
+            value, path, 0, cache, parent, node,
+            requestedPaths, optimizedPaths, requestedPath, optimizedPath,
+            version, expired, lru, comparator, errorSelector, expireImmediate
+        );
     }
 
     arr[0] = undefined;
     arr[1] = undefined;
     arr[2] = undefined;
 
-    var newVersion = cache["\u001ef_version"];
+    var newVersion = cache["ƒ_version"];
     var rootChangeHandler = modelRoot.onChange;
 
     if (rootChangeHandler && initialVersion !== newVersion) {
@@ -1673,7 +1678,10 @@ module.exports = function setPathValues(model, pathValues, errorSelector, compar
 };
 
 /* eslint-disable no-constant-condition */
-function setPathSet(value, path, depth, root, parent, node, requestedPaths, optimizedPaths, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector, expireImmediate) {
+function setPathSet(
+    value, path, depth, root, parent, node,
+    requestedPaths, optimizedPaths, requestedPath, optimizedPath,
+    version, expired, lru, comparator, errorSelector, expireImmediate) {
 
     var note = {};
     var branch = depth < path.length - 1;
@@ -1687,7 +1695,11 @@ function setPathSet(value, path, depth, root, parent, node, requestedPaths, opti
         requestedPath[depth] = key;
         requestedPath.index = depth;
 
-        var results = setNode(root, parent, node, key, value, branch, false, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector, expireImmediate);
+        var results = setNode(
+            root, parent, node, key, value,
+            branch, false, requestedPath, optimizedPath, version,
+            expired, lru, comparator, errorSelector, expireImmediate
+        );
 
         requestedPath[depth] = key;
         requestedPath.index = depth;
@@ -1699,7 +1711,12 @@ function setPathSet(value, path, depth, root, parent, node, requestedPaths, opti
 
         if (nextNode) {
             if (branch) {
-                setPathSet(value, path, depth + 1, root, nextParent, nextNode, requestedPaths, optimizedPaths, requestedPath, nextOptimizedPath, version, expired, lru, comparator, errorSelector, expireImmediate);
+                setPathSet(
+                    value, path, depth + 1,
+                    root, nextParent, nextNode,
+                    requestedPaths, optimizedPaths, requestedPath, nextOptimizedPath,
+                    version, expired, lru, comparator, errorSelector, expireImmediate
+                );
             } else {
                 requestedPaths.push(requestedPath.slice(0, requestedPath.index + 1));
                 optimizedPaths.push(nextOptimizedPath.slice(0, nextOptimizedPath.index));
@@ -1714,7 +1731,9 @@ function setPathSet(value, path, depth, root, parent, node, requestedPaths, opti
 }
 /* eslint-enable */
 
-function setReference(value, root, node, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector, expireImmediate) {
+function setReference(
+    value, root, node, requestedPath, optimizedPath, version,
+    expired, lru, comparator, errorSelector, expireImmediate) {
 
     var parent;
     var reference = node.value;
@@ -1730,10 +1749,10 @@ function setReference(value, root, node, requestedPath, optimizedPath, version, 
         var container = node;
         parent = root;
 
-        node = node["\u001ef_context"];
+        node = node["ƒ_context"];
 
         if (node != null) {
-            parent = node["\u001ef_parent"] || root;
+            parent = node["ƒ_parent"] || root;
             optimizedPath.index = reference.length;
         } else {
 
@@ -1747,7 +1766,11 @@ function setReference(value, root, node, requestedPath, optimizedPath, version, 
                 var branch = index < count;
                 optimizedPath.index = index;
 
-                var results = setNode(root, parent, node, key, value, branch, true, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector, expireImmediate);
+                var results = setNode(
+                    root, parent, node, key, value,
+                    branch, true, requestedPath, optimizedPath, version,
+                    expired, lru, comparator, errorSelector, expireImmediate
+                );
                 node = results[0];
                 optimizedPath = results[2];
                 if (!node || typeof node !== 'object') {
@@ -1759,7 +1782,7 @@ function setReference(value, root, node, requestedPath, optimizedPath, version, 
 
             optimizedPath.index = index;
 
-            if (container["\u001ef_context"] !== node) {
+            if (container["ƒ_context"] !== node) {
                 createHardlink(container, node);
             }
         }
@@ -1772,13 +1795,19 @@ function setReference(value, root, node, requestedPath, optimizedPath, version, 
     return arr;
 }
 
-function setNode(root, parent, node, key, value, branch, reference, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector, expireImmediate) {
+function setNode(
+    root, parent, node, key, value,
+    branch, reference, requestedPath, optimizedPath, version,
+    expired, lru, comparator, errorSelector, expireImmediate) {
 
     var type = node.$type;
 
     while (type === $ref) {
 
-        var results = setReference(value, root, node, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector, expireImmediate);
+        var results = setReference(
+            value, root, node, requestedPath, optimizedPath, version,
+            expired, lru, comparator, errorSelector, expireImmediate
+        );
 
         node = results[0];
 
@@ -1796,14 +1825,18 @@ function setNode(root, parent, node, key, value, branch, reference, requestedPat
             if (branch) {
                 throw new NullInPathError();
             } else if (node) {
-                key = node["\u001ef_key"];
+                key = node["ƒ_key"];
             }
         } else {
             parent = node;
             node = parent[key];
         }
 
-        node = mergeValueOrInsertBranch(parent, node, key, value, branch, reference, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector, expireImmediate);
+        node = mergeValueOrInsertBranch(
+            parent, node, key, value,
+            branch, reference, requestedPath, optimizedPath, version,
+            expired, lru, comparator, errorSelector, expireImmediate
+        );
     }
 
     arr[0] = node;
@@ -1813,12 +1846,13 @@ function setNode(root, parent, node, key, value, branch, reference, requestedPat
     return arr;
 }
 
+
 /***/ },
-/* 31 */
+/* 29 */
 /***/ function(module, exports) {
 
-var NAME = "InvalidKeySetError";
-var MESSAGE = "Keysets can only contain Keys or Ranges";
+var NAME = 'InvalidKeySetError';
+var MESSAGE = 'Keysets can only contain Keys or Ranges';
 
 /**
  * InvalidKeySetError happens when a dataSource syncronously throws
@@ -1828,7 +1862,9 @@ var MESSAGE = "Keysets can only contain Keys or Ranges";
  * @private
  */
 function InvalidKeySetError(path, keysOrRanges) {
-    var err = Error.call(this, "The KeySet " + JSON.stringify(keysOrRanges) + " in path " + JSON.stringify(path) + " contains a KeySet. " + MESSAGE);
+    var err = Error.call(this,
+        'The KeySet ' + JSON.stringify(keysOrRanges) +
+        ' in path ' + JSON.stringify(path) + ' contains a KeySet. ' + MESSAGE);
     err.name = NAME;
     this.stack = err.stack;
     this.message = err.message;
@@ -1839,20 +1875,40 @@ function InvalidKeySetError(path, keysOrRanges) {
 // in the constructor.
 InvalidKeySetError.prototype = Object.create(Error.prototype);
 InvalidKeySetError.prototype.name = NAME;
-InvalidKeySetError.is = function (e) {
+InvalidKeySetError.is = function(e) {
     return e && e.name === NAME;
 };
 
 module.exports = InvalidKeySetError;
 
+
 /***/ },
-/* 32 */
+/* 30 */
+/***/ function(module, exports, __webpack_require__) {
+
+/**
+ * Determined if the key passed in is an f_ internal key.
+ *
+ * @param {String} x The key
+ * @private
+ * @returns {Boolean}
+ */
+
+var f_ = __webpack_require__(83);
+var regexp = new RegExp('^' + f_, 'i', 'g');
+
+module.exports = regexp.test.bind(regexp);
+
+
+/***/ },
+/* 31 */
 /***/ function(module, exports) {
 
 module.exports = 0;
 
+
 /***/ },
-/* 33 */
+/* 32 */
 /***/ function(module, exports) {
 
 var g;
@@ -1877,438 +1933,22 @@ module.exports = g;
 
 
 /***/ },
+/* 33 */
+/***/ function(module, exports) {
+
+module.exports = require("@graphistry/falcor-path-utils/lib/iterateKeySet");
+
+/***/ },
 /* 34 */
 /***/ function(module, exports, __webpack_require__) {
 
 var isArray = Array.isArray;
-var flatBufferToPaths = __webpack_require__(18);
-
-module.exports = toCollapseMap;
-
-function toCollapseMap(paths, collapseMap) {
-    if (!paths) {
-        return collapseMap;
-    } else if (!isArray(paths)) {
-        if (isArray(paths.$keys)) {
-            paths = flatBufferToPaths(paths);
-        }
-    }
-    return paths.reduce(function (acc, path) {
-        var len = path.length;
-        if (!acc[len]) {
-            acc[len] = [];
-        }
-        acc[len].push(path);
-        return acc;
-    }, collapseMap || {});
-}
-
-/***/ },
-/* 35 */
-/***/ function(module, exports, __webpack_require__) {
-
-var toTree = __webpack_require__(37);
-
-module.exports = toCollapseTrees;
-
-function toCollapseTrees(collapseMap, collapseTrees) {
-    return Object.keys(collapseMap).reduce(function (collapseTrees, collapseKey) {
-        collapseTrees[collapseKey] = toTree(collapseMap[collapseKey], collapseTrees[collapseKey]);
-        return collapseTrees;
-    }, collapseTrees || {});
-}
-
-/***/ },
-/* 36 */
-/***/ function(module, exports, __webpack_require__) {
-
-var isArray = Array.isArray;
-var typeOfObject = "object";
-var typeOfString = "string";
-var typeOfNumber = "number";
-var MAX_SAFE_INTEGER = 9007199254740991; // Number.MAX_SAFE_INTEGER in es6
-var MAX_SAFE_INTEGER_DIGITS = 16; // String(Number.MAX_SAFE_INTEGER).length
-var MIN_SAFE_INTEGER_DIGITS = 17; // String(Number.MIN_SAFE_INTEGER).length (including sign)
-var abs = Math.abs;
-var safeNumberRegEx = /^(0|(\-?[1-9][0-9]*))$/;
-var getHashCode = __webpack_require__(19);
-var materializedAtom = __webpack_require__(4);
-
-/* jshint forin: false */
-module.exports = function toPaths(lengths) {
-    var pathmap;
-    var allPaths = [];
-    var allPathsLength = 0;
-    for (var length in lengths) {
-        if (isSafeNumber(length) && isObject(pathmap = lengths[length])) {
-            var paths = collapsePathMap(pathmap, 0, parseInt(length, 10)).sets;
-            var pathsIndex = -1;
-            var pathsCount = paths.length;
-            while (++pathsIndex < pathsCount) {
-                allPaths[allPathsLength++] = collapsePathSetIndexes(paths[pathsIndex]);
-            }
-        }
-    }
-    return allPaths;
-};
-
-function isObject(value) {
-    return value !== null && typeof value === typeOfObject;
-}
-
-function collapsePathMap(pathmap, depth, length) {
-
-    var key;
-    var subs = Object.create(null);
-    var code = '' + getHashCode('' + depth);
-
-    var codes = [];
-    var codesIndex = -1;
-    var codesCount = 0;
-
-    var pathsets = [];
-    var pathsetsCount = 0;
-
-    var subPath, subCode, subKeys, subKeysIndex, subKeysCount, subSets, subSetsIndex, subSetsCount, pathset, pathsetIndex, pathsetCount, firstSubKey, pathsetClone;
-
-    subKeys = [];
-    subKeysIndex = -1;
-
-    if (depth < length - 1) {
-
-        subKeysCount = getSortedKeys(pathmap, subKeys);
-
-        while (++subKeysIndex < subKeysCount) {
-            key = subKeys[subKeysIndex];
-            subPath = collapsePathMap(pathmap[key], depth + 1, length);
-            subCode = subPath.code;
-            if (subs[subCode]) {
-                subPath = subs[subCode];
-            } else {
-                codes[codesCount++] = subCode;
-                subPath = subs[subCode] = {
-                    keys: [],
-                    sets: subPath.sets
-                };
-            }
-            code = '' + getHashCode(code + key + subCode);
-
-            isSafeNumber(key) && subPath.keys.push(parseInt(key, 10)) || subPath.keys.push(key);
-        }
-
-        while (++codesIndex < codesCount) {
-
-            key = codes[codesIndex];
-            subPath = subs[key];
-            subKeys = subPath.keys;
-            subKeysCount = subKeys.length;
-
-            if (subKeysCount > 0) {
-
-                subSets = subPath.sets;
-                subSetsIndex = -1;
-                subSetsCount = subSets.length;
-                firstSubKey = subKeys[0];
-
-                while (++subSetsIndex < subSetsCount) {
-
-                    pathset = subSets[subSetsIndex];
-                    pathsetIndex = -1;
-                    pathsetCount = pathset.length;
-                    pathsetClone = new Array(pathsetCount + 1);
-                    pathsetClone[0] = subKeysCount > 1 && subKeys || firstSubKey;
-
-                    while (++pathsetIndex < pathsetCount) {
-                        pathsetClone[pathsetIndex + 1] = pathset[pathsetIndex];
-                    }
-
-                    pathsets[pathsetsCount++] = pathsetClone;
-                }
-            }
-        }
-    } else {
-        subKeysCount = getSortedKeys(pathmap, subKeys);
-        if (subKeysCount > 1) {
-            pathsets[pathsetsCount++] = [subKeys];
-        } else {
-            pathsets[pathsetsCount++] = subKeys;
-        }
-        while (++subKeysIndex < subKeysCount) {
-            code = '' + getHashCode(code + subKeys[subKeysIndex]);
-        }
-    }
-
-    return {
-        code: code,
-        sets: pathsets
-    };
-}
-
-function collapsePathSetIndexes(pathset) {
-
-    var keysetIndex = -1;
-    var keysetCount = pathset.length;
-
-    while (++keysetIndex < keysetCount) {
-        var keyset = pathset[keysetIndex];
-        if (isArray(keyset)) {
-            pathset[keysetIndex] = collapseIndex(keyset);
-        }
-    }
-
-    return pathset;
-}
-
-/**
- * Collapse range indexers, e.g. when there is a continuous
- * range in an array, turn it into an object instead:
- *
- * [1,2,3,4,5,6] => {"from":1, "to":6}
- *
- * @private
- */
-function collapseIndex(keyset) {
-
-    // Do we need to dedupe an indexer keyset if they're duplicate consecutive integers?
-    // var hash = {};
-    var keyIndex = -1;
-    var keyCount = keyset.length - 1;
-    var isSparseRange = keyCount > 0;
-
-    while (++keyIndex <= keyCount) {
-
-        var key = keyset[keyIndex];
-
-        if (!isSafeNumber(key) /* || hash[key] === true*/) {
-                isSparseRange = false;
-                break;
-            }
-        // hash[key] = true;
-        // Cast number indexes to integers.
-        keyset[keyIndex] = parseInt(key, 10);
-    }
-
-    if (isSparseRange === true) {
-
-        keyset.sort(sortListAscending);
-
-        var from = keyset[0];
-        var to = keyset[keyCount];
-
-        // If we re-introduce deduped integer indexers, change this comparson to "===".
-        if (to - from <= keyCount) {
-            return {
-                from: from,
-                to: to
-            };
-        }
-    }
-
-    return keyset;
-}
-
-function sortListAscending(a, b) {
-    return a - b;
-}
-
-/* jshint forin: false */
-function getSortedKeys(map, keys, sort) {
-    var len = 0;
-    if (map === materializedAtom) {
-        keys[len++] = null;
-    } else {
-        for (var key in map) {
-            keys[len++] = key;
-        }
-        if (len > 1) {
-            keys.sort(sort);
-        }
-    }
-    return len;
-}
-
-// function getHashCode(key) {
-//     var code = 5381;
-//     var index = -1;
-//     var count = key.length;
-//     while (++index < count) {
-//         code = (code << 5) + code + key.charCodeAt(index);
-//     }
-//     return String(code);
-// }
-
-/**
- * Return true if argument is a number or can be cast to a number which
- * roundtrips to the same string.
- * @private
- */
-function isSafeNumber(val) {
-    var num = val;
-    var type = typeof val;
-    if (type === typeOfString) {
-        var length = val.length;
-        // Number.MIN_SAFE_INTEGER is 17 digits including the sign.
-        // Anything longer cannot be safe.
-        if (length === 0 || length > MIN_SAFE_INTEGER_DIGITS) {
-            return false;
-        }
-        if (!safeNumberRegEx.test(val)) {
-            return false;
-        }
-        // Number.MAX_SAFE_INTEGER is 16 digits.
-        // Anything shorter must be safe.
-        if (length < MAX_SAFE_INTEGER_DIGITS) {
-            return true;
-        }
-        num = +val;
-    } else if (type !== typeOfNumber) {
-        return false;
-    }
-    // Number.isSafeInteger(num) in es6.
-    return num % 1 === 0 && abs(num) <= MAX_SAFE_INTEGER;
-}
-
-// export for testing
-module.exports._isSafeNumber = isSafeNumber;
-
-/***/ },
-/* 37 */
-/***/ function(module, exports, __webpack_require__) {
-
-var isArray = Array.isArray;
-var materializedAtom = __webpack_require__(4);
-
-module.exports = toTree;
-module.exports.pathToTree = pathToTree;
-
-/**
- * @param {Array} paths -
- * @returns {Object} -
- */
-
-function toTree(paths, seed) {
-    return paths.reduce(function (seed, path) {
-        return pathToTree(seed, path, 0, path.length, null);
-    }, seed || {});
-};
-
-function pathToTree(seed, path, depth, length, value, branch) {
-
-    if (depth === length) {
-        return true; //seed || value;
-    }
-
-    var seedKeySet,
-        keyset,
-        keysetIndex = -1,
-        keysetLength = 0;
-    var node,
-        next,
-        nextKey,
-        nextDepth = depth + 1,
-        keyIsRange,
-        rangeEnd,
-        keysOrRanges;
-
-    keyset = path[depth];
-
-    if (keyset === null) {
-        return materializedAtom;
-    }
-
-    seedKeySet = keyset;
-    seed = seed ? seed : branch ? branch(path, depth, seed) : {};
-
-    iteratingKeyset: do {
-        // If the keyset is a primitive value, we've found our `nextKey`.
-        if ('object' !== typeof keyset) {
-            nextKey = keyset;
-            rangeEnd = undefined;
-            keyIsRange = false;
-        }
-        // If we encounter a Keyset, either iterate through the Keys and Ranges,
-        // or throw an error if we're already iterating a Keyset. Keysets cannot
-        // contain other Keysets.
-        else if (isArray(keyset)) {
-                // If we've already encountered an Array keyset, throw an error.
-                if (keysOrRanges !== undefined) {
-                    break iteratingKeyset;
-                }
-                keysetIndex = 0;
-                keysOrRanges = keyset;
-                keysetLength = keyset.length;
-                // If an Array of keys or ranges is empty, terminate the graph walk
-                // and return the json constructed so far. An example of an empty
-                // Keyset is: ['lolomo', [], 'summary']. This should short circuit
-                // without building missing paths.
-                if (0 === keysetLength) {
-                    break iteratingKeyset;
-                }
-                // Assign `keyset` to the first value in the Keyset. Re-entering the
-                // outer loop mimics a singly-recursive function call.
-                keyset = keysOrRanges[keysetIndex];
-                continue iteratingKeyset;
-            }
-            // If the Keyset isn't a primitive or Array, then it must be a Range.
-            else {
-                    rangeEnd = keyset.to;
-                    nextKey = keyset.from || 0;
-                    if ("number" !== typeof rangeEnd) {
-                        rangeEnd = nextKey + (keyset.length || 0) - 1;
-                    }
-                    if (rangeEnd - nextKey < 0) {
-                        break iteratingKeyset;
-                    }
-                    keyIsRange = true;
-                }
-
-        do {
-            if (nextDepth === length) {
-                seed[nextKey] = value;
-            } else {
-                node = seed[path[depth] = nextKey];
-                next = pathToTree(node, path, nextDepth, length, value);
-                // next = pathToTree(node ||
-                //     branch && branch(path, depth, seed) || {},
-                //     path, nextDepth, length, value);
-                if (!next) {
-                    seed[nextKey] = value;
-                } else if (!node) {
-                    seed[nextKey] = next;
-                }
-            }
-        }
-        // Re-enter the inner loop and continue iterating the Range, or exit
-        // here if we encountered a Key.
-        while (keyIsRange && ++nextKey <= rangeEnd);
-
-        // If we've exhausted the Keyset (or never encountered one at all),
-        // exit the outer loop.
-        if (++keysetIndex === keysetLength) {
-            break iteratingKeyset;
-        }
-
-        // Otherwise get the next Key or Range from the Keyset and re-enter the
-        // outer loop from the top.
-        keyset = keysOrRanges[keysetIndex];
-    } while (true);
-
-    path[depth] = seedKeySet;
-
-    return seed;
-}
-
-/***/ },
-/* 38 */
-/***/ function(module, exports, __webpack_require__) {
-
-var isArray = Array.isArray;
-var walkPathAndBuildOutput = __webpack_require__(72);
-var walkFlatBufferAndBuildOutput = __webpack_require__(71);
+var walkPathAndBuildOutput = __webpack_require__(64);
+var walkFlatBufferAndBuildOutput = __webpack_require__(63);
 var getBoundCacheNode = __webpack_require__(15);
-var InvalidModelError = __webpack_require__(89);
-var toFlatBuffer = __webpack_require__(64);
-var computeFlatBufferHash = __webpack_require__(62);
+var InvalidModelError = __webpack_require__(81);
+var toFlatBuffer = __webpack_require__(107);
+var computeFlatBufferHash = __webpack_require__(101);
 
 module.exports = getJSON;
 
@@ -2319,10 +1959,9 @@ function getJSON(model, paths, seed, progressive, expireImmediate) {
         boundPath = model._path,
         modelRoot = model._root,
         cache = modelRoot.cache,
-        requestedPath,
-        requestedLength,
-        optimizedPath,
-        optimizedLength = boundPath && boundPath.length || 0;
+        requestedPath, requestedLength,
+        optimizedPath, optimizedLength =
+            boundPath && boundPath.length || 0;
 
     // If the model is bound, get the cache position.
     if (optimizedLength) {
@@ -2357,10 +1996,7 @@ function getJSON(model, paths, seed, progressive, expireImmediate) {
         treatErrorsAsValues = model._treatErrorsAsValues,
         allowFromWhenceYouCame = model._allowFromWhenceYouCame;
 
-    var arr,
-        path,
-        pathsIndex = 0,
-        pathsCount = paths.length;
+    var arr, path, pathsIndex = 0, pathsCount = paths.length;
 
     if (pathsCount > 0) {
         if (recycleJSON) {
@@ -2371,20 +2007,29 @@ function getJSON(model, paths, seed, progressive, expireImmediate) {
             }
             do {
                 path = paths[pathsIndex];
-                arr = walkFlatBufferAndBuildOutput(cache, node, json, path, 0, seed, results, requestedPath, optimizedPath, optimizedLength,
-                /* fromReference = */false, referenceContainer, modelRoot, expired, expireImmediate, branchSelector, boxValues, materialized, hasDataSource, treatErrorsAsValues, allowFromWhenceYouCame);
+                arr = walkFlatBufferAndBuildOutput(cache, node, json, path, 0, seed, results,
+                                                   requestedPath, optimizedPath, optimizedLength,
+                                                   /* fromReference = */ false, referenceContainer,
+                                                   modelRoot, expired, expireImmediate, branchSelector,
+                                                   boxValues, materialized, hasDataSource,
+                                                   treatErrorsAsValues, allowFromWhenceYouCame);
                 json = arr[0];
                 arr[0] = undefined;
                 arr[1] = undefined;
-            } while (++pathsIndex < pathsCount);
+            } while (++pathsIndex < pathsCount)
         } else {
             do {
                 path = paths[pathsIndex];
                 requestedLength = path.length;
                 json = walkPathAndBuildOutput(cache, node, json, path,
-                /* depth = */0, seed, results, requestedPath, requestedLength, optimizedPath, optimizedLength,
-                /* fromReference = */false, referenceContainer, modelRoot, expired, expireImmediate, branchSelector, boxValues, materialized, hasDataSource, treatErrorsAsValues, allowFromWhenceYouCame);
-            } while (++pathsIndex < pathsCount);
+                                           /* depth = */ 0, seed, results,
+                                              requestedPath, requestedLength,
+                                              optimizedPath, optimizedLength,
+                                              /* fromReference = */ false, referenceContainer,
+                                              modelRoot, expired, expireImmediate, branchSelector,
+                                              boxValues, materialized, hasDataSource,
+                                              treatErrorsAsValues, allowFromWhenceYouCame);
+            } while (++pathsIndex < pathsCount)
         }
     }
 
@@ -2393,7 +2038,7 @@ function getJSON(model, paths, seed, progressive, expireImmediate) {
     results.args = isFlatBuffer && paths || requested;
 
     if (requested && requested.length) {
-        results.relative = results.args; //requested;
+        results.relative = results.args;//requested;
         if (optimizedLength) {
             var boundRequested = [];
             for (var i = 0, len = requested.length; i < len; ++i) {
@@ -2410,16 +2055,17 @@ function getJSON(model, paths, seed, progressive, expireImmediate) {
     return results;
 }
 
+
 /***/ },
-/* 39 */
+/* 35 */
 /***/ function(module, exports, __webpack_require__) {
 
 var arr = new Array(3);
 var $ref = __webpack_require__(0);
 var promote = __webpack_require__(11);
 var isExpired = __webpack_require__(1);
-var createHardlink = __webpack_require__(5);
-var CircularReferenceError = __webpack_require__(49);
+var createHardlink = __webpack_require__(4);
+var CircularReferenceError = __webpack_require__(45);
 
 module.exports = getReferenceTarget;
 
@@ -2432,17 +2078,13 @@ function getReferenceTarget(root, ref, modelRoot, expireImmediate) {
     promote(modelRoot, ref);
 
     var context,
-        key,
-        type,
-        depth = 0,
+        key, type, depth = 0,
         followedRefsCount = 0,
-        node = root,
-        path = ref.value,
-        copy = path,
-        length = path.length;
+        node = root, path = ref.value,
+        copy = path, length = path.length;
 
     do {
-        if (depth === 0 && undefined !== (context = ref["\u001ef_context"])) {
+        if (depth === 0 && undefined !== (context = ref["ƒ_context"])) {
             node = context;
             depth = length;
         } else {
@@ -2461,14 +2103,14 @@ function getReferenceTarget(root, ref, modelRoot, expireImmediate) {
             }
             // If a reference points to itself, throw an error.
             else if (node === ref) {
-                    throw new CircularReferenceError(path);
-                }
-                // If the node we land on isn't the existing ref context,
-                // create a hard-link between the reference and the node
-                // it points to.
-                else if (node !== context) {
-                        createHardlink(ref, node);
-                    }
+                throw new CircularReferenceError(path);
+            }
+            // If the node we land on isn't the existing ref context,
+            // create a hard-link between the reference and the node
+            // it points to.
+            else if (node !== context) {
+                createHardlink(ref, node);
+            }
 
             // If the reference points to another ref, follow the new ref
             // by resetting the relevant state and continuing from the top.
@@ -2482,22 +2124,26 @@ function getReferenceTarget(root, ref, modelRoot, expireImmediate) {
                 path = copy = ref.value;
                 length = path.length;
 
-                if (true) {
-                    // If we follow too many references, we might have an indirect
-                    // circular reference chain. Warn about this (but don't throw).
-                    if (++followedRefsCount % 50 === 0) {
-                        try {
-                            throw new Error("Followed " + followedRefsCount + " references. " + "This might indicate the presence of an indirect " + "circular reference chain.");
-                        } catch (e) {
-                            if (console) {
-                                var reportFn = typeof console.warn === "function" && console.warn || typeof console.log === "function" && console.log;
-                                if (reportFn) {
-                                    reportFn.call(console, e.toString());
-                                }
-                            }
-                        }
-                    }
-                }
+                // if (DEBUG) {
+                //     // If we follow too many references, we might have an indirect
+                //     // circular reference chain. Warn about this (but don't throw).
+                //     if (++followedRefsCount % 50 === 0) {
+                //         try {
+                //             throw new Error(
+                //                 'Followed ' + followedRefsCount + ' references. ' +
+                //                 'This might indicate the presence of an indirect ' +
+                //                 'circular reference chain.'
+                //             );
+                //         } catch (e) {
+                //             if (console) {
+                //                 var reportFn = typeof console.log === 'function' && console.log;
+                //                 if (reportFn) {
+                //                     reportFn.call(console, e.toString());
+                //                 }
+                //             }
+                //         }
+                //     }
+                // }
 
                 continue;
             }
@@ -2525,21 +2171,26 @@ function getReferenceTarget(root, ref, modelRoot, expireImmediate) {
 }
 /* eslint-enable */
 
+
 /***/ },
-/* 40 */
+/* 36 */
 /***/ function(module, exports, __webpack_require__) {
 
 var clone = __webpack_require__(8);
-var onError = __webpack_require__(70);
+var onError = __webpack_require__(62);
 var $error = __webpack_require__(14);
-var materializedAtom = __webpack_require__(4);
+var materializedAtom = __webpack_require__(19);
 
 module.exports = onJSONValue;
 
-function onJSONValue(node, type, depth, seed, results, requestedPath, optimizedPath, optimizedLength, fromReference, boxValues, materialized, treatErrorsAsValues) {
+function onJSONValue(node, type, depth, seed, results,
+                     requestedPath, optimizedPath, optimizedLength,
+                     fromReference, boxValues, materialized,
+                     treatErrorsAsValues) {
 
     if ($error === type && !treatErrorsAsValues) {
-        return onError(node, depth, results, requestedPath, fromReference, boxValues);
+        return onError(node, depth, results, requestedPath,
+                       fromReference, boxValues);
     }
 
     var value = node && node.value;
@@ -2547,7 +2198,7 @@ function onJSONValue(node, type, depth, seed, results, requestedPath, optimizedP
 
     if (requiresMaterializedToReport) {
         if (materialized) {
-            debugger;
+            debugger
             results.hasValue = true;
             return materializedAtom;
         }
@@ -2564,25 +2215,24 @@ function onJSONValue(node, type, depth, seed, results, requestedPath, optimizedP
     return value;
 }
 
+
 /***/ },
-/* 41 */
+/* 37 */
 /***/ function(module, exports, __webpack_require__) {
 
-var walkPathAndBuildOutput = __webpack_require__(75);
-var BoundJSONGraphModelError = __webpack_require__(87);
+var walkPathAndBuildOutput = __webpack_require__(67);
+var BoundJSONGraphModelError = __webpack_require__(79);
 
 module.exports = getJSONGraph;
 
 function getJSONGraph(model, paths, seed, progressive, expireImmediate) {
 
-    var node,
-        cache,
+    var node, cache,
         boundPath = model._path,
         modelRoot = model._root,
-        requestedPath,
-        requestedLength,
-        optimizedPath,
-        optimizedLength = boundPath && boundPath.length || 0;
+        requestedPath, requestedLength,
+        optimizedPath, optimizedLength =
+            boundPath && boundPath.length || 0;
 
     // If the model is bound, then get that cache position.
     if (optimizedLength) {
@@ -2601,36 +2251,41 @@ function getJSONGraph(model, paths, seed, progressive, expireImmediate) {
         materialized = model._materialized,
         hasDataSource = Boolean(model._source),
         treatErrorsAsValues = model._treatErrorsAsValues,
+
         results = { data: seed },
-        pathsIndex = -1,
-        pathsCount = paths.length;
+        pathsIndex = -1, pathsCount = paths.length;
 
     while (++pathsIndex < pathsCount) {
         var path = paths[pathsIndex];
         requestedLength = path.length;
         walkPathAndBuildOutput(cache, node, path,
-        /* depth = */0, seed, results, requestedPath, requestedLength, optimizedPath, optimizedLength,
-        /* fromReference = */false, modelRoot, expired, expireImmediate, boxValues, materialized, hasDataSource, treatErrorsAsValues);
+                            /* depth = */ 0, seed, results,
+                               requestedPath, requestedLength,
+                               optimizedPath, optimizedLength,
+              /* fromReference = */ false, modelRoot, expired, expireImmediate,
+                               boxValues, materialized, hasDataSource, treatErrorsAsValues);
     }
 
-    results.args = results.relative = results.requested;
+    results.args =
+    results.relative = results.requested;
 
     return results;
 }
 
+
 /***/ },
-/* 42 */
+/* 38 */
 /***/ function(module, exports, __webpack_require__) {
 
 module.exports = function insertNode(node, parent, key, version, optimizedPath) {
-    node["\u001ef_key"] = key;
-    node["\u001ef_parent"] = parent;
+    node["ƒ_key"] = key;
+    node["ƒ_parent"] = parent;
 
     if (version !== undefined) {
-        node["\u001ef_version"] = version;
+        node["ƒ_version"] = version;
     }
-    if (!node["\u001ef_abs_path"]) {
-        node["\u001ef_abs_path"] = optimizedPath.slice(0, optimizedPath.index).concat(key);
+    if (!node["ƒ_abs_path"]) {
+        node["ƒ_abs_path"] = optimizedPath.slice(0, optimizedPath.index).concat(key);
     }
 
     parent[key] = node;
@@ -2638,8 +2293,9 @@ module.exports = function insertNode(node, parent, key, version, optimizedPath) 
     return node;
 };
 
+
 /***/ },
-/* 43 */
+/* 39 */
 /***/ function(module, exports, __webpack_require__) {
 
 var $ref = __webpack_require__(0);
@@ -2647,10 +2303,11 @@ var isExpired = __webpack_require__(1);
 var expireNode = __webpack_require__(3);
 var lruPromote = __webpack_require__(11);
 var getSize = __webpack_require__(7);
-var createHardlink = __webpack_require__(5);
+var createHardlink = __webpack_require__(4);
 var getBoundCacheNode = __webpack_require__(15);
+var isInternalKey = __webpack_require__(18);
 var updateNodeAncestors = __webpack_require__(10);
-var removeNodeAndDescendants = __webpack_require__(29);
+var removeNodeAndDescendants = __webpack_require__(27);
 
 /**
  * Sets a list of PathMaps into a JSON Graph.
@@ -2668,8 +2325,8 @@ module.exports = function invalidatePathMaps(model, pathMapEnvelopes, expireImme
     var comparator = modelRoot._comparator;
     var cache = modelRoot.cache;
     var node = getBoundCacheNode(model);
-    var parent = node["\u001ef_parent"] || cache;
-    var initialVersion = cache["\u001ef_version"];
+    var parent = node["ƒ_parent"] || cache;
+    var initialVersion = cache["ƒ_version"];
 
     var pathMapIndex = -1;
     var pathMapCount = pathMapEnvelopes.length;
@@ -2678,10 +2335,13 @@ module.exports = function invalidatePathMaps(model, pathMapEnvelopes, expireImme
 
         var pathMapEnvelope = pathMapEnvelopes[pathMapIndex];
 
-        invalidatePathMap(pathMapEnvelope.json, 0, cache, parent, node, version, expired, lru, comparator, expireImmediate);
+        invalidatePathMap(
+            pathMapEnvelope.json, 0, cache, parent, node,
+            version, expired, lru, comparator, expireImmediate
+        );
     }
 
-    var newVersion = cache["\u001ef_version"];
+    var newVersion = cache["ƒ_version"];
     var rootChangeHandler = modelRoot.onChange;
 
     if (rootChangeHandler && initialVersion !== newVersion) {
@@ -2689,22 +2349,32 @@ module.exports = function invalidatePathMaps(model, pathMapEnvelopes, expireImme
     }
 };
 
-function invalidatePathMap(pathMap, depth, root, parent, node, version, expired, lru, comparator, expireImmediate) {
+function invalidatePathMap(
+    pathMap, depth, root, parent, node, version,
+    expired, lru, comparator, expireImmediate) {
 
     if (!pathMap || typeof pathMap !== 'object' || pathMap.$type) {
         return;
     }
 
     for (var key in pathMap) {
-        if (key[0] !== "\u001e" && key[0] !== "$") {
+        if (!isInternalKey(key)) {
             var child = pathMap[key];
             var branch = !(!child || typeof child !== 'object') && !child.$type;
-            var results = invalidateNode(root, parent, node, key, child, branch, false, version, expired, lru, comparator, expireImmediate);
+            var results = invalidateNode(
+                root, parent, node,
+                key, child, branch, false, version, expired,
+                lru, comparator, expireImmediate
+            );
             var nextNode = results[0];
             var nextParent = results[1];
             if (nextNode) {
                 if (branch) {
-                    invalidatePathMap(child, depth + 1, root, nextParent, nextNode, version, expired, lru, comparator, expireImmediate);
+                    invalidatePathMap(
+                        child, depth + 1,
+                        root, nextParent, nextNode,
+                        version, expired, lru, comparator, expireImmediate
+                    );
                 } else if (removeNodeAndDescendants(nextNode, nextParent, key, lru)) {
                     updateNodeAncestors(nextParent, getSize(nextNode), lru, version);
                 }
@@ -2713,7 +2383,9 @@ function invalidatePathMap(pathMap, depth, root, parent, node, version, expired,
     }
 }
 
-function invalidateReference(value, root, node, version, expired, lru, comparator, expireImmediate) {
+function invalidateReference(
+    value, root, node, version,
+    expired, lru, comparator, expireImmediate) {
 
     if (isExpired(node, expireImmediate)) {
         expireNode(node, expired, lru);
@@ -2726,10 +2398,10 @@ function invalidateReference(value, root, node, version, expired, lru, comparato
     var reference = node.value;
     var parent = root;
 
-    node = node["\u001ef_context"];
+    node = node["ƒ_context"];
 
     if (node != null) {
-        parent = node["\u001ef_parent"] || root;
+        parent = node["ƒ_parent"] || root;
     } else {
 
         var index = 0;
@@ -2740,7 +2412,11 @@ function invalidateReference(value, root, node, version, expired, lru, comparato
         do {
             var key = reference[index];
             var branch = index < count;
-            var results = invalidateNode(root, parent, node, key, value, branch, true, version, expired, lru, comparator, expireImmediate);
+            var results = invalidateNode(
+                root, parent, node,
+                key, value, branch, true, version,
+                expired, lru, comparator, expireImmediate
+            );
             node = results[0];
             if (!node || typeof node !== 'object') {
                 return results;
@@ -2748,7 +2424,7 @@ function invalidateReference(value, root, node, version, expired, lru, comparato
             parent = results[1];
         } while (index++ < count);
 
-        if (container["\u001ef_context"] !== node) {
+        if (container["ƒ_context"] !== node) {
             createHardlink(container, node);
         }
     }
@@ -2756,13 +2432,19 @@ function invalidateReference(value, root, node, version, expired, lru, comparato
     return [node, parent];
 }
 
-function invalidateNode(root, parent, node, key, value, branch, reference, version, expired, lru, comparator, expireImmediate) {
+function invalidateNode(
+    root, parent, node,
+    key, value, branch, reference, version,
+    expired, lru, comparator, expireImmediate) {
 
     var type = node.$type;
 
     while (type === $ref) {
 
-        var results = invalidateReference(value, root, node, version, expired, lru, comparator, expireImmediate);
+        var results = invalidateReference(
+            value, root, node, version, expired,
+            lru, comparator, expireImmediate
+        );
 
         node = results[0];
 
@@ -2780,9 +2462,9 @@ function invalidateNode(root, parent, node, key, value, branch, reference, versi
 
     if (key == null) {
         if (branch) {
-            throw new Error("`null` is not allowed in branch key positions.");
+            throw new Error('`null` is not allowed in branch key positions.');
         } else if (node) {
-            key = node["\u001ef_key"];
+            key = node["ƒ_key"];
         }
     } else {
         parent = node;
@@ -2792,40 +2474,44 @@ function invalidateNode(root, parent, node, key, value, branch, reference, versi
     return [node, parent];
 }
 
+
 /***/ },
-/* 44 */
+/* 40 */
 /***/ function(module, exports, __webpack_require__) {
 
 var $ref = __webpack_require__(0);
 var $error = __webpack_require__(14);
-var $now = __webpack_require__(32);
-var getType = __webpack_require__(99);
+var $now = __webpack_require__(31);
+var getType = __webpack_require__(92);
 var getSize = __webpack_require__(7);
-var getTimestamp = __webpack_require__(55);
+var getTimestamp = __webpack_require__(51);
 
-var wrapNode = __webpack_require__(48);
+var wrapNode = __webpack_require__(44);
 var isExpired = __webpack_require__(1);
 var expireNode = __webpack_require__(3);
-var insertNode = __webpack_require__(42);
-var replaceNode = __webpack_require__(46);
-var reconstructPath = __webpack_require__(45);
+var insertNode = __webpack_require__(38);
+var replaceNode = __webpack_require__(42);
+var reconstructPath = __webpack_require__(41);
 var updateNodeAncestors = __webpack_require__(10);
 
-module.exports = function mergeValueOrInsertBranch(parent, node, key, value, branch, reference, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector, expireImmediate) {
+module.exports = function mergeValueOrInsertBranch(
+    parent, node, key, value,
+    branch, reference, requestedPath, optimizedPath, version,
+    expired, lru, comparator, errorSelector, expireImmediate) {
 
     var type = getType(node, reference);
 
     if (branch || reference) {
         if (type && isExpired(node,
-        /* expireImmediate:
-         * force true so the node is marked as
-         * expired but keep using it for the merge if it expires immediately
-         */
-        true)) {
+            /* expireImmediate:
+             * force true so the node is marked as
+             * expired but keep using it for the merge if it expires immediately
+             */
+            true)) {
             expireNode(node, expired, lru);
             type = node.$expires === $now ? type : 'expired';
         }
-        if (type && type !== $ref || !node || typeof node !== 'object') {
+        if ((type && type !== $ref) || (!node || typeof node !== 'object')) {
             node = replaceNode(node, {}, parent, key, lru, version);
             node = insertNode(node, parent, key, version, optimizedPath);
         }
@@ -2838,7 +2524,7 @@ module.exports = function mergeValueOrInsertBranch(parent, node, key, value, bra
         // is specified, the comparator takes precedence over timestamps.
         //
         // Comparing either Number or undefined to undefined always results in false.
-        var isDistinct = getTimestamp(message) < getTimestamp(node) === false;
+        var isDistinct = (getTimestamp(message) < getTimestamp(node)) === false;
         // If at least one of the cache/message are sentinels, compare them.
         if ((type || mType) && comparator) {
             isDistinct = !comparator(node, message, optimizedPath.slice(0, optimizedPath.index));
@@ -2862,8 +2548,9 @@ module.exports = function mergeValueOrInsertBranch(parent, node, key, value, bra
     return node;
 };
 
+
 /***/ },
-/* 45 */
+/* 41 */
 /***/ function(module, exports) {
 
 /**
@@ -2881,19 +2568,20 @@ module.exports = function mergeValueOrInsertBranch(parent, node, key, value, bra
  */
 module.exports = function reconstructPath(currentPath, key) {
 
-  var path = currentPath.slice(0, currentPath.depth);
-  path[path.length] = key;
+    var path = currentPath.slice(0, currentPath.depth);
+    path[path.length] = key;
 
-  return path;
+    return path;
 };
 
+
 /***/ },
-/* 46 */
+/* 42 */
 /***/ function(module, exports, __webpack_require__) {
 
-var transferBackReferences = __webpack_require__(82);
-var removeNodeAndDescendants = __webpack_require__(29);
-var updateBackReferenceVersions = __webpack_require__(47);
+var transferBackReferences = __webpack_require__(74);
+var removeNodeAndDescendants = __webpack_require__(27);
+var updateBackReferenceVersions = __webpack_require__(43);
 
 module.exports = function replaceNode(node, replacement, parent, key, lru, version) {
     if (node === replacement) {
@@ -2908,8 +2596,9 @@ module.exports = function replaceNode(node, replacement, parent, key, lru, versi
     return replacement;
 };
 
+
 /***/ },
-/* 47 */
+/* 43 */
 /***/ function(module, exports, __webpack_require__) {
 
 module.exports = function updateBackReferenceVersions(nodeArg, version) {
@@ -2917,31 +2606,32 @@ module.exports = function updateBackReferenceVersions(nodeArg, version) {
     var count = 0;
     do {
         var node = stack[count];
-        if (node && node["\u001ef_version"] !== version) {
-            node["\u001ef_version"] = version;
-            stack[count++] = node["\u001ef_parent"];
+        if (node && node["ƒ_version"] !== version) {
+            node["ƒ_version"] = version;
+            stack[count++] = node["ƒ_parent"];
             var i = -1;
-            var n = node["\u001ef_refs_length"] || 0;
+            var n = node["ƒ_refs_length"] || 0;
             while (++i < n) {
-                stack[count++] = node["\u001ef_ref" + i];
+                stack[count++] = node["ƒ_ref" + i];
             }
         }
     } while (--count > -1);
     return nodeArg;
 };
 
+
 /***/ },
-/* 48 */
+/* 44 */
 /***/ function(module, exports, __webpack_require__) {
 
 var isArray = Array.isArray;
-var now = __webpack_require__(58);
-var expiresNow = __webpack_require__(32);
+var now = __webpack_require__(54);
+var expiresNow = __webpack_require__(31);
 
-var $atom = __webpack_require__(103);
-var clone = __webpack_require__(97);
+var $atom = __webpack_require__(95);
+var clone = __webpack_require__(90);
 var getSize = __webpack_require__(7);
-var getExpires = __webpack_require__(98);
+var getExpires = __webpack_require__(91);
 
 var atomSize = 50;
 
@@ -2952,32 +2642,32 @@ module.exports = function wrapNode(nodeArg, typeArg, value) {
     var type = typeArg;
 
     if (type) {
-        var modelCreated = node["\u001ef_wrapped_value"];
+        var modelCreated = node["ƒ_wrapped_value"];
         node = clone(node);
         size = getSize(node);
         node.$type = type;
-        node["\u001ef_prev"] = undefined;
-        node["\u001ef_next"] = undefined;
-        node["\u001ef_wrapped_value"] = modelCreated || false;
+        node["ƒ_prev"] = undefined;
+        node["ƒ_next"] = undefined;
+        node["ƒ_wrapped_value"] = modelCreated || false;
     } else {
         node = { $type: $atom, value: value };
-        node["\u001ef_prev"] = undefined;
-        node["\u001ef_next"] = undefined;
-        node["\u001ef_wrapped_value"] = true;
+        node["ƒ_prev"] = undefined;
+        node["ƒ_next"] = undefined;
+        node["ƒ_wrapped_value"] = true;
     }
 
     if (value == null) {
         size = atomSize + 1;
     } else if (size == null || size <= 0) {
         switch (typeof value) {
-            case "object":
+            case 'object':
                 if (isArray(value)) {
                     size = atomSize + value.length;
                 } else {
                     size = atomSize + 1;
                 }
                 break;
-            case "string":
+            case 'string':
                 size = atomSize + value.length;
                 break;
             default:
@@ -2988,8 +2678,8 @@ module.exports = function wrapNode(nodeArg, typeArg, value) {
 
     var expires = getExpires(node);
 
-    if (typeof expires === "number" && expires < expiresNow) {
-        node.$expires = now() + expires * -1;
+    if (typeof expires === 'number' && expires < expiresNow) {
+        node.$expires = now() + (expires * -1);
     }
 
     node.$size = size;
@@ -2997,17 +2687,19 @@ module.exports = function wrapNode(nodeArg, typeArg, value) {
     return node;
 };
 
+
 /***/ },
-/* 49 */
+/* 45 */
 /***/ function(module, exports) {
 
-var NAME = "CircularReferenceError";
+var NAME = 'CircularReferenceError';
 
 /**
  * Does not allow null in path
  */
 function CircularReferenceError(referencePath) {
-    var err = Error.call(this, "Encountered circular reference " + JSON.stringify(referencePath));
+    var err = Error.call(this, 'Encountered circular reference ' +
+        JSON.stringify(referencePath));
     err.name = NAME;
     this.stack = err.stack;
     this.message = err.message;
@@ -3020,12 +2712,13 @@ CircularReferenceError.prototype.name = NAME;
 
 module.exports = CircularReferenceError;
 
+
 /***/ },
-/* 50 */
+/* 46 */
 /***/ function(module, exports) {
 
-var NAME = "InvalidSourceError";
-var MESSAGE = "An exception was thrown when making a request.";
+var NAME = 'InvalidSourceError';
+var MESSAGE = 'An exception was thrown when making a request';
 
 /**
  * InvalidSourceError happens when a dataSource syncronously throws
@@ -3035,7 +2728,7 @@ var MESSAGE = "An exception was thrown when making a request.";
  * @private
  */
 function InvalidSourceError(error) {
-    var err = Error.call(this, MESSAGE);
+    var err = Error.call(this, MESSAGE + ':\n\t' + error);
     err.name = NAME;
     this.stack = err.stack;
     this.message = err.message;
@@ -3047,17 +2740,18 @@ function InvalidSourceError(error) {
 // in the constructor.
 InvalidSourceError.prototype = Object.create(Error.prototype);
 InvalidSourceError.prototype.name = NAME;
-InvalidSourceError.is = function (e) {
+InvalidSourceError.is = function(e) {
     return e && e.name === NAME;
 };
 
 module.exports = InvalidSourceError;
 
+
 /***/ },
-/* 51 */
+/* 47 */
 /***/ function(module, exports, __webpack_require__) {
 
-var removeNode = __webpack_require__(28);
+var removeNode = __webpack_require__(26);
 var updateNodeAncestors = __webpack_require__(10);
 
 module.exports = function collect(lru, expired, totalArg, max, ratioArg, version) {
@@ -3065,11 +2759,11 @@ module.exports = function collect(lru, expired, totalArg, max, ratioArg, version
     var total = totalArg;
     var ratio = ratioArg;
 
-    if (typeof ratio !== "number") {
+    if (typeof ratio !== 'number') {
         ratio = 0.75;
     }
 
-    var shouldUpdate = typeof version === "number";
+    var shouldUpdate = typeof version === 'number';
     var targetSize = max * ratio;
     var parent, node, size;
 
@@ -3080,18 +2774,17 @@ module.exports = function collect(lru, expired, totalArg, max, ratioArg, version
         total -= size;
         if (shouldUpdate === true) {
             updateNodeAncestors(node, size, lru, version);
-        } else if (parent = node["\u001ef_parent"]) {
-            // eslint-disable-line no-cond-assign
-            removeNode(node, parent, node["\u001ef_key"], lru);
+        } else if (parent = node["ƒ_parent"]) {  // eslint-disable-line no-cond-assign
+            removeNode(node, parent, node["ƒ_key"], lru);
         }
         node = expired.pop();
     }
 
     if (total >= max) {
-        var prev = lru["\u001ef_tail"];
+        var prev = lru["ƒ_tail"];
         node = prev;
-        while (total >= targetSize && node) {
-            prev = prev["\u001ef_prev"];
+        while ((total >= targetSize) && node) {
+            prev = prev["ƒ_prev"];
             size = node.$size || 0;
             total -= size;
             if (shouldUpdate === true) {
@@ -3100,47 +2793,49 @@ module.exports = function collect(lru, expired, totalArg, max, ratioArg, version
             node = prev;
         }
 
-        lru["\u001ef_tail"] = lru["\u001ef_prev"] = node;
+        lru["ƒ_tail"] = lru["ƒ_prev"] = node;
         if (node == null) {
-            lru["\u001ef_head"] = lru["\u001ef_next"] = undefined;
+            lru["ƒ_head"] = lru["ƒ_next"] = undefined;
         } else {
-            node["\u001ef_next"] = undefined;
+            node["ƒ_next"] = undefined;
         }
     }
 };
 
+
 /***/ },
-/* 52 */
+/* 48 */
 /***/ function(module, exports, __webpack_require__) {
 
 module.exports = function lruSplice(root, object) {
 
     // Its in the cache.  Splice out.
-    var prev = object["\u001ef_prev"];
-    var next = object["\u001ef_next"];
+    var prev = object["ƒ_prev"];
+    var next = object["ƒ_next"];
     if (next) {
-        next["\u001ef_prev"] = prev;
+        next["ƒ_prev"] = prev;
     }
     if (prev) {
-        prev["\u001ef_next"] = next;
+        prev["ƒ_next"] = next;
     }
-    object["\u001ef_prev"] = object["\u001ef_next"] = undefined;
+    object["ƒ_prev"] = object["ƒ_next"] = undefined;
 
-    if (object === root["\u001ef_head"]) {
-        root["\u001ef_head"] = next;
+    if (object === root["ƒ_head"]) {
+        root["ƒ_head"] = next;
     }
-    if (object === root["\u001ef_tail"]) {
-        root["\u001ef_tail"] = prev;
+    if (object === root["ƒ_tail"]) {
+        root["ƒ_tail"] = prev;
     }
 };
 
+
 /***/ },
-/* 53 */
+/* 49 */
 /***/ function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {var Subscriber = __webpack_require__(12);
 var Subscription = __webpack_require__(13);
-var $$observable = __webpack_require__(104).default;
+var $$observable = __webpack_require__(96).default;
 
 module.exports = Source;
 
@@ -3158,55 +2853,58 @@ function Source(subscribe) {
     }
 }
 
-Source.prototype[$$observable] = function () {
+Source.prototype[$$observable] = function() {
     return this;
-};
+}
 
-Source.prototype.operator = function (destination) {
+Source.prototype.operator = function(destination) {
     return this.subscribe(destination);
-};
+}
 
-Source.prototype.lift = function (operator, source) {
-    source = new Source(source || this);
-    source.operator = operator;
-    return source;
-};
+// Unused
+// Source.prototype.lift = function(operator, source) {
+//     source = new Source(source || this);
+//     source.operator = operator;
+//     source._promise = this._promise;
+//     return source;
+// }
 
-Source.prototype.subscribe = function (destination, x, y) {
-    return new Subscription([this.operator.call(this.source, !(destination instanceof Subscriber) ? new Subscriber(destination, x, y) : destination)]);
-};
+Source.prototype.subscribe = function(destination, x, y) {
+    return new Subscription([
+        this.operator.call(
+            this.source, !(destination instanceof Subscriber) ?
+                new Subscriber(destination, x, y) : destination)
+    ]);
+}
 
 Source.prototype.then = function then(onNext, onError) {
     /* global Promise */
     var source = this;
     if (!this._promise) {
-        this._promise = new global['Promise'](function (resolve, reject) {
-            var values = [],
-                rejected = false;
+        this._promise = new global['Promise'](function(resolve, reject) {
+            var values = [], rejected = false;
             source.subscribe({
-                next: function (value) {
-                    values[values.length] = value;
-                },
-                error: function (errors) {
-                    (rejected = true) && reject(errors);
-                },
-                complete: function () {
-                    !rejected && resolve(values.length <= 1 ? values[0] : values);
+                next: function(value) { values[values.length] = value; },
+                error: function(errors) { (rejected = true) && reject(errors); },
+                complete: function() {
+                    !rejected &&
+                    resolve(values.length <= 1 ? values[0] : values);
                 }
             });
         });
     }
     return this._promise.then(onNext, onError);
 };
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(33)))
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(32)))
 
 /***/ },
-/* 54 */
+/* 50 */
 /***/ function(module, exports) {
 
 var empty = {
-    dispose: function () {},
-    unsubscribe: function () {}
+    dispose: function() {},
+    unsubscribe: function() {}
 };
 
 function ImmediateScheduler() {}
@@ -3218,8 +2916,9 @@ ImmediateScheduler.prototype.schedule = function schedule(action) {
 
 module.exports = ImmediateScheduler;
 
+
 /***/ },
-/* 55 */
+/* 51 */
 /***/ function(module, exports, __webpack_require__) {
 
 var isObject = __webpack_require__(2);
@@ -3227,386 +2926,97 @@ module.exports = function getTimestamp(node) {
     return isObject(node) && node.$timestamp || undefined;
 };
 
+
 /***/ },
-/* 56 */
+/* 52 */
 /***/ function(module, exports, __webpack_require__) {
 
 var isObject = __webpack_require__(2);
 
 module.exports = function isJSONEnvelope(envelope) {
-    return isObject(envelope) && "json" in envelope;
+    return isObject(envelope) && ('json' in envelope);
 };
 
+
 /***/ },
-/* 57 */
+/* 53 */
 /***/ function(module, exports, __webpack_require__) {
 
 var isArray = Array.isArray;
 var isObject = __webpack_require__(2);
 
 module.exports = function isJSONGraphEnvelope(envelope) {
-    return isObject(envelope) && isArray(envelope.paths) && (isObject(envelope.jsonGraph) || isObject(envelope.jsong) || isObject(envelope.json) || isObject(envelope.values) || isObject(envelope.value));
+    return isObject(envelope) && isArray(envelope.paths) && (
+        isObject(envelope.jsonGraph) ||
+        isObject(envelope.jsong) ||
+        isObject(envelope.json) ||
+        isObject(envelope.values) ||
+        isObject(envelope.value)
+    );
 };
 
+
 /***/ },
-/* 58 */
+/* 54 */
 /***/ function(module, exports) {
 
 module.exports = Date.now;
 
+
 /***/ },
-/* 59 */
+/* 55 */
 /***/ function(module, exports) {
 
 module.exports = 1;
 
+
 /***/ },
-/* 60 */
+/* 56 */
 /***/ function(module, exports, __webpack_require__) {
 
-"use strict";
-"use strict";
-
-var Model = __webpack_require__(65);
-var FalcorJSON = __webpack_require__(21);
+var Model = __webpack_require__(57);
+var FalcorJSON = __webpack_require__(5);
 
 function falcor(opts) {
-    return new Model(opts);
+    if (!(this instanceof Model)) {
+        return new Model(opts);
+    }
+    Model.call(this, opts);
 }
 
-falcor["Model"] = Model;
-falcor["FalcorJSON"] = FalcorJSON;
-falcor["toProps"] = FalcorJSON.prototype.toProps;
+falcor.prototype = Object.create(Model.prototype);
+
+falcor['Model'] = Model;
+falcor['FalcorJSON'] = FalcorJSON;
+falcor['toProps'] = FalcorJSON.prototype.toProps;
 
 module.exports = falcor;
 
-/***/ },
-/* 61 */
-/***/ function(module, exports, __webpack_require__) {
-
-var toPaths = __webpack_require__(36);
-var toCollapseMap = __webpack_require__(34);
-var toCollapseTrees = __webpack_require__(35);
-
-module.exports = function collapse(paths) {
-    return toPaths(toCollapseTrees(toCollapseMap(paths)));
-};
 
 /***/ },
-/* 62 */
+/* 57 */
 /***/ function(module, exports, __webpack_require__) {
 
-var isArray = Array.isArray;
-var getHashCode = __webpack_require__(19);
+var Call = __webpack_require__(84);
+var ModelRoot = __webpack_require__(59);
+var FalcorJSON = __webpack_require__(5);
+var ModelDataSourceAdapter = __webpack_require__(58);
+var TimeoutScheduler = __webpack_require__(88);
+var ImmediateScheduler = __webpack_require__(50);
 
-module.exports = computeFlatBufferHash;
-
-function computeFlatBufferHash(seed) {
-
-    if (seed === undefined) {
-        return undefined;
-    }
-
-    var code = '';
-    var keys = seed['$keys'];
-    var keysIndex = -1;
-    var keysLength = keys.length;
-
-    while (++keysIndex < keysLength) {
-
-        var key = keys[keysIndex];
-
-        if (key === null) {
-            code = '' + getHashCode('' + code + 'null');
-            continue;
-        } else if (typeof key === 'object') {
-            key = '{from:' + key.from + ',length:' + key.length + '}';
-        }
-
-        var next = computeFlatBufferHash(seed[keysIndex]);
-        if (next === undefined) {
-            code = '' + getHashCode('' + code + key);
-        } else {
-            code = '' + getHashCode('' + code + key + next['$code']);
-        }
-    }
-
-    seed['$code'] = code;
-
-    return seed;
-}
-
-/***/ },
-/* 63 */
-/***/ function(module, exports, __webpack_require__) {
-
-var isArray = Array.isArray;
-var materializedAtom = __webpack_require__(4);
-
-module.exports = hasIntersection;
-
-/**
- * Tests to see if the intersection should be stripped from the
- * total paths.  The only way this happens currently is if the entirety
- * of the path is contained in the tree.
- * @private
- */
-
-function hasIntersection(tree, path, depth, length) {
-
-    if (depth === length) {
-        return true;
-    }
-
-    var intersects = true;
-    var keyset,
-        keysetIndex = -1,
-        keysetLength = 0;
-    var next,
-        nextKey,
-        nextDepth = depth + 1,
-        keyIsRange,
-        rangeEnd,
-        keysOrRanges;
-
-    keyset = path[depth];
-
-    if (keyset === null) {
-        return tree === materializedAtom;
-    }
-
-    iteratingKeyset: do {
-        // If the keyset is a primitive value, we've found our `nextKey`.
-        if ('object' !== typeof keyset) {
-            nextKey = keyset;
-            rangeEnd = undefined;
-            keyIsRange = false;
-        }
-        // If we encounter a Keyset, either iterate through the Keys and Ranges,
-        // or throw an error if we're already iterating a Keyset. Keysets cannot
-        // contain other Keysets.
-        else if (isArray(keyset)) {
-                // If we've already encountered an Array keyset, throw an error.
-                if (keysOrRanges !== undefined) {
-                    break iteratingKeyset;
-                }
-                keysetIndex = 0;
-                keysOrRanges = keyset;
-                keysetLength = keyset.length;
-                // If an Array of keys or ranges is empty, terminate the graph walk
-                // and return the json constructed so far. An example of an empty
-                // Keyset is: ['lolomo', [], 'summary']. This should short circuit
-                // without building missing paths.
-                if (0 === keysetLength) {
-                    break iteratingKeyset;
-                }
-                // Assign `keyset` to the first value in the Keyset. Re-entering the
-                // outer loop mimics a singly-recursive function call.
-                keyset = keysOrRanges[keysetIndex];
-                continue iteratingKeyset;
-            }
-            // If the Keyset isn't a primitive or Array, then it must be a Range.
-            else {
-                    rangeEnd = keyset.to;
-                    nextKey = keyset.from || 0;
-                    if ("number" !== typeof rangeEnd) {
-                        rangeEnd = nextKey + (keyset.length || 0) - 1;
-                    }
-                    if (rangeEnd - nextKey < 0) {
-                        break iteratingKeyset;
-                    }
-                    keyIsRange = true;
-                }
-
-        do {
-            if (nextDepth === length) {
-                if (tree[nextKey] !== null) {
-                    return false;
-                }
-            } else {
-                next = tree[nextKey];
-                if (next === null || next === undefined) {
-                    return false;
-                } else if (hasIntersection(next, path, nextDepth, length) === false) {
-                    return false;
-                }
-            }
-        }
-        // Re-enter the inner loop and continue iterating the Range, or exit
-        // here if we encountered a Key.
-        while (keyIsRange && ++nextKey <= rangeEnd);
-
-        // If we've exhausted the Keyset (or never encountered one at all),
-        // exit the outer loop.
-        if (++keysetIndex === keysetLength) {
-            break iteratingKeyset;
-        }
-
-        // Otherwise get the next Key or Range from the Keyset and re-enter the
-        // outer loop from the top.
-        keyset = keysOrRanges[keysetIndex];
-    } while (true);
-
-    return true;
-}
-
-/***/ },
-/* 64 */
-/***/ function(module, exports, __webpack_require__) {
-
-var isArray = Array.isArray;
-var nullBuffer = { '$keys': [null], '$keysMap': { 'null': 0 } };
-var flatBufferToPaths = __webpack_require__(18);
-
-module.exports = toFlatBuffer;
-
-/*
-var inspect = require('util').inspect;
-var computeFlatBufferHash = require('./computeFlatBufferHash');
-var flatBuf = computeFlatBufferHash(toFlatBuffer([
-    ['genreLists', 'length'],
-    ['genreLists', { from: 1, length: 9 }, ['name', 'rating']],
-    ['genreLists', { from: 1, length: 9 }, 'color', null],
-    ['genreLists', { from: 1, length: 9 }, 'titles', 'length'],
-    ['genreLists', { from: 1, length: 9 }, 'titles', { from: 9, length: 2 }, ['name', 'rating', 'box-shot']],
-]));
-
-console.log(inspect(flatBuf, { depth: null }));
-*/
-
-function toFlatBuffer(paths, seed) {
-    return paths.reduce(function (seed, path) {
-        if (isArray(path)) {
-            return pathToFlatBuffer(seed, path, 0, path.length);
-        }
-        return toFlatBuffer(flatBufferToPaths(path), seed);
-    }, seed || {});
-}
-
-function pathToFlatBuffer(seed, path, depth, length) {
-
-    if (depth === length) {
-        return undefined;
-    }
-
-    seed = seed || {};
-    var keys = seed['$keys'] || (seed['$keys'] = []);
-    var keysMap = seed['$keysMap'] || (seed['$keysMap'] = {});
-    var keysIndex = -1;
-
-    var keyset,
-        keysetIndex = -1,
-        keysetLength = 0;
-    var node,
-        next,
-        nextKey,
-        nextDepth = depth + 1,
-        rangeEnd,
-        keysOrRanges;
-
-    keyset = path[depth];
-
-    if (keyset === null) {
-        return nullBuffer;
-    }
-
-    iteratingKeyset: do {
-        // If the keyset is a primitive value, we've found our `nextKey`.
-        if ('object' !== typeof keyset) {
-            nextKey = keyset;
-            if ('undefined' === typeof (keysIndex = keysMap[nextKey])) {
-                keysIndex = keys.length;
-            }
-            keys[keysIndex] = nextKey;
-            keysMap[nextKey] = keysIndex;
-            next = pathToFlatBuffer(seed[keysIndex], path, nextDepth, length);
-            if (next !== undefined) {
-                seed[keysIndex] = next;
-            }
-        }
-        // If we encounter a Keyset, either iterate through the Keys and Ranges,
-        // or throw an error if we're already iterating a Keyset. Keysets cannot
-        // contain other Keysets.
-        else if (isArray(keyset)) {
-                // If we've already encountered an Array keyset, throw an error.
-                if (keysOrRanges !== undefined) {
-                    break iteratingKeyset;
-                }
-                keysetIndex = 0;
-                keysOrRanges = keyset;
-                keysetLength = keyset.length;
-                // If an Array of keys or ranges is empty, terminate the graph walk
-                // and return the json constructed so far. An example of an empty
-                // Keyset is: ['lolomo', [], 'summary']. This should short circuit
-                // without building missing paths.
-                if (0 === keysetLength) {
-                    break iteratingKeyset;
-                }
-                // Assign `keyset` to the first value in the Keyset. Re-entering the
-                // outer loop mimics a singly-recursive function call.
-                keyset = keysOrRanges[keysetIndex];
-                continue iteratingKeyset;
-            }
-            // If the Keyset isn't a primitive or Array, then it must be a Range.
-            else {
-                    rangeEnd = keyset.to;
-                    nextKey = keyset.from || 0;
-                    if ('number' !== typeof rangeEnd) {
-                        rangeEnd = nextKey + (keyset.length || 0) - 1;
-                    }
-                    if (rangeEnd - nextKey < 0) {
-                        break iteratingKeyset;
-                    }
-                    keyset = { from: nextKey, length: rangeEnd - nextKey + 1 };
-                    nextKey = '{from:' + nextKey + ',length:' + (rangeEnd - nextKey + 1) + '}';
-                    if ('undefined' === typeof (keysIndex = keysMap[nextKey])) {
-                        keysIndex = keys.length;
-                    }
-                    keys[keysIndex] = keyset;
-                    keysMap[nextKey] = keysIndex;
-                    next = pathToFlatBuffer(seed[keysIndex], path, nextDepth, length);
-                    if (next !== undefined) {
-                        seed[keysIndex] = next;
-                    }
-                }
-
-        // If we've exhausted the Keyset (or never encountered one at all),
-        // exit the outer loop.
-        if (++keysetIndex === keysetLength) {
-            break iteratingKeyset;
-        }
-
-        // Otherwise get the next Key or Range from the Keyset and re-enter the
-        // outer loop from the top.
-        keyset = keysOrRanges[keysetIndex];
-    } while (true);
-
-    return seed;
-}
-
-/***/ },
-/* 65 */
-/***/ function(module, exports, __webpack_require__) {
-
-var Call = __webpack_require__(91);
-var ModelRoot = __webpack_require__(67);
-var ModelDataSourceAdapter = __webpack_require__(66);
-var TimeoutScheduler = __webpack_require__(95);
-var ImmediateScheduler = __webpack_require__(54);
-
-var lruCollect = __webpack_require__(51);
+var lruCollect = __webpack_require__(47);
 var getSize = __webpack_require__(7);
 var isObject = __webpack_require__(2);
-var isJSONEnvelope = __webpack_require__(56);
+var isJSONEnvelope = __webpack_require__(52);
 var getCachePosition = __webpack_require__(9);
-var isJSONGraphEnvelope = __webpack_require__(57);
+var isJSONGraphEnvelope = __webpack_require__(53);
 
 var setCache = __webpack_require__(17);
 var setJSONGraphs = __webpack_require__(16);
 
-var getJSON = __webpack_require__(22);
-var getCache = __webpack_require__(76);
-var getJSONGraph = __webpack_require__(23);
+var getJSON = __webpack_require__(20);
+var getCache = __webpack_require__(68);
+var getJSONGraph = __webpack_require__(21);
 
 module.exports = Model;
 
@@ -3615,20 +3025,20 @@ module.exports = Model;
  * @callback Model~onChange
  */
 
-/**
-* This function is invoked on every JSONGraph Error retrieved from the DataSource. This function allows Error objects to be transformed before being stored in the Model's cache.
-* @callback Model~errorSelector
-* @param {Object} jsonGraphError - the JSONGraph Error object to transform before it is stored in the Model's cache.
-* @returns {Object} the JSONGraph Error object to store in the Model cache.
-*/
+ /**
+ * This function is invoked on every JSONGraph Error retrieved from the DataSource. This function allows Error objects to be transformed before being stored in the Model's cache.
+ * @callback Model~errorSelector
+ * @param {Object} jsonGraphError - the JSONGraph Error object to transform before it is stored in the Model's cache.
+ * @returns {Object} the JSONGraph Error object to store in the Model cache.
+ */
 
-/**
-* This function is invoked every time a value in the Model cache is about to be replaced with a new value. If the function returns true, the existing value is replaced with a new value and the version flag on all of the value's ancestors in the tree are incremented.
-* @callback Model~comparator
-* @param {Object} existingValue - the current value in the Model cache.
-* @param {Object} newValue - the value about to be set into the Model cache.
-* @returns {Boolean} the Boolean value indicating whether the new value and the existing value are equal.
-*/
+ /**
+ * This function is invoked every time a value in the Model cache is about to be replaced with a new value. If the function returns true, the existing value is replaced with a new value and the version flag on all of the value's ancestors in the tree are incremented.
+ * @callback Model~comparator
+ * @param {Object} existingValue - the current value in the Model cache.
+ * @param {Object} newValue - the value about to be set into the Model cache.
+ * @returns {Boolean} the Boolean value indicating whether the new value and the existing value are equal.
+ */
 
 /**
  * A Model object is used to execute commands against a {@link JSONGraph} object. {@link Model}s can work with a local JSONGraph cache, or it can work with a remote {@link JSONGraph} object through a {@link DataSource}.
@@ -3658,8 +3068,8 @@ function Model(opts) {
         this._seed = options._seed;
         this._treatErrorsAsValues = true;
     } else if (this._recycleJSON) {
-        this._seed = {};
         this._treatErrorsAsValues = true;
+        this._seed = { __proto__: FalcorJSON.prototype };
     }
 
     this._boxed = options.boxed === true || options._boxed || false;
@@ -3681,8 +3091,10 @@ Model.prototype.constructor = Model;
  * @return {ModelResponse.<JSONEnvelope>} - the requested data as JSON
  */
 Model.prototype.get = function get() {
-    return new Call('get', this, Array.prototype.slice.call(arguments, 0))._toJSON(this._seed || {}, []);
-};
+    return new Call(
+        'get', this, Array.prototype.slice.call(arguments, 0)
+    )._toJSON(this._seed || { __proto__: FalcorJSON.prototype }, []);
+}
 
 /**
  * Sets the value at one or more places in the JSONGraph model. The set method accepts one or more {@link PathValue}s, each of which is a combination of a location in the document and the value to place there.  In addition to accepting  {@link PathValue}s, the set method also returns the values after the set operation is complete.
@@ -3690,8 +3102,10 @@ Model.prototype.get = function get() {
  * @return {ModelResponse.<JSONEnvelope>} - an {@link Observable} stream containing the values in the JSONGraph model after the set was attempted
  */
 Model.prototype.set = function set() {
-    return new Call('set', this, Array.prototype.slice.call(arguments, 0))._toJSON({}, []);
-};
+    return new Call(
+        'set', this, Array.prototype.slice.call(arguments, 0)
+    )._toJSON({ __proto__: FalcorJSON.prototype }, []);
+}
 
 /**
  * The preload method retrieves several {@link Path}s or {@link PathSet}s from a {@link Model} and loads them into the Model cache.
@@ -3700,8 +3114,10 @@ Model.prototype.set = function set() {
  * @return {ModelResponse.<JSONEnvelope>} - a ModelResponse that completes when the data has been loaded into the cache.
  */
 Model.prototype.preload = function preload() {
-    return new Call('get', this, Array.prototype.slice.call(arguments, 0))._toJSON(null, []);
-};
+    return new Call(
+        'get', this, Array.prototype.slice.call(arguments, 0)
+    )._toJSON(null, []);
+}
 
 /**
  * Invokes a function in the JSON Graph.
@@ -3714,8 +3130,10 @@ Model.prototype.preload = function preload() {
  */
 
 Model.prototype.call = function call() {
-    return new Call('call', this, Array.prototype.slice.call(arguments, 0))._toJSON({}, []);
-};
+    return new Call(
+        'call', this, Array.prototype.slice.call(arguments, 0)
+    )._toJSON({ __proto__: FalcorJSON.prototype }, []);
+}
 
 /**
  * The invalidate method synchronously removes several {@link Path}s or {@link PathSet}s from a {@link Model} cache.
@@ -3723,8 +3141,10 @@ Model.prototype.call = function call() {
  * @param {...PathSet} path - the  paths to remove from the {@link Model}'s cache.
  */
 Model.prototype.invalidate = function invalidate() {
-    return new Call('invalidate', this, Array.prototype.slice.call(arguments, 0))._toJSON(null, null).then();
-};
+    return new Call(
+        'invalidate', this, Array.prototype.slice.call(arguments, 0)
+    )._toJSON(null, null).then();
+}
 
 /**
  * Returns a new {@link Model} bound to a location within the {@link
@@ -3747,12 +3167,12 @@ var Model = falcor.Model;
 var model = new Model({
   cache: {
     users: [
-      Model.ref(["usersById", 32])
+      Model.ref(['usersById', 32])
     ],
     usersById: {
       32: {
-        name: "Steve",
-        surname: "McGuire"
+        name: 'Steve',
+        surname: 'McGuire'
       }
     }
   }
@@ -3769,9 +3189,9 @@ model.
 
 // prints the following:
 // []
-// ["usersById", 32] - because userModel refers to target of reference at ["users", 0]
+// ['usersById', 32] - because userModel refers to target of reference at ['users', 0]
  */
-Model.prototype.deref = __webpack_require__(86);
+Model.prototype.deref = __webpack_require__(78);
 
 /**
  * A dereferenced model can become invalid when the reference from which it was
@@ -3784,14 +3204,14 @@ Model.prototype.deref = __webpack_require__(86);
  * @return {Boolean} - If the currently deref'd model is still considered a
  * valid deref.
  */
-Model.prototype._hasValidParentReference = __webpack_require__(85);
+Model.prototype._hasValidParentReference = __webpack_require__(77);
 
 /**
  * Get data for a single {@link Path}.
  * @param {Path} path - the path to retrieve
  * @return {Observable.<*>} - the value for the path
  * @example
- var model = new falcor.Model({source: new falcor.HttpDataSource("/model.json") });
+ var model = new falcor.Model({source: new falcor.HttpDataSource('/model.json') });
 
  model.
      getValue('user.name').
@@ -3799,12 +3219,12 @@ Model.prototype._hasValidParentReference = __webpack_require__(85);
          console.log(name);
      });
 
- // The code above prints "Jim" to the console.
+ // The code above prints 'Jim' to the console.
  */
 Model.prototype.getValue = function getValue(path) {
-    return this.get(path).lift(function (subscriber) {
+    return this.get(path).lift(function(subscriber) {
         return this.subscribe({
-            onNext: function (data) {
+            onNext: function(data) {
                 var depth = -1;
                 var x = data.json;
                 var length = path.length;
@@ -3815,9 +3235,9 @@ Model.prototype.getValue = function getValue(path) {
             },
             onError: subscriber.onError.bind(subscriber),
             onCompleted: subscriber.onCompleted.bind(subscriber)
-        });
+        })
     });
-};
+}
 
 /**
  * Set value for a single {@link Path}.
@@ -3825,7 +3245,7 @@ Model.prototype.getValue = function getValue(path) {
  * @param {Object} value - the value to set
  * @return {Observable.<*>} - the value for the path
  * @example
- var model = new falcor.Model({source: new falcor.HttpDataSource("/model.json") });
+ var model = new falcor.Model({source: new falcor.HttpDataSource('/model.json') });
 
  model.
      setValue('user.name', 'Jim').
@@ -3833,14 +3253,14 @@ Model.prototype.getValue = function getValue(path) {
          console.log(name);
      });
 
- // The code above prints "Jim" to the console.
+ // The code above prints 'Jim' to the console.
  */
 Model.prototype.setValue = function setValue(path, value) {
     path = arguments.length === 1 ? path.path : path;
-    value = arguments.length === 1 ? path : { path: path, value: value };
-    return this.set(value).lift(function (subscriber) {
+    value = arguments.length === 1 ? path : {path:path,value:value};
+    return this.set(value).lift(function(subscriber) {
         return this.subscribe({
-            onNext: function (data) {
+            onNext: function(data) {
                 var depth = -1;
                 var x = data.json;
                 var length = path.length;
@@ -3851,9 +3271,9 @@ Model.prototype.setValue = function setValue(path, value) {
             },
             onError: subscriber.onError.bind(subscriber),
             onCompleted: subscriber.onCompleted.bind(subscriber)
-        });
+        })
     });
-};
+}
 
 /**
  * Set the local cache to a {@link JSONGraph} fragment. This method can be a useful way of mocking a remote document, or restoring the local cache from a previously stored state.
@@ -3865,26 +3285,27 @@ Model.prototype.setCache = function modelSetCache(cacheOrJSONGraphEnvelope) {
         var modelRoot = this._root;
         var boundPath = this._path;
         this._path = [];
-        this._seed = null;
         this._node = this._root.cache = {};
-        if (typeof cache !== "undefined") {
+        if (typeof cache !== 'undefined') {
             lruCollect(modelRoot, modelRoot.expired, getSize(cache), 0);
+            if (this._recycleJSON) {
+                this._seed = { __proto__: FalcorJSON.prototype };
+            }
         }
-        var out;
+        var paths;
         if (isJSONGraphEnvelope(cacheOrJSONGraphEnvelope)) {
-            out = setJSONGraphs(this, [cacheOrJSONGraphEnvelope])[0];
+            paths = setJSONGraphs(this, [cacheOrJSONGraphEnvelope])[0];
         } else if (isJSONEnvelope(cacheOrJSONGraphEnvelope)) {
-            out = setCache(this, [cacheOrJSONGraphEnvelope])[0];
+            paths = setCache(this, [cacheOrJSONGraphEnvelope])[0];
         } else if (isObject(cacheOrJSONGraphEnvelope)) {
-            out = setCache(this, [{ json: cacheOrJSONGraphEnvelope }])[0];
+            paths = setCache(this, [{ json: cacheOrJSONGraphEnvelope }])[0];
         }
-
         // performs promotion without producing output.
-        if (out) {
-            getJSON(this, out, null, false, true);
+        if (paths) {
+            getJSON(this, paths, null, false, true);
         }
         this._path = boundPath;
-    } else if (typeof cache === "undefined") {
+    } else if (typeof cache === 'undefined') {
         this._root.cache = {};
     }
     return this;
@@ -3896,7 +3317,7 @@ Model.prototype.setCache = function modelSetCache(cacheOrJSONGraphEnvelope) {
  * @return {JSONGraph} all of the {@link JSONGraph} data in the {@link Model} cache.
  * @example
  // Storing the boxshot of the first 10 titles in the first 10 genreLists to local storage.
- localStorage.setItem('cache', JSON.stringify(model.getCache("genreLists[0...10][0...10].boxshot")));
+ localStorage.setItem('cache', JSON.stringify(model.getCache('genreLists[0...10][0...10].boxshot')));
  */
 Model.prototype.getCache = function _getCache() {
     var paths = Array.prototype.slice.call(arguments, 0);
@@ -3918,7 +3339,7 @@ Model.prototype.getCache = function _getCache() {
  */
 Model.prototype.getVersion = function getVersion(path = []) {
     if (Array.isArray(path) === false) {
-        throw new Error("Model#getVersion must be called with an Array path.");
+        throw new Error('Model#getVersion must be called with an Array path.');
     }
     if (this._path.length) {
         path = this._path.concat(path);
@@ -3932,12 +3353,12 @@ Model.prototype._clone = function cloneModel(opts) {
     if (opts) {
         for (var key in opts) {
             var value = opts[key];
-            if (value === "delete") {
+            if (value === 'delete') {
                 delete clone[key];
-            } else if (key === "_path") {
+            } else if (key === '_path') {
                 clone[key] = value;
-                if (false === opts.hasOwnProperty("_node")) {
-                    delete clone["_node"];
+                if (false === opts.hasOwnProperty('_node')) {
+                    delete clone['_node'];
                 }
             } else {
                 clone[key] = value;
@@ -3960,7 +3381,7 @@ Model.prototype.batch = function batch(schedulerOrDelay) {
 
     var scheduler;
 
-    if (typeof schedulerOrDelay === "number") {
+    if (typeof schedulerOrDelay === 'number') {
         scheduler = new TimeoutScheduler(Math.round(Math.abs(schedulerOrDelay)));
     } else if (!schedulerOrDelay) {
         scheduler = new TimeoutScheduler(1);
@@ -4000,15 +3421,15 @@ var model =
     new falcor.Model({
         cache: {
             user: {
-                name: "Steve",
-                surname: "McGuire"
+                name: 'Steve',
+                surname: 'McGuire'
             }
         }
     }),
     proxyModel = new falcor.Model({ source: model.asDataSource() });
 
-// Prints "Steve"
-proxyModel.getValue("user.name").
+// Prints 'Steve'
+proxyModel.getValue('user.name').
     then(function(name) {
         console.log(name);
     });
@@ -4025,7 +3446,7 @@ Model.prototype._materialize = function materialize() {
 
 Model.prototype._dematerialize = function dematerialize() {
     return this._clone({
-        _materialized: "delete"
+        _materialized: 'delete'
     });
 };
 
@@ -4045,7 +3466,7 @@ Model.prototype.boxValues = function boxValues() {
  */
 Model.prototype.unboxValues = function unboxValues() {
     return this._clone({
-        _boxed: "delete"
+        _boxed: 'delete'
     });
 };
 
@@ -4055,13 +3476,13 @@ Model.prototype.unboxValues = function unboxValues() {
  */
 Model.prototype.withoutDataSource = function withoutDataSource() {
     return this._clone({
-        _source: "delete"
+        _source: 'delete'
     });
 };
 
 Model.prototype.toJSON = function toJSON() {
     return {
-        $type: "ref",
+        $type: 'ref',
         value: this.getPath()
     };
 };
@@ -4074,12 +3495,12 @@ var Model = falcor.Model;
 var model = new Model({
   cache: {
     users: [
-      Model.ref(["usersById", 32])
+      Model.ref(['usersById', 32])
     ],
     usersById: {
       32: {
-        name: "Steve",
-        surname: "McGuire"
+        name: 'Steve',
+        surname: 'McGuire'
       }
     }
   }
@@ -4096,7 +3517,7 @@ model.
 
 // prints the following:
 // []
-// ["usersById", 32] - because userModel refers to target of reference at ["users", 0]
+// ['usersById', 32] - because userModel refers to target of reference at ['users', 0]
  */
 Model.prototype.getPath = function getPath() {
     return this._path.slice(0);
@@ -4115,29 +3536,29 @@ Model.prototype._fromWhenceYouCame = function fromWhenceYouCame(allow) {
 
 Model.prototype._optimizePath = function _optimizePath(path) {
     var node = getCachePosition(this._root.cache, path);
-    var abs_path = node && node["\u001ef_abs_path"] || [];
+    var abs_path = node && node["ƒ_abs_path"] || [];
     return abs_path.slice(0);
 };
 
-Model.prototype._getVersion = __webpack_require__(77);
+Model.prototype._getVersion = __webpack_require__(69);
 Model.prototype._getPathValuesAsPathMap = getJSON;
 Model.prototype._getPathValuesAsJSONG = getJSONGraph;
 
-Model.prototype._setPathValues = __webpack_require__(30);
+Model.prototype._setPathValues = __webpack_require__(28);
 Model.prototype._setPathMaps = __webpack_require__(17);
 Model.prototype._setJSONGs = __webpack_require__(16);
 Model.prototype._setCache = __webpack_require__(17);
 
-Model.prototype._invalidatePathValues = __webpack_require__(27);
-Model.prototype._invalidatePathMaps = __webpack_require__(43);
+Model.prototype._invalidatePathValues = __webpack_require__(25);
+Model.prototype._invalidatePathMaps = __webpack_require__(39);
+
 
 /***/ },
-/* 66 */
+/* 58 */
 /***/ function(module, exports) {
 
 function ModelDataSourceAdapter(model) {
     this._model = model._materialize().treatErrorsAsValues();
-    // this._model = model._materialize().boxValues().treatErrorsAsValues();
 }
 
 ModelDataSourceAdapter.prototype.get = function get(pathSets) {
@@ -4149,18 +3570,21 @@ ModelDataSourceAdapter.prototype.set = function set(jsongResponse) {
 };
 
 ModelDataSourceAdapter.prototype.call = function call(path, args, suffixes, paths) {
-    return this._model.call.apply(this._model, [path, args, suffixes].concat(paths))._toJSONG();
+    return this._model.call.apply(this._model, [
+        path, args, suffixes
+    ].concat(paths))._toJSONG();
 };
 
 module.exports = ModelDataSourceAdapter;
 
+
 /***/ },
-/* 67 */
+/* 59 */
 /***/ function(module, exports, __webpack_require__) {
 
 var functionTypeof = 'function';
-var hasOwn = __webpack_require__(100);
-var Requests = __webpack_require__(92);
+var hasOwn = __webpack_require__(93);
+var Requests = __webpack_require__(85);
 
 function ModelRoot(o, model) {
 
@@ -4215,21 +3639,24 @@ ModelRoot.prototype.errorSelector = function errorSelector(x, y) {
 };
 
 ModelRoot.prototype.comparator = function comparator(cacheNode, messageNode) {
-    if (hasOwn(cacheNode, "value") && hasOwn(messageNode, "value")) {
+    if (hasOwn(cacheNode, 'value') && hasOwn(messageNode, 'value')) {
         // They are the same only if the following fields are the same.
-        return cacheNode.value === messageNode.value && cacheNode.$type === messageNode.$type && cacheNode.$expires === messageNode.$expires;
+        return cacheNode.value === messageNode.value &&
+            cacheNode.$type === messageNode.$type &&
+            cacheNode.$expires === messageNode.$expires;
     }
     return cacheNode === messageNode;
 };
 
 module.exports = ModelRoot;
 
+
 /***/ },
-/* 68 */
+/* 60 */
 /***/ function(module, exports, __webpack_require__) {
 
-var getJSON = __webpack_require__(22);
-var getJSONGraph = __webpack_require__(23);
+var getJSON = __webpack_require__(20);
+var getJSONGraph = __webpack_require__(21);
 
 module.exports = { json: json, jsonGraph: jsonGraph };
 
@@ -4238,20 +3665,20 @@ function json(model, _args, data, progressive) {
     if (!_args) {
         return { missing: false, hasValue: false };
     }
-    args = [].concat(_args[1] || []);
-    suffixes = [].concat(_args[2] || []);
-    thisPaths = [].concat(_args[3] || []);
-    path = (model._path || []).concat(_args[0] || []);
+    var args = [].concat(_args[1] || []);
+    var suffixes = [].concat(_args[2] || []);
+    var thisPaths = [].concat(_args[3] || []);
+    var path = (model._path || []).concat(_args[0] || []);
     if (progressive && thisPaths && thisPaths.length) {
-        hasValue = getJSON(model, thisPaths, data, progressive, true).hasValue;
+        hasValue =  getJSON(model, thisPaths, data, progressive, true).hasValue;
     }
     return {
-        args: null,
         data: data,
-        missing: [],
-        relative: [],
+        missing: true,
         hasValue: hasValue,
-        fragments: [path, args, suffixes, thisPaths]
+        fragments: [
+            path, args, suffixes, thisPaths
+        ]
     };
 }
 
@@ -4260,10 +3687,10 @@ function jsonGraph(model, _args, data, progressive) {
     if (!_args) {
         return { missing: false, hasValue: false };
     }
-    args = [].concat(_args[1] || []);
-    suffixes = [].concat(_args[2] || []);
-    thisPaths = [].concat(_args[3] || []);
-    path = (model._path || []).concat(_args[0] || []);
+    var args = [].concat(_args[1] || []);
+    var suffixes = [].concat(_args[2] || []);
+    var thisPaths = [].concat(_args[3] || []);
+    var path = (model._path || []).concat(_args[0] || []);
     if (progressive && thisPaths && thisPaths.length) {
         hasValue = getJSONGraph({
             _root: model._root,
@@ -4273,33 +3700,36 @@ function jsonGraph(model, _args, data, progressive) {
         }, thisPaths, data, true, true).hasValue;
     }
     return {
-        args: null,
         data: data,
-        missing: [],
-        relative: [],
+        missing: true,
         hasValue: hasValue,
-        fragments: [path, args, suffixes, thisPaths]
+        fragments: [
+            path, args, suffixes, thisPaths
+        ]
     };
 }
 
+
 /***/ },
-/* 69 */
+/* 61 */
 /***/ function(module, exports, __webpack_require__) {
 
 module.exports = {
-    json: __webpack_require__(38),
-    jsonGraph: __webpack_require__(41)
+    json: __webpack_require__(34),
+    jsonGraph: __webpack_require__(37)
 };
 
+
 /***/ },
-/* 70 */
+/* 62 */
 /***/ function(module, exports, __webpack_require__) {
 
 var clone = __webpack_require__(8);
 
 module.exports = onError;
 
-function onError(node, depth, results, requestedPath, fromReference, boxValues) {
+function onError(node, depth, results,
+                 requestedPath, fromReference, boxValues) {
 
     var index = -1;
     var length = depth + !!fromReference; // depth + 1 if fromReference === true
@@ -4316,29 +3746,36 @@ function onError(node, depth, results, requestedPath, fromReference, boxValues) 
     });
 }
 
+
+
 /***/ },
-/* 71 */
+/* 63 */
 /***/ function(module, exports, __webpack_require__) {
 
 var arr = new Array(2);
-var onValue = __webpack_require__(40);
+var onValue = __webpack_require__(36);
 var $ref = __webpack_require__(0);
-var FalcorJSON = __webpack_require__(21);
-var onValueType = __webpack_require__(26);
+var FalcorJSON = __webpack_require__(5);
+var onValueType = __webpack_require__(24);
 var isExpired = __webpack_require__(1);
-var originalOnMissing = __webpack_require__(25);
-var getReferenceTarget = __webpack_require__(39);
+var originalOnMissing = __webpack_require__(23);
+var getReferenceTarget = __webpack_require__(35);
 var NullInPathError = __webpack_require__(6);
-var InvalidKeySetError = __webpack_require__(31);
-var getHashCode = __webpack_require__(19);
-var flatBufferToPaths = __webpack_require__(18);
+var InvalidKeySetError = __webpack_require__(29);
+var getHashCode = __webpack_require__(103);
+var flatBufferToPaths = __webpack_require__(102);
 
 module.exports = walkPathAndBuildOutput;
 
 /* eslint-disable camelcase */
 /* eslint-disable no-cond-assign */
 /* eslint-disable no-constant-condition */
-function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, results, requestedPath, optimizedPath, optimizedLength, fromReference, referenceContainer, modelRoot, expired, expireImmediate, branchSelector, boxValues, materialized, hasDataSource, treatErrorsAsValues, allowFromWhenceYouCame) {
+function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, results,
+                                requestedPath, optimizedPath, optimizedLength,
+                                fromReference, referenceContainer,
+                                modelRoot, expired, expireImmediate, branchSelector,
+                                boxValues, materialized, hasDataSource,
+                                treatErrorsAsValues, allowFromWhenceYouCame) {
 
     var type, refTarget;
 
@@ -4346,52 +3783,54 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
 
     // If there's nowhere to go, we've reached a terminal node, or hit
     // the end of the path, stop now. Either build missing paths or report the value.
-    if (undefined === node || undefined !== (type = node.$type) || undefined === path) {
+    if (undefined === node ||
+        undefined !== (type = node.$type) ||
+        undefined === path) {
         arr[1] = false;
-        arr[0] = onValueType(node, type, json, path, depth, seed, results, requestedPath, depth, optimizedPath, optimizedLength, fromReference, modelRoot, expired, expireImmediate, branchSelector, boxValues, materialized, hasDataSource, treatErrorsAsValues, onValue, onMissing);
+        arr[0] = onValueType(node, type, json,
+                             path, depth, seed, results,
+                             requestedPath, depth,
+                             optimizedPath, optimizedLength,
+                             fromReference, modelRoot, expired, expireImmediate,
+                             branchSelector, boxValues, materialized, hasDataSource,
+                             treatErrorsAsValues, onValue, onMissing);
         return arr;
     }
 
-    var f_meta,
-        f_old_keys,
-        f_new_keys,
-        f_code = "";
+    var f_meta, f_old_keys, f_new_keys, f_code = '';
 
-    var next,
-        nextKey,
-        keyset,
-        keyIsRange,
-        keys = path["$keys"],
-        nextDepth = depth + 1,
-        rangeEnd,
-        nextJSON,
-        nextReferenceContainer,
-        nextOptimizedLength,
-        nextOptimizedPath,
+    var next, nextKey,
+        keyset, keyIsRange,
+        keys = path['$keys'],
+        nextDepth = depth + 1, rangeEnd,
+        nextJSON, nextReferenceContainer,
+        nextOptimizedLength, nextOptimizedPath,
         optimizedLengthNext = optimizedLength + 1,
-        refContainerAbsPath,
-        refContainerRefPath;
+        refContainerAbsPath, refContainerRefPath;
 
     if (allowFromWhenceYouCame && referenceContainer) {
         refContainerRefPath = referenceContainer.value;
-        refContainerAbsPath = referenceContainer["\u001ef_abs_path"];
+        refContainerAbsPath = referenceContainer["ƒ_abs_path"];
     }
 
     if (json) {
         if (typeof json !== 'object') {
             json = undefined;
-        } else if (f_meta = json["\u001ef_metadata"]) {
+        } else if (f_meta = json["ƒ_meta"]) {
             if (!branchSelector && !(json instanceof FalcorJSON)) {
-                json = { ["\u001ef_metadata"]: f_meta, __proto__: FalcorJSON.prototype };
-            } else if (f_meta["version"] === node["\u001ef_version"] && f_meta["$code"] === path["$code"] && f_meta["abs_path"] === node["\u001ef_abs_path"]) {
+                json = { ["ƒ_meta"]: f_meta, __proto__: FalcorJSON.prototype };
+            } else if (
+                f_meta["version"]  === node["ƒ_version"] &&
+                f_meta['$code']         === path['$code'] &&
+                f_meta["abs_path"] === node["ƒ_abs_path"]) {
                 results.hasValue = true;
                 arr[0] = json;
                 arr[1] = false;
                 return arr;
             }
             f_old_keys = f_meta["keys"];
-            f_meta["version"] = node["\u001ef_version"];
-            f_meta["abs_path"] = node["\u001ef_abs_path"];
+            f_meta["version"] = node["ƒ_version"];
+            f_meta["abs_path"] = node["ƒ_abs_path"];
             f_meta["deref_to"] = refContainerRefPath;
             f_meta["deref_from"] = refContainerAbsPath;
         }
@@ -4401,13 +3840,12 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
 
     var keysIndex = -1;
     var keysLength = keys.length;
-    var nextPath,
-        nextPathKey,
+    var nextPath, nextPathKey,
         hasMissingPath = false,
-        nextMeta,
-        nextMetaPath;
+        nextMeta, nextMetaPath;
 
-    iteratingKeyset: while (++keysIndex < keysLength) {
+    iteratingKeyset:
+    while (++keysIndex < keysLength) {
 
         keyset = keys[keysIndex];
         nextPath = path[keysIndex];
@@ -4426,29 +3864,29 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
             if (nextPath !== undefined) {
                 throw new NullInPathError();
             }
-            f_code = "" + getHashCode("" + f_code + "null");
+            f_code = '' + getHashCode('' + f_code + 'null');
             continue;
         }
         // If the keyset is a primitive value, we've found our `nextKey`.
-        else if ("object" !== typeof keyset) {
-                nextKey = keyset;
-                rangeEnd = undefined;
-                keyIsRange = false;
-                nextPathKey = nextKey;
+        else if ('object' !== typeof keyset) {
+            nextKey = keyset;
+            rangeEnd = undefined;
+            keyIsRange = false;
+            nextPathKey = nextKey;
+        }
+        // If the Keyset isn't null or primitive, then it must be a Range.
+        else {
+            rangeEnd = keyset.to;
+            nextKey = keyset.from || 0;
+            if ('number' !== typeof rangeEnd) {
+                rangeEnd = nextKey + (keyset.length || 0) - 1;
             }
-            // If the Keyset isn't null or primitive, then it must be a Range.
-            else {
-                    rangeEnd = keyset.to;
-                    nextKey = keyset.from || 0;
-                    if ("number" !== typeof rangeEnd) {
-                        rangeEnd = nextKey + (keyset.length || 0) - 1;
-                    }
-                    if (rangeEnd - nextKey < 0) {
-                        break iteratingKeyset;
-                    }
-                    keyIsRange = true;
-                    nextPathKey = "{from:" + nextKey + ",length:" + (rangeEnd - nextKey + 1) + "}";
-                }
+            if ((rangeEnd - nextKey) < 0) {
+                break iteratingKeyset;
+            }
+            keyIsRange = true;
+            nextPathKey = '{from:' + nextKey + ',length:' + (rangeEnd - nextKey + 1) + '}';
+        }
 
         // Now that we have the next key, step down one level in the cache.
         do {
@@ -4464,10 +3902,11 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
 
             // If we encounter a ref, inline the reference target and continue
             // evaluating the path.
-            if (next && nextPath !== undefined &&
-            // If the reference is expired, it will be invalidated and
-            // reported as missing in the next call to walkPath below.
-            next.$type === $ref && !isExpired(next, expireImmediate)) {
+            if (next &&
+                nextPath !== undefined &&
+                // If the reference is expired, it will be invalidated and
+                // reported as missing in the next call to walkPath below.
+                next.$type === $ref && !isExpired(next, expireImmediate)) {
 
                 // Retrieve the reference target and next referenceContainer (if
                 // this reference points to other references) and continue
@@ -4486,7 +3925,13 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
 
             // Continue following the path
 
-            arr = walkPathAndBuildOutput(cacheRoot, next, nextJSON, nextPath, nextDepth, seed, results, requestedPath, nextOptimizedPath, nextOptimizedLength, fromReference, nextReferenceContainer, modelRoot, expired, expireImmediate, branchSelector, boxValues, materialized, hasDataSource, treatErrorsAsValues, allowFromWhenceYouCame);
+            arr = walkPathAndBuildOutput(
+                cacheRoot, next, nextJSON, nextPath, nextDepth, seed,
+                results, requestedPath, nextOptimizedPath,
+                nextOptimizedLength, fromReference, nextReferenceContainer,
+                modelRoot, expired, expireImmediate, branchSelector, boxValues,
+                materialized, hasDataSource, treatErrorsAsValues, allowFromWhenceYouCame
+            );
 
             nextJSON = arr[0];
             hasMissingPath = hasMissingPath || arr[1];
@@ -4515,16 +3960,16 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
                 // branch to contain it.
                 if (f_meta === undefined) {
                     f_meta = {};
-                    f_meta["version"] = node["\u001ef_version"];
-                    f_meta["abs_path"] = node["\u001ef_abs_path"];
+                    f_meta["version"] = node["ƒ_version"];
+                    f_meta["abs_path"] = node["ƒ_abs_path"];
                     f_meta["deref_to"] = refContainerRefPath;
                     f_meta["deref_from"] = refContainerAbsPath;
                     // Empower developers to instrument branch node creation by
                     // providing a custom function. If they do, delegate branch
                     // node creation to them.
                     json = branchSelector && branchSelector({
-                        ["\u001ef_metadata"]: f_meta, __proto__: FalcorJSON.prototype }) || {
-                        ["\u001ef_metadata"]: f_meta, __proto__: FalcorJSON.prototype };
+                        ["ƒ_meta"]: f_meta, __proto__: FalcorJSON.prototype }) || {
+                        ["ƒ_meta"]: f_meta, __proto__: FalcorJSON.prototype };
                 }
 
                 f_new_keys[nextKey] = true;
@@ -4546,19 +3991,19 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
 
         if (!hasMissingPath) {
             if (undefined === nextPath) {
-                f_code = "" + getHashCode("" + f_code + nextPathKey);
+                f_code = '' + getHashCode('' + f_code + nextPathKey);
             } else {
-                f_code = "" + getHashCode("" + f_code + nextPathKey + nextPath["$code"]);
+                f_code = '' + getHashCode('' + f_code + nextPathKey + nextPath['$code']);
             }
         }
     }
 
     if (hasMissingPath) {
-        f_code = "__incomplete__";
+        f_code = '__incomplete__';
     }
 
     if (f_meta) {
-        f_meta["$code"] = f_code;
+        f_meta['$code'] = f_code;
         f_meta["keys"] = f_new_keys;
         if (f_old_keys) {
             for (nextKey in f_old_keys) {
@@ -4578,53 +4023,72 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
 }
 /* eslint-enable */
 
-function onMissing(path, depth, results, requestedPath, requestedLength, fromReference, optimizedPath, optimizedLength, reportMissing, json, reportMaterialized, branchSelector) {
+function onMissing(path, depth, results,
+                   requestedPath, requestedLength, fromReference,
+                   optimizedPath, optimizedLength, reportMissing,
+                   json, reportMaterialized, branchSelector) {
 
     var suffix;
     var paths = path ? flatBufferToPaths(path) : [[]];
     var rPath = requestedPath.slice(0, requestedLength);
-    var createMaterializedBranch = !branchSelector ? createDefaultMaterializedBranch : wrapMaterializedBranchSelector(branchSelector);
+    var createMaterializedBranch = !branchSelector ?
+        createDefaultMaterializedBranch :
+        wrapMaterializedBranchSelector(branchSelector);
 
-    return paths.reduce(function (json, restPath) {
+    return paths.reduce(function(json, restPath) {
         requestedLength = depth + restPath.length;
-        return originalOnMissing(rPath.concat(restPath), depth, results, requestedPath, requestedLength, fromReference, optimizedPath, optimizedLength, reportMissing, json, reportMaterialized, createMaterializedBranch);
+        return originalOnMissing(rPath.concat(restPath), depth,
+                                 results, requestedPath, requestedLength, fromReference,
+                                 optimizedPath, optimizedLength, reportMissing, json,
+                                 reportMaterialized, createMaterializedBranch);
     }, json);
 }
 
 function wrapMaterializedBranchSelector(branchSelector) {
-    return function (path, _depth, node) {
-        return branchSelector(node = createDefaultMaterializedBranch(path, _depth, node)) || node;
-    };
+    return function(path, _depth, node) {
+        return branchSelector(
+            node = createDefaultMaterializedBranch(path, _depth, node)
+        ) || node;
+    }
 }
 
 function createDefaultMaterializedBranch(path, _depth, node) {
-    f_meta = {};
+    var f_meta = {};
     f_meta["version"] = 0;
     f_meta["abs_path"] = path.slice(0, _depth);
-    return { ["\u001ef_metadata"]: f_meta, __proto__: FalcorJSON.prototype };
-}
+    return { ["ƒ_meta"]: f_meta, __proto__: FalcorJSON.prototype };
+ }
+
 
 /***/ },
-/* 72 */
+/* 64 */
 /***/ function(module, exports, __webpack_require__) {
 
 var isArray = Array.isArray;
-var onValue = __webpack_require__(40);
+var onValue = __webpack_require__(36);
 var $ref = __webpack_require__(0);
-var FalcorJSON = __webpack_require__(21);
-var onValueType = __webpack_require__(26);
+var FalcorJSON = __webpack_require__(5);
+var onValueType = __webpack_require__(24);
 var isExpired = __webpack_require__(1);
-var originalOnMissing = __webpack_require__(25);
-var getReferenceTarget = __webpack_require__(39);
+var originalOnMissing = __webpack_require__(23);
+var getReferenceTarget = __webpack_require__(35);
 var NullInPathError = __webpack_require__(6);
-var InvalidKeySetError = __webpack_require__(31);
+var InvalidKeySetError = __webpack_require__(29);
 
 module.exports = walkPathAndBuildOutput;
 
 /* eslint-disable camelcase */
 /* eslint-disable no-cond-assign */
 /* eslint-disable no-constant-condition */
-function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, results, requestedPath, requestedLength, optimizedPath, optimizedLength, fromReference, referenceContainer, modelRoot, expired, expireImmediate, branchSelector, boxValues, materialized, hasDataSource, treatErrorsAsValues, allowFromWhenceYouCame) {
+function walkPathAndBuildOutput(cacheRoot, node, json, path,
+                                depth, seed, results,
+                                requestedPath, requestedLength,
+                                optimizedPath, optimizedLength,
+                                fromReference, referenceContainer,
+                                modelRoot, expired, expireImmediate,
+                                branchSelector, boxValues, materialized,
+                                hasDataSource, treatErrorsAsValues,
+                                allowFromWhenceYouCame) {
 
     var type, refTarget;
 
@@ -4632,28 +4096,29 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
 
     // If there's nowhere to go, we've reached a terminal node, or hit
     // the end of the path, stop now. Either build missing paths or report the value.
-    if (node === undefined || (type = node.$type) || depth === requestedLength) {
-        return onValueType(node, type, json, path, depth, seed, results, requestedPath, requestedLength, optimizedPath, optimizedLength, fromReference, modelRoot, expired, expireImmediate, branchSelector, boxValues, materialized, hasDataSource, treatErrorsAsValues, onValue, onMissing);
+    if (node === undefined || (
+        type = node.$type) || (
+        depth === requestedLength)) {
+        return onValueType(node, type, json,
+                           path, depth, seed, results,
+                           requestedPath, requestedLength,
+                           optimizedPath, optimizedLength,
+                           fromReference, modelRoot, expired, expireImmediate,
+                           branchSelector, boxValues, materialized, hasDataSource,
+                           treatErrorsAsValues, onValue, onMissing);
     }
 
     var f_meta;
 
-    var next,
-        nextKey,
-        keyset,
-        keyIsRange,
+    var next, nextKey,
+        keyset, keyIsRange,
         nextDepth = depth + 1,
-        rangeEnd,
-        keysOrRanges,
-        nextJSON,
-        nextReferenceContainer,
-        keysetIndex = -1,
-        keysetLength = 0,
-        nextOptimizedLength,
-        nextOptimizedPath,
+        rangeEnd, keysOrRanges,
+        nextJSON, nextReferenceContainer,
+        keysetIndex = -1, keysetLength = 0,
+        nextOptimizedLength, nextOptimizedPath,
         optimizedLengthNext = optimizedLength + 1,
-        refContainerAbsPath,
-        refContainerRefPath;
+        refContainerAbsPath, refContainerRefPath;
 
     keyset = path[depth];
 
@@ -4674,15 +4139,15 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
 
     if (allowFromWhenceYouCame && referenceContainer) {
         refContainerRefPath = referenceContainer.value;
-        refContainerAbsPath = referenceContainer["\u001ef_abs_path"];
+        refContainerAbsPath = referenceContainer["ƒ_abs_path"];
     }
 
     if (json) {
         if (typeof json !== 'object') {
             json = undefined;
-        } else if (f_meta = json["\u001ef_metadata"]) {
-            f_meta["version"] = node["\u001ef_version"];
-            f_meta["abs_path"] = node["\u001ef_abs_path"];
+        } else if (f_meta = json["ƒ_meta"]) {
+            f_meta["version"] = node["ƒ_version"];
+            f_meta["abs_path"] = node["ƒ_abs_path"];
             f_meta["deref_to"] = refContainerRefPath;
             f_meta["deref_from"] = refContainerAbsPath;
         }
@@ -4714,7 +4179,7 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
     iteratingKeyset: do {
 
         // If the keyset is a primitive value, we've found our `nextKey`.
-        if ("object" !== typeof keyset) {
+        if ('object' !== typeof keyset) {
             nextKey = keyset;
             rangeEnd = undefined;
             keyIsRange = false;
@@ -4723,37 +4188,37 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
         // or throw an error if we're already iterating a Keyset. Keysets cannot
         // contain other Keysets.
         else if (isArray(keyset)) {
-                // If we've already encountered an Array keyset, throw an error.
-                if (keysOrRanges !== undefined) {
-                    throw new InvalidKeySetError(path, keysOrRanges);
-                }
-                keysetIndex = 0;
-                keysOrRanges = keyset;
-                keysetLength = keyset.length;
-                // If an Array of keys or ranges is empty, terminate the graph walk
-                // and return the json constructed so far. An example of an empty
-                // Keyset is: ['lolomo', [], 'summary']. This should short circuit
-                // without building missing paths.
-                if (0 === keysetLength) {
-                    break iteratingKeyset;
-                }
-                // Assign `keyset` to the first value in the Keyset. Re-entering the
-                // outer loop mimics a singly-recursive function call.
-                keyset = keysOrRanges[keysetIndex];
-                continue iteratingKeyset;
+            // If we've already encountered an Array keyset, throw an error.
+            if (keysOrRanges !== undefined) {
+                throw new InvalidKeySetError(path, keysOrRanges);
             }
-            // If the Keyset isn't a primitive or Array, then it must be a Range.
-            else {
-                    rangeEnd = keyset.to;
-                    nextKey = keyset.from || 0;
-                    if ("number" !== typeof rangeEnd) {
-                        rangeEnd = nextKey + (keyset.length || 0) - 1;
-                    }
-                    if (rangeEnd - nextKey < 0) {
-                        break iteratingKeyset;
-                    }
-                    keyIsRange = true;
-                }
+            keysetIndex = 0;
+            keysOrRanges = keyset;
+            keysetLength = keyset.length;
+            // If an Array of keys or ranges is empty, terminate the graph walk
+            // and return the json constructed so far. An example of an empty
+            // Keyset is: ['lolomo', [], 'summary']. This should short circuit
+            // without building missing paths.
+            if (0 === keysetLength) {
+                break iteratingKeyset;
+            }
+            // Assign `keyset` to the first value in the Keyset. Re-entering the
+            // outer loop mimics a singly-recursive function call.
+            keyset = keysOrRanges[keysetIndex];
+            continue iteratingKeyset;
+        }
+        // If the Keyset isn't a primitive or Array, then it must be a Range.
+        else {
+            rangeEnd = keyset.to;
+            nextKey = keyset.from || 0;
+            if ('number' !== typeof rangeEnd) {
+                rangeEnd = nextKey + (keyset.length || 0) - 1;
+            }
+            if ((rangeEnd - nextKey) < 0) {
+                break iteratingKeyset;
+            }
+            keyIsRange = true;
+        }
 
         // Now that we have the next key, step down one level in the cache.
         do {
@@ -4769,10 +4234,11 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
 
             // If we encounter a ref, inline the reference target and continue
             // evaluating the path.
-            if (next && nextDepth < requestedLength &&
-            // If the reference is expired, it will be invalidated and
-            // reported as missing in the next call to walkPath below.
-            next.$type === $ref && !isExpired(next, expireImmediate)) {
+            if (next &&
+                nextDepth < requestedLength &&
+                // If the reference is expired, it will be invalidated and
+                // reported as missing in the next call to walkPath below.
+                next.$type === $ref && !isExpired(next, expireImmediate)) {
 
                 // Retrieve the reference target and next referenceContainer (if
                 // this reference points to other references) and continue
@@ -4791,7 +4257,13 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
 
             // Continue following the path
 
-            nextJSON = walkPathAndBuildOutput(cacheRoot, next, nextJSON, path, nextDepth, seed, results, requestedPath, requestedLength, nextOptimizedPath, nextOptimizedLength, fromReference, nextReferenceContainer, modelRoot, expired, expireImmediate, branchSelector, boxValues, materialized, hasDataSource, treatErrorsAsValues, allowFromWhenceYouCame);
+            nextJSON = walkPathAndBuildOutput(
+                cacheRoot, next, nextJSON, path, nextDepth, seed,
+                results, requestedPath, requestedLength, nextOptimizedPath,
+                nextOptimizedLength, fromReference, nextReferenceContainer,
+                modelRoot, expired, expireImmediate, branchSelector, boxValues,
+                materialized, hasDataSource, treatErrorsAsValues, allowFromWhenceYouCame
+            );
 
             // Inspect the return value from the step and determine whether to
             // create or write into the JSON branch at this level.
@@ -4813,16 +4285,16 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
                 // branch to contain it.
                 if (f_meta === undefined) {
                     f_meta = {};
-                    f_meta["version"] = node["\u001ef_version"];
-                    f_meta["abs_path"] = node["\u001ef_abs_path"];
+                    f_meta["version"] = node["ƒ_version"];
+                    f_meta["abs_path"] = node["ƒ_abs_path"];
                     f_meta["deref_to"] = refContainerRefPath;
                     f_meta["deref_from"] = refContainerAbsPath;
                     // Empower developers to instrument branch node creation by
                     // providing a custom function. If they do, delegate branch
                     // node creation to them.
                     json = branchSelector && branchSelector({
-                        ["\u001ef_metadata"]: f_meta, __proto__: FalcorJSON.prototype }) || {
-                        ["\u001ef_metadata"]: f_meta, __proto__: FalcorJSON.prototype };
+                        ["ƒ_meta"]: f_meta, __proto__: FalcorJSON.prototype }) || {
+                        ["ƒ_meta"]: f_meta, __proto__: FalcorJSON.prototype };
                 }
 
                 // Set the reported branch or leaf into this branch.
@@ -4849,38 +4321,49 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
 }
 /* eslint-enable */
 
-function onMissing(path, depth, results, requestedPath, requestedLength, fromReference, optimizedPath, optimizedLength, reportMissing, json, reportMaterialized, branchSelector) {
+function onMissing(path, depth, results,
+                   requestedPath, requestedLength, fromReference,
+                   optimizedPath, optimizedLength, reportMissing,
+                   json, reportMaterialized, branchSelector) {
 
-    var createMaterializedBranch = !branchSelector ? createDefaultMaterializedBranch : wrapMaterializedBranchSelector(branchSelector);
+    var createMaterializedBranch = !branchSelector ?
+        createDefaultMaterializedBranch :
+        wrapMaterializedBranchSelector(branchSelector);
 
-    return originalOnMissing(path, depth, results, requestedPath, requestedLength, fromReference, optimizedPath, optimizedLength, reportMissing, json, reportMaterialized, createMaterializedBranch);
+    return originalOnMissing(path, depth, results,
+                             requestedPath, requestedLength, fromReference,
+                             optimizedPath, optimizedLength, reportMissing,
+                             json, reportMaterialized, createMaterializedBranch);
 }
 
 function wrapMaterializedBranchSelector(branchSelector) {
-    return function (path, _depth, node) {
-        return branchSelector(node = createDefaultMaterializedBranch(path, _depth, node)) || node;
-    };
+    return function(path, _depth, node) {
+        return branchSelector(
+            node = createDefaultMaterializedBranch(path, _depth, node)
+        ) || node;
+    }
 }
 
 function createDefaultMaterializedBranch(path, _depth, node) {
-    f_meta = {};
+    var f_meta = {};
     f_meta["version"] = 0;
     f_meta["abs_path"] = path.slice(0, _depth);
-    return { ["\u001ef_metadata"]: f_meta, __proto__: FalcorJSON.prototype };
-}
+    return { ["ƒ_meta"]: f_meta, __proto__: FalcorJSON.prototype };
+ }
+
 
 /***/ },
-/* 73 */
+/* 65 */
 /***/ function(module, exports, __webpack_require__) {
 
 var arr = new Array(2);
 var clone = __webpack_require__(8);
 var $ref = __webpack_require__(0);
-var inlineValue = __webpack_require__(24);
+var inlineValue = __webpack_require__(22);
 var promote = __webpack_require__(11);
 var isExpired = __webpack_require__(1);
-var createHardlink = __webpack_require__(5);
-var CircularReferenceError = __webpack_require__(49);
+var createHardlink = __webpack_require__(4);
+var CircularReferenceError = __webpack_require__(45);
 
 module.exports = getReferenceTarget;
 
@@ -4893,17 +4376,13 @@ function getReferenceTarget(root, ref, modelRoot, seed, boxValues, materialized,
     promote(modelRoot, ref);
 
     var context,
-        key,
-        type,
-        depth = 0,
+        key, type, depth = 0,
         followedRefsCount = 0,
-        node = root,
-        path = ref.value,
-        copy = path,
-        length = path.length;
+        node = root, path = ref.value,
+        copy = path, length = path.length;
 
     do {
-        if (depth === 0 && undefined !== (context = ref["\u001ef_context"])) {
+        if (depth === 0 && undefined !== (context = ref["ƒ_context"])) {
             node = context;
             depth = length;
         } else {
@@ -4922,14 +4401,14 @@ function getReferenceTarget(root, ref, modelRoot, seed, boxValues, materialized,
             }
             // If a reference points to itself, throw an error.
             else if (node === ref) {
-                    throw new CircularReferenceError(path);
-                }
-                // If the node we land on isn't the existing ref context,
-                // create a hard-link between the reference and the node
-                // it points to.
-                else if (node !== context) {
-                        createHardlink(ref, node);
-                    }
+                throw new CircularReferenceError(path);
+            }
+            // If the node we land on isn't the existing ref context,
+            // create a hard-link between the reference and the node
+            // it points to.
+            else if (node !== context) {
+                createHardlink(ref, node);
+            }
 
             // If the reference points to another ref, follow the new ref
             // by resetting the relevant state and continuing from the top.
@@ -4945,22 +4424,26 @@ function getReferenceTarget(root, ref, modelRoot, seed, boxValues, materialized,
                 path = copy = ref.value;
                 length = path.length;
 
-                if (true) {
-                    // If we follow too many references, we might have an indirect
-                    // circular reference chain. Warn about this (but don't throw).
-                    if (++followedRefsCount % 50 === 0) {
-                        try {
-                            throw new Error("Followed " + followedRefsCount + " references. " + "This might indicate the presence of an indirect " + "circular reference chain.");
-                        } catch (e) {
-                            if (console) {
-                                var reportFn = typeof console.warn === "function" && console.warn || typeof console.log === "function" && console.log;
-                                if (reportFn) {
-                                    reportFn.call(console, e.toString());
-                                }
-                            }
-                        }
-                    }
-                }
+                // if (DEBUG) {
+                //     // If we follow too many references, we might have an indirect
+                //     // circular reference chain. Warn about this (but don't throw).
+                //     if (++followedRefsCount % 50 === 0) {
+                //         try {
+                //             throw new Error(
+                //                 'Followed ' + followedRefsCount + ' references. ' +
+                //                 'This might indicate the presence of an indirect ' +
+                //                 'circular reference chain.'
+                //             );
+                //         } catch (e) {
+                //             if (console) {
+                //                 var reportFn = typeof console.log === 'function' && console.log;
+                //                 if (reportFn) {
+                //                     reportFn.call(console, e.toString());
+                //                 }
+                //             }
+                //         }
+                //     }
+                // }
 
                 continue;
             }
@@ -4987,19 +4470,22 @@ function getReferenceTarget(root, ref, modelRoot, seed, boxValues, materialized,
 }
 /* eslint-enable */
 
+
 /***/ },
-/* 74 */
+/* 66 */
 /***/ function(module, exports, __webpack_require__) {
 
 var clone = __webpack_require__(8);
 var $ref = __webpack_require__(0);
 var $error = __webpack_require__(14);
-var inlineValue = __webpack_require__(24);
-var materializedAtom = __webpack_require__(4);
+var inlineValue = __webpack_require__(22);
+var materializedAtom = __webpack_require__(19);
 
 module.exports = onJSONGraphValue;
 
-function onJSONGraphValue(node, type, depth, seed, results, requestedPath, optimizedPath, optimizedLength, fromReference, boxValues, materialized) {
+function onJSONGraphValue(node, type, depth, seed, results,
+                          requestedPath, optimizedPath, optimizedLength,
+                          fromReference, boxValues, materialized) {
 
     var value = node && node.value;
     var requiresMaterializedToReport = type && value === undefined;
@@ -5013,46 +4499,56 @@ function onJSONGraphValue(node, type, depth, seed, results, requestedPath, optim
     }
     // boxValues always clones the node
     else if (boxValues ||
-        /*
-         * JSON Graph should always clone errors, refs, atoms we didn't
-         * create, and atoms we created to wrap Object values.
-         */
-        $ref === type || $error === type || !node["\u001ef_wrapped_value"] || "object" === typeof value) {
-            value = clone(node);
-        }
+            /*
+             * JSON Graph should always clone errors, refs, atoms we didn't
+             * create, and atoms we created to wrap Object values.
+             */
+             $ref === type ||
+             $error === type ||
+             !node["ƒ_wrapped_value"] ||
+             'object' === typeof value) {
+        value = clone(node);
+    }
 
     if (seed) {
         results.hasValue = true;
         inlineValue(value, optimizedPath, optimizedLength, seed);
-        (seed.paths || (seed.paths = [])).push(requestedPath.slice(0, depth + !!fromReference) // depth + 1 if fromReference === true
+        (seed.paths || (seed.paths = [])).push(
+            requestedPath.slice(0, depth + !!fromReference) // depth + 1 if fromReference === true
         );
     }
 
     return value;
 }
 
+
 /***/ },
-/* 75 */
+/* 67 */
 /***/ function(module, exports, __webpack_require__) {
 
 var isArray = Array.isArray;
 var clone = __webpack_require__(8);
 var $ref = __webpack_require__(0);
-var onValue = __webpack_require__(74);
-var inlineValue = __webpack_require__(24);
-var onValueType = __webpack_require__(26);
+var onValue = __webpack_require__(66);
+var inlineValue = __webpack_require__(22);
+var onValueType = __webpack_require__(24);
 var isExpired = __webpack_require__(1);
-var originalOnMissing = __webpack_require__(25);
-var getReferenceTarget = __webpack_require__(73);
+var originalOnMissing = __webpack_require__(23);
+var getReferenceTarget = __webpack_require__(65);
 var NullInPathError = __webpack_require__(6);
-var InvalidKeySetError = __webpack_require__(31);
-var materializedAtom = __webpack_require__(4);
+var InvalidKeySetError = __webpack_require__(29);
+var materializedAtom = __webpack_require__(19);
 
 module.exports = walkPathAndBuildOutput;
 
 /* eslint-disable no-cond-assign */
 /* eslint-disable no-constant-condition */
-function walkPathAndBuildOutput(cacheRoot, node, path, depth, seed, results, requestedPath, requestedLength, optimizedPath, optimizedLength, fromReference, modelRoot, expired, expireImmediate, boxValues, materialized, hasDataSource, treatErrorsAsValues) {
+function walkPathAndBuildOutput(cacheRoot, node, path,
+                                depth, seed, results,
+                                requestedPath, requestedLength,
+                                optimizedPath, optimizedLength,
+                                fromReference, modelRoot, expired, expireImmediate,
+                                boxValues, materialized, hasDataSource, treatErrorsAsValues) {
 
     var type, refTarget;
 
@@ -5060,21 +4556,24 @@ function walkPathAndBuildOutput(cacheRoot, node, path, depth, seed, results, req
 
     // If there's nowhere to go, we've reached a terminal node, or hit
     // the end of the path, stop now. Either build missing paths or report the value.
-    if (node === undefined || (type = node.$type) || depth === requestedLength) {
-        return onValueType(node, type, seed, path, depth, seed, results, requestedPath, requestedLength, optimizedPath, optimizedLength, fromReference, modelRoot, expired, expireImmediate, undefined, boxValues, materialized, hasDataSource, treatErrorsAsValues, onValue, onMissing);
+    if (node === undefined || (
+        type = node.$type) || (
+        depth === requestedLength)) {
+        return onValueType(node, type, seed,
+                           path, depth, seed, results,
+                           requestedPath, requestedLength,
+                           optimizedPath, optimizedLength,
+                           fromReference, modelRoot, expired, expireImmediate,
+                           undefined, boxValues, materialized, hasDataSource,
+                           treatErrorsAsValues, onValue, onMissing);
     }
 
-    var next,
-        nextKey,
-        keyset,
-        keyIsRange,
+    var next, nextKey,
+        keyset, keyIsRange,
         nextDepth = depth + 1,
-        rangeEnd,
-        keysOrRanges,
-        keysetIndex = -1,
-        keysetLength = 0,
-        nextOptimizedLength,
-        nextOptimizedPath,
+        rangeEnd, keysOrRanges,
+        keysetIndex = -1, keysetLength = 0,
+        nextOptimizedLength, nextOptimizedPath,
         optimizedLengthNext = optimizedLength + 1;
 
     keyset = path[depth];
@@ -5120,7 +4619,7 @@ function walkPathAndBuildOutput(cacheRoot, node, path, depth, seed, results, req
     iteratingKeyset: do {
 
         // If the keyset is a primitive value, we've found our `nextKey`.
-        if ("object" !== typeof keyset) {
+        if ('object' !== typeof keyset) {
             nextKey = keyset;
             rangeEnd = undefined;
             keyIsRange = false;
@@ -5129,37 +4628,37 @@ function walkPathAndBuildOutput(cacheRoot, node, path, depth, seed, results, req
         // or throw an error if we're already iterating a Keyset. Keysets cannot
         // contain other Keysets.
         else if (isArray(keyset)) {
-                // If we've already encountered an Array keyset, throw an error.
-                if (keysOrRanges !== undefined) {
-                    throw new InvalidKeySetError(path, keysOrRanges);
-                }
-                keysetIndex = 0;
-                keysOrRanges = keyset;
-                keysetLength = keyset.length;
-                // If an Array of keys or ranges is empty, terminate the graph walk
-                // and return the json constructed so far. An example of an empty
-                // Keyset is: ['lolomo', [], 'summary']. This should short circuit
-                // without building missing paths.
-                if (0 === keysetLength) {
-                    break iteratingKeyset;
-                }
-                keyset = keysOrRanges[keysetIndex];
-                // Assign `keyset` to the first value in the Keyset. Re-entering the
-                // outer loop mimics a singly-recursive function call.
-                continue iteratingKeyset;
+            // If we've already encountered an Array keyset, throw an error.
+            if (keysOrRanges !== undefined) {
+                throw new InvalidKeySetError(path, keysOrRanges);
             }
-            // If the Keyset isn't a primitive or Array, then it must be a Range.
-            else {
-                    rangeEnd = keyset.to;
-                    nextKey = keyset.from || 0;
-                    if ("number" !== typeof rangeEnd) {
-                        rangeEnd = nextKey + (keyset.length || 0) - 1;
-                    }
-                    if (rangeEnd - nextKey < 0) {
-                        break iteratingKeyset;
-                    }
-                    keyIsRange = true;
-                }
+            keysetIndex = 0;
+            keysOrRanges = keyset;
+            keysetLength = keyset.length;
+            // If an Array of keys or ranges is empty, terminate the graph walk
+            // and return the json constructed so far. An example of an empty
+            // Keyset is: ['lolomo', [], 'summary']. This should short circuit
+            // without building missing paths.
+            if (0 === keysetLength) {
+                break iteratingKeyset;
+            }
+            keyset = keysOrRanges[keysetIndex];
+            // Assign `keyset` to the first value in the Keyset. Re-entering the
+            // outer loop mimics a singly-recursive function call.
+            continue iteratingKeyset;
+        }
+        // If the Keyset isn't a primitive or Array, then it must be a Range.
+        else {
+            rangeEnd = keyset.to;
+            nextKey = keyset.from || 0;
+            if ('number' !== typeof rangeEnd) {
+                rangeEnd = nextKey + (keyset.length || 0) - 1;
+            }
+            if ((rangeEnd - nextKey) < 0) {
+                break iteratingKeyset;
+            }
+            keyIsRange = true;
+        }
 
         // Now that we have the next key, step down one level in the cache.
         do {
@@ -5173,10 +4672,11 @@ function walkPathAndBuildOutput(cacheRoot, node, path, depth, seed, results, req
 
             // If we encounter a ref, inline the reference target and continue
             // evaluating the path.
-            if (next && nextDepth < requestedLength &&
-            // If the reference is expired, it will be invalidated and
-            // reported as missing in the next call to walkPath below.
-            next.$type === $ref && !isExpired(next, expireImmediate)) {
+            if (next &&
+                nextDepth < requestedLength &&
+                // If the reference is expired, it will be invalidated and
+                // reported as missing in the next call to walkPath below.
+                next.$type === $ref && !isExpired(next, expireImmediate)) {
 
                 // Write the cloned ref value into the jsonGraph at the
                 // optimized path. JSONGraph must always clone references.
@@ -5187,7 +4687,8 @@ function walkPathAndBuildOutput(cacheRoot, node, path, depth, seed, results, req
                 // following the path. If the reference resolves to a missing
                 // path or leaf node, it will be handled in the next call to
                 // walkPath.
-                refTarget = getReferenceTarget(cacheRoot, next, modelRoot, seed, boxValues, materialized, expireImmediate);
+                refTarget = getReferenceTarget(cacheRoot, next, modelRoot, seed,
+                                               boxValues, materialized, expireImmediate);
 
                 next = refTarget[0];
                 fromReference = true;
@@ -5196,7 +4697,12 @@ function walkPathAndBuildOutput(cacheRoot, node, path, depth, seed, results, req
                 refTarget[0] = refTarget[1] = undefined;
             }
 
-            walkPathAndBuildOutput(cacheRoot, next, path, nextDepth, seed, results, requestedPath, requestedLength, nextOptimizedPath, nextOptimizedLength, fromReference, modelRoot, expired, expireImmediate, boxValues, materialized, hasDataSource, treatErrorsAsValues);
+            walkPathAndBuildOutput(
+                cacheRoot, next, path, nextDepth, seed,
+                results, requestedPath, requestedLength, nextOptimizedPath,
+                nextOptimizedLength, fromReference, modelRoot, expired, expireImmediate,
+                boxValues, materialized, hasDataSource, treatErrorsAsValues
+            );
         }
         // Re-enter the inner loop and continue iterating the Range, or exit
         // here if we encountered a Key.
@@ -5217,27 +4723,39 @@ function walkPathAndBuildOutput(cacheRoot, node, path, depth, seed, results, req
 }
 /* eslint-enable */
 
-function onMissing(path, depth, results, requestedPath, requestedLength, fromReference, optimizedPath, optimizedLength, reportMissing, seed, reportMaterialized, branchSelector) {
+function onMissing(path, depth, results,
+                   requestedPath, requestedLength, fromReference,
+                   optimizedPath, optimizedLength, reportMissing,
+                   seed, reportMaterialized, branchSelector) {
 
     var json, isLeaf;
 
     if (seed && reportMaterialized) {
 
-        (seed.paths || (seed.paths = [])).push((isLeaf = 0 === requestedLength - depth) &&
-        // depth + 1 if fromReference === true
-        requestedPath.slice(0, depth + !!fromReference) || requestedPath.slice(0, depth).concat(path.slice(depth, requestedLength + !!fromReference)));
+        (seed.paths || (seed.paths = [])).push(
+            (isLeaf = 0 === requestedLength - depth) &&
+                                 // depth + 1 if fromReference === true
+                requestedPath.slice(0, depth + !!fromReference) ||
+                requestedPath.slice(0, depth).concat(path
+                    .slice(depth, requestedLength + !!fromReference))
+        );
 
-        json = inlineValue(isLeaf && materializedAtom || undefined, optimizedPath, optimizedLength, seed, !isLeaf);
+        json = inlineValue(isLeaf && materializedAtom || undefined,
+                           optimizedPath, optimizedLength, seed, !isLeaf);
     }
 
-    return originalOnMissing(path, depth, results, requestedPath, requestedLength, fromReference, optimizedPath, optimizedLength, reportMissing, json, reportMaterialized);
+    return originalOnMissing(path, depth, results,
+                             requestedPath, requestedLength, fromReference,
+                             optimizedPath, optimizedLength, reportMissing,
+                             json, reportMaterialized);
 }
 
+
 /***/ },
-/* 76 */
+/* 68 */
 /***/ function(module, exports, __webpack_require__) {
 
-var isInternalKey = __webpack_require__(101);
+var isInternalKey = __webpack_require__(18);
 
 /**
  * decends and copies the cache.
@@ -5260,7 +4778,7 @@ function cloneBoxedValue(boxedValue) {
     for (i = 0, l = keys.length; i < l; i++) {
         key = keys[i];
 
-        if (!isInternalKey(key)) {
+        if (key === '$type' || !isInternalKey(key)) {
             clonedValue[key] = boxedValue[key];
         }
     }
@@ -5272,65 +4790,70 @@ function _copyCache(node, out, fromKey) {
     // copy and return
 
     // only copy objects
-    if (!node || typeof node !== "object") {
+    if (!node || typeof node !== 'object') {
         return;
     }
 
-    Object.keys(node).filter(function (k) {
-        // Its not an internal key and the node has a value.  In the cache
-        // there are 3 possibilities for values.
-        // 1: A branch node.
-        // 2: A $type-value node.
-        // 3: undefined
-        // We will strip out 3
-        return !isInternalKey(k) && node[k] !== undefined;
-    }).forEach(function (key) {
-        var cacheNext = node[key];
-        var outNext = out[key];
+    Object.
+        keys(node).
+        filter(function(key) {
+            // Its not an internal key and the node has a value.  In the cache
+            // there are 3 possibilities for values.
+            // 1: A branch node.
+            // 2: A $type-value node.
+            // 3: undefined
+            // We will strip out 3
+            return (key === '$type' || !isInternalKey(key)) && node[key] !== undefined;
+        }).
+        forEach(function(key) {
+            var cacheNext = node[key];
+            var outNext = out[key];
 
-        if (!outNext) {
-            outNext = out[key] = {};
-        }
-
-        // Paste the node into the out cache.
-        if (cacheNext.$type) {
-            var isObject = cacheNext.value && typeof cacheNext.value === "object";
-            var isUserCreatedcacheNext = !cacheNext["\u001ef_wrapped_value"];
-            var value;
-            if (isObject || isUserCreatedcacheNext) {
-                value = cloneBoxedValue(cacheNext);
-            } else {
-                value = cacheNext.value;
+            if (!outNext) {
+                outNext = out[key] = {};
             }
 
-            out[key] = value;
-            return;
-        }
+            // Paste the node into the out cache.
+            if (cacheNext.$type) {
+                var isObject = cacheNext.value && typeof cacheNext.value === 'object';
+                var isUserCreatedcacheNext = !cacheNext["ƒ_wrapped_value"];
+                var value;
+                if (isObject || isUserCreatedcacheNext) {
+                    value = cloneBoxedValue(cacheNext);
+                } else {
+                    value = cacheNext.value;
+                }
 
-        _copyCache(cacheNext, outNext, key);
-    });
+                out[key] = value;
+                return;
+            }
+
+            _copyCache(cacheNext, outNext, key);
+        });
 }
 
+
 /***/ },
-/* 77 */
+/* 69 */
 /***/ function(module, exports, __webpack_require__) {
 
 var getBoundCacheNode = __webpack_require__(15);
 
 module.exports = function _getVersion(model, path) {
     var node = getBoundCacheNode(model, path);
-    var version = node && node["\u001ef_version"];
-    return version == null ? -1 : version;
+    var version = node && node["ƒ_version"];
+    return (version == null) ? -1 : version;
 };
 
+
 /***/ },
-/* 78 */
+/* 70 */
 /***/ function(module, exports, __webpack_require__) {
 
 var isArray = Array.isArray;
-var isPathValue = __webpack_require__(102);
-var isJSONEnvelope = __webpack_require__(56);
-var isJSONGraphEnvelope = __webpack_require__(57);
+var isPathValue = __webpack_require__(94);
+var isJSONEnvelope = __webpack_require__(52);
+var isJSONGraphEnvelope = __webpack_require__(53);
 
 module.exports = groupCacheArguments;
 
@@ -5345,13 +4868,13 @@ function groupCacheArguments(args) {
         arg = args[argIndex];
         if (isArray(arg)) {
             arg = { path: arg };
-            argType = "PathValues";
+            argType = 'PathValues';
         } else if (isPathValue(arg)) {
-            argType = "PathValues";
+            argType = 'PathValues';
         } else if (isJSONGraphEnvelope(arg)) {
-            argType = "JSONGraphs";
+            argType = 'JSONGraphs';
         } else if (isJSONEnvelope(arg)) {
-            argType = "PathMaps";
+            argType = 'PathMaps';
         }
 
         if (groupType !== argType) {
@@ -5368,45 +4891,51 @@ function groupCacheArguments(args) {
     return groups;
 }
 
+
 /***/ },
-/* 79 */
+/* 71 */
 /***/ function(module, exports, __webpack_require__) {
 
-var invalidatePathSets = __webpack_require__(27);
-var invalidatePathMaps = __webpack_require__(43);
+var invalidatePathSets = __webpack_require__(25);
+var invalidatePathMaps = __webpack_require__(39);
 
 module.exports = {
     json: invalidate,
-    jsonGraph: invalidate
-};
+    jsonGraph: invalidate,
+}
 
 function invalidate(model, args, seed, progressive, expireImmediate) {
     invalidatePathSets(model, args, expireImmediate);
     return {};
 }
 
+
 /***/ },
-/* 80 */
+/* 72 */
 /***/ function(module, exports, __webpack_require__) {
 
 var $ref = __webpack_require__(0);
 var $error = __webpack_require__(14);
 var getSize = __webpack_require__(7);
-var getTimestamp = __webpack_require__(55);
+var getTimestamp = __webpack_require__(51);
 
-var wrapNode = __webpack_require__(48);
+var wrapNode = __webpack_require__(44);
 var isExpired = __webpack_require__(1);
-var insertNode = __webpack_require__(42);
+var insertNode = __webpack_require__(38);
 var expireNode = __webpack_require__(3);
-var replaceNode = __webpack_require__(46);
-var reconstructPath = __webpack_require__(45);
+var replaceNode = __webpack_require__(42);
+var reconstructPath = __webpack_require__(41);
 var updateNodeAncestors = __webpack_require__(10);
 
-module.exports = function mergeJSONGraphNode(parent, node, message, key, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector, expireImmediate) {
+module.exports = function mergeJSONGraphNode(
+    parent, node, message, key, requestedPath, optimizedPath,
+    version, expired, lru, comparator, errorSelector, expireImmediate) {
 
     var sizeOffset;
 
-    var cType, mType, cIsObject, mIsObject, cTimestamp, mTimestamp;
+    var cType, mType,
+        cIsObject, mIsObject,
+        cTimestamp, mTimestamp;
 
     // If the cache and message are the same, we can probably return early:
     // - If they're both nullsy,
@@ -5429,22 +4958,24 @@ module.exports = function mergeJSONGraphNode(parent, node, message, key, request
 
         // The message and cache are both undefined, return undefined.
         else if (message === undefined) {
-                return message;
-            } else {
-                cIsObject = !(!node || typeof node !== 'object');
-                if (cIsObject) {
-                    // Is the cache node a branch? If so, return the cache branch.
-                    cType = node.$type;
-                    if (cType == null) {
-                        // Has the branch been introduced to the cache yet? If not,
-                        // give it a parent, key, and absolute path.
-                        if (node["\u001ef_parent"] == null) {
-                            insertNode(node, parent, key, version, optimizedPath);
-                        }
-                        return node;
+            return message;
+        }
+
+        else {
+            cIsObject = !(!node || typeof node !== 'object');
+            if (cIsObject) {
+                // Is the cache node a branch? If so, return the cache branch.
+                cType = node.$type;
+                if (cType == null) {
+                    // Has the branch been introduced to the cache yet? If not,
+                    // give it a parent, key, and absolute path.
+                    if (node["ƒ_parent"] == null) {
+                        insertNode(node, parent, key, version, optimizedPath);
                     }
+                    return node;
                 }
             }
+        }
     } else {
         cIsObject = !(!node || typeof node !== 'object');
         if (cIsObject) {
@@ -5461,58 +4992,60 @@ module.exports = function mergeJSONGraphNode(parent, node, message, key, request
         if (cIsObject && !cType) {
             // If the cache is a branch and the message is empty or
             // also a branch, continue with the cache branch.
-            if (message == null || mIsObject && !mType) {
+            if (message == null || (mIsObject && !mType)) {
                 return node;
             }
         }
     }
     // If the cache is a reference, we might not need to replace it.
     else {
-            // If the cache is a reference, but the message is empty, leave the cache alone...
-            if (message == null) {
-                // ...unless the cache is an expired reference. In that case, expire
-                // the cache node and return undefined.
-                if (isExpired(node, expireImmediate)) {
-                    expireNode(node, expired, lru);
-                    return void 0;
-                }
-                return node;
+        // If the cache is a reference, but the message is empty, leave the cache alone...
+        if (message == null) {
+            // ...unless the cache is an expired reference. In that case, expire
+            // the cache node and return undefined.
+            if (isExpired(node, expireImmediate)) {
+                expireNode(node, expired, lru);
+                return void 0;
             }
-            mIsObject = !(!message || typeof message !== 'object');
-            if (mIsObject) {
-                mType = message.$type;
-                // If the cache and the message are both references,
-                // check if we need to replace the cache reference.
-                if (mType === $ref) {
-                    if (node === message) {
-                        // If the cache and message are the same reference,
-                        // we performed a whole-branch merge of one of the
-                        // grandparents. If we've previously graphed this
-                        // reference, break early. Otherwise, continue to
-                        // leaf insertion below.
-                        if (node["\u001ef_parent"] != null) {
-                            return node;
-                        }
-                    } else {
+            return node;
+        }
+        mIsObject = !(!message || typeof message !== 'object');
+        if (mIsObject) {
+            mType = message.$type;
+            // If the cache and the message are both references,
+            // check if we need to replace the cache reference.
+            if (mType === $ref) {
+                if (node === message) {
+                    // If the cache and message are the same reference,
+                    // we performed a whole-branch merge of one of the
+                    // grandparents. If we've previously graphed this
+                    // reference, break early. Otherwise, continue to
+                    // leaf insertion below.
+                    if (node["ƒ_parent"] != null) {
+                        return node;
+                    }
+                } else {
 
-                        cTimestamp = node.$timestamp;
-                        mTimestamp = message.$timestamp;
+                    cTimestamp = node.$timestamp;
+                    mTimestamp = message.$timestamp;
 
-                        // - If either the cache or message reference is expired,
-                        //   replace the cache reference with the message.
-                        // - If neither of the references are expired, compare their
-                        //   timestamps. If either of them don't have a timestamp,
-                        //   or the message's timestamp is newer, replace the cache
-                        //   reference with the message reference.
-                        // - If the message reference is older than the cache
-                        //   reference, short-circuit.
-                        if (!isExpired(node, expireImmediate) && !isExpired(message, expireImmediate) && mTimestamp < cTimestamp) {
-                            return void 0;
-                        }
+                    // - If either the cache or message reference is expired,
+                    //   replace the cache reference with the message.
+                    // - If neither of the references are expired, compare their
+                    //   timestamps. If either of them don't have a timestamp,
+                    //   or the message's timestamp is newer, replace the cache
+                    //   reference with the message reference.
+                    // - If the message reference is older than the cache
+                    //   reference, short-circuit.
+                    if (!isExpired(node, expireImmediate) &&
+                        !isExpired(message, expireImmediate) &&
+                        mTimestamp < cTimestamp) {
+                        return void 0;
                     }
                 }
             }
         }
+    }
 
     // If the cache is a leaf but the message is a branch, merge the branch over the leaf.
     if (cType && mIsObject && !mType) {
@@ -5520,82 +5053,84 @@ module.exports = function mergeJSONGraphNode(parent, node, message, key, request
     }
     // If the message is a sentinel or primitive, insert it into the cache.
     else if (mType || !mIsObject) {
-            // If the cache and the message are the same value, we branch-merged one
-            // of the message's ancestors. If this is the first time we've seen this
-            // leaf, give the message a $size and $type, attach its graph pointers,
-            // and update the cache sizes and versions.
+        // If the cache and the message are the same value, we branch-merged one
+        // of the message's ancestors. If this is the first time we've seen this
+        // leaf, give the message a $size and $type, attach its graph pointers,
+        // and update the cache sizes and versions.
 
-            if (mType === $error && errorSelector) {
-                message = errorSelector(reconstructPath(requestedPath, key), message);
+        if (mType === $error && errorSelector) {
+            message = errorSelector(reconstructPath(requestedPath, key), message);
+        }
+
+        if (mType && node === message) {
+            if (node["ƒ_parent"] == null) {
+                node = wrapNode(node, cType, node.value);
+                parent = updateNodeAncestors(parent, -node.$size, lru, version);
+                node = insertNode(node, parent, key, version, optimizedPath);
             }
-
-            if (mType && node === message) {
-                if (node["\u001ef_parent"] == null) {
-                    node = wrapNode(node, cType, node.value);
-                    parent = updateNodeAncestors(parent, -node.$size, lru, version);
-                    node = insertNode(node, parent, key, version, optimizedPath);
+        }
+        // If the cache and message are different, the cache value is expired,
+        // or the message is a primitive, replace the cache with the message value.
+        // If the message is a sentinel, clone and maintain its type.
+        // If the message is a primitive value, wrap it in an atom.
+        else {
+            var isDistinct = true;
+            // If the cache is a branch, but the message is a leaf, replace the
+            // cache branch with the message leaf.
+            if ((cType && !isExpired(node, expireImmediate)) || !cIsObject) {
+                // Compare the current cache value with the new value. If either of
+                // them don't have a timestamp, or the message's timestamp is newer,
+                // replace the cache value with the message value. If a comparator
+                // is specified, the comparator takes precedence over timestamps.
+                //
+                // Comparing either Number or undefined to undefined always results in false.
+                isDistinct = (getTimestamp(message) < getTimestamp(node)) === false;
+                // If at least one of the cache/message are sentinels, compare them.
+                if (isDistinct && (cType || mType) && comparator) {
+                    isDistinct = !comparator(node, message, optimizedPath.slice(0, optimizedPath.index));
                 }
             }
-            // If the cache and message are different, the cache value is expired,
-            // or the message is a primitive, replace the cache with the message value.
-            // If the message is a sentinel, clone and maintain its type.
-            // If the message is a primitive value, wrap it in an atom.
-            else {
-                    var isDistinct = true;
-                    // If the cache is a branch, but the message is a leaf, replace the
-                    // cache branch with the message leaf.
-                    if (cType && !isExpired(node, expireImmediate) || !cIsObject) {
-                        // Compare the current cache value with the new value. If either of
-                        // them don't have a timestamp, or the message's timestamp is newer,
-                        // replace the cache value with the message value. If a comparator
-                        // is specified, the comparator takes precedence over timestamps.
-                        //
-                        // Comparing either Number or undefined to undefined always results in false.
-                        isDistinct = getTimestamp(message) < getTimestamp(node) === false;
-                        // If at least one of the cache/message are sentinels, compare them.
-                        if (isDistinct && (cType || mType) && comparator) {
-                            isDistinct = !comparator(node, message, optimizedPath.slice(0, optimizedPath.index));
-                        }
-                    }
-                    if (isDistinct) {
-                        message = wrapNode(message, mType, mType ? message.value : message);
-                        sizeOffset = getSize(node) - getSize(message);
-                        node = replaceNode(node, message, parent, key, lru, version);
-                        parent = updateNodeAncestors(parent, sizeOffset, lru, version);
-                        node = insertNode(node, parent, key, version, optimizedPath);
-                    }
-                }
+            if (isDistinct) {
+                message = wrapNode(message, mType, mType ? message.value : message);
+                sizeOffset = getSize(node) - getSize(message);
+                node = replaceNode(node, message, parent, key, lru, version);
+                parent = updateNodeAncestors(parent, sizeOffset, lru, version);
+                node = insertNode(node, parent, key, version, optimizedPath);
+            }
+        }
 
-            // Promote the message edge in the LRU.
-            if (isExpired(node,
+        // Promote the message edge in the LRU.
+        if (isExpired(node,
             /* expireImmediate:
              * force true so the node is marked as
              * expired but keep using it for the merge.
              */
             true)) {
-                expireNode(node, expired, lru);
-            }
-        } else if (node == null) {
-            node = insertNode(message, parent, key, undefined, optimizedPath);
+            expireNode(node, expired, lru);
         }
+    }
+    else if (node == null) {
+        node = insertNode(message, parent, key, undefined, optimizedPath);
+    }
 
     return node;
 };
 
+
 /***/ },
-/* 81 */
+/* 73 */
 /***/ function(module, exports, __webpack_require__) {
 
-var getJSON = __webpack_require__(22);
-var getJSONGraph = __webpack_require__(23);
-var arrayFlatMap = __webpack_require__(96);
-var groupCacheArguments = __webpack_require__(78);
+var getJSON = __webpack_require__(20);
+var getJSONGraph = __webpack_require__(21);
+var arrayFlatMap = __webpack_require__(89);
+var groupCacheArguments = __webpack_require__(70);
 
 module.exports = {
     json: json,
     jsonGraph: jsonGraph,
     setPathMaps: __webpack_require__(17),
-    setPathValues: __webpack_require__(30),
+    setPathValues: __webpack_require__(28),
     setJSONGraphs: __webpack_require__(16)
 };
 
@@ -5658,12 +5193,12 @@ function setGroupsIntoCache(model, xs /*, expireImmediate */) {
         var groupedArgs = group.arguments;
 
         if (groupedArgs.length > 0) {
-            var operation = module.exports["set" + inputType];
+            var operation = module.exports['set' + inputType];
             var resultPaths = operation(model, groupedArgs, selector, null, false);
             optimizedPaths.push.apply(optimizedPaths, resultPaths[1]);
-            if (inputType === "PathValues") {
+            if (inputType === 'PathValues') {
                 requestedPaths.push.apply(requestedPaths, groupedArgs.map(pluckPaths));
-            } else if (inputType === "JSONGraphs") {
+            } else if (inputType === 'JSONGraphs') {
                 requestedPaths.push.apply(requestedPaths, arrayFlatMap(groupedArgs, pluckPaths));
             } else {
                 requestedPaths.push.apply(requestedPaths, resultPaths[0]);
@@ -5678,64 +5213,67 @@ function pluckPaths(x) {
     return x.path || x.paths;
 }
 
+
 /***/ },
-/* 82 */
+/* 74 */
 /***/ function(module, exports, __webpack_require__) {
 
 module.exports = function transferBackReferences(fromNode, destNode) {
-    var fromNodeRefsLength = fromNode["\u001ef_refs_length"] || 0,
-        destNodeRefsLength = destNode["\u001ef_refs_length"] || 0,
+    var fromNodeRefsLength = fromNode["ƒ_refs_length"] || 0,
+        destNodeRefsLength = destNode["ƒ_refs_length"] || 0,
         i = -1;
     while (++i < fromNodeRefsLength) {
-        var ref = fromNode["\u001ef_ref" + i];
+        var ref = fromNode["ƒ_ref" + i];
         if (ref !== void 0) {
-            ref["\u001ef_context"] = destNode;
-            destNode["\u001ef_ref" + (destNodeRefsLength + i)] = ref;
-            fromNode["\u001ef_ref" + i] = void 0;
+            ref["ƒ_context"] = destNode;
+            destNode["ƒ_ref" + (destNodeRefsLength + i)] = ref;
+            fromNode["ƒ_ref" + i] = void 0;
         }
     }
-    destNode["\u001ef_refs_length"] = fromNodeRefsLength + destNodeRefsLength;
-    fromNode["\u001ef_refs_length"] = void 0;
+    destNode["ƒ_refs_length"] = fromNodeRefsLength + destNodeRefsLength;
+    fromNode["ƒ_refs_length"] = void 0;
     return destNode;
 };
 
+
 /***/ },
-/* 83 */
+/* 75 */
 /***/ function(module, exports, __webpack_require__) {
 
 module.exports = function unlinkBackReferences(node) {
-    var i = -1,
-        n = node["\u001ef_refs_length"] || 0;
+    var i = -1, n = node["ƒ_refs_length"] || 0;
     while (++i < n) {
-        var ref = node["\u001ef_ref" + i];
+        var ref = node["ƒ_ref" + i];
         if (ref != null) {
-            ref["\u001ef_context"] = ref["\u001ef_ref_index"] = node["\u001ef_ref" + i] = void 0;
+            ref["ƒ_context"] = ref["ƒ_ref_index"] = node["ƒ_ref" + i] = void 0;
         }
     }
-    node["\u001ef_refs_length"] = void 0;
+    node["ƒ_refs_length"] = void 0;
     return node;
 };
 
+
 /***/ },
-/* 84 */
+/* 76 */
 /***/ function(module, exports, __webpack_require__) {
 
 module.exports = function unlinkForwardReference(reference) {
-    var destination = reference["\u001ef_context"];
+    var destination = reference["ƒ_context"];
     if (destination) {
-        var i = (reference["\u001ef_ref_index"] || 0) - 1,
-            n = (destination["\u001ef_refs_length"] || 0) - 1;
+        var i = (reference["ƒ_ref_index"] || 0) - 1,
+            n = (destination["ƒ_refs_length"] || 0) - 1;
         while (++i <= n) {
-            destination["\u001ef_ref" + i] = destination["\u001ef_ref" + (i + 1)];
+            destination["ƒ_ref" + i] = destination["ƒ_ref" + (i + 1)];
         }
-        destination["\u001ef_refs_length"] = n;
-        reference["\u001ef_ref_index"] = reference["\u001ef_context"] = destination = void 0;
+        destination["ƒ_refs_length"] = n;
+        reference["ƒ_ref_index"] = reference["ƒ_context"] = destination = void 0;
     }
     return reference;
 };
 
+
 /***/ },
-/* 85 */
+/* 77 */
 /***/ function(module, exports, __webpack_require__) {
 
 module.exports = hasValidParentReference;
@@ -5760,26 +5298,28 @@ function hasValidParentReference() {
     }
 
     // Its been disconnected (set over or collected) from the graph.
-    if (reference && reference["\u001ef_parent"] === undefined) {
+    if (reference && reference["ƒ_parent"] === undefined) {
         return false;
     }
 
     // The reference has expired but has not been collected from the graph.
-    if (reference && reference["\u001ef_invalidated"]) {
+    if (reference && reference["ƒ_invalidated"]) {
         return false;
     }
 
     return true;
 }
 
+
 /***/ },
-/* 86 */
+/* 78 */
 /***/ function(module, exports, __webpack_require__) {
 
-var CONTAINER_DOES_NOT_EXIST = "e";
+var CONTAINER_DOES_NOT_EXIST = 'e';
 var $ref = __webpack_require__(0);
+var FalcorJSON = __webpack_require__(5);
 var getCachePosition = __webpack_require__(9);
-var InvalidDerefInputError = __webpack_require__(88);
+var InvalidDerefInputError = __webpack_require__(80);
 
 module.exports = function deref(boundJSONArg) {
 
@@ -5788,7 +5328,7 @@ module.exports = function deref(boundJSONArg) {
     }
 
     var referenceContainer, currentRefPath, i, len;
-    var jsonMetadata = boundJSONArg && boundJSONArg["\u001ef_metadata"];
+    var jsonMetadata = boundJSONArg && boundJSONArg["ƒ_meta"];
 
     if (!jsonMetadata || typeof jsonMetadata !== 'object') {
         return this._clone({
@@ -5802,14 +5342,18 @@ module.exports = function deref(boundJSONArg) {
     if (!absolutePath) {
         return this._clone({
             _node: undefined,
-            _seed: recycleJSON && { json: boundJSONArg } || undefined
+            _seed: recycleJSON && {
+                json: boundJSONArg, __proto__: FalcorJSON.prototype
+            } || undefined
         });
     } else if (absolutePath.length === 0) {
         return this._clone({
             _path: absolutePath,
             _node: this._root.cache,
             _referenceContainer: true,
-            _seed: recycleJSON && { json: boundJSONArg } || undefined
+            _seed: recycleJSON && {
+                json: boundJSONArg, __proto__: FalcorJSON.prototype
+            } || undefined
         });
     }
 
@@ -5865,23 +5409,28 @@ module.exports = function deref(boundJSONArg) {
     // The container did not exist, therefore there is no reference
     // container and fromWhenceYouCame should always return true.
     else if (validContainer === CONTAINER_DOES_NOT_EXIST) {
-            referenceContainer = true;
-        }
+        referenceContainer = true;
+    }
 
     return this._clone({
         _node: cacheNode,
         _path: absolutePath,
         _referenceContainer: referenceContainer,
-        _seed: recycleJSON && { json: boundJSONArg } || undefined
+        _seed: recycleJSON && {
+            json: boundJSONArg, __proto__: FalcorJSON.prototype
+        } || undefined
     });
 };
 
+
 /***/ },
-/* 87 */
+/* 79 */
 /***/ function(module, exports) {
 
-var NAME = "BoundJSONGraphModelError";
-var MESSAGE = "It is not legal to use the JSON Graph " + "format from a bound Model. JSON Graph format" + " can only be used from a root model.";
+var NAME = 'BoundJSONGraphModelError';
+var MESSAGE = 'It is not legal to use the JSON Graph ' +
+    'format from a bound Model. JSON Graph format' +
+    ' can only be used from a root model.';
 
 /**
  * When a bound model attempts to retrieve JSONGraph it should throw an
@@ -5904,12 +5453,13 @@ BoundJSONGraphModelError.message = MESSAGE;
 
 module.exports = BoundJSONGraphModelError;
 
+
 /***/ },
-/* 88 */
+/* 80 */
 /***/ function(module, exports) {
 
-var NAME = "InvalidDerefInputError";
-var MESSAGE = "Deref can only be used with a non-primitive object from get, set, or call.";
+var NAME = 'InvalidDerefInputError';
+var MESSAGE = 'Deref can only be used with a non-primitive object from get, set, or call.';
 
 /**
  * An invalid deref input is when deref is used with input that is not generated
@@ -5919,11 +5469,11 @@ var MESSAGE = "Deref can only be used with a non-primitive object from get, set,
  * @private
  */
 function InvalidDerefInputError() {
-  var err = Error.call(this, MESSAGE);
-  err.name = NAME;
-  this.stack = err.stack;
-  this.message = err.message;
-  return this;
+    var err = Error.call(this, MESSAGE);
+    err.name = NAME;
+    this.stack = err.stack;
+    this.message = err.message;
+    return this;
 }
 
 // instanceof will be an error, but stack will be correct because its defined in the constructor.
@@ -5933,12 +5483,13 @@ InvalidDerefInputError.message = MESSAGE;
 
 module.exports = InvalidDerefInputError;
 
+
 /***/ },
-/* 89 */
+/* 81 */
 /***/ function(module, exports) {
 
-var NAME = "InvalidModelError";
-var MESSAGE = "The boundPath of the model is not valid since a value or error was found before the path end.";
+var NAME = 'InvalidModelError';
+var MESSAGE = 'The boundPath of the model is not valid since a value or error was found before the path end.';
 
 /**
  * An InvalidModelError can only happen when a user binds, whether sync
@@ -5964,12 +5515,13 @@ InvalidModelError.message = MESSAGE;
 
 module.exports = InvalidModelError;
 
+
 /***/ },
-/* 90 */
+/* 82 */
 /***/ function(module, exports) {
 
-var NAME = "MaxRetryExceededError";
-var MESSAGE = "The allowed number of retries have been exceeded.";
+var NAME = 'MaxRetryExceededError';
+var MESSAGE = 'The allowed number of retries have been exceeded.';
 
 /**
  * A request can only be retried up to a specified limit.  Once that
@@ -5978,7 +5530,15 @@ var MESSAGE = "The allowed number of retries have been exceeded.";
  * @private
  */
 function MaxRetryExceededError(maxRetryCount, absolute, relative, optimized) {
-    var err = Error.call(this, "Exceeded the max retry count (" + maxRetryCount + ") for these paths: \n" + (absolute && "absolute: [\n\t" + printPaths(absolute) + "\n]\n" || "") + (relative && "relative: [\n\t" + printPaths(relative) + "\n]\n" || "") + (optimized && "optimized: [\n\t" + printPaths(optimized) + "\n]\n" || ""));
+    var err = Error.call(this,
+        'Exceeded the max retry count (' + maxRetryCount + ') for these paths: \n' +
+        (absolute &&
+        'absolute: [\n\t' + printPaths(absolute) + '\n]\n' || '') +
+        (relative &&
+        'relative: [\n\t' + printPaths(relative) + '\n]\n' || '') +
+        (optimized &&
+        'optimized: [\n\t' + printPaths(optimized) + '\n]\n' || '')
+    );
     err.name = NAME;
     this.stack = err.stack;
     this.message = err.message;
@@ -5989,28 +5549,37 @@ function MaxRetryExceededError(maxRetryCount, absolute, relative, optimized) {
 // in the constructor.
 MaxRetryExceededError.prototype = Object.create(Error.prototype);
 MaxRetryExceededError.prototype.name = NAME;
-MaxRetryExceededError.is = function (e) {
+MaxRetryExceededError.is = function(e) {
     return e && e.name === NAME;
 };
 
 module.exports = MaxRetryExceededError;
 
 function printPaths(paths) {
-    return paths.map(function (path) {
+    return paths.map(function(path) {
         return JSON.stringify(path);
     }).join(',\n\t');
 }
 
+
 /***/ },
-/* 91 */
+/* 83 */
+/***/ function(module, exports) {
+
+module.exports = String.fromCharCode(30) + 'ƒ_';
+
+
+/***/ },
+/* 84 */
 /***/ function(module, exports, __webpack_require__) {
 
-var Source = __webpack_require__(53);
+var Source = __webpack_require__(49);
 var Subscriber = __webpack_require__(12);
-var lruCollect = __webpack_require__(51);
-var collapse = __webpack_require__(61);
-var InvalidSourceError = __webpack_require__(50);
-var MaxRetryExceededError = __webpack_require__(90);
+var lruCollect = __webpack_require__(47);
+var FalcorJSON = __webpack_require__(5);
+var collapse = __webpack_require__(100);
+var InvalidSourceError = __webpack_require__(46);
+var MaxRetryExceededError = __webpack_require__(82);
 
 module.exports = Call;
 
@@ -6026,20 +5595,20 @@ function Call(type, model, _args) {
 
 Call.prototype = Object.create(Source.prototype);
 
-Call.prototype.lift = function (operator, source) {
+Call.prototype.lift = function(operator, source) {
     source = new Call(source || this);
     source.operator = operator;
     source.type = this.type;
     source.model = this.model;
     source._args = this._args;
     return source;
-};
+}
 
-Call.prototype.operator = function (subscriber) {
+Call.prototype.operator = function(subscriber) {
     return this._subscribe(subscriber);
-};
+}
 
-Call.prototype._subscribe = function (subscriber) {
+Call.prototype._subscribe = function(subscriber) {
     subscriber.onNext({
         type: this.type,
         args: this._args,
@@ -6048,31 +5617,43 @@ Call.prototype._subscribe = function (subscriber) {
     });
     subscriber.onCompleted();
     return subscriber;
-};
+}
 
-Call.prototype._toJSON = function (data, errors) {
-    return this.lift(new CallOperator(this.operator.data || data, this.operator.errors || errors, 'json', this.operator.progressive, this.operator.maxRetryCount), this.source);
-};
+Call.prototype._toJSON = function(data = { __proto__: FalcorJSON.prototype }, errors) {
+    return this.lift(new CallOperator(
+        data, errors || this.operator.errors, 'json',
+        this.operator.progressive, this.operator.maxRetryCount
+    ), this.source);
+}
 
-Call.prototype._toJSONG = function (data, errors) {
-    return this.lift(new CallOperator(this.operator.data || data, this.operator.errors || errors, 'jsonGraph', this.operator.progressive, this.operator.maxRetryCount), this.source);
-};
+Call.prototype._toJSONG = function(data = { __proto__: FalcorJSON.prototype }, errors) {
+    return this.lift(new CallOperator(
+        data, errors || this.operator.errors, 'jsonGraph',
+        this.operator.progressive, this.operator.maxRetryCount
+    ), this.source);
+}
 
-Call.prototype.retry = function (maxRetryCount) {
-    return this.lift(new CallOperator(this.operator.data, this.operator.errors, this.operator.operation, this.operator.progresive, maxRetryCount), this.source);
-};
+Call.prototype.retry = function(maxRetryCount) {
+    return this.lift(new CallOperator(
+        this.operator.data,
+        this.operator.errors,
+        this.operator.operation,
+        this.operator.progresive,
+        maxRetryCount
+    ), this.source);
+}
 
-Call.prototype.progressively = function () {
-    return this.lift(new CallOperator(this.operator.data, this.operator.errors, this.operator.operation, true, this.operator.maxRetryCount), this.source);
-};
+Call.prototype.progressively = function() {
+    return this.lift(new CallOperator(
+        this.operator.data,
+        this.operator.errors,
+        this.operator.operation,
+        true,
+        this.operator.maxRetryCount
+    ), this.source);
+}
 
 function CallOperator(data, errors, operation, progressive, maxRetryCount) {
-    if (data === undefined) {
-        data = {};
-    }
-    if (errors === undefined) {
-        errors = [];
-    }
     this.data = data;
     this.errors = errors;
     this.operation = operation;
@@ -6080,9 +5661,11 @@ function CallOperator(data, errors, operation, progressive, maxRetryCount) {
     this.maxRetryCount = maxRetryCount;
 }
 
-CallOperator.prototype.call = function (source, destination) {
-    return source.subscribe(new CallSubscriber(destination, this.data, this.errors, this.operation, this.progressive));
-};
+CallOperator.prototype.call = function(source, destination) {
+    return source.subscribe(new CallSubscriber(
+        destination, this.data, this.errors, this.operation, this.progressive
+    ));
+}
 
 function CallSubscriber(destination, data, errors, operation, progressive, maxRetryCount) {
     Subscriber.call(this, destination);
@@ -6098,13 +5681,14 @@ function CallSubscriber(destination, data, errors, operation, progressive, maxRe
 
 CallSubscriber.prototype = Object.create(Subscriber.prototype);
 CallSubscriber.prototype.operations = {
-    get: __webpack_require__(69),
-    set: __webpack_require__(81),
-    call: __webpack_require__(68),
-    invalidate: __webpack_require__(79)
+    get: __webpack_require__(61),
+    set: __webpack_require__(73),
+    call: __webpack_require__(60),
+    invalidate: __webpack_require__(71)
 };
 
-CallSubscriber.prototype.next = CallSubscriber.prototype.onNext = function (seed) {
+CallSubscriber.prototype.next =
+CallSubscriber.prototype.onNext = function(seed) {
 
     if (!this.started) {
         this.args = seed.args;
@@ -6134,12 +5718,15 @@ CallSubscriber.prototype.next = CallSubscriber.prototype.onNext = function (seed
     // valueNode is immutable. If not in progressive mode, we can write into the
     // same JSON tree until the request is completed.
     if (seedIsImmutable) {
-        data = {};
+        data = { __proto__: FalcorJSON.prototype };
     }
 
     if (args && args.length) {
 
-        results = this.operations[type][operation](model, args, data, progressive || !model._source, this.retryCount === -1);
+        results = this.operations[type]
+            [operation](model, args, data,
+                        progressive || !model._source,
+                        this.retryCount === -1);
 
         // We must communicate critical errors from get, such as bound path is
         // broken or this is a JSONGraph request with a bound path.
@@ -6147,7 +5734,8 @@ CallSubscriber.prototype.next = CallSubscriber.prototype.onNext = function (seed
             throw results.error;
         }
 
-        errors && results.errors && errors.push.apply(errors, results.errors);
+        errors && results.errors &&
+            errors.push.apply(errors, results.errors);
 
         if (fragments = results.fragments) {
             args = results.args;
@@ -6165,7 +5753,7 @@ CallSubscriber.prototype.next = CallSubscriber.prototype.onNext = function (seed
     this.completed = !missing || !model._source;
 
     if (type !== 'set') {
-        this.args = args; // || this.args;
+        this.args = args;// || this.args;
         if (seedIsImmutable) {
             this.data = mergeInto(data, this.data);
         }
@@ -6174,17 +5762,19 @@ CallSubscriber.prototype.next = CallSubscriber.prototype.onNext = function (seed
     if (progressive && hasValue && data && (data.json || data.jsonGraph)) {
         tryOnNext(data, operation, model._root, this.destination);
     }
-};
+}
 
-CallSubscriber.prototype.error = CallSubscriber.prototype.onError = function (error) {
+CallSubscriber.prototype.error =
+CallSubscriber.prototype.onError = function(error) {
     if (error instanceof InvalidSourceError) {
         return Subscriber.prototype.onError.call(this, error);
     }
     this.errored = true;
     this.onCompleted(error);
-};
+}
 
-CallSubscriber.prototype.complete = CallSubscriber.prototype.onCompleted = function (error) {
+CallSubscriber.prototype.complete =
+CallSubscriber.prototype.onCompleted = function(error) {
 
     var data, type, errors, errored;
 
@@ -6195,25 +5785,39 @@ CallSubscriber.prototype.complete = CallSubscriber.prototype.onCompleted = funct
     }
 
     if (errored || this.completed) {
-        if (!this.progressive && this.hasValue && ((data = this.data) && data.json || data.jsonGraph)) {
+        if (!this.progressive && this.hasValue && (
+            (data = this.data) && data.json || data.jsonGraph)) {
             tryOnNext(data, this.operation, this.model._root, this.destination);
         }
         errors = this.errors;
         if (errored || error || errors && errors.length) {
-            return Subscriber.prototype.onError.call(this, errors.length && errors || error);
+            return Subscriber.prototype.onError.call(
+                this,  errors.length && errors || error
+            );
         }
 
         return Subscriber.prototype.onCompleted.call(this);
     }
 
     if (++this.retryCount >= this.maxRetryCount) {
-        return Subscriber.prototype.onError.call(this, new MaxRetryExceededError(this.retryCount, this.requested, this.relative, this.missing));
+        return Subscriber.prototype.onError.call(this, new MaxRetryExceededError(
+            this.retryCount,
+            this.requested,
+            this.relative,
+            this.missing
+        ));
     }
 
-    this.request = this.model._root.requests[this.type](this.model, this.missing, this.relative, this.fragments).subscribe(this);
-};
+    this.request = this.model._root.requests[this.type](
+        this.model,
+        this.missing,
+        this.relative,
+        this.fragments
+    ).subscribe(this);
+}
 
-CallSubscriber.prototype.dispose = CallSubscriber.prototype.unsubscribe = function () {
+CallSubscriber.prototype.dispose =
+CallSubscriber.prototype.unsubscribe = function() {
 
     var model = this.model;
     var version = this.version;
@@ -6239,13 +5843,19 @@ CallSubscriber.prototype.dispose = CallSubscriber.prototype.unsubscribe = functi
 
         var modelRoot = model._root;
         var cache = modelRoot.cache;
-        var shouldCollectCache = modelRoot.syncRefCount <= 0 && version !== modelRoot.version;
+        var shouldCollectCache = modelRoot.syncRefCount <= 0 &&
+                                 version !== modelRoot.version;
 
         // Prune the cache via the LRU if this is the last request.
         if (shouldCollectCache) {
 
             if (cache) {
-                lruCollect(modelRoot, modelRoot.expired, cache.$size || 0, modelRoot.maxSize, modelRoot.collectRatio, modelRoot.version);
+                lruCollect(modelRoot,
+                           modelRoot.expired,
+                           cache.$size || 0,
+                           modelRoot.maxSize,
+                           modelRoot.collectRatio,
+                           modelRoot.version);
             }
 
             var rootOnChangesCompletedHandler = modelRoot.onChangesCompleted;
@@ -6255,7 +5865,7 @@ CallSubscriber.prototype.dispose = CallSubscriber.prototype.unsubscribe = functi
             }
         }
     }
-};
+}
 
 function tryOnNext(data, operation, modelRoot, destination) {
     if (operation === 'jsonGraph' && data.paths) {
@@ -6264,7 +5874,7 @@ function tryOnNext(data, operation, modelRoot, destination) {
     try {
         ++modelRoot.syncRefCount;
         destination.onNext(data);
-    } catch (e) {
+    } catch(e) {
         throw e;
     } finally {
         --modelRoot.syncRefCount;
@@ -6273,28 +5883,26 @@ function tryOnNext(data, operation, modelRoot, destination) {
 
 function mergeInto(dest, node) {
 
-    var destValue,
-        nodeValue,
-        key,
-        keys = Object.keys(node),
-        index = -1,
-        length = keys.length;
+    var destValue, nodeValue,
+        key, keys = Object.keys(node),
+        index = -1, length = keys.length;
 
     while (++index < length) {
 
         key = keys[index];
 
-        if (key === "\u001ef_metadata") {
-            dest["\u001ef_metadata"] = node["\u001ef_metadata"];
+        if (key === "ƒ_meta") {
+            dest["ƒ_meta"] = node["ƒ_meta"];
         } else {
 
             nodeValue = node[key];
             destValue = dest[key];
 
             if (destValue !== nodeValue) {
-                if (destValue === undefined || "object" !== typeof nodeValue) {
+                if (destValue === undefined || 'object' !== typeof nodeValue) {
                     dest[key] = nodeValue;
-                } else {
+                }
+                else {
                     mergeInto(destValue, nodeValue);
                 }
             }
@@ -6304,15 +5912,16 @@ function mergeInto(dest, node) {
     return dest;
 }
 
+
 /***/ },
-/* 92 */
+/* 85 */
 /***/ function(module, exports, __webpack_require__) {
 
-var Source = __webpack_require__(53);
-var Request = __webpack_require__(93);
+var Source = __webpack_require__(49);
+var Request = __webpack_require__(86);
 var Subscriber = __webpack_require__(12);
 var Subscription = __webpack_require__(13);
-var ImmediateScheduler = __webpack_require__(54);
+var ImmediateScheduler = __webpack_require__(50);
 
 module.exports = Queue;
 
@@ -6329,13 +5938,16 @@ Queue.prototype.get = batchAndDedupeGet;
 
 function isolateSet(model, optimized, requested, env) {
     var queue = this;
-    return new Source(function (destination) {
+    return new Source(function(destination) {
 
-        var request = new Request('set', queue, model._source, new ImmediateScheduler()).batch(requested, optimized || env.paths, env.jsonGraph);
+        var request = new Request('set', queue, model._source, new ImmediateScheduler())
+            .batch(requested, optimized || env.paths, env.jsonGraph);
 
         var subscriber = request.subscribe(new Subscriber(destination, request));
 
-        queue.add(request.connect());
+        queue.add(request);
+
+        request.connect();
 
         return subscriber;
     });
@@ -6343,20 +5955,25 @@ function isolateSet(model, optimized, requested, env) {
 
 function isolateCall(model, optimized, requested, env) {
     var queue = this;
-    return new Source(function (destination) {
+    return new Source(function(destination) {
 
-        var request = new Request('call', queue, model._source, new ImmediateScheduler()).batch(null, null, env);
+        var request = new Request('call', queue, model._source, new ImmediateScheduler())
+            .batch(null, null, env);
 
         var subscriber = request.subscribe(new Subscriber(destination, request));
 
-        queue.add(request.connect());
+        queue.add(request);
+
+        request.connect();
 
         return subscriber;
     });
 }
 
 function batchAndDedupeGet(model, optimized, requested) {
-    return new Dedupe(this, model._source, model._scheduler, requested, optimized);
+    return new Dedupe(
+        this, model._source, model._scheduler, requested, optimized
+    );
 }
 
 function Dedupe(queue, source, scheduler, requested, optimized) {
@@ -6367,7 +5984,7 @@ function Dedupe(queue, source, scheduler, requested, optimized) {
     this.optimized = optimized;
 }
 
-Dedupe.prototype.subscribe = function (destination) {
+Dedupe.prototype.subscribe = function(destination) {
 
     var queue = this.queue;
     var source = this.dataSource;
@@ -6376,7 +5993,7 @@ Dedupe.prototype.subscribe = function (destination) {
     var scheduler = this.scheduler;
 
     var requestsIndex = -1;
-    var requests = queue.subscriptions;
+    var requests  = queue.subscriptions;
     var requestsCount = requests.length;
     var subscription = new Subscription([], destination);
 
@@ -6398,32 +6015,34 @@ Dedupe.prototype.subscribe = function (destination) {
     }
 
     if (optimized.length) {
-        request = requests[requestsIndex] = new Request('get', queue, source, scheduler).batch(requested, optimized);
+        request = requests[requestsIndex] =
+            new Request('get', queue, source, scheduler).batch(requested, optimized);
         subscription.add(request.subscribe(new Subscriber(destination, request)));
         request.connect();
     }
 
     return subscription;
-};
+}
+
 
 /***/ },
-/* 93 */
+/* 86 */
 /***/ function(module, exports, __webpack_require__) {
 
-var Subject = __webpack_require__(94);
+var Subject = __webpack_require__(87);
 var $error = __webpack_require__(14);
 var Subscriber = __webpack_require__(12);
 var Subscription = __webpack_require__(13);
-var InvalidSourceError = __webpack_require__(50);
-
-var toPaths = __webpack_require__(36);
-var toCollapseMap = __webpack_require__(34);
-var toCollapseTrees = __webpack_require__(35);
-var hasIntersection = __webpack_require__(63);
+var InvalidSourceError = __webpack_require__(46);
 
 var setJSONGraphs = __webpack_require__(16);
-var setPathValues = __webpack_require__(30);
-var invalidatePaths = __webpack_require__(27);
+var setPathValues = __webpack_require__(28);
+var invalidatePaths = __webpack_require__(25);
+
+var toPaths = __webpack_require__(108);
+var toCollapseMap = __webpack_require__(105);
+var toCollapseTrees = __webpack_require__(106);
+var hasIntersection = __webpack_require__(104);
 
 module.exports = Request;
 
@@ -6444,7 +6063,8 @@ function Request(type, queue, source, scheduler) {
 
 Request.prototype = Object.create(Subject.prototype);
 
-Request.prototype.next = Request.prototype.onNext = function (env) {
+Request.prototype.next =
+Request.prototype.onNext = function(env) {
 
     var queue = this.parent;
 
@@ -6452,7 +6072,13 @@ Request.prototype.next = Request.prototype.onNext = function (env) {
         return;
     }
 
-    this.responded = true;
+    if (this.responded === false) {
+        this.responded = true;
+        // Remove this request from the request queue as soon as we get
+        // at least one response back. This ensures we won't be the target
+        // of in-flight batch requests.
+        queue.remove(this);
+    }
 
     var jsonGraph = env.jsonGraph;
     var requested = this.requested;
@@ -6466,17 +6092,22 @@ Request.prototype.next = Request.prototype.onNext = function (env) {
     }
 
     if (paths && paths.length && !(!jsonGraph || typeof jsonGraph !== 'object')) {
-        setJSONGraphs({ _root: modelRoot }, [{ paths: paths, jsonGraph: jsonGraph }], modelRoot.errorSelector, modelRoot.comparator, false);
+        setJSONGraphs(
+            { _root: modelRoot },
+            [{ paths: paths, jsonGraph: jsonGraph }],
+            modelRoot.errorSelector, modelRoot.comparator, false
+        );
     }
 
-    this.observers.slice(0).forEach(function (observer, index) {
+    this.observers.slice(0).forEach(function(observer, index) {
         observer.onNext({
             type: 'get', paths: requested[index] || paths
         });
     });
-};
+}
 
-Request.prototype.error = Request.prototype.onError = function (error) {
+Request.prototype.error =
+Request.prototype.onError = function(error) {
 
     var queue = this.parent;
 
@@ -6484,43 +6115,56 @@ Request.prototype.error = Request.prototype.onError = function (error) {
         return;
     }
 
-    this.responded = true;
+    if (this.responded === false) {
+        this.responded = true;
+        // Remove this request from the request queue as soon as we get
+        // at least one response back. This ensures we won't be the target
+        // of in-flight batch requests.
+        queue.remove(this);
+    }
 
     error = error || {};
 
-    // Converts errors to objects, a more friendly storage
-    // of errors.
+    // Converts errors to object we can insert into the cache.
     error = !(error instanceof Error) ?
-    // if it's $type error, use it raw
-    error.$type === $error && error ||
-    // Otherwise make it an error
-    { $type: $error, value: error } :
-    // If it's instanceof Error, pluck error.message
-    { $type: $error, value: { message: error.message } };
+        // if it's $type error, use it raw
+        error.$type === $error && error ||
+        // Otherwise make it an error
+        { $type: $error, value: error } :
+        // If it's instanceof Error, pluck error.message
+        { $type: $error, value: { message: error.message }};
 
     var modelRoot = queue.modelRoot;
 
-    var errorPathValues = toPaths(toCollapseTrees(this.requested.reduce(function (collapseMap, paths) {
-        return toCollapseMap(paths, collapseMap);
-    }, {}))).map(function (path) {
-        return { path: path, value: error };
-    });
+    var errorPathValues = toPaths(toCollapseTrees(
+        this.requested.reduce(function(collapseMap, paths) {
+            return toCollapseMap(paths, collapseMap);
+        }, {})
+    ))
+    .map(function(path) { return { path: path, value: error }; });
 
     if (errorPathValues.length) {
-        setPathValues({ _root: modelRoot, _path: [] }, errorPathValues, modelRoot.errorSelector, modelRoot.comparator, false);
+        setPathValues(
+            { _root: modelRoot, _path: [] },
+            errorPathValues,
+            modelRoot.errorSelector,
+            modelRoot.comparator,
+            false
+        );
     }
 
     Subject.prototype.onError.call(this, error);
-};
+}
 
-Request.prototype.complete = Request.prototype.onCompleted = function () {
+Request.prototype.complete =
+Request.prototype.onCompleted = function() {
     if (this.responded === false) {
         this.onNext({});
     }
     Subject.prototype.onCompleted.call(this);
-};
+}
 
-Request.prototype.remove = function (subscription) {
+Request.prototype.remove = function(subscription) {
     var index = this.subscriptions.indexOf(subscription);
     if (~index) {
         this.requested.splice(index, 1);
@@ -6532,9 +6176,10 @@ Request.prototype.remove = function (subscription) {
         this.dispose();
     }
     return this;
-};
+}
 
-Request.prototype.dispose = Request.prototype.unsubscribe = function () {
+Request.prototype.dispose =
+Request.prototype.unsubscribe = function () {
     this.tree = {};
     this.data = null;
     this.paths = null;
@@ -6556,9 +6201,9 @@ Request.prototype.dispose = Request.prototype.unsubscribe = function () {
         }
     }
     Subject.prototype.dispose.call(this);
-};
+}
 
-Request.prototype.connect = function () {
+Request.prototype.connect = function() {
     if (!this.active && !this.disposable) {
         var scheduledDisposable = this.scheduler.schedule(flush.bind(this));
         if (!this.disposable) {
@@ -6566,13 +6211,20 @@ Request.prototype.connect = function () {
         }
     }
     return this;
-};
+}
 
-Request.prototype.batch = function (requested, optimized, requestedComplements, optimizedComplements) {
+Request.prototype.batch = function(requested, optimized,
+                                   requestedComplements,
+                                   optimizedComplements) {
     if (this.active) {
         var requestedIntersection = [];
         var optimizedIntersection = [];
-        if (findIntersections(this.tree, requested, optimized, requestedComplements, optimizedComplements, requestedIntersection, optimizedIntersection)) {
+        if (findIntersections(this.tree,
+                              requested, optimized,
+                              requestedComplements,
+                              optimizedComplements,
+                              requestedIntersection,
+                              optimizedIntersection)) {
             this.requested.push(requestedIntersection);
             this.optimized.push(optimizedIntersection);
             return this;
@@ -6583,16 +6235,17 @@ Request.prototype.batch = function (requested, optimized, requestedComplements, 
     this.optimized.push(optimized);
     this.data = requestedComplements;
     return this;
-};
+}
 
 function flush() {
 
     this.active = true;
 
-    var obs,
-        paths = this.paths = toPaths(this.tree = toCollapseTrees(this.optimized.reduce(function (collapseMap, paths) {
-        return toCollapseMap(paths, collapseMap);
-    }, {})));
+    var obs, paths = this.paths = toPaths(this.tree = toCollapseTrees(
+        this.optimized.reduce(function(collapseMap, paths) {
+            return toCollapseMap(paths, collapseMap);
+        }, {})
+    ));
 
     try {
         switch (this.type) {
@@ -6608,53 +6261,42 @@ function flush() {
         }
         this.disposable = obs.subscribe(this);
     } catch (e) {
-        this.disposable = null;
+        this.disposable = {};
         Subject.prototype.onError.call(this, new InvalidSourceError(e));
     }
 }
 
-function findIntersections(tree, requested, optimized, requestedComplements, optimizedComplements, requestedIntersection, optimizedIntersection) {
+function findIntersections(tree,
+                           requested, optimized,
+                           requestedComplements,
+                           optimizedComplements,
+                           requestedIntersection,
+                           optimizedIntersection) {
 
     var index = -1;
-    var complementIndex = 0;
-    var intersectionIndex = 0;
+    var complementIndex = -1;
+    var intersectionIndex = -1;
     var total = optimized.length;
-    var intersectionFound = false;
 
     while (++index < total) {
-        // If this does not intersect then add it to the output.
         var path = optimized[index];
         var pathLen = path.length;
         var subTree = tree[pathLen];
-
-        // If there is no subtree to look into or there is no intersection.
-        if (!subTree || !hasIntersection(subTree, path, 0, pathLen)) {
-            if (intersectionFound) {
-                requestedComplements[complementIndex] = requested[index];
-                optimizedComplements[complementIndex++] = path;
-            }
-        } else {
-            // If there has been no intersection yet and index is larger than 0
-            // (meaning we have had only complements), then we need to update
-            // our complements to match the current reality.
-            if (!intersectionFound) {
-                while (complementIndex < index) {
-                    requestedComplements[complementIndex] = requested[complementIndex];
-                    optimizedComplements[complementIndex] = optimized[complementIndex++];
-                }
-            }
-
-            intersectionFound = true;
+        if (subTree && hasIntersection(subTree, path, 0, pathLen)) {
+            optimizedIntersection[++intersectionIndex] = path;
             requestedIntersection[intersectionIndex] = requested[index];
-            optimizedIntersection[intersectionIndex++] = optimized[index];
+        } else {
+            optimizedComplements[++complementIndex] = path;
+            requestedComplements[complementIndex] = requested[index];
         }
     }
 
-    return intersectionFound;
+    return ~intersectionIndex;
 }
 
+
 /***/ },
-/* 94 */
+/* 87 */
 /***/ function(module, exports, __webpack_require__) {
 
 var Subscriber = __webpack_require__(12);
@@ -6669,40 +6311,43 @@ function Subject(observers, parent) {
 
 Subject.prototype = Object.create(Subscriber.prototype);
 
-Subject.prototype.onNext = function (value) {
-    this.observers.slice(0).forEach(function (observer) {
-        observer.onNext(value);
-    });
-};
+// Unused
+// Subject.prototype.onNext = function(value) {
+//     this.observers.slice(0).forEach(function(observer) {
+//         observer.onNext(value);
+//     });
+// }
 
-Subject.prototype.onError = function (error) {
+Subject.prototype.onError = function(error) {
     var observers = this.observers.slice(0);
     this.dispose();
-    observers.forEach(function (observer) {
+    observers.forEach(function(observer) {
         observer.onError(error);
     });
-};
+}
 
-Subject.prototype.onCompleted = function () {
+Subject.prototype.onCompleted = function() {
     var observers = this.observers.slice(0);
     this.dispose();
-    observers.forEach(function (observer) {
+    observers.forEach(function(observer) {
         observer.onCompleted();
     });
-};
+}
 
-Subject.prototype.subscribe = function (subscriber) {
+Subject.prototype.subscribe = function(subscriber) {
     this.observers.push(subscriber);
     this.subscriptions.push(subscriber = new Subscription([subscriber], this));
     return subscriber;
-};
+}
 
-Subject.prototype.dispose = Subject.prototype.unsubscribe = function () {
+Subject.prototype.dispose =
+Subject.prototype.unsubscribe = function () {
     this.observers = [];
-};
+}
+
 
 /***/ },
-/* 95 */
+/* 88 */
 /***/ function(module, exports) {
 
 function TimeoutScheduler(delay) {
@@ -6718,7 +6363,8 @@ TimeoutScheduler.prototype.schedule = function schedule(action) {
     return new TimerDisposable(setTimeout(action, this.delay));
 };
 
-TimerDisposable.prototype.dispose = TimerDisposable.prototype.unsubscribe = function () {
+TimerDisposable.prototype.dispose =
+TimerDisposable.prototype.unsubscribe = function() {
     if (!this.disposed) {
         clearTimeout(this.id);
         this.id = null;
@@ -6728,8 +6374,9 @@ TimerDisposable.prototype.dispose = TimerDisposable.prototype.unsubscribe = func
 
 module.exports = TimeoutScheduler;
 
+
 /***/ },
-/* 96 */
+/* 89 */
 /***/ function(module, exports) {
 
 module.exports = function arrayFlatMap(array, selector) {
@@ -6748,11 +6395,13 @@ module.exports = function arrayFlatMap(array, selector) {
     return array2;
 };
 
+
 /***/ },
-/* 97 */
+/* 90 */
 /***/ function(module, exports, __webpack_require__) {
 
 var isArray = Array.isArray;
+var isInternal = __webpack_require__(30);
 
 module.exports = clone;
 
@@ -6761,7 +6410,7 @@ function clone(source) {
     if (!(!dest || typeof dest !== 'object')) {
         dest = isArray(source) ? [] : {};
         for (var key in source) {
-            if (key.charAt(0) === "\u001e") {
+            if (isInternal(key)) {
                 continue;
             }
             dest[key] = source[key];
@@ -6770,8 +6419,9 @@ function clone(source) {
     return dest;
 }
 
+
 /***/ },
-/* 98 */
+/* 91 */
 /***/ function(module, exports, __webpack_require__) {
 
 var isObject = __webpack_require__(2);
@@ -6779,8 +6429,9 @@ module.exports = function getSize(node) {
     return isObject(node) && node.$expires || undefined;
 };
 
+
 /***/ },
-/* 99 */
+/* 92 */
 /***/ function(module, exports, __webpack_require__) {
 
 var isObject = __webpack_require__(2);
@@ -6788,63 +6439,55 @@ var isObject = __webpack_require__(2);
 module.exports = function getType(node, anyType) {
     var type = isObject(node) && node.$type || void 0;
     if (anyType && type) {
-        return "branch";
+        return 'branch';
     }
     return type;
 };
 
+
 /***/ },
-/* 100 */
+/* 93 */
 /***/ function(module, exports, __webpack_require__) {
 
 var isObject = __webpack_require__(2);
 var hasOwn = Object.prototype.hasOwnProperty;
 
-module.exports = function (obj, prop) {
+module.exports = function(obj, prop) {
   return isObject(obj) && hasOwn.call(obj, prop);
 };
 
-/***/ },
-/* 101 */
-/***/ function(module, exports, __webpack_require__) {
-
-/**
- * Determined if the key passed in is an internal key.
- *
- * @param {String} x The key
- * @private
- * @returns {Boolean}
- */
-module.exports = function isInternalKey(x) {
-  return x === "$size" || x === "\u001ef_wrapped_value" || x.charAt(0) === "\u001e";
-};
 
 /***/ },
-/* 102 */
+/* 94 */
 /***/ function(module, exports, __webpack_require__) {
 
 var isArray = Array.isArray;
 var isObject = __webpack_require__(2);
 
 module.exports = function isPathValue(pathValue) {
-    return isObject(pathValue) && (isArray(pathValue.path) || typeof pathValue.path === "string");
+    return isObject(pathValue) && (
+        isArray(pathValue.path) || (
+            typeof pathValue.path === 'string'
+        ));
 };
 
+
 /***/ },
-/* 103 */
+/* 95 */
 /***/ function(module, exports) {
 
-module.exports = "atom";
+module.exports = 'atom';
+
 
 /***/ },
-/* 104 */
+/* 96 */
 /***/ function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(105);
+module.exports = __webpack_require__(97);
 
 
 /***/ },
-/* 105 */
+/* 97 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6854,7 +6497,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _ponyfill = __webpack_require__(106);
+var _ponyfill = __webpack_require__(98);
 
 var _ponyfill2 = _interopRequireDefault(_ponyfill);
 
@@ -6877,10 +6520,10 @@ if (typeof self !== 'undefined') {
 
 var result = (0, _ponyfill2['default'])(root);
 exports['default'] = result;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(33), __webpack_require__(107)(module)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(32), __webpack_require__(99)(module)))
 
 /***/ },
-/* 106 */
+/* 98 */
 /***/ function(module, exports) {
 
 "use strict";
@@ -6909,7 +6552,7 @@ function symbolObservablePonyfill(root) {
 };
 
 /***/ },
-/* 107 */
+/* 99 */
 /***/ function(module, exports) {
 
 module.exports = function(module) {
@@ -6935,14 +6578,72 @@ module.exports = function(module) {
 
 
 /***/ },
+/* 100 */
+/***/ function(module, exports) {
+
+module.exports = require("@graphistry/falcor-path-utils/lib/collapse");
+
+/***/ },
+/* 101 */
+/***/ function(module, exports) {
+
+module.exports = require("@graphistry/falcor-path-utils/lib/computeFlatBufferHash");
+
+/***/ },
+/* 102 */
+/***/ function(module, exports) {
+
+module.exports = require("@graphistry/falcor-path-utils/lib/flatBufferToPaths");
+
+/***/ },
+/* 103 */
+/***/ function(module, exports) {
+
+module.exports = require("@graphistry/falcor-path-utils/lib/getHashCode");
+
+/***/ },
+/* 104 */
+/***/ function(module, exports) {
+
+module.exports = require("@graphistry/falcor-path-utils/lib/hasIntersection");
+
+/***/ },
+/* 105 */
+/***/ function(module, exports) {
+
+module.exports = require("@graphistry/falcor-path-utils/lib/toCollapseMap");
+
+/***/ },
+/* 106 */
+/***/ function(module, exports) {
+
+module.exports = require("@graphistry/falcor-path-utils/lib/toCollapseTrees");
+
+/***/ },
+/* 107 */
+/***/ function(module, exports) {
+
+module.exports = require("@graphistry/falcor-path-utils/lib/toFlatBuffer");
+
+/***/ },
 /* 108 */
+/***/ function(module, exports) {
+
+module.exports = require("@graphistry/falcor-path-utils/lib/toPaths");
+
+/***/ },
+/* 109 */
+/***/ function(module, exports) {
+
+module.exports = require("@graphistry/falcor-path-utils/lib/toTree");
+
+/***/ },
+/* 110 */
 /***/ function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(60);
+module.exports = __webpack_require__(56);
 
 
 /***/ }
-/******/ ])
-});
-;
-//# sourceMappingURL=falcor.js.map
+/******/ ]);
+//# sourceMappingURL=falcor.node.js.map

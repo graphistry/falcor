@@ -44,8 +44,8 @@ function netflixGetSuiteDescription() {
 function graphistryGetSuiteDescription() {
     var jsonSeed = {};
     var jsonGraphSeed = {};
-    var f_meta = require('../internalKeyDefinitions')['ƒ_meta'];
-    var Model = require('../dist/falcor.min').Model;
+    var f_meta = require('../lib/internal/f_meta_data');
+    var Model = require('../dist/falcor.all.min').Model;
     var createCacheWith100Videos = require('./createCacheWith100Videos');
     var memoizedModel = new Model({ cache: createCacheWith100Videos() });
     var memoizedBoundModel = memoizedModel.deref({ [f_meta]: { abs_path: ['lists', 'A', '0'] }});
@@ -75,7 +75,7 @@ function graphistryGetSuiteDescription() {
 
 function graphistryGetRecycledSuiteDescription() {
     var jsonSeed = {};
-    var Model = require('../dist/falcor').Model;
+    var Model = require('../dist/falcor.all.min').Model;
     var createCacheWith100Videos = require('./createCacheWith100Videos');
     var toFlatBuffer = require('@graphistry/falcor-path-utils/lib/toFlatBuffer');
     var computeFlatBufferHash = require('@graphistry/falcor-path-utils/lib/computeFlatBufferHash');

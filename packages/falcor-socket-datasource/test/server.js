@@ -1,15 +1,14 @@
-import Router from "./router";
-import SocketIOServer from "socket.io";
-import { FalcorPubSubDataSink } from "../source";
+import Router from './router';
+import SocketIOServer from 'socket.io';
+import { FalcorPubSubDataSink } from '../src';
 
 export default class Server {
-
-    constructor(event = "falcor-operation",
-                cancel = "cancel-falcor-operation") {
+    constructor(event = 'falcor-operation',
+                cancel = 'cancel-falcor-operation') {
         this.socket = new SocketIOServer({
             path: `/socket.io`, serveClient: false
         });
-        this.socket.on("connection", (socket) => {
+        this.socket.on('connection', (socket) => {
             const sink = new FalcorPubSubDataSink(
                 {
                     on: socket.on.bind(socket),

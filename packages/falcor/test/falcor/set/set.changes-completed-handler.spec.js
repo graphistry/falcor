@@ -1,10 +1,10 @@
-var falcor = require('./../../../lib/');
+var falcor = require('./../../../falcor.js');
 var Model = falcor.Model;
 var expect = require('chai').expect;
 var Rx = require('rx');
 
-describe("root onChangesCompleted handler", function () {
-    it("is called only once per transaction and before the subscription is disposed.", function () {
+describe('root onChangesCompleted handler', function () {
+    it('is called only once per transaction and before the subscription is disposed.', function () {
 
         var changes = 0;
         var changesCompleted = 0;
@@ -17,7 +17,7 @@ describe("root onChangesCompleted handler", function () {
                     jsonGraph: {
                         a: {
                             b: {
-                                c: "foo"
+                                c: 'foo'
                             }
                         }
                     }
@@ -38,19 +38,19 @@ describe("root onChangesCompleted handler", function () {
 
         toObservable(model
             .set({
-                path: ["a", "b", "c"],
-                value: "foo"
+                path: ['a', 'b', 'c'],
+                value: 'foo'
             })).
-            ensure(function() {
+            finally(function() {
                 if(completedCalled === true) {
                     calledBeforeEnsure = true;
                 }
             }).
             subscribe();
 
-        expect(changes, "onChange should have been called twice").to.equal(2);
-        expect(changesCompleted, "onChangesCompleted should have been called once").to.equal(1);
-        expect(completedCalled, "onChangesCompleted wasn't called.").to.be.ok;
-        expect(calledBeforeEnsure, "onChangesCompleted wasn't called before the subscription was disposed.").to.be.ok;
+        expect(changes, 'onChange should have been called twice').to.equal(2);
+        expect(changesCompleted, 'onChangesCompleted should have been called once').to.equal(1);
+        expect(completedCalled, 'onChangesCompleted wasn\'t called.').to.be.ok;
+        expect(calledBeforeEnsure, 'onChangesCompleted wasn\'t called before the subscription was disposed.').to.be.ok;
     });
 });

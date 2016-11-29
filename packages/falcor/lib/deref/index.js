@@ -1,7 +1,8 @@
-var CONTAINER_DOES_NOT_EXIST = "e";
-var $ref = require("../types/ref");
-var getCachePosition = require("../cache/getCachePosition");
-var InvalidDerefInputError = require("../errors/InvalidDerefInputError");
+var CONTAINER_DOES_NOT_EXIST = 'e';
+var $ref = require('../types/ref');
+var FalcorJSON = require('../cache/get/json/FalcorJSON');
+var getCachePosition = require('../cache/getCachePosition');
+var InvalidDerefInputError = require('../errors/InvalidDerefInputError');
 
 module.exports = function deref(boundJSONArg) {
 
@@ -10,7 +11,7 @@ module.exports = function deref(boundJSONArg) {
     }
 
     var referenceContainer, currentRefPath, i, len;
-    var jsonMetadata = boundJSONArg && boundJSONArg[ƒ_meta];
+    var jsonMetadata = boundJSONArg && boundJSONArg[f_meta_data];
 
     if (!jsonMetadata || typeof jsonMetadata !== 'object') {
         return this._clone({
@@ -19,24 +20,28 @@ module.exports = function deref(boundJSONArg) {
     }
 
     var recycleJSON = this._recycleJSON;
-    var absolutePath = jsonMetadata[ƒm_abs_path];
+    var absolutePath = jsonMetadata[f_meta_abs_path];
 
     if (!absolutePath) {
         return this._clone({
             _node: undefined,
-            _seed: recycleJSON && { json: boundJSONArg } || undefined
+            _seed: recycleJSON && {
+                json: boundJSONArg, __proto__: FalcorJSON.prototype
+            } || undefined
         });
     } else if (absolutePath.length === 0) {
         return this._clone({
             _path: absolutePath,
             _node: this._root.cache,
             _referenceContainer: true,
-            _seed: recycleJSON && { json: boundJSONArg } || undefined
+            _seed: recycleJSON && {
+                json: boundJSONArg, __proto__: FalcorJSON.prototype
+            } || undefined
         });
     }
 
-    var originalRefPath = jsonMetadata[ƒm_deref_to];
-    var originalAbsPath = jsonMetadata[ƒm_deref_from];
+    var originalRefPath = jsonMetadata[f_meta_deref_to];
+    var originalAbsPath = jsonMetadata[f_meta_deref_from];
 
     // We deref and then ensure that the reference container is attached to
     // the model.
@@ -94,6 +99,8 @@ module.exports = function deref(boundJSONArg) {
         _node: cacheNode,
         _path: absolutePath,
         _referenceContainer: referenceContainer,
-        _seed: recycleJSON && { json: boundJSONArg } || undefined
+        _seed: recycleJSON && {
+            json: boundJSONArg, __proto__: FalcorJSON.prototype
+        } || undefined
     });
 };

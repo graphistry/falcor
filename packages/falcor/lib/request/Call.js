@@ -1,8 +1,9 @@
 var Source = require('./Source');
 var Subscriber = require('./Subscriber');
 var lruCollect = require('../lru/collect');
-var collapse = require("@graphistry/falcor-path-utils/lib/collapse");
-var InvalidSourceError = require("../errors/InvalidSourceError");
+var FalcorJSON = require('../cache/get/json/FalcorJSON');
+var collapse = require('@graphistry/falcor-path-utils/lib/collapse');
+var InvalidSourceError = require('../errors/InvalidSourceError');
 var MaxRetryExceededError = require('../errors/MaxRetryExceededError');
 
 module.exports = Call;
@@ -43,23 +44,17 @@ Call.prototype._subscribe = function(subscriber) {
     return subscriber;
 }
 
-Call.prototype._toJSON = function(data, errors) {
+Call.prototype._toJSON = function(data = { __proto__: FalcorJSON.prototype }, errors) {
     return this.lift(new CallOperator(
-        this.operator.data || data,
-        this.operator.errors || errors,
-        'json',
-        this.operator.progressive,
-        this.operator.maxRetryCount
+        data, errors || this.operator.errors, 'json',
+        this.operator.progressive, this.operator.maxRetryCount
     ), this.source);
 }
 
-Call.prototype._toJSONG = function(data, errors) {
+Call.prototype._toJSONG = function(data = { __proto__: FalcorJSON.prototype }, errors) {
     return this.lift(new CallOperator(
-        this.operator.data || data,
-        this.operator.errors || errors,
-        'jsonGraph',
-        this.operator.progressive,
-        this.operator.maxRetryCount
+        data, errors || this.operator.errors, 'jsonGraph',
+        this.operator.progressive, this.operator.maxRetryCount
     ), this.source);
 }
 
@@ -84,8 +79,6 @@ Call.prototype.progressively = function() {
 }
 
 function CallOperator(data, errors, operation, progressive, maxRetryCount) {
-    if (data === undefined) { data = {}; }
-    if (errors === undefined) { errors = []; }
     this.data = data;
     this.errors = errors;
     this.operation = operation;
@@ -150,7 +143,7 @@ CallSubscriber.prototype.onNext = function(seed) {
     // valueNode is immutable. If not in progressive mode, we can write into the
     // same JSON tree until the request is completed.
     if (seedIsImmutable) {
-        data = {};
+        data = { __proto__: FalcorJSON.prototype };
     }
 
     if (args && args.length) {
@@ -323,15 +316,15 @@ function mergeInto(dest, node) {
 
         key = keys[index];
 
-        if (key === ƒ_meta) {
-            dest[ƒ_meta] = node[ƒ_meta];
+        if (key === f_meta_data) {
+            dest[f_meta_data] = node[f_meta_data];
         } else {
 
             nodeValue = node[key];
             destValue = dest[key];
 
             if (destValue !== nodeValue) {
-                if (destValue === undefined || "object" !== typeof nodeValue) {
+                if (destValue === undefined || 'object' !== typeof nodeValue) {
                     dest[key] = nodeValue;
                 }
                 else {

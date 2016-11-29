@@ -6,7 +6,7 @@ module.exports = function() {
     return {
         routerOrSourceMissing: {
             getPathValues: {
-                query: [["videos", "missingBranch", "summary"]]
+                query: [['videos', 'missingBranch', 'summary']]
             },
             getPathMaps: {
                 query: [{
@@ -34,7 +34,7 @@ module.exports = function() {
         },
         missingBranch: {
             getPathValues: {
-                query: [["videos", "missingBranch", "summary"]]
+                query: [['videos', 'missingBranch', 'summary']]
             },
             getPathMaps: {
                 query: [{
@@ -49,30 +49,30 @@ module.exports = function() {
             },
             AsValues: {
                 values: [{
-                    path: ["videos", "missingBranch"],
-                    "value": { "$type": $atom }
+                    path: ['videos', 'missingBranch'],
+                    'value': { '$type': $atom }
                 }]
             },
             AsJSON: {
                 values: [{
-                    json: { "$type": $atom }
+                    json: { '$type': $atom }
                 }]
             },
             AsPathMap: {
                 values: [{
-                    json: { videos: { missingBranch: { "$type": $atom } } }
+                    json: { videos: { missingBranch: { '$type': $atom } } }
                 }]
             },
             AsJSONG: {
                 values: [{
-                    paths: [["videos", "missingBranch"]],
-                    jsonGraph: { videos: { missingBranch: { "$type": $atom } } }
+                    paths: [['videos', 'missingBranch']],
+                    jsonGraph: { videos: { missingBranch: { '$type': $atom } } }
                 }]
             }
         },
         missingLeaf: {
             getPathValues: {
-                query: [["videos", "1234", "missingLeaf"]]
+                query: [['videos', '1234', 'missingLeaf']]
             },
             getPathMaps: {
                 query: [{
@@ -87,30 +87,30 @@ module.exports = function() {
             },
             AsValues: {
                 values: [{
-                    path: ["videos", "1234", "missingLeaf"],
-                    "value": { "$type": $atom }
+                    path: ['videos', '1234', 'missingLeaf'],
+                    'value': { '$type': $atom }
                 }]
             },
             AsJSON: {
                 values: [{
-                    json: { "$type": $atom }
+                    json: { '$type': $atom }
                 }]
             },
             AsPathMap: {
                 values: [{
-                    json: { videos: { 1234: { missingLeaf: { "$type": $atom } } } }
+                    json: { videos: { 1234: { missingLeaf: { '$type': $atom } } } }
                 }]
             },
             AsJSONG: {
                 values: [{
-                    paths: [["videos", "1234", "missingLeaf"]],
-                    jsonGraph: { videos: { 1234: { missingLeaf: { "$type": $atom } } } }
+                    paths: [['videos', '1234', 'missingLeaf']],
+                    jsonGraph: { videos: { 1234: { missingLeaf: { '$type': $atom } } } }
                 }]
             }
         },
         atomOfUndefined: {
             getPathValues: {
-                query: [["misc", "uatom"]]
+                query: [['misc', 'uatom']]
             },
             getPathMaps: {
                 query: [{
@@ -123,24 +123,24 @@ module.exports = function() {
             },
             AsValues: {
                 values: [{
-                    path: ["misc", "uatom"],
-                    "value": { "$type": $atom }
+                    path: ['misc', 'uatom'],
+                    'value': { '$type': $atom }
                 }]
             },
             AsJSON: {
                 values: [{
-                    json: { "$type": $atom }
+                    json: { '$type': $atom }
                 }]
             },
             AsPathMap: {
                 values: [{
-                    json: { misc: { uatom: { "$type": $atom } } }
+                    json: { misc: { uatom: { '$type': $atom } } }
                 }]
             },
             AsJSONG: {
                 values: [{
-                    paths: [["misc", "uatom"]],
-                    jsonGraph: { misc: { uatom: { "$type": $atom } } }
+                    paths: [['misc', 'uatom']],
+                    jsonGraph: { misc: { uatom: { '$type': $atom } } }
                 }]
             }
         }

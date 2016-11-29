@@ -1,7 +1,7 @@
-var NAME = "BoundJSONGraphModelError";
-var MESSAGE = "It is not legal to use the JSON Graph " +
-    "format from a bound Model. JSON Graph format" +
-    " can only be used from a root model.";
+var NAME = 'BoundJSONGraphModelError';
+var MESSAGE = 'It is not legal to use the JSON Graph ' +
+    'format from a bound Model. JSON Graph format' +
+    ' can only be used from a root model.';
 
 /**
  * When a bound model attempts to retrieve JSONGraph it should throw an

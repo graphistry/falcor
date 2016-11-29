@@ -1,19 +1,19 @@
-var $ref = require("@graphistry/falcor-json-graph").ref;
-var strip = require("../support/strip");
-var $atom = require("@graphistry/falcor-json-graph").atom;
-var $ref = require("@graphistry/falcor-json-graph").ref;
-var $error = require("@graphistry/falcor-json-graph").error;
-var $pathValue = require("@graphistry/falcor-json-graph").pathValue;
-var $jsonGraph = require("../support/jsonGraph");
-var $jsonGraphEnvelope = require("../support/jsonGraphEnvelope");
+var $ref = require('@graphistry/falcor-json-graph').ref;
+var strip = require('../support/strip');
+var $atom = require('@graphistry/falcor-json-graph').atom;
+var $ref = require('@graphistry/falcor-json-graph').ref;
+var $error = require('@graphistry/falcor-json-graph').error;
+var $pathValue = require('@graphistry/falcor-json-graph').pathValue;
+var $jsonGraph = require('../support/jsonGraph');
+var $jsonGraphEnvelope = require('../support/jsonGraphEnvelope');
 
 var expect = require('chai').expect;
-var getModel = require("../support/getModel");
-var setJSONGraphs = require("../../../lib/cache/set/setJSONGraphs");
+var getModel = require('../support/getModel');
+var setJSONGraphs = require('../../../lib/cache/set/setJSONGraphs');
 var NullInPathError = require('./../../../lib/errors/NullInPathError');
-var Model = require('./../../../lib');
+var Model = require('./../../../falcor.js');
 
-describe("a primitive over a branch", function() {
+describe('a primitive over a branch', function() {
     it('should allow null at end of path.', function() {
         var model = new Model();
         var error;
@@ -66,7 +66,7 @@ describe("a primitive over a branch", function() {
         }
     });
 
-    it("directly", function() {
+    it('directly', function() {
 
         var lru = new Object();
         var cache = {};
@@ -75,23 +75,23 @@ describe("a primitive over a branch", function() {
         setJSONGraphs(
             getModel({ lru: lru, cache: cache, version: version++ }), [
             $jsonGraphEnvelope([
-                $pathValue("movies['pulp-fiction'].title", "Pulp Fiction")
+                $pathValue('movies["pulp-fiction"].title', 'Pulp Fiction')
             ])]
         );
 
         setJSONGraphs(
             getModel({ lru: lru, cache: cache, version: version++ }), [
             $jsonGraphEnvelope([
-                $pathValue("movies['pulp-fiction']", "Pulp Fiction")
+                $pathValue('movies["pulp-fiction"]', 'Pulp Fiction')
             ])]
         )
 
         expect(strip(cache)).to.deep.equal(strip({
-            movies: { "pulp-fiction": $atom("Pulp Fiction") }
+            movies: { "pulp-fiction": $atom('Pulp Fiction') }
         }));
     });
 
-    it("through a reference with a null last key", function() {
+    it('through a reference with a null last key', function() {
 
         var lru = new Object();
         var cache = {};
@@ -100,34 +100,34 @@ describe("a primitive over a branch", function() {
         setJSONGraphs(
             getModel({ lru: lru, cache: cache, version: version++ }), [
             $jsonGraphEnvelope([
-                $pathValue("grid", $ref("grids['id']")),
-                $pathValue("grids['id'][0]", $ref("lists['id']")),
-                $pathValue("lists['id'][0]", $ref("movies['pulp-fiction']")),
-                $pathValue("movies['pulp-fiction'].title", "Pulp Fiction")
+                $pathValue('grid', $ref('grids["id"]')),
+                $pathValue('grids["id"][0]', $ref('lists["id"]')),
+                $pathValue('lists["id"][0]', $ref('movies["pulp-fiction"]')),
+                $pathValue('movies["pulp-fiction"].title', 'Pulp Fiction')
             ])]
         );
 
         setJSONGraphs(
             getModel({ lru: lru, cache: cache, version: version++ }), [{
-                paths: [["grid", 0, 0, null]],
+                paths: [['grid', 0, 0, null]],
                 jsonGraph: $jsonGraph([
-                    $pathValue("movies['pulp-fiction']", "Pulp Fiction")
+                    $pathValue('movies["pulp-fiction"]', 'Pulp Fiction')
                 ])
             }]
         );
 
         expect(strip(cache)).to.deep.equal(strip({
-            grid: $ref("grids['id']"),
-            grids: { id: { 0: $ref("lists['id']") } },
-            lists: { id: { 0: $ref("movies['pulp-fiction']") } },
-            movies: { "pulp-fiction": $atom("Pulp Fiction") }
+            grid: $ref('grids["id"]'),
+            grids: { id: { 0: $ref('lists["id"]') } },
+            lists: { id: { 0: $ref('movies["pulp-fiction"]') } },
+            movies: { "pulp-fiction": $atom('Pulp Fiction') }
         }));
     });
 });
 
-describe("set an error over a branch", function() {
+describe('set an error over a branch', function() {
 
-    it("directly", function() {
+    it('directly', function() {
 
         var lru = new Object();
         var cache = {};
@@ -136,23 +136,23 @@ describe("set an error over a branch", function() {
         setJSONGraphs(
             getModel({ cache: cache, version: version++ }), [
             $jsonGraphEnvelope([
-                $pathValue("movies['pulp-fiction'].title", "Pulp Fiction"),
+                $pathValue('movies["pulp-fiction"].title', 'Pulp Fiction'),
             ])]
         );
 
         setJSONGraphs(
             getModel({ lru: lru, cache: cache, version: version++ }), [
             $jsonGraphEnvelope([
-                $pathValue("movies['pulp-fiction']", $error("oops"))
+                $pathValue('movies["pulp-fiction"]', $error('oops'))
             ])]
         )
 
         expect(strip(cache)).to.deep.equal(strip({
-            movies: { "pulp-fiction": $error("oops") }
+            movies: { "pulp-fiction": $error('oops') }
         }));
     });
 
-    it("through a reference with a null last key", function() {
+    it('through a reference with a null last key', function() {
 
         var lru = new Object();
         var cache = {};
@@ -161,27 +161,27 @@ describe("set an error over a branch", function() {
         setJSONGraphs(
             getModel({ lru: lru, cache: cache, version: version++ }), [
             $jsonGraphEnvelope([
-                $pathValue("grid", $ref("grids['id']")),
-                $pathValue("grids['id'][0]", $ref("lists['id']")),
-                $pathValue("lists['id'][0]", $ref("movies['pulp-fiction']")),
-                $pathValue("movies['pulp-fiction'].title", "Pulp Fiction")
+                $pathValue('grid', $ref('grids["id"]')),
+                $pathValue('grids["id"][0]', $ref('lists["id"]')),
+                $pathValue('lists["id"][0]', $ref('movies["pulp-fiction"]')),
+                $pathValue('movies["pulp-fiction"].title', 'Pulp Fiction')
             ])]
         );
 
         setJSONGraphs(
             getModel({ lru: lru, cache: cache, version: version++ }), [{
-                paths: [["grid", 0, 0, null]],
+                paths: [['grid', 0, 0, null]],
                 jsonGraph: $jsonGraph([
-                    $pathValue("movies['pulp-fiction']", $error("oops"))
+                    $pathValue('movies["pulp-fiction"]', $error('oops'))
                 ])
             }]
         );
 
         expect(strip(cache)).to.deep.equal(strip({
-            grid: $ref("grids['id']"),
-            grids: { id: { 0: $ref("lists['id']") } },
-            lists: { id: { 0: $ref("movies['pulp-fiction']") } },
-            movies: { "pulp-fiction": $error("oops") }
+            grid: $ref('grids["id"]'),
+            grids: { id: { 0: $ref('lists["id"]') } },
+            lists: { id: { 0: $ref('movies["pulp-fiction"]') } },
+            movies: { "pulp-fiction": $error('oops') }
         }));
     });
 });

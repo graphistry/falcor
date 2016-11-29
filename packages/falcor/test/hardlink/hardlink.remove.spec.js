@@ -1,12 +1,12 @@
-var falcor = require("./../../lib/");
+var falcor = require('./../../falcor.js');
 var Model = falcor.Model;
 var expect = require('chai').expect;
-var Cache = require("../data/Cache");
-var ReducedCache = require("../data/ReducedCache");
-var Expected = require("../data/expected");
-var LocalDataSource = require("../data/LocalDataSource");
-var Rx = require("rx");
-var testRunner = require("../testRunner");
+var Cache = require('../data/Cache');
+var ReducedCache = require('../data/ReducedCache');
+var Expected = require('../data/expected');
+var LocalDataSource = require('../data/LocalDataSource');
+var Rx = require('rx');
+var testRunner = require('../testRunner');
 var References = Expected.References;
 var Complex = Expected.Complex;
 var Values = Expected.Values;
@@ -58,16 +58,16 @@ function getTest(query, output) {
     var lhs = model._root.cache.genreList[0];
     var rhs = model._root.cache.lists.abcd;
 
-    expect(lhs[ƒ_ref_index]).to.not.be.ok;
-    expect(rhs[ƒ_refs_length]).to.not.be.ok;
-    expect(lhs[ƒ_context]).to.not.be.ok;
+    expect(lhs[f_ref_index]).to.not.be.ok;
+    expect(rhs[f_refs_length]).to.not.be.ok;
+    expect(lhs[f_context]).to.not.be.ok;
 
     return toObservable(testRunner.get(model, _.cloneDeep(query), output)).
         do(noOp, noOp, function() {
-            expect(lhs[ƒ_ref_index]).to.equal(0);
-            expect(rhs[ƒ_refs_length]).to.equal(1);
-            expect(rhs[ƒ_ref + lhs[ƒ_ref_index]]).to.equal(lhs);
-            expect(lhs[ƒ_context]).to.equal(rhs);
+            expect(lhs[f_ref_index]).to.equal(0);
+            expect(rhs[f_refs_length]).to.equal(1);
+            expect(rhs[f_ref + lhs[f_ref_index]]).to.equal(lhs);
+            expect(lhs[f_context]).to.equal(rhs);
         });
 }
 
@@ -78,8 +78,8 @@ function setTest(query, output) {
 
     return toObservable(testRunner.set(model, _.cloneDeep(query), output)).
         do(noOp, noOp, function() {
-            expect(lhs[ƒ_ref_index]).to.not.be.ok;
-            expect(rhs[ƒ_refs_length]).to.not.be.ok;
-            expect(lhs[ƒ_context]).to.not.equal(rhs);
+            expect(lhs[f_ref_index]).to.not.be.ok;
+            expect(rhs[f_refs_length]).to.not.be.ok;
+            expect(lhs[f_context]).to.not.equal(rhs);
         });
 }

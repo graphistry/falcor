@@ -1,6 +1,6 @@
-var transferBackReferences = require("./transferBackReferences");
-var removeNodeAndDescendants = require("./removeNodeAndDescendants");
-var updateBackReferenceVersions = require("./updateBackReferenceVersions");
+var transferBackReferences = require('./transferBackReferences');
+var removeNodeAndDescendants = require('./removeNodeAndDescendants');
+var updateBackReferenceVersions = require('./updateBackReferenceVersions');
 
 module.exports = function replaceNode(node, replacement, parent, key, lru, version) {
     if (node === replacement) {

@@ -1,14 +1,14 @@
 var getJSON = require('../get/json');
 var getJSONGraph = require('../get/jsonGraph');
-var arrayFlatMap = require("../../support/array-flat-map");
+var arrayFlatMap = require('../../support/array-flat-map');
 var groupCacheArguments = require('../groupCacheArguments');
 
 module.exports = {
     json: json,
     jsonGraph: jsonGraph,
-    setPathMaps: require("./setPathMaps"),
-    setPathValues: require("./setPathValues"),
-    setJSONGraphs: require("./setJSONGraphs")
+    setPathMaps: require('./setPathMaps'),
+    setPathValues: require('./setPathValues'),
+    setJSONGraphs: require('./setJSONGraphs')
 };
 
 function json(model, args, data, progressive, expireImmediate) {
@@ -70,12 +70,12 @@ function setGroupsIntoCache(model, xs /*, expireImmediate */) {
         var groupedArgs = group.arguments;
 
         if (groupedArgs.length > 0) {
-            var operation = module.exports["set" + inputType];
+            var operation = module.exports['set' + inputType];
             var resultPaths = operation(model, groupedArgs, selector, null, false);
             optimizedPaths.push.apply(optimizedPaths, resultPaths[1]);
-            if (inputType === "PathValues") {
+            if (inputType === 'PathValues') {
                 requestedPaths.push.apply(requestedPaths, groupedArgs.map(pluckPaths));
-            } else if (inputType === "JSONGraphs") {
+            } else if (inputType === 'JSONGraphs') {
                 requestedPaths.push.apply(requestedPaths, arrayFlatMap(groupedArgs, pluckPaths));
             } else {
                 requestedPaths.push.apply(requestedPaths, resultPaths[0]);

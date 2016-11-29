@@ -4,7 +4,7 @@ var Queue = require('./../../../lib/request/Queue');
 var TimeoutScheduler = require('./../../../lib/schedulers/TimeoutScheduler');
 var ImmediateScheduler = require('./../../../lib/schedulers/ImmediateScheduler');
 var Rx = require('rx');
-var Model = require('./../../../lib').Model;
+var Model = require('./../../../falcor.js').Model;
 var LocalDataSource = require('./../../data/LocalDataSource');
 var noOp = function() {};
 var zipSpy = require('./../../zipSpy');
@@ -58,7 +58,7 @@ describe('#get', function() {
         var queue = new Queue(model._root);
 
         var zip = zipSpy(2, function() {
-            expect(queue.subscriptions.length).to.equal(1);
+            expect(queue.subscriptions.length).to.equal(0);
             expect(zip.callCount).to.equal(2);
 
             var onNext = sinon.spy();
@@ -98,7 +98,7 @@ describe('#get', function() {
         expect(queue.subscriptions[0].disposable).to.be.ok;
     });
 
-    it('should make a couple requests where the second argument is deduped.', function(done) {
+    it('should make a couple requests where the second request is deduped.', function(done) {
         var scheduler = new ImmediateScheduler();
         var getSpy = sinon.spy();
         var source = new LocalDataSource(Cache(), {wait: 100});
@@ -106,7 +106,7 @@ describe('#get', function() {
         var queue = new Queue(model._root);
 
         var zip = zipSpy(2, function() {
-            expect(queue.subscriptions.length).to.equal(1);
+            expect(queue.subscriptions.length).to.equal(0);
             expect(zip.callCount).to.equal(2);
 
             var onNext = sinon.spy();
@@ -143,6 +143,57 @@ describe('#get', function() {
         expect(queue.subscriptions.length).to.equal(1);
         expect(queue.subscriptions[0].active).to.equal(true);
         expect(queue.subscriptions[0].disposable).to.be.ok;
+    });
+
+    it('should make a couple requests where the second request isn\'t deduped.', function(done) {
+        var scheduler = new ImmediateScheduler();
+        var getSpy = sinon.spy();
+        var source = new LocalDataSource(Cache(), {wait: 100});
+        var model = new Model({source: source, scheduler: scheduler});
+        var queue = new Queue(model._root);
+
+        var zip = zipSpy(2, function() {
+            expect(queue.subscriptions.length).to.equal(0);
+            expect(zip.callCount).to.equal(2);
+
+            var onNext = sinon.spy();
+            toObservable(model.
+                withoutDataSource().
+                get(videos0, videos1)).
+                doAction(onNext, noOp, function() {
+                    expect(strip(onNext.getCall(0).args[0])).to.deep.equals({
+                        json: {
+                            videos: {
+                                0: {
+                                    title: 'Video 0'
+                                },
+                                1: {
+                                    title: 'Video 1'
+                                }
+                            }
+                        }
+                    });
+                }).
+                subscribe(noOp, done, done);
+        });
+
+        var pending = 2;
+        var zipObserver = {
+            onNext: zip,
+            onError: throwError,
+            onCompleted: function() {
+                expect(queue.subscriptions.length).to.equal(--pending);
+            }
+        };
+
+        var disposable = queue.get(model, [videos0], [videos0]).subscribe(zipObserver);
+        expect(queue.subscriptions.length).to.equal(1);
+        expect(queue.subscriptions[0].active).to.equal(true);
+        expect(queue.subscriptions[0].disposable).to.be.ok;
+        var disposable2 = queue.get(model, [videos1], [videos1]).subscribe(zipObserver);
+        expect(queue.subscriptions.length).to.equal(2);
+        expect(queue.subscriptions[1].active).to.equal(true);
+        expect(queue.subscriptions[1].disposable).to.be.ok;
     });
 
     it('should make a couple requests where only part of the second request is deduped then first request is disposed.', function(done) {

@@ -1,27 +1,27 @@
 function FalcorJSON(f_meta) {
-    this[ƒ_meta] = f_meta || {};
+    this[f_meta_data] = f_meta || {};
 }
 
 FalcorJSON.prototype = Object.create(Object.prototype, Object.assign({
         toJSON: { value: toJSON },
         toProps: { value: toProps },
-        serialize: { value: serialize },
+        toString: { value: toString },
         $__hash: {
             enumerable: false,
             get() {
-                var f_meta = this[ƒ_meta];
-                return f_meta && f_meta["$code"] || '';
+                var f_meta = this[f_meta_data];
+                return f_meta && f_meta['$code'] || '';
             }
         },
         $__version: {
             enumerable: false,
             get() {
-                var f_meta = this[ƒ_meta];
-                return f_meta && f_meta[ƒm_version] || 0;
+                var f_meta = this[f_meta_data];
+                return f_meta && f_meta[f_meta_version] || 0;
             }
         }
     },
-    arrayProtoMethods().reduce((falcorJSONProto, methodName) => {
+    arrayProtoMethods().reduce(function (falcorJSONProto, methodName) {
         var method = Array.prototype[methodName];
         falcorJSONProto[methodName] = {
             writable: true, enumerable: false, value() {
@@ -45,85 +45,96 @@ var isArray = Array.isArray;
 var typeofObject = 'object';
 var typeofString = 'string';
 
-function toJSON(inst) {
-    if (typeof inst === typeofString) {
-        if (arguments.length !== 1) {
+function getInst(inst) {
+    var typeofInst = typeof inst;
+    var argsLen = arguments.length;
+    if (argsLen === 0) {
+        inst = this;
+    } else if (typeofInst !== typeofString) {
+        if (!inst || typeofInst !== typeofObject) {
             return inst;
         }
+    } else if (argsLen !== 1) {
+        return inst;
+    } else {
         inst = this;
-    } else if (!inst) {
-        inst = this;
-    } else if (inst === global) {
-        return undefined;
     }
-    var json = serialize(inst, toJSON);
-    if (json[ƒ_meta]) {
-        delete json[ƒ_meta];
+    return inst === global ? undefined : inst;
+}
+
+function toJSON() {
+    return serialize(
+        getInst.apply(this, arguments), toJSON, false
+    );
+}
+
+function toString(includeMetadata) {
+    return JSON.stringify(serialize(
+        getInst.call(this, this), serialize, includeMetadata === true
+    ));
+}
+
+function toProps(inst) {
+
+    inst = getInst.apply(this, arguments);
+
+    var f_meta_inst, f_meta_json, version = 0;
+    var json = serialize(inst, toProps, true);
+
+    if (inst && (f_meta_inst = inst[f_meta_data])) {
+        version = f_meta_inst[f_meta_version];
     }
+
+    if (!(!json || typeof json !== typeofObject)) {
+        json.__proto__ = FalcorJSON.prototype;
+        if (f_meta_json = json[f_meta_data]) {
+            f_meta_json[f_meta_version] = version;
+        }
+    }
+
     return json;
 }
 
-function toProps(inst, serializer) {
-    var argsLen = arguments.length;
-    inst = argsLen === 0 ? this : inst;
-    if (!inst || typeof inst !== typeofObject) {
-        return inst;
-    } else if (inst === global) {
-        return {};
-    }
-    var json = serialize(inst, argsLen > 0 && serializer || toProps);
-    var f_meta = json[ƒ_meta];
-    if (f_meta) {
-        delete json[ƒ_meta];
-        f_meta[ƒm_version] = inst[ƒ_meta][ƒm_version];
-        json.__proto__ = new FalcorJSON(f_meta);
-    }
-    return json;
-}
-
-function serialize(inst, serializer) {
-
-    var argsLen = arguments.length;
-    inst = argsLen === 0 ? this : inst;
+function serialize(inst, serializer, includeMetadata) {
 
     if (!inst || typeof inst !== typeofObject) {
         return inst;
-    } else if (inst === global) {
-        return {};
     }
 
     var count, total, f_meta, keys, key, xs;
 
-    serializer = argsLen > 0 && serializer || serialize;
-
     if (isArray(inst)) {
-        count = -1;
-        total = inst.length;
-        xs = new Array(total);
-        while (++count < total) {
-            xs[count] = inst[count];
-        }
+        xs = inst;
+        // count = -1;
+        // total = inst.length;
+        // xs = new Array(total);
+        // while (++count < total) {
+        //     xs[count] = inst[count];
+        // }
     } else {
+
         xs = {};
         count = -1;
-        f_meta = inst[ƒ_meta];
         keys = Object.keys(inst);
         total = keys.length;
-        if (f_meta) {
-            var $code = f_meta["$code"],
-                fm_abs_path = f_meta[ƒm_abs_path],
-                fm_deref_to = f_meta[ƒm_deref_to],
-                fm_deref_from = f_meta[ƒm_deref_from];
-            xs[ƒ_meta] = f_meta = {};
-            $code && (f_meta["$code"] = $code);
-            fm_abs_path && (f_meta[ƒm_abs_path] = fm_abs_path);
-            fm_deref_to && (f_meta[ƒm_deref_to] = fm_deref_to);
-            fm_deref_from && (f_meta[ƒm_deref_from] = fm_deref_from);
+
+        if (includeMetadata && (f_meta = inst[f_meta_data])) {
+
+            var $code = f_meta['$code'];
+            var abs_path = f_meta[f_meta_abs_path];
+            var deref_to = f_meta[f_meta_deref_to];
+            var deref_from = f_meta[f_meta_deref_from];
+
+            f_meta = xs[f_meta_data] = {};
+            $code && (f_meta['$code'] = $code);
+            abs_path && (f_meta[f_meta_abs_path] = abs_path);
+            deref_to && (f_meta[f_meta_deref_to] = deref_to);
+            deref_from && (f_meta[f_meta_deref_from] = deref_from);
         }
+
         while (++count < total) {
-            key = keys[count]
-            if (key !== ƒ_meta) {
-                xs[key] = serializer(inst[key], serializer);
+            if ((key = keys[count]) !== f_meta_data) {
+                xs[key] = serializer(inst[key], serializer, includeMetadata);
             }
         }
     }

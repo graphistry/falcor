@@ -26,11 +26,13 @@ Source.prototype.operator = function(destination) {
     return this.subscribe(destination);
 }
 
-Source.prototype.lift = function(operator, source) {
-    source = new Source(source || this);
-    source.operator = operator;
-    return source;
-}
+// Unused
+// Source.prototype.lift = function(operator, source) {
+//     source = new Source(source || this);
+//     source.operator = operator;
+//     source._promise = this._promise;
+//     return source;
+// }
 
 Source.prototype.subscribe = function(destination, x, y) {
     return new Subscription([

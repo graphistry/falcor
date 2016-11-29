@@ -1,5 +1,5 @@
 var get = require('./../lib/cache/get');
-var Model = require('./../lib');
+var Model = require('./../falcor.js');
 var expect = require('chai').expect;
 var clean = require('./cleanData').clean;
 var convertKey = require('./cleanData').convertKey;
@@ -71,25 +71,27 @@ module.exports = function(testConfig) {
         model = model._materialize();
     }
 
-    var out, seed = {};
+    var out;
 
     if (testConfig.input) {
-        out = fn(model, testConfig.input, seed, true, true);
+        out = fn(model, testConfig.input, {}, true, true);
     }
 
     else {
         testConfig.inputs.forEach(function(input) {
-            out = fn(model, input, seed, true, true);
+            out = fn(model, input, {}, true, true);
         });
     }
 
     var valueNode = out.data;
-    var stripMetadataKeys = testConfig.stripMetadata === false ? [] : [ƒ_meta];
+    var stripMetadataKeys = testConfig.stripMetadata === false ? [] : [f_meta_data];
 
     if (testConfig.stripMetadata === false) {
         valueNode = convertKey(valueNode, {
-            [ƒ_meta]: function(x) { return x; }
+            [f_meta_data]: function(x) { return x; }
         });
+    } else if (testConfig.recycleJSON === true) {
+        valueNode = JSON.parse(JSON.stringify(valueNode));
     }
 
     // $size is stripped out of basic core tests.
