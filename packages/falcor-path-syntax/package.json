@@ -1,6 +1,6 @@
 {
   "name": "@graphistry/falcor-path-syntax",
-  "version": "2.0.4",
+  "version": "2.5.3",
   "description": "Parser for Falcor Path Syntax",
   "main": "src/index.js",
   "directories": {

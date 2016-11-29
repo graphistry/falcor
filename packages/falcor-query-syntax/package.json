@@ -1,6 +1,6 @@
 {
   "name": "@graphistry/falcor-query-syntax",
-  "version": "2.5.0",
+  "version": "2.5.3",
   "description": "ES6 Template String and Builder function for Creating Falcor Paths (Experimental)",
   "main": "index.js",
   "scripts": {
@@ -41,7 +41,7 @@
     "pegjs": "0.10.0"
   },
   "devDependencies": {
-    "@graphistry/falcor-path-utils": "^2.5.0",
+    "@graphistry/falcor-path-utils": "^2.5.3",
     "benchmark": "~2.1.1",
     "chai": "~3.5.0",
     "google-closure-compiler": "~20160911.0.0",
