@@ -10,7 +10,7 @@
     "test": "cross-env NODE_ENV=production MOCHA_COLORS=true lerna run --concurrency=1 test",
     "build": "cross-env NODE_ENV=production MOCHA_COLORS=true lerna run --concurrency=1 build",
     "prepublish": "cross-env NODE_ENV=production MOCHA_COLORS=true lerna run --concurrency=1 prepublish",
-    "deploy": "cross-env NODE_ENV=production MOCHA_COLORS=true lerna publish"
+    "deploy": "cross-env NODE_ENV=production MOCHA_COLORS=true lerna publish --concurrency=1"
   },
   "repository": {
     "type": "git",

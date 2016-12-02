@@ -26,7 +26,7 @@ export default class Router extends FalcorRouter.createClass([
         },
         get({ names }) {
             return Observable
-                .interval(50)
+                .interval(5)
                 .take(names.length)
                 .map((x, idx) => ({
                     value: names[idx] + '-val',
@@ -35,14 +35,14 @@ export default class Router extends FalcorRouter.createClass([
         },
         call(path, names) {
             return Observable
-                .interval(50)
+                .interval(5)
                 .take(names.length)
                 .map((x, idx) => ({
                     value: 'call-' + names[idx] + '-val',
                     path: ['streaming', names[idx]]
                 }))
                 .merge(Observable
-                    .interval(70)
+                    .interval(7)
                     .take((names.length / 2) | 0)
                     .map((x, idx) => ({
                         value: 'call-' + names[idx] + '-followup',
