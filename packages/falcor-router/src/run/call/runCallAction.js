@@ -93,8 +93,9 @@ function validateAndEnhanceCallOutput(callOperation, matchedPath, callPath,
 
         // If there are path values, report their paths in the output.
         values.forEach(function(pathValue) {
+            // callResults[++callResultsLen] = pathValue;
             callResults[++callResultsLen] = {
-                isMessage: true, additionalPath: pathValue.path
+                isMessage: true, value: pathValue
             };
         });
 
@@ -107,7 +108,7 @@ function validateAndEnhanceCallOutput(callOperation, matchedPath, callPath,
         if (hasExtraPaths) {
             extraPaths.forEach(function(path) {
                 callResults[++callResultsLen] = {
-                    isMessage: true, additionalPath: callPathSave1.concat(path)
+                    isMessage: true, path: callPathSave1.concat(path)
                 };
             });
         }
@@ -135,7 +136,7 @@ function validateAndEnhanceCallOutput(callOperation, matchedPath, callPath,
                 );
                 suffixes.forEach(function(suffix) {
                     callResults[++callResultsLen] = {
-                        isMessage: true, additionalPath: deoptimizedPath.concat(suffix)
+                        isMessage: true, path: deoptimizedPath.concat(suffix)
                     };
                 });
             });
@@ -144,7 +145,7 @@ function validateAndEnhanceCallOutput(callOperation, matchedPath, callPath,
         else {
             references.forEach(function(refPathValue) {
                 callResults[++callResultsLen] = {
-                    isMessage: true, additionalPath: refPathValue.path
+                    isMessage: true, path: refPathValue.path
                 };
             });
         }

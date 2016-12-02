@@ -1,5 +1,5 @@
-var Observable = require('../../rx').Observable;
 var isArray = Array.isArray;
+var Observable = require('../../rx').Observable;
 
 /**
  * For the router there are several return types from user
@@ -32,7 +32,7 @@ module.exports = function outputToObservable(valueOrObservable) {
 
     // from array of pathValues.
     else if (isArray(value)) {
-        value = Observable.from(value);
+        value = Observable.of(value);
     }
 
     // this will be jsong or pathValue at this point.

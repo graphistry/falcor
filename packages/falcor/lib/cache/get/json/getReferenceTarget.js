@@ -17,7 +17,6 @@ function getReferenceTarget(root, ref, modelRoot, expireImmediate) {
 
     var context,
         key, type, depth = 0,
-        followedRefsCount = 0,
         node = root, path = ref.value,
         copy = path, length = path.length;
 
@@ -61,27 +60,6 @@ function getReferenceTarget(root, ref, modelRoot, expireImmediate) {
                 node = root;
                 path = copy = ref.value;
                 length = path.length;
-
-                // if (DEBUG) {
-                //     // If we follow too many references, we might have an indirect
-                //     // circular reference chain. Warn about this (but don't throw).
-                //     if (++followedRefsCount % 50 === 0) {
-                //         try {
-                //             throw new Error(
-                //                 'Followed ' + followedRefsCount + ' references. ' +
-                //                 'This might indicate the presence of an indirect ' +
-                //                 'circular reference chain.'
-                //             );
-                //         } catch (e) {
-                //             if (console) {
-                //                 var reportFn = typeof console.log === 'function' && console.log;
-                //                 if (reportFn) {
-                //                     reportFn.call(console, e.toString());
-                //                 }
-                //             }
-                //         }
-                //     }
-                // }
 
                 continue;
             }

@@ -114,6 +114,9 @@ function request(method, parameters, observer) {
                         break;
                     case 'C':
                         finalized = true;
+                        if (value && observer.onNext) {
+                            observer.onNext(value);
+                        }
                         observer.onCompleted && observer.onCompleted();
                         break;
                 }
@@ -140,6 +143,8 @@ function request(method, parameters, observer) {
                     }
                 }
             };
+
+            ;
         }();
 
         if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;

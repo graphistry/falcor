@@ -9,19 +9,19 @@ function optimizeJSONGraph(router, paths, optimizedJSONGraph, originalJSONGraph,
 
     // We have to ensure that the paths maps in order
     // to the optimized paths array.
-    var optimizedAndPaths = spreadPaths(paths).
-            // Optimizes each path.
-            map(function(path) {
-                var pair = optimizePathSets(
-                    optimizedJSONGraph, [path], router.maxRefFollow
-                );
-                pair[1] = path;
-                return pair;
-            }).
-            // only include the paths from the set that intersect
-            filter(function(optimizedAndPath) {
-                return hasIntersection(optimizedAndPath[0]);
-            });
+    var optimizedAndPaths = spreadPaths(paths)
+        // Optimizes each path.
+        .map(function(path) {
+            var pair = optimizePathSets(
+                optimizedJSONGraph, [path], router.maxRefFollow
+            );
+            pair[1] = path;
+            return pair;
+        })
+        // only include the paths from the set that intersect
+        .filter(function(optimizedAndPath) {
+            return hasIntersection(optimizedAndPath[0]);
+        });
 
     return optimizedAndPaths.reduce(function(env, optimizedAndPath) {
         env.paths.push(optimizedAndPath[0]);

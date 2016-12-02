@@ -12,9 +12,9 @@ module.exports = function() {
                 route: 'genreLists[{integers:indices}]',
                 get: function(path) {
                     if (fn) { fn(path); }
-                    return Observable.
-                        from(path.indices).
-                        map(function(id) {
+                    return Observable
+                        .from(path.indices)
+                        .map(function(id) {
                             var xs = {
                                 paths: [['genreLists', id]],
                                 jsonGraph: {
@@ -46,9 +46,9 @@ module.exports = function() {
                 route: 'genreLists[{ranges:indices}]',
                 get: function(path) {
                     if (fn) { fn(path); }
-                    return Observable.
-                        from(TestRunner.rangeToArray(path.indices)).
-                        map(function(id) {
+                    return Observable
+                        .from(TestRunner.rangeToArray(path.indices))
+                        .map(function(id) {
                             var xs = {
                                 paths: [['genreLists', id]],
                                 jsonGraph: {
@@ -72,8 +72,8 @@ module.exports = function() {
                             };
                         })
                         .concat(Observable.of({
-                            path: ['genreLists', 'top-rated'],
-                            invalidated: true
+                            invalidated: true,
+                            path: ['genreLists', 'top-rated']
                         }))
                         .let(letDelayEach(delay, batch));
                 }

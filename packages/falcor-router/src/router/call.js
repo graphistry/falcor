@@ -1,10 +1,11 @@
 var call = 'call';
 var Observable = require('../rx').Observable;
 var getPathsCount = require('./getPathsCount');
+var runAggregate = require('../run/aggregate');
+var runStreaming = require('../run/streaming');
 var runCallAction = require('./../run/call/runCallAction');
 var CallNotFoundError = require('./../errors/CallNotFoundError');
 var MaxPathsExceededError = require('../errors/MaxPathsExceededError');
-var recurseMatchAndExecute = require('./../run/recurseMatchAndExecute');
 var normalizePathSets = require('../operations/ranges/normalizePathSets');
 
 /**
@@ -31,8 +32,10 @@ module.exports = function routerCall(callPath, args,
             throw new MaxPathsExceededError();
         }
 
-        return recurseMatchAndExecute(router._matcher, action, callPaths, call,
-                                      router, jsonGraph)
+        var run = router._streaming ? runStreaming : runAggregate;
+
+        return run(router._matcher, action, callPaths, call,
+                   router, jsonGraph)
             // Catch CallNotFoundError in order to chain call requests.
             .catch(function catchException(e) {
                 if (e instanceof CallNotFoundError &&

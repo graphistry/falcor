@@ -1,6 +1,5 @@
 var clone = require('./../support/clone');
-var types = require('./../support/types');
-var $ref = types.$ref;
+var $ref = require('./../support/types').$ref;
 var iterateKeySet = require('@graphistry/falcor-path-utils/lib/iterateKeySet');
 
 /**

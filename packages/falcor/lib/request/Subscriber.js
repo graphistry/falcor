@@ -38,16 +38,19 @@ Subscriber.prototype.onNext = function onNext(value) {
 
 Subscriber.prototype.error =
 Subscriber.prototype.onError = function onError(error) {
+    var signaled = false;
     var dest = this.destination;
     if (dest) {
         if (dest.onError) {
+            signaled = true;
             dest.onError(error);
         } else if (dest.error) {
+            signaled = true;
             dest.error(error);
         }
         this.dispose();
-    } else {
-        this.dispose();
+    }
+    if (!signaled) {
         throw error;
     }
 }

@@ -15,9 +15,7 @@ describe('#call', function() {
                         summary: 5
                     }
                 },
-                paths: [
-                    ['videos', 'summary']
-                ]
+                paths: [['videos', 'summary']]
             });
         });
         router.routeUnhandledPathsTo({
@@ -29,14 +27,13 @@ describe('#call', function() {
             do(onNext, noOp, function() {
                 expect(onNext.callCount).to.equals(1);
                 expect(onNext.getCall(0).args[0]).to.deep.equals({
+                    paths: [['videos', 'summary']],
                     jsonGraph: {
                         videos: {
                             summary: 5
                         }
                     },
-                    paths: [
-                        ['videos', 'summary']
-                    ]
+                    paths: [['videos', 'summary']]
                 });
             }).
             subscribe(noOp, done, done);
@@ -47,9 +44,7 @@ describe('#call', function() {
         var onCall = sinon.spy(function() {
             return Observable.return({
                 jsonGraph: { },
-                paths: [
-                    ['videos', 'summary']
-                ]
+                paths: [['videos', 'summary']]
             });
         });
         router.routeUnhandledPathsTo({
@@ -62,9 +57,7 @@ describe('#call', function() {
                 expect(onNext.callCount).to.equals(1);
                 expect(onNext.getCall(0).args[0]).to.deep.equals({
                     jsonGraph: { },
-                    paths: [
-                        ['videos', 'summary']
-                    ]
+                    paths: [['videos', 'summary']]
                 });
             }).
             subscribe(noOp, done, done);

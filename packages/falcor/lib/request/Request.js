@@ -202,7 +202,6 @@ Request.prototype.batch = function(requested, optimized,
     }
     this.requested.push(requested);
     this.optimized.push(optimized);
-    this.data = requestedComplements;
     return this;
 }
 
@@ -245,18 +244,23 @@ function findIntersections(tree,
     var index = -1;
     var complementIndex = -1;
     var intersectionIndex = -1;
-    var total = optimized.length;
+    var optTotal = optimized.length;
+    var reqTotal = requested.length - 1;
 
-    while (++index < total) {
+    while (++index < optTotal) {
         var path = optimized[index];
         var pathLen = path.length;
         var subTree = tree[pathLen];
         if (subTree && hasIntersection(subTree, path, 0, pathLen)) {
             optimizedIntersection[++intersectionIndex] = path;
-            requestedIntersection[intersectionIndex] = requested[index];
+            requestedIntersection[intersectionIndex] = requested[
+                index < reqTotal ? index : reqTotal
+            ];
         } else {
             optimizedComplements[++complementIndex] = path;
-            requestedComplements[complementIndex] = requested[index];
+            requestedComplements[complementIndex] = requested[
+                index < reqTotal ? index : reqTotal
+            ];
         }
     }
 

@@ -85,11 +85,12 @@ describe('Integers', function() {
         ]);
 
         router.
-            get([['titlesById', {from: 1, to: 1}, ["name", "rating"]]]).
+            get([['titlesById', {from: 1, to: 1}, ['name', 'rating']]]).
             do(onNext).
             do(noOp, noOp, function(x) {
                 expect(onNext.calledOnce).to.be.ok;
                 expect(onNext.getCall(0).args[0]).to.deep.equals({
+                    paths: [['titlesById', 1, ['name', 'rating']]],
                     jsonGraph: {
                         titlesById: {
                             1: {

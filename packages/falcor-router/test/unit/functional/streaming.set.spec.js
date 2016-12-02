@@ -14,86 +14,92 @@ describe('Set', function() {
     describe('Simple', function() {
         it('should set partial values streamed in over time.', function(done) {
             var router = new R(
-                Routes().Videos.Ranges.Summary(null, 100),
+                Routes().Videos.Ranges.Summary(null, 10),
                 { streaming: true }
             );
             var obs = router.
-                set(_.merge({ paths: [
-                    ['videos', 0, 'summary'],
-                    ['videos', 1, 'summary'],
-                    ['videos', 2, 'summary'] ] },
-                    Expected().Videos.summary(0),
-                    Expected().Videos.summary(1),
-                    Expected().Videos.summary(2)
+                set(_.merge({
+                    paths: [
+                        ['videos', 0, 'summary'],
+                        ['videos', 1, 'summary'],
+                        ['videos', 2, 'summary']
+                    ]},
+                    { jsonGraph: Expected().Videos.summary(0).jsonGraph },
+                    { jsonGraph: Expected().Videos.summary(1).jsonGraph },
+                    { jsonGraph: Expected().Videos.summary(2).jsonGraph }
                 ));
 
             TestRunner.runStreaming(obs, [
-                    _.merge({ paths: [
-                        ['videos', 0, 'summary']]},
-                        Expected().Videos[0].summary),
-                    _.merge({ paths: [
-                        ['videos', 1, 'summary']]},
-                        Expected().Videos[1].summary),
-                    _.merge({ paths: [
-                        ['videos', 2, 'summary']]},
-                        Expected().Videos[2].summary)
+                    _.merge(
+                        { paths: [['videos', 0, 'summary']]},
+                        { jsonGraph: Expected().Videos[0].summary.jsonGraph }),
+                    _.merge(
+                        { paths: [['videos', 1, 'summary']]},
+                        { jsonGraph: Expected().Videos[1].summary.jsonGraph }),
+                    _.merge(
+                        { paths: [['videos', 2, 'summary']]},
+                        { jsonGraph: Expected().Videos[2].summary.jsonGraph })
                 ]).
                 subscribe(noOp, done, done);
         });
         it('should set partial values streamed in over time in the order in which they emit.', function(done) {
             var router = new R(
-                Routes().Videos.Ranges.Summary(null, [100, 10, 1]),
+                Routes().Videos.Ranges.Summary(null, [50, 10, 1]),
                 { streaming: true }
             );
             var obs = router.
-                set(_.merge({ paths: [
-                    ['videos', 0, 'summary'],
-                    ['videos', 1, 'summary'],
-                    ['videos', 2, 'summary'] ] },
-                    Expected().Videos.summary(0),
-                    Expected().Videos.summary(1),
-                    Expected().Videos.summary(2)
+                set(_.merge({
+                    paths: [
+                        ['videos', 0, 'summary'],
+                        ['videos', 1, 'summary'],
+                        ['videos', 2, 'summary']
+                    ]},
+                    { jsonGraph: Expected().Videos.summary(0).jsonGraph },
+                    { jsonGraph: Expected().Videos.summary(1).jsonGraph },
+                    { jsonGraph: Expected().Videos.summary(2).jsonGraph }
                 ));
 
             TestRunner.runStreaming(obs, [
-                    _.merge({ paths: [
-                        ['videos', 2, 'summary']]},
-                        Expected().Videos[2].summary),
-                    _.merge({ paths: [
-                        ['videos', 1, 'summary']]},
-                        Expected().Videos[1].summary),
-                    _.merge({ paths: [
-                        ['videos', 0, 'summary']]},
-                        Expected().Videos[0].summary)
+                    _.merge(
+                        { paths: [['videos', 2, 'summary']]},
+                        { jsonGraph: Expected().Videos[2].summary.jsonGraph }),
+                    _.merge(
+                        { paths: [['videos', 1, 'summary']]},
+                        { jsonGraph: Expected().Videos[1].summary.jsonGraph }),
+                    _.merge(
+                        { paths: [['videos', 0, 'summary']]},
+                        { jsonGraph: Expected().Videos[0].summary.jsonGraph })
                 ]).
                 subscribe(noOp, done, done);
         });
         it('should set partial values streamed in over time followed by a materialized result.', function(done) {
             var router = new R(
-                Routes().Videos.Ranges.Summary(null, 100),
+                Routes().Videos.Ranges.Summary(null, 10),
                 { streaming: true }
             );
             var obs = router.
-                set(_.merge({ paths: [
-                    ['videos', 0, 'summary'],
-                    ['videos', 1, 'summary'],
-                    ['videos', 2, 'summary'],
-                    ['videos', 'summary'] ] },
-                    Expected().Videos.summary(0),
-                    Expected().Videos.summary(1),
-                    Expected().Videos.summary(2)
+                set(_.merge({
+                    paths: [
+                        ['videos', 0, 'summary'],
+                        ['videos', 1, 'summary'],
+                        ['videos', 2, 'summary'],
+                        ['videos', 'summary']
+                    ]},
+                    { jsonGraph: Expected().Videos.summary(0).jsonGraph },
+                    { jsonGraph: Expected().Videos.summary(1).jsonGraph },
+                    { jsonGraph: Expected().Videos.summary(2).jsonGraph }
                 ));
 
             TestRunner.runStreaming(obs, [
-                    _.merge({ paths: [
-                        ['videos', 0, 'summary']]},
-                        Expected().Videos[0].summary),
-                    _.merge({ paths: [
-                        ['videos', 1, 'summary']]},
-                        Expected().Videos[1].summary),
-                    _.merge({ paths: [
-                        ['videos', 2, 'summary']]},
-                        Expected().Videos[2].summary),
+                    _.merge(
+                        { paths: [['videos', 0, 'summary']]},
+                        { jsonGraph: Expected().Videos[0].summary.jsonGraph }),
+                    _.merge(
+                        { paths: [['videos', 1, 'summary']]},
+                        { jsonGraph: Expected().Videos[1].summary.jsonGraph }),
+                    _.merge(
+                        { paths: [['videos', 2, 'summary']]},
+                        { jsonGraph: Expected().Videos[2].summary.jsonGraph }),
                     {
                         paths: [['videos', 'summary']],
                         jsonGraph: {
@@ -108,7 +114,7 @@ describe('Set', function() {
         it('should set partial values streamed in over time followed by an unhandled response result.', function(done) {
 
             var router = new R(
-                Routes().Videos.Ranges.Summary(null, 100),
+                Routes().Videos.Ranges.Summary(null, 10),
                 { streaming: true }
             )
             .routeUnhandledPathsTo({
@@ -137,14 +143,16 @@ describe('Set', function() {
             });
 
             var obs = router.
-                set(_.merge({ paths: [
-                    ['videos', 0, 'summary'],
-                    ['videos', 1, 'summary'],
-                    ['videos', 2, 'summary'],
-                    ['videos', 'summary'] ] },
-                    Expected().Videos.summary(0),
-                    Expected().Videos.summary(1),
-                    Expected().Videos.summary(2),
+                set(_.merge({
+                    paths: [
+                        ['videos', 0, 'summary'],
+                        ['videos', 1, 'summary'],
+                        ['videos', 2, 'summary'],
+                        ['videos', 'summary']
+                    ]},
+                    { jsonGraph: Expected().Videos.summary(0).jsonGraph },
+                    { jsonGraph: Expected().Videos.summary(1).jsonGraph },
+                    { jsonGraph: Expected().Videos.summary(2).jsonGraph },
                     {
                         jsonGraph: {
                             videos: {
@@ -155,15 +163,15 @@ describe('Set', function() {
                 ));
 
             TestRunner.runStreaming(obs, [
-                    _.merge({ paths: [
-                        ['videos', 0, 'summary']]},
-                        Expected().Videos[0].summary),
-                    _.merge({ paths: [
-                        ['videos', 1, 'summary']]},
-                        Expected().Videos[1].summary),
-                    _.merge({ paths: [
-                        ['videos', 2, 'summary']]},
-                        Expected().Videos[2].summary),
+                    _.merge(
+                        { paths: [['videos', 0, 'summary']]},
+                        { jsonGraph: Expected().Videos[0].summary.jsonGraph }),
+                    _.merge(
+                        { paths: [['videos', 1, 'summary']]},
+                        { jsonGraph: Expected().Videos[1].summary.jsonGraph }),
+                    _.merge(
+                        { paths: [['videos', 2, 'summary']]},
+                        { jsonGraph: Expected().Videos[2].summary.jsonGraph }),
                     {
                         paths: [['videos', 'summary']],
                         jsonGraph: {
@@ -179,7 +187,7 @@ describe('Set', function() {
     // describe('References', function() {
     //     it('should get partial values streamed in over time.', function(done) {
     //         var router = new R([].concat(
-    //                 Routes().Genrelists.Ranges(null, 100),
+    //                 Routes().Genrelists.Ranges(null, 10),
     //                 Routes().Videos.Ranges.Summary(null)
     //             ),
     //             { streaming: true }
@@ -196,7 +204,7 @@ describe('Set', function() {
     //     });
     //     it('should get partial values streamed in over time in the order in which they emit.', function(done) {
     //         var router = new R([].concat(
-    //                 Routes().Genrelists.Ranges(null, [100, 10, 1]),
+    //                 Routes().Genrelists.Ranges(null, [50, 10, 1]),
     //                 Routes().Videos.Ranges.Summary(null)
     //             ),
     //             { streaming: true }
@@ -213,7 +221,7 @@ describe('Set', function() {
     //     });
     //     it('should get partial values streamed in over time followed by a materialized result.', function(done) {
     //         var router = new R([].concat(
-    //                 Routes().Genrelists.Ranges(null, 100),
+    //                 Routes().Genrelists.Ranges(null, 10),
     //                 Routes().Videos.Ranges.Summary(null)
     //             ),
     //             { streaming: true }
@@ -243,7 +251,7 @@ describe('Set', function() {
     //     it('should get partial values streamed in over time followed by an unhandled response result.', function(done) {
 
     //         var router = new R([].concat(
-    //                 Routes().Genrelists.Ranges(null, 100),
+    //                 Routes().Genrelists.Ranges(null, 10),
     //                 Routes().Videos.Ranges.Summary(null)
     //             ),
     //             { streaming: true }

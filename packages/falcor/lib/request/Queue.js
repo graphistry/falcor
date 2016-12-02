@@ -21,12 +21,13 @@ function isolateSet(model, optimized, requested, env) {
     var queue = this;
     return new Source(function(destination) {
 
-        var request = new Request('set', queue, model._source, new ImmediateScheduler())
-            .batch(requested, optimized || env.paths, env.jsonGraph);
-
+        var request = new Request('set', queue, model._source, new ImmediateScheduler());
         var subscriber = request.subscribe(new Subscriber(destination, request));
 
         queue.add(request);
+        request.data = env.jsonGraph;
+        request.requested.push(requested);
+        request.optimized.push(optimized);
 
         request.connect();
 
@@ -34,16 +35,15 @@ function isolateSet(model, optimized, requested, env) {
     });
 }
 
-function isolateCall(model, optimized, requested, env) {
+function isolateCall(model, optimized, requested, callArgs) {
     var queue = this;
     return new Source(function(destination) {
 
-        var request = new Request('call', queue, model._source, new ImmediateScheduler())
-            .batch(null, null, env);
-
+        var request = new Request('call', queue, model._source, new ImmediateScheduler());
         var subscriber = request.subscribe(new Subscriber(destination, request));
 
         queue.add(request);
+        request.data = callArgs;
 
         request.connect();
 

@@ -13,7 +13,7 @@ describe(`Falcor Event Emitter DataSource with Rx v${devDependencies.rx}`, funct
 
 describe(`Falcor Event Emitter DataSource with Rx v${devDependencies.rx} and recycled JSON`, function() {
     eventEmitterDataSourceTests(Rx4, true);
-})
+});
 
 describe(`Falcor Event Emitter DataSource with Rx v${devDependencies.rxjs}`, function() {
     eventEmitterDataSourceTests(Rx5, false);

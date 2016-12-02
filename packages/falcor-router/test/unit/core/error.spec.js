@@ -21,11 +21,12 @@ describe('Error', function() {
         var onNext = sinon.spy();
 
         router.
-            get([["videos", 1, "title"]]).
+            get([['videos', 1, 'title']]).
             do(onNext).
             do(noOp, noOp, function() {
                 expect(onNext.calledOnce).to.be.ok;
                 expect(onNext.getCall(0).args[0]).to.deep.equals({
+                    paths: [['videos', 1, 'title']],
                     jsonGraph: {
                         videos: {
                             1: {
@@ -49,7 +50,7 @@ describe('Error', function() {
                 };
             }
         }]);
-        var obs = router.get([["videos", 1, "title"]]);
+        var obs = router.get([['videos', 1, 'title']]);
         var err = false;
         obs.
             do(
@@ -74,7 +75,7 @@ describe('Error', function() {
             get: function(json) {
                 /* eslint-disable no-throw-literal */
                 throw {
-                    message: "not authorized",
+                    message: 'not authorized',
                     unauthorized: true
                 };
                 /* eslint-enable no-throw-literal */
@@ -87,22 +88,23 @@ describe('Error', function() {
             do(noOp, noOp, function() {
                 expect(onNext.calledOnce).to.be.ok;
                 expect(onNext.getCall(0).args[0]).to.deep.equals({
+                    paths: [['videos', [333, 1234], 'rating']],
                     jsonGraph: {
                         videos: {
                             1234: {
                                 rating: {
-                                    $type: "error",
+                                    $type: 'error',
                                     value: {
-                                        message: "not authorized",
+                                        message: 'not authorized',
                                         unauthorized: true
                                     }
                                 }
                             },
                             333: {
                                 rating: {
-                                    $type: "error",
+                                    $type: 'error',
                                     value: {
-                                        message: "not authorized",
+                                        message: 'not authorized',
                                         unauthorized: true
                                     }
                                 }
@@ -119,7 +121,7 @@ describe('Error', function() {
             route: 'videos[{integers:id}].rating',
             set: function(json) {
                 return Promise.reject({
-                    message: "user not authorized",
+                    message: 'user not authorized',
                     unauthorized: true
                 });
             }
@@ -143,22 +145,23 @@ describe('Error', function() {
             do(noOp, noOp, function() {
                 expect(onNext.calledOnce).to.be.ok;
                 expect(onNext.getCall(0).args[0]).to.deep.equals({
+                    paths: [['videos', [333, 1234], 'rating']],
                     jsonGraph: {
                         videos: {
                             1234: {
                                 rating: {
-                                    $type: "error",
+                                    $type: 'error',
                                     value: {
-                                        message: "user not authorized",
+                                        message: 'user not authorized',
                                         unauthorized: true
                                     }
                                 }
                             },
                             333: {
                                 rating: {
-                                    $type: "error",
+                                    $type: 'error',
                                     value: {
-                                        message: "user not authorized",
+                                        message: 'user not authorized',
                                         unauthorized: true
                                     }
                                 }
@@ -176,7 +179,7 @@ describe('Error', function() {
             set: function(json) {
                 /* eslint-disable no-throw-literal */
                 throw {
-                    message: "not authorized",
+                    message: 'not authorized',
                     unauthorized: true
                 };
                 /* eslint-enable no-throw-literal */
@@ -201,22 +204,23 @@ describe('Error', function() {
             do(noOp, noOp, function() {
                 expect(onNext.calledOnce).to.be.ok;
                 expect(onNext.getCall(0).args[0]).to.deep.equals({
+                    paths: [['videos', [333, 1234], 'rating']],
                     jsonGraph: {
                         videos: {
                             1234: {
                                 rating: {
-                                    $type: "error",
+                                    $type: 'error',
                                     value: {
-                                        message: "not authorized",
+                                        message: 'not authorized',
                                         unauthorized: true
                                     }
                                 }
                             },
                             333: {
                                 rating: {
-                                    $type: "error",
+                                    $type: 'error',
                                     value: {
-                                        message: "not authorized",
+                                        message: 'not authorized',
                                         unauthorized: true
                                     }
                                 }

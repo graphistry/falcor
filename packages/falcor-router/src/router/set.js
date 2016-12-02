@@ -1,10 +1,11 @@
 var set = 'set';
 var Observable = require('../rx').Observable;
 var getPathsCount = require('./getPathsCount');
+var runAggregate = require('../run/aggregate');
+var runStreaming = require('../run/streaming');
 var runSetAction = require('./../run/set/runSetAction');
 var optimizeJSONGraph = require('./../cache/optimizeJSONGraph');
 var collapse = require('@graphistry/falcor-path-utils/lib/collapse');
-var recurseMatchAndExecute = require('./../run/recurseMatchAndExecute');
 var normalizePathSets = require('../operations/ranges/normalizePathSets');
 var MaxPathsExceededError = require('../errors/MaxPathsExceededError');
 
@@ -28,9 +29,14 @@ function routerSet(incomingJsonGraphEnvelope) {
             throw new MaxPathsExceededError();
         }
 
-        return recurseMatchAndExecute(router._matcher, action, normPS, set,
-                                      router, jsonGraph, router._unhandled &&
-                                      router._unhandled.set && unhandledSetRunner);
+        var run = router._streaming ? runStreaming : runAggregate;
+
+        return run(router._matcher,
+                   action, normPS, set,
+                   router, jsonGraph,
+                   router._unhandled &&
+                   router._unhandled.set &&
+                   unhandledSetRunner || undefined);
     });
 
     function unhandledSetRunner(router, jsonGraphEnvelope, paths, unhandled) {

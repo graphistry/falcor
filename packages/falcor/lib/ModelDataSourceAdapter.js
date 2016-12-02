@@ -1,5 +1,7 @@
 function ModelDataSourceAdapter(model) {
-    this._model = model._materialize().treatErrorsAsValues();
+    this._model = model
+        // .boxValues()
+        ._materialize().treatErrorsAsValues();
 }
 
 ModelDataSourceAdapter.prototype.get = function get(pathSets) {

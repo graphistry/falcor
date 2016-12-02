@@ -1,5 +1,4 @@
 var Observable = require('../../rx').Observable;
-var materialize = require('./../materialize');
 var getExecutableMatches = require('./getExecutableMatches');
 
 /**

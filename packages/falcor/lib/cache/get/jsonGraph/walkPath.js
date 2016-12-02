@@ -159,8 +159,7 @@ function walkPathAndBuildOutput(cacheRoot, node, path,
                 // following the path. If the reference resolves to a missing
                 // path or leaf node, it will be handled in the next call to
                 // walkPath.
-                refTarget = getReferenceTarget(cacheRoot, next, modelRoot, seed,
-                                               boxValues, materialized, expireImmediate);
+                refTarget = getReferenceTarget(cacheRoot, next, modelRoot, seed, expireImmediate);
 
                 next = refTarget[0];
                 fromReference = true;

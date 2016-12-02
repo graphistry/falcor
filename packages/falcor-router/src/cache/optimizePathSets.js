@@ -1,8 +1,7 @@
-var iterateKeySet = require('@graphistry/falcor-path-utils/lib/iterateKeySet');
-var catAndSlice = require('./../support/catAndSlice');
-var $types = require('./../support/types');
-var $ref = $types.$ref;
 var errors = require('./../exceptions');
+var $ref = require('./../support/types').$ref;
+var catAndSlice = require('./../support/catAndSlice');
+var iterateKeySet = require('@graphistry/falcor-path-utils/lib/iterateKeySet');
 
 /**
  * Find paths from the input list that aren't in the JSON Graph.

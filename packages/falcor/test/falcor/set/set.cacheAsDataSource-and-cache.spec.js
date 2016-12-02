@@ -97,14 +97,14 @@ describe('Cache as DataSource and Cache', function() {
                     onSet: function(source, tmp, jsongEnv) {
                         sourceCalled = true;
                         testRunner.compare({
+                            paths: [['videos', 1234, 'summary']],
                             jsonGraph: {
                                 videos: {
                                     1234: {
                                         summary: 5
                                     }
                                 }
-                            },
-                            paths: [['videos', 1234, 'summary']]
+                            }
                         }, jsongEnv);
                         return jsongEnv;
                     }

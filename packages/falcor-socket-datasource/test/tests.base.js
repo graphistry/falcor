@@ -145,17 +145,23 @@ export default function tests({ Observable }, context, runBefore, runAfter) {
             'call-cinco-val'
         ];
         const expected = expectedProgressive(keys, vals);
-        // The function call weaves in some streaming invalidations, so
-        // be sure to delete them from the expected output.
-        delete expected[1].json.streaming[1];
-        delete expected[2].json.streaming[1];
-        delete expected[2].json.streaming['two'];
-        delete expected[3].json.streaming[1];
-        delete expected[3].json.streaming['two'];
-        delete expected[4].json.streaming[1];
-        delete expected[4].json.streaming['two'];
+        expected.splice(0, 0, _.merge({}, expected[0]));
+        expected.splice(2, 0, _.merge({}, expected[2]));
+        expected[1].json.streaming[1] = 'call-1-followup';
+        expected[2].json.streaming[1] = 'call-1-followup';
+        expected[3].json.streaming[1] = 'call-1-followup';
+        expected[4].json.streaming[1] = 'call-1-followup';
+        expected[5].json.streaming[1] = 'call-1-followup';
+        expected[6].json.streaming[1] = 'call-1-followup';
+        expected[3].json.streaming['two'] = 'call-two-followup';
+        expected[4].json.streaming['two'] = 'call-two-followup';
+        expected[5].json.streaming['two'] = 'call-two-followup';
+        expected[6].json.streaming['two'] = 'call-two-followup';
+
         Observable
-            .defer(() => model.call(['streaming', 'call'], keys))
+            .defer(() => model
+                .call(['streaming', 'call'], keys)
+                .progressively())
             .do((data) => {
                 expect(data.toJSON()).to.deep.equal(expected.shift());
             })

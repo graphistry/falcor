@@ -41,8 +41,8 @@ module.exports = function() {
                     },
                     get: function (path) {
                         fn && fn(path);
-                        return Observable.
-                            from(Array.from(path[1], function(id, index) {
+                        return Observable
+                            .from(Array.from(path[1], function(id, index) {
                                 return index % 2 === 0 ?
                                     generateVideoPV(id) :
                                     generateVideoJSONG(id);
@@ -65,12 +65,29 @@ module.exports = function() {
                     },
                     get: function (path) {
                         fn && fn(path);
-                        return Observable.
-                            from(Array.from(path[1], function(id, index) {
+                        return Observable
+                            .from(Array.from(path[1], function(id, index) {
                                 return index % 2 === 0 ?
                                     generateVideoPV(id) :
                                     generateVideoJSONG(id);
                             }))
+                            .let(letDelayEach(delay, batch));
+                    }
+                }, {
+                    route: ['videos', R.integers, 'update'],
+                    call: function(path, args) {
+                        fn && fn(path);
+                        return Observable
+                            .from(Array.from(path[1], function(id, index) {
+                                return [{
+                                    invalidated: true,
+                                    path: ['videos', id, 'summary']
+                                }, {
+                                    value: args[index],
+                                    path: ['videos', id, 'summary']
+                                }]
+                            }))
+                            .mergeMap(function (xs) { return xs; })
                             .let(letDelayEach(delay, batch));
                     }
                 }];
@@ -98,6 +115,22 @@ module.exports = function() {
                             }))
                             .let(letDelayEach(delay, batch));
                     }
+                }, {
+                    route: ['videos', R.ranges, 'update'],
+                    call: function(path, args) {
+                        fn && fn(path);
+                        return Observable
+                            .from(Array.from(TestRunner.rangeToArray(path[1]), function(id, index) {
+                                return [{
+                                    invalidated: true,
+                                    path: ['videos', id, 'summary']
+                                }, {
+                                    value: args[index],
+                                    path: ['videos', id, 'summary']
+                                }]
+                            }))
+                            .let(letDelayEach(delay, batch))
+                    }
                 }];
             }
         },
@@ -107,9 +140,9 @@ module.exports = function() {
                     route: ['videos', 'state', R.keys],
                     get: function (path) {
                         fn && fn(path);
-                        return Observable.
-                            from(path[2]).
-                            map(function(key) {
+                        return Observable
+                            .from(path[2])
+                            .map(function(key) {
                                 return generateVideoStateJSONG(key);
                             })
                             .let(letDelayEach(delay, batch));
@@ -121,9 +154,9 @@ module.exports = function() {
                     route: ['videos', 'state', R.integers],
                     get: function (path) {
                         fn && fn(path);
-                        return Observable.
-                            from(path[2]).
-                            map(function(key) {
+                        return Observable
+                            .from(path[2])
+                            .map(function(key) {
                                 return generateVideoStateJSONG(key);
                             })
                             .let(letDelayEach(delay, batch));
@@ -135,9 +168,9 @@ module.exports = function() {
                     route: ['videos', 'state', R.ranges],
                     get: function (path) {
                         fn && fn(path);
-                        return Observable.
-                            from(TestRunner.rangeToArray(path[2])).
-                            map(function(key) {
+                        return Observable
+                            .from(TestRunner.rangeToArray(path[2]))
+                            .map(function(key) {
                                 return generateVideoStateJSONG(key);
                             })
                             .let(letDelayEach(delay, batch));

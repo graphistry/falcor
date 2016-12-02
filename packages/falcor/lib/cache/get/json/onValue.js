@@ -20,7 +20,6 @@ function onJSONValue(node, type, depth, seed, results,
 
     if (requiresMaterializedToReport) {
         if (materialized) {
-            debugger
             results.hasValue = true;
             return materializedAtom;
         }

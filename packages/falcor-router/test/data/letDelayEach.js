@@ -6,14 +6,14 @@ module.exports = function letDelayEach(delay, batch, index) {
             return source.toArray();
         } else if (typeof delay === 'number') {
             return source.concatMap(function(x) {
-                return Observable.of(x).delay(delay);
+                return Observable.timer(delay).mapTo(x);
             });
         } else if (Array.isArray(delay)) {
             if (typeof index === 'number') {
-                return source.delay(delay[index]);
+                return Observable.timer(delay[index]).mergeMapTo(source);
             } else {
                 return source.mergeMap(function(x, i) {
-                    return Observable.of(x).delay(delay[i]);
+                    return Observable.timer(delay[i]).mapTo(x);
                 });
             }
         }

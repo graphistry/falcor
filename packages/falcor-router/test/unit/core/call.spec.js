@@ -314,7 +314,6 @@ describe('Call', function() {
             );
     });
 
-
     it('should return paths in jsonGraphEnvelope if array of pathValues is returned from promise.', function(done) {
         var onNext = sinon.spy();
 
@@ -363,8 +362,6 @@ describe('Call', function() {
             }).
             subscribe(noOp, done, done);
     });
-
-
 
     it('should perform a simple call.', function(done) {
         var onNext = sinon.spy();

@@ -19,7 +19,7 @@ describe('Get', function() {
         var called = false;
         obs.
             subscribe(function(res) {
-                expect(res).to.deep.equals(Expected().Videos.Summary);
+                expect(res.jsonGraph).to.deep.equals(Expected().Videos.Summary.jsonGraph);
                 called = true;
             }, done, function() {
                 expect(called, 'expect onNext called 1 time.').to.equal(true);
@@ -50,6 +50,7 @@ describe('Get', function() {
             do(noOp, noOp, function() {
                 expect(onNext.calledOnce).to.be.ok;
                 expect(onNext.getCall(0).args[0]).to.deep.equals({
+                    paths: [['videos', 'falsey']],
                     jsonGraph: {
                         videos: {
                             falsey: null
@@ -83,6 +84,7 @@ describe('Get', function() {
             do(noOp, noOp, function() {
                 expect(onNext.calledOnce).to.be.ok;
                 expect(onNext.getCall(0).args[0]).to.deep.equals({
+                    paths: [['videos', 'falsey']],
                     jsonGraph: {
                         videos: {
                             falsey: $atom(null)
@@ -116,6 +118,7 @@ describe('Get', function() {
             do(noOp, noOp, function() {
                 expect(onNext.calledOnce).to.be.ok;
                 expect(onNext.getCall(0).args[0]).to.deep.equals({
+                    paths: [['videos', 'falsey']],
                     jsonGraph: {
                         videos: {
                             falsey: 0
@@ -149,6 +152,7 @@ describe('Get', function() {
             do(noOp, noOp, function() {
                 expect(onNext.calledOnce).to.be.ok;
                 expect(onNext.getCall(0).args[0]).to.deep.equals({
+                    paths: [['videos', 'falsey']],
                     jsonGraph: {
                         videos: {
                             falsey: $atom(0)
@@ -178,6 +182,7 @@ describe('Get', function() {
             do(noOp, noOp, function() {
                 expect(onNext.calledOnce).to.be.ok;
                 expect(onNext.getCall(0).args[0]).to.deep.equals({
+                    paths: [['videos', 'falsey']],
                     jsonGraph: {
                         videos: {
                             falsey: 0
@@ -207,6 +212,7 @@ describe('Get', function() {
             do(noOp, noOp, function() {
                 expect(onNext.calledOnce).to.be.ok;
                 expect(onNext.getCall(0).args[0]).to.deep.equals({
+                    paths: [['videos', 'falsey']],
                     jsonGraph: {
                         videos: {
                             falsey: null
@@ -236,6 +242,7 @@ describe('Get', function() {
             do(noOp, noOp, function() {
                 expect(onNext.calledOnce).to.be.ok;
                 expect(onNext.getCall(0).args[0]).to.deep.equals({
+                    paths: [['videos', 'falsey']],
                     jsonGraph: {
                         videos: {
                             falsey: false
@@ -265,6 +272,7 @@ describe('Get', function() {
             do(noOp, noOp, function() {
                 expect(onNext.calledOnce).to.be.ok;
                 expect(onNext.getCall(0).args[0]).to.deep.equals({
+                    paths: [['videos', 'falsey']],
                     jsonGraph: {
                         videos: {
                             falsey: ''
@@ -320,6 +328,7 @@ describe('Get', function() {
             do(noOp, noOp, function() {
                 expect(onNext.calledOnce).to.be.ok;
                 expect(onNext.getCall(0).args[0]).to.deep.equals({
+                    paths: [['lists', {from: 0, to: 1}, 'summary']],
                     jsonGraph: {
                         lists: {
                             0: $ref('two.be[956]'),
@@ -358,9 +367,10 @@ describe('Get', function() {
             });
 
         router.
-            get([['videos', 123, ['title', 'rating']]]).
+            get([['videos', 123, ['rating', 'title']]]).
             do(function(x) {
                 expect(x).to.deep.equals({
+                    paths: [['videos', 123, ['rating', 'title']]],
                     jsonGraph: {
                         videos: {
                             123: {
@@ -418,6 +428,7 @@ describe('Get', function() {
             get([['lists', 'abc', 0]]).
             do(function(x) {
                 expect(x).to.deep.equals({
+                    paths: [['lists', 'abc', '0']],
                     jsonGraph: {
                         lists: {
                             abc: {
@@ -440,6 +451,7 @@ describe('Get', function() {
             get([['myList']]).
             do(function(x) {
                 expect(x).to.deep.equals({
+                    paths: [['myList']],
                     jsonGraph: {
                         myList: $ref(['videos', [0, 1, 2]])
                     }
@@ -455,9 +467,10 @@ describe('Get', function() {
         var called = 0;
         var router = getPrecedenceRouter();
         router.
-            get([['myList', ['title', 'rating']]]).
+            get([['myList', ['rating', 'title']]]).
             do(function(x) {
                 expect(x).to.deep.equals({
+                    paths: [['myList', ['rating', 'title']]],
                     jsonGraph: {
                         myList: $ref(['videos', [0, 1, 2]]),
                         videos: {
@@ -485,24 +498,25 @@ describe('Get', function() {
 
     it('should not follow references if no keys specified after path to reference', function (done) {
         var routeResponse = {
+            paths: [['ProffersById', 1, 'ProductsList', {'from': 0, 'to': 1}]],
             jsonGraph: {
-                "ProffersById": {
-                    "1": {
-                        "ProductsList": {
-                            "0": {
-                                "$size": 52,
-                                "$type": "ref",
-                                "value": [
-                                    "ProductsById",
-                                    "CSC1471105X"
+                'ProffersById': {
+                    '1': {
+                        'ProductsList': {
+                            '0': {
+                                '$size': 52,
+                                '$type': 'ref',
+                                'value': [
+                                    'ProductsById',
+                                    'CSC1471105X'
                                 ]
                             },
-                            "1": {
-                                "$size": 52,
-                                "$type": "ref",
-                                "value": [
-                                    "ProductsById",
-                                    "HON4033T"
+                            '1': {
+                                '$size': 52,
+                                '$type': 'ref',
+                                'value': [
+                                    'ProductsById',
+                                    'HON4033T'
                                 ]
                             }
                         }
@@ -512,19 +526,19 @@ describe('Get', function() {
         };
         var router = new R([
             {
-                route: "ProductsById[{keys}][{keys}]",
+                route: 'ProductsById[{keys}][{keys}]',
                 get: function (pathSet) {
-                    throw new Error("reference was followed in error");
+                    throw new Error('reference was followed in error');
                 }
             },
             {
-                route: "ProffersById[{integers}].ProductsList[{ranges}]",
+                route: 'ProffersById[{integers}].ProductsList[{ranges}]',
                 get: function (pathSet) {
                     return Observable.of(routeResponse);
                 }
             }
         ]);
-        var obs = router.get([["ProffersById", 1, "ProductsList", {"from": 0, "to": 1}]]);
+        var obs = router.get([['ProffersById', 1, 'ProductsList', {'from': 0, 'to': 1}]]);
         var called = false;
         obs.
             do(function (res) {
@@ -543,13 +557,14 @@ describe('Get', function() {
                 return Observable.empty();
             }
         }]);
-        var obs = router.get([["videos", 1, "title"]]);
+        var obs = router.get([['videos', 1, 'title']]);
         var onNext = sinon.spy();
 
         obs.
             do(onNext, noOp, function() {
                 expect(onNext.calledOnce).to.be.ok;
                 expect(onNext.getCall(0).args[0]).to.deep.equals({
+                    paths: [['videos', 1, 'title']],
                     jsonGraph: {videos: {1: {title: {$type: 'atom'}}}}
                 });
             }).
@@ -568,7 +583,7 @@ describe('Get', function() {
                 });
             }
         }]);
-        var obs = router.get([["videos", 1, "title"]]);
+        var obs = router.get([['videos', 1, 'title']]);
         var onNext = sinon.spy();
 
         obs.
@@ -576,6 +591,7 @@ describe('Get', function() {
                 expect(onNext.calledOnce).to.be.ok;
                 expect(onNext.getCall(0).args[0]).to.deep.equals({
                     invalidated: [['videos', 1, 'title']],
+                    paths: [['videos', 1, 'title']],
                     jsonGraph: {
                         videos: {
                             1: {

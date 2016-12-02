@@ -1,9 +1,10 @@
 var get = 'get';
 var Observable = require('../rx').Observable;
 var getPathsCount = require('./getPathsCount');
+var runAggregate = require('../run/aggregate');
+var runStreaming = require('../run/streaming');
 var runGetAction = require('../run/get/runGetAction');
 var collapse = require('@graphistry/falcor-path-utils/lib/collapse');
-var recurseMatchAndExecute = require('../run/recurseMatchAndExecute');
 var MaxPathsExceededError = require('../errors/MaxPathsExceededError');
 var normalizePathSets = require('../operations/ranges/normalizePathSets');
 
@@ -25,11 +26,14 @@ module.exports = function routerGet(paths) {
             throw new MaxPathsExceededError();
         }
 
-        return recurseMatchAndExecute(router._matcher, action, normPS, get,
-                                      router, jsonGraph,
-                                      router._unhandled &&
-                                      router._unhandled.get &&
-                                      unhandledGetRunner || undefined);
+        var run = router._streaming ? runStreaming : runAggregate;
+
+        return run(router._matcher,
+                   action, normPS, get,
+                   router, jsonGraph,
+                   router._unhandled &&
+                   router._unhandled.get &&
+                   unhandledGetRunner || undefined);
     });
 };
 

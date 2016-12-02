@@ -6,11 +6,12 @@ var expect = chai.expect;
 var falcor = require('@graphistry/falcor');
 var $ref = falcor.Model.ref;
 var $atom = falcor.Model.atom;
+var Scheduler = require('rxjs').Scheduler;
 var Observable = require('rxjs').Observable;
 var Promise = require('promise');
 
 describe('Collapse and Batch', function() {
-    it('should ensure that collapse is being ran.', function(done) {
+    it('should ensure that collapse is being run.', function(done) {
         var videos = Routes().Videos.Integers.Summary(function(path) {
             expect(path.concat()).to.deep.equal(['videos', [0, 1], 'summary']);
         });
@@ -24,6 +25,7 @@ describe('Collapse and Batch', function() {
         obs.
             do(function(res) {
                 expect(res).to.deep.equals({
+                    paths: [['genreLists', {'from': 0, 'to': 1}, 'summary']],
                     jsonGraph: {
                         genreLists: {
                             0: $ref('videos[0]'),
@@ -176,6 +178,7 @@ describe('Collapse and Batch', function() {
         obs.
             do(function(res) {
                 expect(res).to.deep.equals({
+                    paths: [['lists', {from: 0, to: 1}, 'summary']],
                     jsonGraph: {
                         lists: {
                             0: $ref('two.be[956]'),
@@ -194,6 +197,70 @@ describe('Collapse and Batch', function() {
             }, noOp, function() {
                 expect(count, 'expect onNext called 1 time.').to.equal(1);
                 expect(serviceCalls).to.equal(1);
+            }).
+            subscribe(noOp, done, done);
+    });
+
+    xit('should validate that optimizedPathSets strips out already found data and collapse makes two requests.', function(done) {
+        var serviceCalls = 0;
+        var routes = [{
+            route: 'lists[{keys:ids}]',
+            get: function(aliasMap) {
+                return Observable.
+                    from(aliasMap.ids).
+                    map(function(id) {
+                        if (id === 0) {
+                            return {
+                                path: ['lists', id],
+                                value: $ref('lists[1]')
+                            };
+                        }
+                        return {
+                            path: ['lists', id],
+                            value: $ref('two.be[956]')
+                        };
+                    });
+            }
+        }, {
+            route: 'two.be[{integers:ids}].summary',
+            get: function(aliasMap) {
+                serviceCalls++;
+                return Observable.
+                    from(aliasMap.ids).
+                    map(function(id) {
+                        return {
+                            path: ['two', 'be', id, 'summary'],
+                            value: 'hello world'
+                        };
+                    });
+            }
+        }];
+        var router = new R(routes);
+        var obs = router.
+            get([['lists', [0, 1], 'summary']]);
+        var count = 0;
+        obs.
+            do(function(res) {
+                expect(res).to.deep.equals({
+                    paths: [['lists', {from: 0, to: 1}, 'summary']],
+                    jsonGraph: {
+                        lists: {
+                            0: $ref('lists[1]'),
+                            1: $ref('two.be[956]')
+                        },
+                        two: {
+                            be: {
+                                956: {
+                                    summary: 'hello world'
+                                }
+                            }
+                        }
+                    }
+                });
+                count++;
+            }, noOp, function() {
+                expect(count, 'expect onNext called 1 time.').to.equal(1);
+                expect(serviceCalls).to.equal(2);
             }).
             subscribe(noOp, done, done);
     });

@@ -73,10 +73,8 @@ describe('Deref', function() {
             _path: ['videos', 0],
             cache: cacheGenerator(0, 1)
         });
-
         var res = model._getPathValuesAsJSONG(model, [['summary']], {});
-        expect(res.error.name).to.equals(BoundJSONGraphModelError.name);
-        expect(res.error.message).to.equals(BoundJSONGraphModelError.message);
+        expect(BoundJSONGraphModelError.is(res.error), 'expected BoundJSONGraphModelError').to.equal(true);
     });
 
     it('should ensure that correct parents are produced for non-paths.', function(done) {

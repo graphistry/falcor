@@ -78,7 +78,7 @@ module.exports =
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 110);
+/******/ 	return __webpack_require__(__webpack_require__.s = 111);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -92,9 +92,9 @@ module.exports = 'ref';
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
-var now = __webpack_require__(54);
-var $now = __webpack_require__(31);
-var $never = __webpack_require__(55);
+var now = __webpack_require__(55);
+var $now = __webpack_require__(32);
+var $never = __webpack_require__(56);
 
 module.exports = function isExpired(node, expireImmediate) {
     var exp = node.$expires;
@@ -121,7 +121,7 @@ module.exports = function isObject(value) {
 /* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
-var splice = __webpack_require__(48);
+var splice = __webpack_require__(49);
 
 module.exports = function expireNode(node, expired, lru) {
     if (!node["ƒ_invalidated"]) {
@@ -135,6 +135,30 @@ module.exports = function expireNode(node, expired, lru) {
 
 /***/ },
 /* 4 */
+/***/ function(module, exports) {
+
+module.exports = createErrorClass;
+
+function createErrorClass(name, init) {
+    function E(message) {
+        if (!Error.captureStackTrace) {
+            this.stack = (new Error()).stack;
+        } else {
+            Error.captureStackTrace(this, this.constructor);
+        }
+        this.message = message;
+        init && init.apply(this, arguments);
+    }
+    E.prototype = new Error();
+    E.prototype.name = name;
+    E.prototype.constructor = E;
+    E.is = function(x) { return x.name === name; };
+    return E;
+}
+
+
+/***/ },
+/* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
 module.exports = function createHardlink(from, to) {
@@ -151,7 +175,7 @@ module.exports = function createHardlink(from, to) {
 
 
 /***/ },
-/* 5 */
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {function FalcorJSON(f_meta) {
@@ -300,36 +324,25 @@ function serialize(inst, serializer, includeMetadata) {
 
 module.exports = FalcorJSON;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(32)))
-
-/***/ },
-/* 6 */
-/***/ function(module, exports) {
-
-var NAME = 'NullInPathError';
-var MESSAGE = '`null` is not allowed in branch key positions.';
-
-/**
- * Does not allow null in path
- */
-function NullInPathError() {
-    var err = Error.call(this, MESSAGE);
-    err.name = NAME;
-    this.stack = err.stack;
-    this.message = err.message;
-    return this;
-}
-
-// instanceof will be an error, but stack will be correct because its defined in the constructor.
-NullInPathError.prototype = Object.create(Error.prototype);
-NullInPathError.prototype.name = NAME;
-NullInPathError.message = MESSAGE;
-
-module.exports = NullInPathError;
-
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(33)))
 
 /***/ },
 /* 7 */
+/***/ function(module, exports, __webpack_require__) {
+
+var createErrorClass = __webpack_require__(4);
+var MESSAGE = '`null` is not allowed in branch key positions.';
+
+/**
+ * Do not allow null in path.
+ */
+module.exports = createErrorClass('NullInPathError', function() {
+    this.message = MESSAGE;
+});
+
+
+/***/ },
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
 var isObject = __webpack_require__(2);
@@ -339,10 +352,10 @@ module.exports = function getSize(node) {
 
 
 /***/ },
-/* 8 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
-var isInternal = __webpack_require__(30);
+var isInternal = __webpack_require__(31);
 
 module.exports = clone;
 
@@ -364,7 +377,7 @@ function clone(node) {
 
 
 /***/ },
-/* 9 */
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 var $ref = __webpack_require__(0);
@@ -401,11 +414,11 @@ function getCachePosition(cache, path) {
 
 
 /***/ },
-/* 10 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
-var removeNode = __webpack_require__(26);
-var updateBackReferenceVersions = __webpack_require__(43);
+var removeNode = __webpack_require__(27);
+var updateBackReferenceVersions = __webpack_require__(44);
 
 module.exports = function updateNodeAncestors(nodeArg, offset, lru, version) {
     var child = nodeArg;
@@ -424,10 +437,10 @@ module.exports = function updateNodeAncestors(nodeArg, offset, lru, version) {
 
 
 /***/ },
-/* 11 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
-var EXPIRES_NEVER = __webpack_require__(55);
+var EXPIRES_NEVER = __webpack_require__(56);
 
 // [H] -> Next -> ... -> [T]
 // [T] -> Prev -> ... -> [H]
@@ -474,10 +487,10 @@ module.exports = function lruPromote(root, object) {
 
 
 /***/ },
-/* 12 */
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
-var Subscription = __webpack_require__(13);
+var Subscription = __webpack_require__(14);
 
 module.exports = Subscriber;
 
@@ -517,16 +530,19 @@ Subscriber.prototype.onNext = function onNext(value) {
 
 Subscriber.prototype.error =
 Subscriber.prototype.onError = function onError(error) {
+    var signaled = false;
     var dest = this.destination;
     if (dest) {
         if (dest.onError) {
+            signaled = true;
             dest.onError(error);
         } else if (dest.error) {
+            signaled = true;
             dest.error(error);
         }
         this.dispose();
-    } else {
-        this.dispose();
+    }
+    if (!signaled) {
         throw error;
     }
 }
@@ -552,7 +568,7 @@ Subscriber.prototype.unsubscribe = function () {
 
 
 /***/ },
-/* 13 */
+/* 14 */
 /***/ function(module, exports) {
 
 module.exports = Subscription;
@@ -592,17 +608,17 @@ Subscription.prototype.unsubscribe = function () {
 
 
 /***/ },
-/* 14 */
+/* 15 */
 /***/ function(module, exports) {
 
 module.exports = 'error';
 
 
 /***/ },
-/* 15 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
-var getCachePosition = __webpack_require__(9);
+var getCachePosition = __webpack_require__(10);
 
 module.exports = getBoundCacheNode;
 
@@ -625,17 +641,17 @@ function getBoundCacheNode(model, path) {
 
 
 /***/ },
-/* 16 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 var arr = new Array(5);
 var $ref = __webpack_require__(0);
 var isExpired = __webpack_require__(1);
 var expireNode = __webpack_require__(3);
-var createHardlink = __webpack_require__(4);
-var mergeJSONGraphNode = __webpack_require__(72);
-var NullInPathError = __webpack_require__(6);
-var iterateKeySet = __webpack_require__(33);
+var createHardlink = __webpack_require__(5);
+var mergeJSONGraphNode = __webpack_require__(73);
+var NullInPathError = __webpack_require__(7);
+var iterateKeySet = __webpack_require__(34);
 
 /**
  * Merges a list of {@link JSONGraphEnvelope}s into a {@link JSONGraph}.
@@ -872,7 +888,7 @@ function setNode(
 
 
 /***/ },
-/* 17 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
 var arr = new Array(3);
@@ -880,11 +896,11 @@ var isArray = Array.isArray;
 var $ref = __webpack_require__(0);
 var isExpired = __webpack_require__(1);
 var expireNode = __webpack_require__(3);
-var createHardlink = __webpack_require__(4);
-var getCachePosition = __webpack_require__(9);
-var isInternalKey = __webpack_require__(18);
-var NullInPathError = __webpack_require__(6);
-var mergeValueOrInsertBranch = __webpack_require__(40);
+var createHardlink = __webpack_require__(5);
+var getCachePosition = __webpack_require__(10);
+var isInternalKey = __webpack_require__(19);
+var NullInPathError = __webpack_require__(7);
+var mergeValueOrInsertBranch = __webpack_require__(41);
 
 /**
  * Sets a list of {@link PathMapEnvelope}s into a {@link JSONGraph}.
@@ -1131,7 +1147,7 @@ function getKeys(pathMap) {
 
 
 /***/ },
-/* 18 */
+/* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
 /**
@@ -1144,7 +1160,7 @@ function getKeys(pathMap) {
 
 module.exports = isInternalKey;
 
-var isInternal = __webpack_require__(30);
+var isInternal = __webpack_require__(31);
 
 function isInternalKey(key) {
     return key && key[0] === '$' || isInternal(key);
@@ -1152,27 +1168,27 @@ function isInternalKey(key) {
 
 
 /***/ },
-/* 19 */
+/* 20 */
 /***/ function(module, exports) {
 
 module.exports = require("@graphistry/falcor-path-utils/lib/support/materializedAtom");
 
 /***/ },
-/* 20 */
-/***/ function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__(34);
-
-
-/***/ },
 /* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(37);
+module.exports = __webpack_require__(35);
 
 
 /***/ },
 /* 22 */
+/***/ function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__(38);
+
+
+/***/ },
+/* 23 */
 /***/ function(module, exports) {
 
 module.exports = inlineJSONGraphValue;
@@ -1203,12 +1219,12 @@ function inlineJSONGraphValue(node, path, length, seed, branch) {
 
 
 /***/ },
-/* 23 */
+/* 24 */
 /***/ function(module, exports, __webpack_require__) {
 
 var isArray = Array.isArray;
-var pathToTree = __webpack_require__(109).pathToTree;
-var materializedAtom = __webpack_require__(19);
+var pathToTree = __webpack_require__(110).pathToTree;
+var materializedAtom = __webpack_require__(20);
 
 module.exports = onMissing;
 
@@ -1319,12 +1335,12 @@ function isEmptyKeySet(keyset) {
 
 
 /***/ },
-/* 24 */
+/* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
 var isExpired = __webpack_require__(1);
 var expireNode = __webpack_require__(3);
-var lruPromote = __webpack_require__(11);
+var lruPromote = __webpack_require__(12);
 
 module.exports = onValueType;
 
@@ -1373,22 +1389,22 @@ function onValueType(node, type, json,
 
 
 /***/ },
-/* 25 */
+/* 26 */
 /***/ function(module, exports, __webpack_require__) {
 
 var arr = new Array(2);
 var $ref = __webpack_require__(0);
 
-var getBoundCacheNode = __webpack_require__(15);
+var getBoundCacheNode = __webpack_require__(16);
 
 var isExpired = __webpack_require__(1);
 var expireNode = __webpack_require__(3);
-var lruPromote = __webpack_require__(11);
-var getSize = __webpack_require__(7);
-var createHardlink = __webpack_require__(4);
-var iterateKeySet = __webpack_require__(33);
-var updateNodeAncestors = __webpack_require__(10);
-var removeNodeAndDescendants = __webpack_require__(27);
+var lruPromote = __webpack_require__(12);
+var getSize = __webpack_require__(8);
+var createHardlink = __webpack_require__(5);
+var iterateKeySet = __webpack_require__(34);
+var updateNodeAncestors = __webpack_require__(11);
+var removeNodeAndDescendants = __webpack_require__(28);
 
 /**
  * Invalidates a list of Paths in a JSON Graph.
@@ -1560,13 +1576,13 @@ function invalidateNode(
 
 
 /***/ },
-/* 26 */
+/* 27 */
 /***/ function(module, exports, __webpack_require__) {
 
 var $ref = __webpack_require__(0);
-var lruSplice = __webpack_require__(48);
-var unlinkBackReferences = __webpack_require__(75);
-var unlinkForwardReference = __webpack_require__(76);
+var lruSplice = __webpack_require__(49);
+var unlinkBackReferences = __webpack_require__(76);
+var unlinkForwardReference = __webpack_require__(77);
 
 module.exports = function removeNode(node, parent, key, lru) {
     if (!(!node || typeof node !== 'object')) {
@@ -1586,11 +1602,11 @@ module.exports = function removeNode(node, parent, key, lru) {
 
 
 /***/ },
-/* 27 */
+/* 28 */
 /***/ function(module, exports, __webpack_require__) {
 
-var removeNode = __webpack_require__(26);
-var isInternalKey = __webpack_require__(18);
+var removeNode = __webpack_require__(27);
+var isInternalKey = __webpack_require__(19);
 
 module.exports = function removeNodeAndDescendants(node, parent, key, lru) {
     if (removeNode(node, parent, key, lru)) {
@@ -1608,18 +1624,18 @@ module.exports = function removeNodeAndDescendants(node, parent, key, lru) {
 
 
 /***/ },
-/* 28 */
+/* 29 */
 /***/ function(module, exports, __webpack_require__) {
 
 var arr = new Array(3);
 var $ref = __webpack_require__(0);
 var isExpired = __webpack_require__(1);
 var expireNode = __webpack_require__(3);
-var createHardlink = __webpack_require__(4);
-var getCachePosition = __webpack_require__(9);
-var NullInPathError = __webpack_require__(6);
-var iterateKeySet = __webpack_require__(33);
-var mergeValueOrInsertBranch = __webpack_require__(40);
+var createHardlink = __webpack_require__(5);
+var getCachePosition = __webpack_require__(10);
+var NullInPathError = __webpack_require__(7);
+var iterateKeySet = __webpack_require__(34);
+var mergeValueOrInsertBranch = __webpack_require__(41);
 
 /**
  * Sets a list of {@link PathValue}s into a {@link JSONGraph}.
@@ -1848,11 +1864,10 @@ function setNode(
 
 
 /***/ },
-/* 29 */
-/***/ function(module, exports) {
+/* 30 */
+/***/ function(module, exports, __webpack_require__) {
 
-var NAME = 'InvalidKeySetError';
-var MESSAGE = 'Keysets can only contain Keys or Ranges';
+var createErrorClass = __webpack_require__(4);
 
 /**
  * InvalidKeySetError happens when a dataSource syncronously throws
@@ -1861,29 +1876,16 @@ var MESSAGE = 'Keysets can only contain Keys or Ranges';
  * @param {Error} error - The error that was thrown.
  * @private
  */
-function InvalidKeySetError(path, keysOrRanges) {
-    var err = Error.call(this,
+module.exports = createErrorClass('InvalidKeySetError', function(path, keysOrRanges) {
+    this.mesage = '' +
         'The KeySet ' + JSON.stringify(keysOrRanges) +
-        ' in path ' + JSON.stringify(path) + ' contains a KeySet. ' + MESSAGE);
-    err.name = NAME;
-    this.stack = err.stack;
-    this.message = err.message;
-    return this;
-}
-
-// instanceof will be an error, but stack will be correct because its defined
-// in the constructor.
-InvalidKeySetError.prototype = Object.create(Error.prototype);
-InvalidKeySetError.prototype.name = NAME;
-InvalidKeySetError.is = function(e) {
-    return e && e.name === NAME;
-};
-
-module.exports = InvalidKeySetError;
+        ' in path ' + JSON.stringify(path) + ' contains a KeySet. ' +
+        'Keysets can only contain Keys or Ranges';
+});
 
 
 /***/ },
-/* 30 */
+/* 31 */
 /***/ function(module, exports, __webpack_require__) {
 
 /**
@@ -1894,21 +1896,21 @@ module.exports = InvalidKeySetError;
  * @returns {Boolean}
  */
 
-var f_ = __webpack_require__(83);
+var f_ = __webpack_require__(84);
 var regexp = new RegExp('^' + f_, 'i', 'g');
 
 module.exports = regexp.test.bind(regexp);
 
 
 /***/ },
-/* 31 */
+/* 32 */
 /***/ function(module, exports) {
 
 module.exports = 0;
 
 
 /***/ },
-/* 32 */
+/* 33 */
 /***/ function(module, exports) {
 
 var g;
@@ -1933,22 +1935,22 @@ module.exports = g;
 
 
 /***/ },
-/* 33 */
+/* 34 */
 /***/ function(module, exports) {
 
 module.exports = require("@graphistry/falcor-path-utils/lib/iterateKeySet");
 
 /***/ },
-/* 34 */
+/* 35 */
 /***/ function(module, exports, __webpack_require__) {
 
 var isArray = Array.isArray;
-var walkPathAndBuildOutput = __webpack_require__(64);
-var walkFlatBufferAndBuildOutput = __webpack_require__(63);
-var getBoundCacheNode = __webpack_require__(15);
-var InvalidModelError = __webpack_require__(81);
-var toFlatBuffer = __webpack_require__(107);
-var computeFlatBufferHash = __webpack_require__(101);
+var walkPathAndBuildOutput = __webpack_require__(65);
+var walkFlatBufferAndBuildOutput = __webpack_require__(64);
+var getBoundCacheNode = __webpack_require__(16);
+var InvalidModelError = __webpack_require__(82);
+var toFlatBuffer = __webpack_require__(108);
+var computeFlatBufferHash = __webpack_require__(102);
 
 module.exports = getJSON;
 
@@ -2002,7 +2004,7 @@ function getJSON(model, paths, seed, progressive, expireImmediate) {
         if (recycleJSON) {
             pathsCount = 1;
             isFlatBuffer = true;
-            if (!paths[0].$keys || paths.length > 1) {
+            if (!paths[0].$keys) {
                 paths = [computeFlatBufferHash(toFlatBuffer(paths, {}))];
             }
             do {
@@ -2057,15 +2059,15 @@ function getJSON(model, paths, seed, progressive, expireImmediate) {
 
 
 /***/ },
-/* 35 */
+/* 36 */
 /***/ function(module, exports, __webpack_require__) {
 
 var arr = new Array(3);
 var $ref = __webpack_require__(0);
-var promote = __webpack_require__(11);
+var promote = __webpack_require__(12);
 var isExpired = __webpack_require__(1);
-var createHardlink = __webpack_require__(4);
-var CircularReferenceError = __webpack_require__(45);
+var createHardlink = __webpack_require__(5);
+var CircularReferenceError = __webpack_require__(46);
 
 module.exports = getReferenceTarget;
 
@@ -2079,7 +2081,6 @@ function getReferenceTarget(root, ref, modelRoot, expireImmediate) {
 
     var context,
         key, type, depth = 0,
-        followedRefsCount = 0,
         node = root, path = ref.value,
         copy = path, length = path.length;
 
@@ -2124,27 +2125,6 @@ function getReferenceTarget(root, ref, modelRoot, expireImmediate) {
                 path = copy = ref.value;
                 length = path.length;
 
-                // if (DEBUG) {
-                //     // If we follow too many references, we might have an indirect
-                //     // circular reference chain. Warn about this (but don't throw).
-                //     if (++followedRefsCount % 50 === 0) {
-                //         try {
-                //             throw new Error(
-                //                 'Followed ' + followedRefsCount + ' references. ' +
-                //                 'This might indicate the presence of an indirect ' +
-                //                 'circular reference chain.'
-                //             );
-                //         } catch (e) {
-                //             if (console) {
-                //                 var reportFn = typeof console.log === 'function' && console.log;
-                //                 if (reportFn) {
-                //                     reportFn.call(console, e.toString());
-                //                 }
-                //             }
-                //         }
-                //     }
-                // }
-
                 continue;
             }
             break;
@@ -2173,13 +2153,13 @@ function getReferenceTarget(root, ref, modelRoot, expireImmediate) {
 
 
 /***/ },
-/* 36 */
+/* 37 */
 /***/ function(module, exports, __webpack_require__) {
 
-var clone = __webpack_require__(8);
-var onError = __webpack_require__(62);
-var $error = __webpack_require__(14);
-var materializedAtom = __webpack_require__(19);
+var clone = __webpack_require__(9);
+var onError = __webpack_require__(63);
+var $error = __webpack_require__(15);
+var materializedAtom = __webpack_require__(20);
 
 module.exports = onJSONValue;
 
@@ -2198,7 +2178,6 @@ function onJSONValue(node, type, depth, seed, results,
 
     if (requiresMaterializedToReport) {
         if (materialized) {
-            debugger
             results.hasValue = true;
             return materializedAtom;
         }
@@ -2217,11 +2196,11 @@ function onJSONValue(node, type, depth, seed, results,
 
 
 /***/ },
-/* 37 */
+/* 38 */
 /***/ function(module, exports, __webpack_require__) {
 
-var walkPathAndBuildOutput = __webpack_require__(67);
-var BoundJSONGraphModelError = __webpack_require__(79);
+var walkPathAndBuildOutput = __webpack_require__(68);
+var BoundJSONGraphModelError = __webpack_require__(80);
 
 module.exports = getJSONGraph;
 
@@ -2274,7 +2253,7 @@ function getJSONGraph(model, paths, seed, progressive, expireImmediate) {
 
 
 /***/ },
-/* 38 */
+/* 39 */
 /***/ function(module, exports, __webpack_require__) {
 
 module.exports = function insertNode(node, parent, key, version, optimizedPath) {
@@ -2295,19 +2274,19 @@ module.exports = function insertNode(node, parent, key, version, optimizedPath) 
 
 
 /***/ },
-/* 39 */
+/* 40 */
 /***/ function(module, exports, __webpack_require__) {
 
 var $ref = __webpack_require__(0);
 var isExpired = __webpack_require__(1);
 var expireNode = __webpack_require__(3);
-var lruPromote = __webpack_require__(11);
-var getSize = __webpack_require__(7);
-var createHardlink = __webpack_require__(4);
-var getBoundCacheNode = __webpack_require__(15);
-var isInternalKey = __webpack_require__(18);
-var updateNodeAncestors = __webpack_require__(10);
-var removeNodeAndDescendants = __webpack_require__(27);
+var lruPromote = __webpack_require__(12);
+var getSize = __webpack_require__(8);
+var createHardlink = __webpack_require__(5);
+var getBoundCacheNode = __webpack_require__(16);
+var isInternalKey = __webpack_require__(19);
+var updateNodeAncestors = __webpack_require__(11);
+var removeNodeAndDescendants = __webpack_require__(28);
 
 /**
  * Sets a list of PathMaps into a JSON Graph.
@@ -2476,23 +2455,23 @@ function invalidateNode(
 
 
 /***/ },
-/* 40 */
+/* 41 */
 /***/ function(module, exports, __webpack_require__) {
 
 var $ref = __webpack_require__(0);
-var $error = __webpack_require__(14);
-var $now = __webpack_require__(31);
-var getType = __webpack_require__(92);
-var getSize = __webpack_require__(7);
-var getTimestamp = __webpack_require__(51);
+var $error = __webpack_require__(15);
+var $now = __webpack_require__(32);
+var getType = __webpack_require__(93);
+var getSize = __webpack_require__(8);
+var getTimestamp = __webpack_require__(52);
 
-var wrapNode = __webpack_require__(44);
+var wrapNode = __webpack_require__(45);
 var isExpired = __webpack_require__(1);
 var expireNode = __webpack_require__(3);
-var insertNode = __webpack_require__(38);
-var replaceNode = __webpack_require__(42);
-var reconstructPath = __webpack_require__(41);
-var updateNodeAncestors = __webpack_require__(10);
+var insertNode = __webpack_require__(39);
+var replaceNode = __webpack_require__(43);
+var reconstructPath = __webpack_require__(42);
+var updateNodeAncestors = __webpack_require__(11);
 
 module.exports = function mergeValueOrInsertBranch(
     parent, node, key, value,
@@ -2550,7 +2529,7 @@ module.exports = function mergeValueOrInsertBranch(
 
 
 /***/ },
-/* 41 */
+/* 42 */
 /***/ function(module, exports) {
 
 /**
@@ -2576,12 +2555,12 @@ module.exports = function reconstructPath(currentPath, key) {
 
 
 /***/ },
-/* 42 */
+/* 43 */
 /***/ function(module, exports, __webpack_require__) {
 
-var transferBackReferences = __webpack_require__(74);
-var removeNodeAndDescendants = __webpack_require__(27);
-var updateBackReferenceVersions = __webpack_require__(43);
+var transferBackReferences = __webpack_require__(75);
+var removeNodeAndDescendants = __webpack_require__(28);
+var updateBackReferenceVersions = __webpack_require__(44);
 
 module.exports = function replaceNode(node, replacement, parent, key, lru, version) {
     if (node === replacement) {
@@ -2598,7 +2577,7 @@ module.exports = function replaceNode(node, replacement, parent, key, lru, versi
 
 
 /***/ },
-/* 43 */
+/* 44 */
 /***/ function(module, exports, __webpack_require__) {
 
 module.exports = function updateBackReferenceVersions(nodeArg, version) {
@@ -2621,17 +2600,17 @@ module.exports = function updateBackReferenceVersions(nodeArg, version) {
 
 
 /***/ },
-/* 44 */
+/* 45 */
 /***/ function(module, exports, __webpack_require__) {
 
 var isArray = Array.isArray;
-var now = __webpack_require__(54);
-var expiresNow = __webpack_require__(31);
+var now = __webpack_require__(55);
+var expiresNow = __webpack_require__(32);
 
-var $atom = __webpack_require__(95);
-var clone = __webpack_require__(90);
-var getSize = __webpack_require__(7);
-var getExpires = __webpack_require__(91);
+var $atom = __webpack_require__(96);
+var clone = __webpack_require__(91);
+var getSize = __webpack_require__(8);
+var getExpires = __webpack_require__(92);
 
 var atomSize = 50;
 
@@ -2689,35 +2668,21 @@ module.exports = function wrapNode(nodeArg, typeArg, value) {
 
 
 /***/ },
-/* 45 */
-/***/ function(module, exports) {
+/* 46 */
+/***/ function(module, exports, __webpack_require__) {
 
-var NAME = 'CircularReferenceError';
+var createErrorClass = __webpack_require__(4);
 
-/**
- * Does not allow null in path
- */
-function CircularReferenceError(referencePath) {
-    var err = Error.call(this, 'Encountered circular reference ' +
-        JSON.stringify(referencePath));
-    err.name = NAME;
-    this.stack = err.stack;
-    this.message = err.message;
-    return this;
-}
-
-// instanceof will be an error, but stack will be correct because its defined in the constructor.
-CircularReferenceError.prototype = Object.create(Error.prototype);
-CircularReferenceError.prototype.name = NAME;
-
-module.exports = CircularReferenceError;
+module.exports = createErrorClass('CircularReferenceError', function(referencePath) {
+    this.message = 'Encountered circular reference ' + JSON.stringify(referencePath);
+});
 
 
 /***/ },
-/* 46 */
-/***/ function(module, exports) {
+/* 47 */
+/***/ function(module, exports, __webpack_require__) {
 
-var NAME = 'InvalidSourceError';
+var createErrorClass = __webpack_require__(4);
 var MESSAGE = 'An exception was thrown when making a request';
 
 /**
@@ -2727,32 +2692,17 @@ var MESSAGE = 'An exception was thrown when making a request';
  * @param {Error} error - The error that was thrown.
  * @private
  */
-function InvalidSourceError(error) {
-    var err = Error.call(this, MESSAGE + ':\n\t' + error);
-    err.name = NAME;
-    this.stack = err.stack;
-    this.message = err.message;
-    this.innerError = error;
-    return this;
-}
-
-// instanceof will be an error, but stack will be correct because its defined
-// in the constructor.
-InvalidSourceError.prototype = Object.create(Error.prototype);
-InvalidSourceError.prototype.name = NAME;
-InvalidSourceError.is = function(e) {
-    return e && e.name === NAME;
-};
-
-module.exports = InvalidSourceError;
+module.exports = createErrorClass('InvalidSourceError', function(error) {
+    this.message = MESSAGE + ':\n\t' + error;
+});
 
 
 /***/ },
-/* 47 */
+/* 48 */
 /***/ function(module, exports, __webpack_require__) {
 
-var removeNode = __webpack_require__(26);
-var updateNodeAncestors = __webpack_require__(10);
+var removeNode = __webpack_require__(27);
+var updateNodeAncestors = __webpack_require__(11);
 
 module.exports = function collect(lru, expired, totalArg, max, ratioArg, version) {
 
@@ -2804,7 +2754,7 @@ module.exports = function collect(lru, expired, totalArg, max, ratioArg, version
 
 
 /***/ },
-/* 48 */
+/* 49 */
 /***/ function(module, exports, __webpack_require__) {
 
 module.exports = function lruSplice(root, object) {
@@ -2830,12 +2780,12 @@ module.exports = function lruSplice(root, object) {
 
 
 /***/ },
-/* 49 */
+/* 50 */
 /***/ function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(global) {var Subscriber = __webpack_require__(12);
-var Subscription = __webpack_require__(13);
-var $$observable = __webpack_require__(96).default;
+/* WEBPACK VAR INJECTION */(function(global) {var Subscriber = __webpack_require__(13);
+var Subscription = __webpack_require__(14);
+var $$observable = __webpack_require__(97).default;
 
 module.exports = Source;
 
@@ -2896,10 +2846,10 @@ Source.prototype.then = function then(onNext, onError) {
     return this._promise.then(onNext, onError);
 };
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(32)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(33)))
 
 /***/ },
-/* 50 */
+/* 51 */
 /***/ function(module, exports) {
 
 var empty = {
@@ -2918,7 +2868,7 @@ module.exports = ImmediateScheduler;
 
 
 /***/ },
-/* 51 */
+/* 52 */
 /***/ function(module, exports, __webpack_require__) {
 
 var isObject = __webpack_require__(2);
@@ -2928,7 +2878,7 @@ module.exports = function getTimestamp(node) {
 
 
 /***/ },
-/* 52 */
+/* 53 */
 /***/ function(module, exports, __webpack_require__) {
 
 var isObject = __webpack_require__(2);
@@ -2939,7 +2889,7 @@ module.exports = function isJSONEnvelope(envelope) {
 
 
 /***/ },
-/* 53 */
+/* 54 */
 /***/ function(module, exports, __webpack_require__) {
 
 var isArray = Array.isArray;
@@ -2957,25 +2907,25 @@ module.exports = function isJSONGraphEnvelope(envelope) {
 
 
 /***/ },
-/* 54 */
+/* 55 */
 /***/ function(module, exports) {
 
 module.exports = Date.now;
 
 
 /***/ },
-/* 55 */
+/* 56 */
 /***/ function(module, exports) {
 
 module.exports = 1;
 
 
 /***/ },
-/* 56 */
+/* 57 */
 /***/ function(module, exports, __webpack_require__) {
 
-var Model = __webpack_require__(57);
-var FalcorJSON = __webpack_require__(5);
+var Model = __webpack_require__(58);
+var FalcorJSON = __webpack_require__(6);
 
 function falcor(opts) {
     if (!(this instanceof Model)) {
@@ -2994,29 +2944,29 @@ module.exports = falcor;
 
 
 /***/ },
-/* 57 */
+/* 58 */
 /***/ function(module, exports, __webpack_require__) {
 
-var Call = __webpack_require__(84);
-var ModelRoot = __webpack_require__(59);
-var FalcorJSON = __webpack_require__(5);
-var ModelDataSourceAdapter = __webpack_require__(58);
-var TimeoutScheduler = __webpack_require__(88);
-var ImmediateScheduler = __webpack_require__(50);
+var Call = __webpack_require__(85);
+var ModelRoot = __webpack_require__(60);
+var FalcorJSON = __webpack_require__(6);
+var ModelDataSourceAdapter = __webpack_require__(59);
+var TimeoutScheduler = __webpack_require__(89);
+var ImmediateScheduler = __webpack_require__(51);
 
-var lruCollect = __webpack_require__(47);
-var getSize = __webpack_require__(7);
+var lruCollect = __webpack_require__(48);
+var getSize = __webpack_require__(8);
 var isObject = __webpack_require__(2);
-var isJSONEnvelope = __webpack_require__(52);
-var getCachePosition = __webpack_require__(9);
-var isJSONGraphEnvelope = __webpack_require__(53);
+var isJSONEnvelope = __webpack_require__(53);
+var getCachePosition = __webpack_require__(10);
+var isJSONGraphEnvelope = __webpack_require__(54);
 
-var setCache = __webpack_require__(17);
-var setJSONGraphs = __webpack_require__(16);
+var setCache = __webpack_require__(18);
+var setJSONGraphs = __webpack_require__(17);
 
-var getJSON = __webpack_require__(20);
-var getCache = __webpack_require__(68);
-var getJSONGraph = __webpack_require__(21);
+var getJSON = __webpack_require__(21);
+var getCache = __webpack_require__(69);
+var getJSONGraph = __webpack_require__(22);
 
 module.exports = Model;
 
@@ -3191,7 +3141,7 @@ model.
 // []
 // ['usersById', 32] - because userModel refers to target of reference at ['users', 0]
  */
-Model.prototype.deref = __webpack_require__(78);
+Model.prototype.deref = __webpack_require__(79);
 
 /**
  * A dereferenced model can become invalid when the reference from which it was
@@ -3204,7 +3154,7 @@ Model.prototype.deref = __webpack_require__(78);
  * @return {Boolean} - If the currently deref'd model is still considered a
  * valid deref.
  */
-Model.prototype._hasValidParentReference = __webpack_require__(77);
+Model.prototype._hasValidParentReference = __webpack_require__(78);
 
 /**
  * Get data for a single {@link Path}.
@@ -3540,25 +3490,27 @@ Model.prototype._optimizePath = function _optimizePath(path) {
     return abs_path.slice(0);
 };
 
-Model.prototype._getVersion = __webpack_require__(69);
+Model.prototype._getVersion = __webpack_require__(70);
 Model.prototype._getPathValuesAsPathMap = getJSON;
 Model.prototype._getPathValuesAsJSONG = getJSONGraph;
 
-Model.prototype._setPathValues = __webpack_require__(28);
-Model.prototype._setPathMaps = __webpack_require__(17);
-Model.prototype._setJSONGs = __webpack_require__(16);
-Model.prototype._setCache = __webpack_require__(17);
+Model.prototype._setPathValues = __webpack_require__(29);
+Model.prototype._setPathMaps = __webpack_require__(18);
+Model.prototype._setJSONGs = __webpack_require__(17);
+Model.prototype._setCache = __webpack_require__(18);
 
-Model.prototype._invalidatePathValues = __webpack_require__(25);
-Model.prototype._invalidatePathMaps = __webpack_require__(39);
+Model.prototype._invalidatePathValues = __webpack_require__(26);
+Model.prototype._invalidatePathMaps = __webpack_require__(40);
 
 
 /***/ },
-/* 58 */
+/* 59 */
 /***/ function(module, exports) {
 
 function ModelDataSourceAdapter(model) {
-    this._model = model._materialize().treatErrorsAsValues();
+    this._model = model
+        // .boxValues()
+        ._materialize().treatErrorsAsValues();
 }
 
 ModelDataSourceAdapter.prototype.get = function get(pathSets) {
@@ -3579,12 +3531,12 @@ module.exports = ModelDataSourceAdapter;
 
 
 /***/ },
-/* 59 */
+/* 60 */
 /***/ function(module, exports, __webpack_require__) {
 
 var functionTypeof = 'function';
-var hasOwn = __webpack_require__(93);
-var Requests = __webpack_require__(85);
+var hasOwn = __webpack_require__(94);
+var Requests = __webpack_require__(86);
 
 function ModelRoot(o, model) {
 
@@ -3652,11 +3604,11 @@ module.exports = ModelRoot;
 
 
 /***/ },
-/* 60 */
+/* 61 */
 /***/ function(module, exports, __webpack_require__) {
 
-var getJSON = __webpack_require__(20);
-var getJSONGraph = __webpack_require__(21);
+var getJSON = __webpack_require__(21);
+var getJSONGraph = __webpack_require__(22);
 
 module.exports = { json: json, jsonGraph: jsonGraph };
 
@@ -3711,20 +3663,20 @@ function jsonGraph(model, _args, data, progressive) {
 
 
 /***/ },
-/* 61 */
+/* 62 */
 /***/ function(module, exports, __webpack_require__) {
 
 module.exports = {
-    json: __webpack_require__(34),
-    jsonGraph: __webpack_require__(37)
+    json: __webpack_require__(35),
+    jsonGraph: __webpack_require__(38)
 };
 
 
 /***/ },
-/* 62 */
+/* 63 */
 /***/ function(module, exports, __webpack_require__) {
 
-var clone = __webpack_require__(8);
+var clone = __webpack_require__(9);
 
 module.exports = onError;
 
@@ -3749,21 +3701,21 @@ function onError(node, depth, results,
 
 
 /***/ },
-/* 63 */
+/* 64 */
 /***/ function(module, exports, __webpack_require__) {
 
 var arr = new Array(2);
-var onValue = __webpack_require__(36);
+var onValue = __webpack_require__(37);
 var $ref = __webpack_require__(0);
-var FalcorJSON = __webpack_require__(5);
-var onValueType = __webpack_require__(24);
+var FalcorJSON = __webpack_require__(6);
+var onValueType = __webpack_require__(25);
 var isExpired = __webpack_require__(1);
-var originalOnMissing = __webpack_require__(23);
-var getReferenceTarget = __webpack_require__(35);
-var NullInPathError = __webpack_require__(6);
-var InvalidKeySetError = __webpack_require__(29);
-var getHashCode = __webpack_require__(103);
-var flatBufferToPaths = __webpack_require__(102);
+var originalOnMissing = __webpack_require__(24);
+var getReferenceTarget = __webpack_require__(36);
+var NullInPathError = __webpack_require__(7);
+var InvalidKeySetError = __webpack_require__(30);
+var getHashCode = __webpack_require__(104);
+var flatBufferToPaths = __webpack_require__(103);
 
 module.exports = walkPathAndBuildOutput;
 
@@ -4061,19 +4013,19 @@ function createDefaultMaterializedBranch(path, _depth, node) {
 
 
 /***/ },
-/* 64 */
+/* 65 */
 /***/ function(module, exports, __webpack_require__) {
 
 var isArray = Array.isArray;
-var onValue = __webpack_require__(36);
+var onValue = __webpack_require__(37);
 var $ref = __webpack_require__(0);
-var FalcorJSON = __webpack_require__(5);
-var onValueType = __webpack_require__(24);
+var FalcorJSON = __webpack_require__(6);
+var onValueType = __webpack_require__(25);
 var isExpired = __webpack_require__(1);
-var originalOnMissing = __webpack_require__(23);
-var getReferenceTarget = __webpack_require__(35);
-var NullInPathError = __webpack_require__(6);
-var InvalidKeySetError = __webpack_require__(29);
+var originalOnMissing = __webpack_require__(24);
+var getReferenceTarget = __webpack_require__(36);
+var NullInPathError = __webpack_require__(7);
+var InvalidKeySetError = __webpack_require__(30);
 
 module.exports = walkPathAndBuildOutput;
 
@@ -4353,17 +4305,17 @@ function createDefaultMaterializedBranch(path, _depth, node) {
 
 
 /***/ },
-/* 65 */
+/* 66 */
 /***/ function(module, exports, __webpack_require__) {
 
 var arr = new Array(2);
-var clone = __webpack_require__(8);
+var clone = __webpack_require__(9);
 var $ref = __webpack_require__(0);
-var inlineValue = __webpack_require__(22);
-var promote = __webpack_require__(11);
+var inlineValue = __webpack_require__(23);
+var promote = __webpack_require__(12);
 var isExpired = __webpack_require__(1);
-var createHardlink = __webpack_require__(4);
-var CircularReferenceError = __webpack_require__(45);
+var createHardlink = __webpack_require__(5);
+var CircularReferenceError = __webpack_require__(46);
 
 module.exports = getReferenceTarget;
 
@@ -4371,13 +4323,12 @@ module.exports = getReferenceTarget;
 /* eslint-disable no-console */
 /* eslint-disable no-cond-assign */
 /* eslint-disable no-constant-condition */
-function getReferenceTarget(root, ref, modelRoot, seed, boxValues, materialized, expireImmediate) {
+function getReferenceTarget(root, ref, modelRoot, seed, expireImmediate) {
 
     promote(modelRoot, ref);
 
     var context,
         key, type, depth = 0,
-        followedRefsCount = 0,
         node = root, path = ref.value,
         copy = path, length = path.length;
 
@@ -4424,27 +4375,6 @@ function getReferenceTarget(root, ref, modelRoot, seed, boxValues, materialized,
                 path = copy = ref.value;
                 length = path.length;
 
-                // if (DEBUG) {
-                //     // If we follow too many references, we might have an indirect
-                //     // circular reference chain. Warn about this (but don't throw).
-                //     if (++followedRefsCount % 50 === 0) {
-                //         try {
-                //             throw new Error(
-                //                 'Followed ' + followedRefsCount + ' references. ' +
-                //                 'This might indicate the presence of an indirect ' +
-                //                 'circular reference chain.'
-                //             );
-                //         } catch (e) {
-                //             if (console) {
-                //                 var reportFn = typeof console.log === 'function' && console.log;
-                //                 if (reportFn) {
-                //                     reportFn.call(console, e.toString());
-                //                 }
-                //             }
-                //         }
-                //     }
-                // }
-
                 continue;
             }
             break;
@@ -4472,14 +4402,14 @@ function getReferenceTarget(root, ref, modelRoot, seed, boxValues, materialized,
 
 
 /***/ },
-/* 66 */
+/* 67 */
 /***/ function(module, exports, __webpack_require__) {
 
-var clone = __webpack_require__(8);
+var clone = __webpack_require__(9);
 var $ref = __webpack_require__(0);
-var $error = __webpack_require__(14);
-var inlineValue = __webpack_require__(22);
-var materializedAtom = __webpack_require__(19);
+var $error = __webpack_require__(15);
+var inlineValue = __webpack_require__(23);
+var materializedAtom = __webpack_require__(20);
 
 module.exports = onJSONGraphValue;
 
@@ -4523,21 +4453,21 @@ function onJSONGraphValue(node, type, depth, seed, results,
 
 
 /***/ },
-/* 67 */
+/* 68 */
 /***/ function(module, exports, __webpack_require__) {
 
 var isArray = Array.isArray;
-var clone = __webpack_require__(8);
+var clone = __webpack_require__(9);
 var $ref = __webpack_require__(0);
-var onValue = __webpack_require__(66);
-var inlineValue = __webpack_require__(22);
-var onValueType = __webpack_require__(24);
+var onValue = __webpack_require__(67);
+var inlineValue = __webpack_require__(23);
+var onValueType = __webpack_require__(25);
 var isExpired = __webpack_require__(1);
-var originalOnMissing = __webpack_require__(23);
-var getReferenceTarget = __webpack_require__(65);
-var NullInPathError = __webpack_require__(6);
-var InvalidKeySetError = __webpack_require__(29);
-var materializedAtom = __webpack_require__(19);
+var originalOnMissing = __webpack_require__(24);
+var getReferenceTarget = __webpack_require__(66);
+var NullInPathError = __webpack_require__(7);
+var InvalidKeySetError = __webpack_require__(30);
+var materializedAtom = __webpack_require__(20);
 
 module.exports = walkPathAndBuildOutput;
 
@@ -4687,8 +4617,7 @@ function walkPathAndBuildOutput(cacheRoot, node, path,
                 // following the path. If the reference resolves to a missing
                 // path or leaf node, it will be handled in the next call to
                 // walkPath.
-                refTarget = getReferenceTarget(cacheRoot, next, modelRoot, seed,
-                                               boxValues, materialized, expireImmediate);
+                refTarget = getReferenceTarget(cacheRoot, next, modelRoot, seed, expireImmediate);
 
                 next = refTarget[0];
                 fromReference = true;
@@ -4752,10 +4681,10 @@ function onMissing(path, depth, results,
 
 
 /***/ },
-/* 68 */
+/* 69 */
 /***/ function(module, exports, __webpack_require__) {
 
-var isInternalKey = __webpack_require__(18);
+var isInternalKey = __webpack_require__(19);
 
 /**
  * decends and copies the cache.
@@ -4834,10 +4763,10 @@ function _copyCache(node, out, fromKey) {
 
 
 /***/ },
-/* 69 */
+/* 70 */
 /***/ function(module, exports, __webpack_require__) {
 
-var getBoundCacheNode = __webpack_require__(15);
+var getBoundCacheNode = __webpack_require__(16);
 
 module.exports = function _getVersion(model, path) {
     var node = getBoundCacheNode(model, path);
@@ -4847,13 +4776,13 @@ module.exports = function _getVersion(model, path) {
 
 
 /***/ },
-/* 70 */
+/* 71 */
 /***/ function(module, exports, __webpack_require__) {
 
 var isArray = Array.isArray;
-var isPathValue = __webpack_require__(94);
-var isJSONEnvelope = __webpack_require__(52);
-var isJSONGraphEnvelope = __webpack_require__(53);
+var isPathValue = __webpack_require__(95);
+var isJSONEnvelope = __webpack_require__(53);
+var isJSONGraphEnvelope = __webpack_require__(54);
 
 module.exports = groupCacheArguments;
 
@@ -4893,11 +4822,11 @@ function groupCacheArguments(args) {
 
 
 /***/ },
-/* 71 */
+/* 72 */
 /***/ function(module, exports, __webpack_require__) {
 
-var invalidatePathSets = __webpack_require__(25);
-var invalidatePathMaps = __webpack_require__(39);
+var invalidatePathSets = __webpack_require__(26);
+var invalidatePathMaps = __webpack_require__(40);
 
 module.exports = {
     json: invalidate,
@@ -4911,21 +4840,21 @@ function invalidate(model, args, seed, progressive, expireImmediate) {
 
 
 /***/ },
-/* 72 */
+/* 73 */
 /***/ function(module, exports, __webpack_require__) {
 
 var $ref = __webpack_require__(0);
-var $error = __webpack_require__(14);
-var getSize = __webpack_require__(7);
-var getTimestamp = __webpack_require__(51);
+var $error = __webpack_require__(15);
+var getSize = __webpack_require__(8);
+var getTimestamp = __webpack_require__(52);
 
-var wrapNode = __webpack_require__(44);
+var wrapNode = __webpack_require__(45);
 var isExpired = __webpack_require__(1);
-var insertNode = __webpack_require__(38);
+var insertNode = __webpack_require__(39);
 var expireNode = __webpack_require__(3);
-var replaceNode = __webpack_require__(42);
-var reconstructPath = __webpack_require__(41);
-var updateNodeAncestors = __webpack_require__(10);
+var replaceNode = __webpack_require__(43);
+var reconstructPath = __webpack_require__(42);
+var updateNodeAncestors = __webpack_require__(11);
 
 module.exports = function mergeJSONGraphNode(
     parent, node, message, key, requestedPath, optimizedPath,
@@ -5118,20 +5047,20 @@ module.exports = function mergeJSONGraphNode(
 
 
 /***/ },
-/* 73 */
+/* 74 */
 /***/ function(module, exports, __webpack_require__) {
 
-var getJSON = __webpack_require__(20);
-var getJSONGraph = __webpack_require__(21);
-var arrayFlatMap = __webpack_require__(89);
-var groupCacheArguments = __webpack_require__(70);
+var getJSON = __webpack_require__(21);
+var getJSONGraph = __webpack_require__(22);
+var arrayFlatMap = __webpack_require__(90);
+var groupCacheArguments = __webpack_require__(71);
 
 module.exports = {
     json: json,
     jsonGraph: jsonGraph,
-    setPathMaps: __webpack_require__(17),
-    setPathValues: __webpack_require__(28),
-    setJSONGraphs: __webpack_require__(16)
+    setPathMaps: __webpack_require__(18),
+    setPathValues: __webpack_require__(29),
+    setJSONGraphs: __webpack_require__(17)
 };
 
 function json(model, args, data, progressive, expireImmediate) {
@@ -5215,7 +5144,7 @@ function pluckPaths(x) {
 
 
 /***/ },
-/* 74 */
+/* 75 */
 /***/ function(module, exports, __webpack_require__) {
 
 module.exports = function transferBackReferences(fromNode, destNode) {
@@ -5237,7 +5166,7 @@ module.exports = function transferBackReferences(fromNode, destNode) {
 
 
 /***/ },
-/* 75 */
+/* 76 */
 /***/ function(module, exports, __webpack_require__) {
 
 module.exports = function unlinkBackReferences(node) {
@@ -5254,7 +5183,7 @@ module.exports = function unlinkBackReferences(node) {
 
 
 /***/ },
-/* 76 */
+/* 77 */
 /***/ function(module, exports, __webpack_require__) {
 
 module.exports = function unlinkForwardReference(reference) {
@@ -5273,7 +5202,7 @@ module.exports = function unlinkForwardReference(reference) {
 
 
 /***/ },
-/* 77 */
+/* 78 */
 /***/ function(module, exports, __webpack_require__) {
 
 module.exports = hasValidParentReference;
@@ -5312,14 +5241,14 @@ function hasValidParentReference() {
 
 
 /***/ },
-/* 78 */
+/* 79 */
 /***/ function(module, exports, __webpack_require__) {
 
 var CONTAINER_DOES_NOT_EXIST = 'e';
 var $ref = __webpack_require__(0);
-var FalcorJSON = __webpack_require__(5);
-var getCachePosition = __webpack_require__(9);
-var InvalidDerefInputError = __webpack_require__(80);
+var FalcorJSON = __webpack_require__(6);
+var getCachePosition = __webpack_require__(10);
+var InvalidDerefInputError = __webpack_require__(81);
 
 module.exports = function deref(boundJSONArg) {
 
@@ -5424,10 +5353,10 @@ module.exports = function deref(boundJSONArg) {
 
 
 /***/ },
-/* 79 */
-/***/ function(module, exports) {
+/* 80 */
+/***/ function(module, exports, __webpack_require__) {
 
-var NAME = 'BoundJSONGraphModelError';
+var createErrorClass = __webpack_require__(4);
 var MESSAGE = 'It is not legal to use the JSON Graph ' +
     'format from a bound Model. JSON Graph format' +
     ' can only be used from a root model.';
@@ -5438,27 +5367,16 @@ var MESSAGE = 'It is not legal to use the JSON Graph ' +
  *
  * @private
  */
-function BoundJSONGraphModelError() {
-    var err = Error.call(this, MESSAGE);
-    err.name = this.name;
-    this.stack = err.stack;
-    this.message = err.message;
-    return this;
-}
-
-// instanceof will be an error, but stack will be correct because its defined in the constructor.
-BoundJSONGraphModelError.prototype = Object.create(Error.prototype);
-BoundJSONGraphModelError.prototype.name = NAME;
-BoundJSONGraphModelError.message = MESSAGE;
-
-module.exports = BoundJSONGraphModelError;
+module.exports = createErrorClass('BoundJSONGraphModelError', function() {
+    this.message = MESSAGE;
+});
 
 
 /***/ },
-/* 80 */
-/***/ function(module, exports) {
+/* 81 */
+/***/ function(module, exports, __webpack_require__) {
 
-var NAME = 'InvalidDerefInputError';
+var createErrorClass = __webpack_require__(4);
 var MESSAGE = 'Deref can only be used with a non-primitive object from get, set, or call.';
 
 /**
@@ -5468,27 +5386,16 @@ var MESSAGE = 'Deref can only be used with a non-primitive object from get, set,
  * @param {String} message
  * @private
  */
-function InvalidDerefInputError() {
-    var err = Error.call(this, MESSAGE);
-    err.name = NAME;
-    this.stack = err.stack;
-    this.message = err.message;
-    return this;
-}
-
-// instanceof will be an error, but stack will be correct because its defined in the constructor.
-InvalidDerefInputError.prototype = Object.create(Error.prototype);
-InvalidDerefInputError.prototype.name = NAME;
-InvalidDerefInputError.message = MESSAGE;
-
-module.exports = InvalidDerefInputError;
+module.exports = createErrorClass('InvalidDerefInputError', function() {
+    this.message = MESSAGE;
+});
 
 
 /***/ },
-/* 81 */
-/***/ function(module, exports) {
+/* 82 */
+/***/ function(module, exports, __webpack_require__) {
 
-var NAME = 'InvalidModelError';
+var createErrorClass = __webpack_require__(4);
 var MESSAGE = 'The boundPath of the model is not valid since a value or error was found before the path end.';
 
 /**
@@ -5498,30 +5405,18 @@ var MESSAGE = 'The boundPath of the model is not valid since a value or error wa
  * @param {String} message
  * @private
  */
-function InvalidModelError(boundPath, shortedPath) {
-    var err = Error.call(this, MESSAGE);
-    err.name = NAME;
-    this.stack = err.stack;
-    this.message = err.message;
+module.exports = createErrorClass('InvalidModelError', function(boundPath, shortedPath) {
+    this.message = MESSAGE;
     this.boundPath = boundPath;
     this.shortedPath = shortedPath;
-    return this;
-}
-
-// instanceof will be an error, but stack will be correct because its defined in the constructor.
-InvalidModelError.prototype = Object.create(Error.prototype);
-InvalidModelError.prototype.name = NAME;
-InvalidModelError.message = MESSAGE;
-
-module.exports = InvalidModelError;
+});
 
 
 /***/ },
-/* 82 */
-/***/ function(module, exports) {
+/* 83 */
+/***/ function(module, exports, __webpack_require__) {
 
-var NAME = 'MaxRetryExceededError';
-var MESSAGE = 'The allowed number of retries have been exceeded.';
+var createErrorClass = __webpack_require__(4);
 
 /**
  * A request can only be retried up to a specified limit.  Once that
@@ -5529,31 +5424,16 @@ var MESSAGE = 'The allowed number of retries have been exceeded.';
  *
  * @private
  */
-function MaxRetryExceededError(maxRetryCount, absolute, relative, optimized) {
-    var err = Error.call(this,
+module.exports = createErrorClass('MaxRetryExceededError', function(maxRetryCount, absolute, relative, optimized) {
+    this.message = '' +
         'Exceeded the max retry count (' + maxRetryCount + ') for these paths: \n' +
         (absolute &&
         'absolute: [\n\t' + printPaths(absolute) + '\n]\n' || '') +
         (relative &&
         'relative: [\n\t' + printPaths(relative) + '\n]\n' || '') +
         (optimized &&
-        'optimized: [\n\t' + printPaths(optimized) + '\n]\n' || '')
-    );
-    err.name = NAME;
-    this.stack = err.stack;
-    this.message = err.message;
-    return this;
-}
-
-// instanceof will be an error, but stack will be correct because its defined
-// in the constructor.
-MaxRetryExceededError.prototype = Object.create(Error.prototype);
-MaxRetryExceededError.prototype.name = NAME;
-MaxRetryExceededError.is = function(e) {
-    return e && e.name === NAME;
-};
-
-module.exports = MaxRetryExceededError;
+        'optimized: [\n\t' + printPaths(optimized) + '\n]\n' || '');
+});
 
 function printPaths(paths) {
     return paths.map(function(path) {
@@ -5563,23 +5443,23 @@ function printPaths(paths) {
 
 
 /***/ },
-/* 83 */
+/* 84 */
 /***/ function(module, exports) {
 
 module.exports = String.fromCharCode(30) + 'ƒ_';
 
 
 /***/ },
-/* 84 */
+/* 85 */
 /***/ function(module, exports, __webpack_require__) {
 
-var Source = __webpack_require__(49);
-var Subscriber = __webpack_require__(12);
-var lruCollect = __webpack_require__(47);
-var FalcorJSON = __webpack_require__(5);
-var collapse = __webpack_require__(100);
-var InvalidSourceError = __webpack_require__(46);
-var MaxRetryExceededError = __webpack_require__(82);
+var Source = __webpack_require__(50);
+var Subscriber = __webpack_require__(13);
+var lruCollect = __webpack_require__(48);
+var FalcorJSON = __webpack_require__(6);
+var collapse = __webpack_require__(101);
+var InvalidSourceError = __webpack_require__(47);
+var MaxRetryExceededError = __webpack_require__(83);
 
 module.exports = Call;
 
@@ -5681,10 +5561,10 @@ function CallSubscriber(destination, data, errors, operation, progressive, maxRe
 
 CallSubscriber.prototype = Object.create(Subscriber.prototype);
 CallSubscriber.prototype.operations = {
-    get: __webpack_require__(61),
-    set: __webpack_require__(73),
-    call: __webpack_require__(60),
-    invalidate: __webpack_require__(71)
+    get: __webpack_require__(62),
+    set: __webpack_require__(74),
+    call: __webpack_require__(61),
+    invalidate: __webpack_require__(72)
 };
 
 CallSubscriber.prototype.next =
@@ -5712,7 +5592,7 @@ CallSubscriber.prototype.onNext = function(seed) {
     var operation = this.operation;
     var progressive = this.progressive;
 
-    var seedIsImmutable = progressive && data && !model._recycleJSON;
+    var seedIsImmutable = progressive && data;// && !model._recycleJSON;
 
     // If we request paths as JSON in progressive mode, ensure each progressive
     // valueNode is immutable. If not in progressive mode, we can write into the
@@ -5731,7 +5611,7 @@ CallSubscriber.prototype.onNext = function(seed) {
         // We must communicate critical errors from get, such as bound path is
         // broken or this is a JSONGraph request with a bound path.
         if (results.error) {
-            throw results.error;
+            return tryOnError(this, results.error);
         }
 
         errors && results.errors &&
@@ -5753,7 +5633,7 @@ CallSubscriber.prototype.onNext = function(seed) {
     this.completed = !missing || !model._source;
 
     if (type !== 'set') {
-        this.args = args;// || this.args;
+        this.args = args;
         if (seedIsImmutable) {
             this.data = mergeInto(data, this.data);
         }
@@ -5791,16 +5671,14 @@ CallSubscriber.prototype.onCompleted = function(error) {
         }
         errors = this.errors;
         if (errored || error || errors && errors.length) {
-            return Subscriber.prototype.onError.call(
-                this,  errors.length && errors || error
-            );
+            return tryOnError(this, errors.length && errors || error);
         }
 
         return Subscriber.prototype.onCompleted.call(this);
     }
 
     if (++this.retryCount >= this.maxRetryCount) {
-        return Subscriber.prototype.onError.call(this, new MaxRetryExceededError(
+        return tryOnError(this, new MaxRetryExceededError(
             this.retryCount,
             this.requested,
             this.relative,
@@ -5809,10 +5687,7 @@ CallSubscriber.prototype.onCompleted = function(error) {
     }
 
     this.request = this.model._root.requests[this.type](
-        this.model,
-        this.missing,
-        this.relative,
-        this.fragments
+        this.model, this.missing, this.relative, this.fragments
     ).subscribe(this);
 }
 
@@ -5881,6 +5756,14 @@ function tryOnNext(data, operation, modelRoot, destination) {
     }
 }
 
+function tryOnError(self, error) {
+    try {
+        throw error;
+    } catch (err) {
+        Subscriber.prototype.onError.call(self, err);
+    }
+}
+
 function mergeInto(dest, node) {
 
     var destValue, nodeValue,
@@ -5899,10 +5782,13 @@ function mergeInto(dest, node) {
             destValue = dest[key];
 
             if (destValue !== nodeValue) {
-                if (destValue === undefined || 'object' !== typeof nodeValue) {
+                if (!nodeValue || typeof nodeValue !== 'object') {
+                    if (destValue === undefined) {
+                        dest[key] = nodeValue;
+                    }
+                } else if (destValue === undefined) {
                     dest[key] = nodeValue;
-                }
-                else {
+                } else {
                     mergeInto(destValue, nodeValue);
                 }
             }
@@ -5914,14 +5800,14 @@ function mergeInto(dest, node) {
 
 
 /***/ },
-/* 85 */
+/* 86 */
 /***/ function(module, exports, __webpack_require__) {
 
-var Source = __webpack_require__(49);
-var Request = __webpack_require__(86);
-var Subscriber = __webpack_require__(12);
-var Subscription = __webpack_require__(13);
-var ImmediateScheduler = __webpack_require__(50);
+var Source = __webpack_require__(50);
+var Request = __webpack_require__(87);
+var Subscriber = __webpack_require__(13);
+var Subscription = __webpack_require__(14);
+var ImmediateScheduler = __webpack_require__(51);
 
 module.exports = Queue;
 
@@ -5940,12 +5826,13 @@ function isolateSet(model, optimized, requested, env) {
     var queue = this;
     return new Source(function(destination) {
 
-        var request = new Request('set', queue, model._source, new ImmediateScheduler())
-            .batch(requested, optimized || env.paths, env.jsonGraph);
-
+        var request = new Request('set', queue, model._source, new ImmediateScheduler());
         var subscriber = request.subscribe(new Subscriber(destination, request));
 
         queue.add(request);
+        request.data = env.jsonGraph;
+        request.requested.push(requested);
+        request.optimized.push(optimized);
 
         request.connect();
 
@@ -5953,16 +5840,15 @@ function isolateSet(model, optimized, requested, env) {
     });
 }
 
-function isolateCall(model, optimized, requested, env) {
+function isolateCall(model, optimized, requested, callArgs) {
     var queue = this;
     return new Source(function(destination) {
 
-        var request = new Request('call', queue, model._source, new ImmediateScheduler())
-            .batch(null, null, env);
-
+        var request = new Request('call', queue, model._source, new ImmediateScheduler());
         var subscriber = request.subscribe(new Subscriber(destination, request));
 
         queue.add(request);
+        request.data = callArgs;
 
         request.connect();
 
@@ -6026,23 +5912,23 @@ Dedupe.prototype.subscribe = function(destination) {
 
 
 /***/ },
-/* 86 */
+/* 87 */
 /***/ function(module, exports, __webpack_require__) {
 
-var Subject = __webpack_require__(87);
-var $error = __webpack_require__(14);
-var Subscriber = __webpack_require__(12);
-var Subscription = __webpack_require__(13);
-var InvalidSourceError = __webpack_require__(46);
+var Subject = __webpack_require__(88);
+var $error = __webpack_require__(15);
+var Subscriber = __webpack_require__(13);
+var Subscription = __webpack_require__(14);
+var InvalidSourceError = __webpack_require__(47);
 
-var setJSONGraphs = __webpack_require__(16);
-var setPathValues = __webpack_require__(28);
-var invalidatePaths = __webpack_require__(25);
+var setJSONGraphs = __webpack_require__(17);
+var setPathValues = __webpack_require__(29);
+var invalidatePaths = __webpack_require__(26);
 
-var toPaths = __webpack_require__(108);
-var toCollapseMap = __webpack_require__(105);
-var toCollapseTrees = __webpack_require__(106);
-var hasIntersection = __webpack_require__(104);
+var toPaths = __webpack_require__(109);
+var toCollapseMap = __webpack_require__(106);
+var toCollapseTrees = __webpack_require__(107);
+var hasIntersection = __webpack_require__(105);
 
 module.exports = Request;
 
@@ -6233,7 +6119,6 @@ Request.prototype.batch = function(requested, optimized,
     }
     this.requested.push(requested);
     this.optimized.push(optimized);
-    this.data = requestedComplements;
     return this;
 }
 
@@ -6276,18 +6161,23 @@ function findIntersections(tree,
     var index = -1;
     var complementIndex = -1;
     var intersectionIndex = -1;
-    var total = optimized.length;
+    var optTotal = optimized.length;
+    var reqTotal = requested.length - 1;
 
-    while (++index < total) {
+    while (++index < optTotal) {
         var path = optimized[index];
         var pathLen = path.length;
         var subTree = tree[pathLen];
         if (subTree && hasIntersection(subTree, path, 0, pathLen)) {
             optimizedIntersection[++intersectionIndex] = path;
-            requestedIntersection[intersectionIndex] = requested[index];
+            requestedIntersection[intersectionIndex] = requested[
+                index < reqTotal ? index : reqTotal
+            ];
         } else {
             optimizedComplements[++complementIndex] = path;
-            requestedComplements[complementIndex] = requested[index];
+            requestedComplements[complementIndex] = requested[
+                index < reqTotal ? index : reqTotal
+            ];
         }
     }
 
@@ -6296,11 +6186,11 @@ function findIntersections(tree,
 
 
 /***/ },
-/* 87 */
+/* 88 */
 /***/ function(module, exports, __webpack_require__) {
 
-var Subscriber = __webpack_require__(12);
-var Subscription = __webpack_require__(13);
+var Subscriber = __webpack_require__(13);
+var Subscription = __webpack_require__(14);
 
 module.exports = Subject;
 
@@ -6347,7 +6237,7 @@ Subject.prototype.unsubscribe = function () {
 
 
 /***/ },
-/* 88 */
+/* 89 */
 /***/ function(module, exports) {
 
 function TimeoutScheduler(delay) {
@@ -6376,7 +6266,7 @@ module.exports = TimeoutScheduler;
 
 
 /***/ },
-/* 89 */
+/* 90 */
 /***/ function(module, exports) {
 
 module.exports = function arrayFlatMap(array, selector) {
@@ -6397,11 +6287,11 @@ module.exports = function arrayFlatMap(array, selector) {
 
 
 /***/ },
-/* 90 */
+/* 91 */
 /***/ function(module, exports, __webpack_require__) {
 
 var isArray = Array.isArray;
-var isInternal = __webpack_require__(30);
+var isInternal = __webpack_require__(31);
 
 module.exports = clone;
 
@@ -6421,7 +6311,7 @@ function clone(source) {
 
 
 /***/ },
-/* 91 */
+/* 92 */
 /***/ function(module, exports, __webpack_require__) {
 
 var isObject = __webpack_require__(2);
@@ -6431,7 +6321,7 @@ module.exports = function getSize(node) {
 
 
 /***/ },
-/* 92 */
+/* 93 */
 /***/ function(module, exports, __webpack_require__) {
 
 var isObject = __webpack_require__(2);
@@ -6446,7 +6336,7 @@ module.exports = function getType(node, anyType) {
 
 
 /***/ },
-/* 93 */
+/* 94 */
 /***/ function(module, exports, __webpack_require__) {
 
 var isObject = __webpack_require__(2);
@@ -6458,7 +6348,7 @@ module.exports = function(obj, prop) {
 
 
 /***/ },
-/* 94 */
+/* 95 */
 /***/ function(module, exports, __webpack_require__) {
 
 var isArray = Array.isArray;
@@ -6473,21 +6363,21 @@ module.exports = function isPathValue(pathValue) {
 
 
 /***/ },
-/* 95 */
+/* 96 */
 /***/ function(module, exports) {
 
 module.exports = 'atom';
 
 
 /***/ },
-/* 96 */
+/* 97 */
 /***/ function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(97);
+module.exports = __webpack_require__(98);
 
 
 /***/ },
-/* 97 */
+/* 98 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6497,7 +6387,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _ponyfill = __webpack_require__(98);
+var _ponyfill = __webpack_require__(99);
 
 var _ponyfill2 = _interopRequireDefault(_ponyfill);
 
@@ -6520,10 +6410,10 @@ if (typeof self !== 'undefined') {
 
 var result = (0, _ponyfill2['default'])(root);
 exports['default'] = result;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(32), __webpack_require__(99)(module)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(33), __webpack_require__(100)(module)))
 
 /***/ },
-/* 98 */
+/* 99 */
 /***/ function(module, exports) {
 
 "use strict";
@@ -6552,7 +6442,7 @@ function symbolObservablePonyfill(root) {
 };
 
 /***/ },
-/* 99 */
+/* 100 */
 /***/ function(module, exports) {
 
 module.exports = function(module) {
@@ -6578,70 +6468,70 @@ module.exports = function(module) {
 
 
 /***/ },
-/* 100 */
+/* 101 */
 /***/ function(module, exports) {
 
 module.exports = require("@graphistry/falcor-path-utils/lib/collapse");
 
 /***/ },
-/* 101 */
+/* 102 */
 /***/ function(module, exports) {
 
 module.exports = require("@graphistry/falcor-path-utils/lib/computeFlatBufferHash");
 
 /***/ },
-/* 102 */
+/* 103 */
 /***/ function(module, exports) {
 
 module.exports = require("@graphistry/falcor-path-utils/lib/flatBufferToPaths");
 
 /***/ },
-/* 103 */
+/* 104 */
 /***/ function(module, exports) {
 
 module.exports = require("@graphistry/falcor-path-utils/lib/getHashCode");
 
 /***/ },
-/* 104 */
+/* 105 */
 /***/ function(module, exports) {
 
 module.exports = require("@graphistry/falcor-path-utils/lib/hasIntersection");
 
 /***/ },
-/* 105 */
+/* 106 */
 /***/ function(module, exports) {
 
 module.exports = require("@graphistry/falcor-path-utils/lib/toCollapseMap");
 
 /***/ },
-/* 106 */
+/* 107 */
 /***/ function(module, exports) {
 
 module.exports = require("@graphistry/falcor-path-utils/lib/toCollapseTrees");
 
 /***/ },
-/* 107 */
+/* 108 */
 /***/ function(module, exports) {
 
 module.exports = require("@graphistry/falcor-path-utils/lib/toFlatBuffer");
 
 /***/ },
-/* 108 */
+/* 109 */
 /***/ function(module, exports) {
 
 module.exports = require("@graphistry/falcor-path-utils/lib/toPaths");
 
 /***/ },
-/* 109 */
+/* 110 */
 /***/ function(module, exports) {
 
 module.exports = require("@graphistry/falcor-path-utils/lib/toTree");
 
 /***/ },
-/* 110 */
+/* 111 */
 /***/ function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(56);
+module.exports = __webpack_require__(57);
 
 
 /***/ }

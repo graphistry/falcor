@@ -137,7 +137,7 @@ CallSubscriber.prototype.onNext = function(seed) {
     var operation = this.operation;
     var progressive = this.progressive;
 
-    var seedIsImmutable = progressive && data && !model._recycleJSON;
+    var seedIsImmutable = progressive && data;// && !model._recycleJSON;
 
     // If we request paths as JSON in progressive mode, ensure each progressive
     // valueNode is immutable. If not in progressive mode, we can write into the
@@ -156,7 +156,7 @@ CallSubscriber.prototype.onNext = function(seed) {
         // We must communicate critical errors from get, such as bound path is
         // broken or this is a JSONGraph request with a bound path.
         if (results.error) {
-            throw results.error;
+            return tryOnError(this, results.error);
         }
 
         errors && results.errors &&
@@ -178,7 +178,7 @@ CallSubscriber.prototype.onNext = function(seed) {
     this.completed = !missing || !model._source;
 
     if (type !== 'set') {
-        this.args = args;// || this.args;
+        this.args = args;
         if (seedIsImmutable) {
             this.data = mergeInto(data, this.data);
         }
@@ -216,16 +216,14 @@ CallSubscriber.prototype.onCompleted = function(error) {
         }
         errors = this.errors;
         if (errored || error || errors && errors.length) {
-            return Subscriber.prototype.onError.call(
-                this,  errors.length && errors || error
-            );
+            return tryOnError(this, errors.length && errors || error);
         }
 
         return Subscriber.prototype.onCompleted.call(this);
     }
 
     if (++this.retryCount >= this.maxRetryCount) {
-        return Subscriber.prototype.onError.call(this, new MaxRetryExceededError(
+        return tryOnError(this, new MaxRetryExceededError(
             this.retryCount,
             this.requested,
             this.relative,
@@ -234,10 +232,7 @@ CallSubscriber.prototype.onCompleted = function(error) {
     }
 
     this.request = this.model._root.requests[this.type](
-        this.model,
-        this.missing,
-        this.relative,
-        this.fragments
+        this.model, this.missing, this.relative, this.fragments
     ).subscribe(this);
 }
 
@@ -306,6 +301,14 @@ function tryOnNext(data, operation, modelRoot, destination) {
     }
 }
 
+function tryOnError(self, error) {
+    try {
+        throw error;
+    } catch (err) {
+        Subscriber.prototype.onError.call(self, err);
+    }
+}
+
 function mergeInto(dest, node) {
 
     var destValue, nodeValue,
@@ -324,10 +327,13 @@ function mergeInto(dest, node) {
             destValue = dest[key];
 
             if (destValue !== nodeValue) {
-                if (destValue === undefined || 'object' !== typeof nodeValue) {
+                if (!nodeValue || typeof nodeValue !== 'object') {
+                    if (destValue === undefined) {
+                        dest[key] = nodeValue;
+                    }
+                } else if (destValue === undefined) {
                     dest[key] = nodeValue;
-                }
-                else {
+                } else {
                     mergeInto(destValue, nodeValue);
                 }
             }

@@ -32,8 +32,8 @@ describe('Error cases', function() {
 
                 toObservable(lolomoModel.
                     get([0, 0, 'item', 'title'])).
-                    doAction(onNext, function(err) {
-                        expect(err.message).to.equals(InvalidModelError.message);
+                    doAction(onNext, function(e) {
+                        expect(InvalidModelError.is(e), 'expected InvalidModelError').to.equal(true);
                     }).
                     subscribe(
                         done.bind(null, new Error('onNext shouldnt be called')),
@@ -51,7 +51,7 @@ describe('Error cases', function() {
         try {
             new Model().deref('testing');
         } catch (e) {
-            expect(e.name).to.equals(InvalidDerefInputError.name);
+            expect(InvalidDerefInputError.is(e), 'expected InvalidDerefInputError').to.equal(true);
             return done();
         }
         done(new Error('should of thrown an error.'));

@@ -118,7 +118,10 @@ describe('Error', function() {
             doAction(noOp, function() {
                 expect(onNext.callCount).to.equal(0);
                 expect(onError.calledOnce).to.be.ok;
-                expect(onError.getCall(0).args[0].name).to.equals(InvalidSourceError.name);
+                expect(InvalidSourceError.is(
+                    onError.getCall(0).args[0]),
+                    'expected InvalidSourceError'
+                ).to.equal(true);
             }).
             subscribe(noOp, function(e) {
                 if (isAssertionError(e)) {
@@ -141,7 +144,7 @@ describe('Error', function() {
             get(['path', 'to', 'value'])).
             doAction(onNext, function(e) {
                 expect(onNext.callCount).to.equal(0);
-                expect(e.name, 'Expect error to be an InvalidSourceError').to.equals(InvalidSourceError.name);
+                expect(InvalidSourceError.is(e), 'Expect error to be an InvalidSourceError').to.equal(true);
             }).
             subscribe(noOp, function(e) {
                 if (isAssertionError(e)) {
@@ -164,7 +167,7 @@ describe('Error', function() {
             doAction(onNext).
             doAction(noOp, function(err) {
                 expect(onNext.callCount).to.equal(0);
-                expect(err.name).to.equals(InvalidSourceError.name);
+                expect(InvalidSourceError.is(err), 'expected InvalidSourceError').to.equal(true);
             }).
             subscribe(noOp, function(e) {
                 if (isAssertionError(e)) {

@@ -66,10 +66,14 @@ function request(method, parameters, observer, ...rest) {
                     break;
                 case 'C':
                     finalized = true;
+                    if (value && observer.onNext) {
+                        observer.onNext(value);
+                    }
                     observer.onCompleted && observer.onCompleted();
                     break;
             }
-        }
+        };
+
     } else if (model) {
         let thisPath, callPath, pathSets, jsonGraphEnvelope;
         if (method === 'set') {

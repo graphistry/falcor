@@ -4,6 +4,7 @@ var chai = require('chai');
 var expect = chai.expect;
 var Observable = require('rxjs').Observable;
 var Promise = require('promise');
+var collapse = require('@graphistry/falcor-path-utils/lib/collapse');
 
 describe('return-types', function() {
     describe('PathValues', function() {
@@ -86,6 +87,7 @@ describe('return-types', function() {
                 videos[ids[i]] = { title: 'House of Cards' };
             }
             return {
+                paths: collapse([['videos', ids, 'title']]),
                 jsonGraph: {
                     videos: videos
                 }
