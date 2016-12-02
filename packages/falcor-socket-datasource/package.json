@@ -1,5 +1,5 @@
 {
-  "version": "2.5.4",
+  "version": "2.5.5",
   "name": "@graphistry/falcor-socket-datasource",
   "scripts": {
     "prepublish": "npm test && babel src --out-dir dist",
