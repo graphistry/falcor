@@ -44,6 +44,7 @@ function isolateCall(model, optimized, requested, callArgs) {
 
         queue.add(request);
         request.data = callArgs;
+        request.boundPath = model._path;
 
         request.connect();
 

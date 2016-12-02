@@ -223,21 +223,23 @@ Model.prototype._hasValidParentReference = require('./deref/hasValidParentRefere
  // The code above prints 'Jim' to the console.
  */
 Model.prototype.getValue = function getValue(path) {
-    return this.get(path).lift(function(subscriber) {
-        return this.subscribe({
-            onNext: function(data) {
-                var depth = -1;
-                var x = data.json;
-                var length = path.length;
-                while (x && !x.$type && ++depth < length) {
-                    x = x[path[depth]];
-                }
-                subscriber.onNext(x);
-            },
-            onError: subscriber.onError.bind(subscriber),
-            onCompleted: subscriber.onCompleted.bind(subscriber)
-        })
-    });
+    return new Call('get', this, [path])
+        ._toJSON({ __proto__: FalcorJSON.prototype }, [])
+        .lift(function(subscriber) {
+            return this.subscribe({
+                onNext: function(data) {
+                    var depth = -1;
+                    var x = data.json;
+                    var length = path.length;
+                    while (x && !x.$type && ++depth < length) {
+                        x = x[path[depth]];
+                    }
+                    subscriber.onNext(x);
+                },
+                onError: subscriber.onError.bind(subscriber),
+                onCompleted: subscriber.onCompleted.bind(subscriber)
+            })
+        });
 }
 
 /**
@@ -259,21 +261,23 @@ Model.prototype.getValue = function getValue(path) {
 Model.prototype.setValue = function setValue(path, value) {
     path = arguments.length === 1 ? path.path : path;
     value = arguments.length === 1 ? path : {path:path,value:value};
-    return this.set(value).lift(function(subscriber) {
-        return this.subscribe({
-            onNext: function(data) {
-                var depth = -1;
-                var x = data.json;
-                var length = path.length;
-                while (x && !x.$type && ++depth < length) {
-                    x = x[path[depth]];
-                }
-                subscriber.onNext(x);
-            },
-            onError: subscriber.onError.bind(subscriber),
-            onCompleted: subscriber.onCompleted.bind(subscriber)
-        })
-    });
+    return new Call('set', this, [value])
+        ._toJSON({ __proto__: FalcorJSON.prototype }, [])
+        .lift(function(subscriber) {
+            return this.subscribe({
+                onNext: function(data) {
+                    var depth = -1;
+                    var x = data.json;
+                    var length = path.length;
+                    while (x && !x.$type && ++depth < length) {
+                        x = x[path[depth]];
+                    }
+                    subscriber.onNext(x);
+                },
+                onError: subscriber.onError.bind(subscriber),
+                onCompleted: subscriber.onCompleted.bind(subscriber)
+            })
+        });
 }
 
 /**

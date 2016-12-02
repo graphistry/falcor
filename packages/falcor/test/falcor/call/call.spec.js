@@ -1,6 +1,7 @@
 var Observable = require('rx').Observable;
 var falcor = require('./../../../falcor.js');
 var Model = falcor.Model;
+var $ref = Model.ref;
 var LocalDataSource = require('../../data/LocalDataSource');
 var strip = require('../../cleanData').stripDerefAndVersionKeys;
 var chai = require('chai');
@@ -17,7 +18,50 @@ function getModel(newModel, cache) {
 }
 
 describe('JSON', function() {
-    it('should execute a remote call on a bound Model and sends the call and extra paths relative to the root', function(done) {
+
+    it('should execute a remote call on a bound Model with extra paths relative to the model', function(done) {
+        var model = new Model({
+            source: {
+                call: function(callPath, args, suffixes, extraPaths) {
+                    return Observable.return({
+                        paths: [
+                            ['videos', 0, 'title'],
+                            ['lists', 0, 0, 'summary']
+                        ],
+                        jsonGraph: {
+                            lists: {
+                                0: { 0: $ref('videos[0]') }
+                            },
+                            videos: {
+                                0: {
+                                    title: 'A title',
+                                    summary: 'A summary'
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+        });
+
+        toObservable(model
+            ._clone({ _path: ['lists'] })
+            .call(['add'], [], [], [[0, 'summary']]))
+            .do(function(data) {
+                expect(data.toJSON()).to.deep.equals({
+                    json: {
+                        0: {
+                            0: {
+                                summary: 'A summary'
+                            }
+                        }
+                    }
+                })
+            })
+            .subscribe(noOp, done, done);
+    });
+
+    it('should execute a remote call on a bound Model and send the call and extra paths relative to the model', function(done) {
         var model = new Model({
             source: {
                 call: function(callPath, args, suffixes, extraPaths) {
@@ -165,7 +209,7 @@ describe('JSON', function() {
 });
 
 describe('JSONGraph', function() {
-    it('should execute a remote call on a bound Model and sends the call and extra paths relative to the root', function(done) {
+    it('should execute a remote call on a bound Model and send the call and extra paths relative to the model', function(done) {
         var model = new Model({
             source: {
                 call: function(callPath, args, suffixes, extraPaths) {

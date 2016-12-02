@@ -61,6 +61,8 @@ Request.prototype.onNext = function(envelopes) {
         queue.remove(this);
     }
 
+    var boundPath = this.boundPath;
+
     do {
 
         var jsonGraph = env.jsonGraph;
@@ -75,17 +77,18 @@ Request.prototype.onNext = function(envelopes) {
         }
 
         if (paths && paths.length && !(!jsonGraph || typeof jsonGraph !== 'object')) {
-            setJSONGraphs(
+            paths = setJSONGraphs(
                 { _root: modelRoot },
                 [{ paths: paths, jsonGraph: jsonGraph }],
                 modelRoot.errorSelector, modelRoot.comparator, false
-            );
+            )[0];
         }
     } while (++envelopeIndex < envelopeCount && (env = envelopes[envelopeIndex]))
 
     this.observers.slice(0).forEach(function(observer, index) {
         observer.onNext({
-            type: 'get', paths: requested[index] || paths
+            type: 'get', paths: requested[index] ||
+                filterPathsBoundTo(boundPath, paths)
         });
     });
 }
@@ -168,6 +171,7 @@ Request.prototype.unsubscribe = function () {
     this.data = null;
     this.paths = null;
     this.active = false;
+    this.boundPath = null;
     this.requested = [];
     this.optimized = [];
     var queue = this.parent;
@@ -280,4 +284,31 @@ function findIntersections(tree,
     }
 
     return ~intersectionIndex;
+}
+
+function filterPathsBoundTo(boundPath, paths) {
+
+    var boundLength;
+
+    if (!boundPath || (boundLength = boundPath.length) === 0) {
+        return paths;
+    }
+
+    var filtered = [], filteredIndex = -1, keyIndex;
+    var path, pathsIndex = -1, pathsCount = paths.length;
+
+    outer: while (++pathsIndex < pathsCount) {
+        path = paths[pathsIndex];
+        if (path.length > boundLength) {
+            keyIndex = 0;
+            do {
+                if (path[keyIndex] !== boundPath[keyIndex]) {
+                    continue outer;
+                }
+            } while (++keyIndex < boundLength);
+            filtered[++filteredIndex] = path.slice(boundLength);
+        }
+    }
+
+    return filtered;
 }

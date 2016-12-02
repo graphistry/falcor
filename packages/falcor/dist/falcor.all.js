@@ -4046,21 +4046,23 @@ Model.prototype._hasValidParentReference = __webpack_require__(88);
  // The code above prints 'Jim' to the console.
  */
 Model.prototype.getValue = function getValue(path) {
-    return this.get(path).lift(function(subscriber) {
-        return this.subscribe({
-            onNext: function(data) {
-                var depth = -1;
-                var x = data.json;
-                var length = path.length;
-                while (x && !x.$type && ++depth < length) {
-                    x = x[path[depth]];
-                }
-                subscriber.onNext(x);
-            },
-            onError: subscriber.onError.bind(subscriber),
-            onCompleted: subscriber.onCompleted.bind(subscriber)
-        })
-    });
+    return new Call('get', this, [path])
+        ._toJSON({ __proto__: FalcorJSON.prototype }, [])
+        .lift(function(subscriber) {
+            return this.subscribe({
+                onNext: function(data) {
+                    var depth = -1;
+                    var x = data.json;
+                    var length = path.length;
+                    while (x && !x.$type && ++depth < length) {
+                        x = x[path[depth]];
+                    }
+                    subscriber.onNext(x);
+                },
+                onError: subscriber.onError.bind(subscriber),
+                onCompleted: subscriber.onCompleted.bind(subscriber)
+            })
+        });
 }
 
 /**
@@ -4082,21 +4084,23 @@ Model.prototype.getValue = function getValue(path) {
 Model.prototype.setValue = function setValue(path, value) {
     path = arguments.length === 1 ? path.path : path;
     value = arguments.length === 1 ? path : {path:path,value:value};
-    return this.set(value).lift(function(subscriber) {
-        return this.subscribe({
-            onNext: function(data) {
-                var depth = -1;
-                var x = data.json;
-                var length = path.length;
-                while (x && !x.$type && ++depth < length) {
-                    x = x[path[depth]];
-                }
-                subscriber.onNext(x);
-            },
-            onError: subscriber.onError.bind(subscriber),
-            onCompleted: subscriber.onCompleted.bind(subscriber)
-        })
-    });
+    return new Call('set', this, [value])
+        ._toJSON({ __proto__: FalcorJSON.prototype }, [])
+        .lift(function(subscriber) {
+            return this.subscribe({
+                onNext: function(data) {
+                    var depth = -1;
+                    var x = data.json;
+                    var length = path.length;
+                    while (x && !x.$type && ++depth < length) {
+                        x = x[path[depth]];
+                    }
+                    subscriber.onNext(x);
+                },
+                onError: subscriber.onError.bind(subscriber),
+                onCompleted: subscriber.onCompleted.bind(subscriber)
+            })
+        });
 }
 
 /**
@@ -6352,10 +6356,15 @@ Call.prototype = Object.create(Source.prototype);
 
 Call.prototype.lift = function(operator, source) {
     source = new Call(source || this);
-    source.operator = operator;
     source.type = this.type;
     source.model = this.model;
     source._args = this._args;
+    source.operator = operator;
+    operator.data = operator.data || this.operator.data;
+    operator.errors = operator.errors || this.operator.errors;
+    operator.operation = operator.operation || this.operator.operation;
+    operator.progressive = operator.progressive || this.operator.progressive;
+    operator.maxRetryCount = operator.maxRetryCount || this.operator.maxRetryCount;
     return source;
 }
 
@@ -6724,6 +6733,7 @@ function isolateCall(model, optimized, requested, callArgs) {
 
         queue.add(request);
         request.data = callArgs;
+        request.boundPath = model._path;
 
         request.connect();
 
@@ -6853,6 +6863,8 @@ Request.prototype.onNext = function(envelopes) {
         queue.remove(this);
     }
 
+    var boundPath = this.boundPath;
+
     do {
 
         var jsonGraph = env.jsonGraph;
@@ -6867,17 +6879,18 @@ Request.prototype.onNext = function(envelopes) {
         }
 
         if (paths && paths.length && !(!jsonGraph || typeof jsonGraph !== 'object')) {
-            setJSONGraphs(
+            paths = setJSONGraphs(
                 { _root: modelRoot },
                 [{ paths: paths, jsonGraph: jsonGraph }],
                 modelRoot.errorSelector, modelRoot.comparator, false
-            );
+            )[0];
         }
     } while (++envelopeIndex < envelopeCount && (env = envelopes[envelopeIndex]))
 
     this.observers.slice(0).forEach(function(observer, index) {
         observer.onNext({
-            type: 'get', paths: requested[index] || paths
+            type: 'get', paths: requested[index] ||
+                filterPathsBoundTo(boundPath, paths)
         });
     });
 }
@@ -6960,6 +6973,7 @@ Request.prototype.unsubscribe = function () {
     this.data = null;
     this.paths = null;
     this.active = false;
+    this.boundPath = null;
     this.requested = [];
     this.optimized = [];
     var queue = this.parent;
@@ -7072,6 +7086,33 @@ function findIntersections(tree,
     }
 
     return ~intersectionIndex;
+}
+
+function filterPathsBoundTo(boundPath, paths) {
+
+    var boundLength;
+
+    if (!boundPath || (boundLength = boundPath.length) === 0) {
+        return paths;
+    }
+
+    var filtered = [], filteredIndex = -1, keyIndex;
+    var path, pathsIndex = -1, pathsCount = paths.length;
+
+    outer: while (++pathsIndex < pathsCount) {
+        path = paths[pathsIndex];
+        if (path.length > boundLength) {
+            keyIndex = 0;
+            do {
+                if (path[keyIndex] !== boundPath[keyIndex]) {
+                    continue outer;
+                }
+            } while (++keyIndex < boundLength);
+            filtered[++filteredIndex] = path.slice(boundLength);
+        }
+    }
+
+    return filtered;
 }
 
 

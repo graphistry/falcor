@@ -3,11 +3,12 @@ var rxjs = require('rxjs');
 
 var falcor = require('../falcor.js');
 var Model = require('../falcor.js').Model;
-var $ref = require('@graphistry/falcor-json-graph').ref;
-var $atom = require('@graphistry/falcor-json-graph').atom;
-var $error = require('@graphistry/falcor-json-graph').error;
 var fromPath = require('@graphistry/falcor-path-syntax').fromPath;
 var fromPaths = require('@graphistry/falcor-path-syntax').fromPathsOrPathValues;
+
+Model.ref = require('@graphistry/falcor-json-graph').ref;
+Model.atom = require('@graphistry/falcor-json-graph').atom;
+Model.error = require('@graphistry/falcor-json-graph').error;
 
 var modelGet = Model.prototype.get;
 var modelSet = Model.prototype.set;
@@ -78,16 +79,16 @@ describe('Model', function() {
         var ref = ['a', 'b', 'c'];
         var err = {ohhh: 'no!'};
 
-        var out = $ref(ref);
+        var out = Model.ref(ref);
         testRunner.compare({$type: $ref, value: ref}, out);
 
-        out = $ref('a.b.c');
+        out = Model.ref('a.b.c');
         testRunner.compare({$type: $ref, value: ref}, out);
 
-        out = $error(err);
+        out = Model.error(err);
         testRunner.compare({$type: $error, value: err}, out);
 
-        out = $atom(1337);
+        out = Model.atom(1337);
         testRunner.compare({$type: $atom, value: 1337}, out);
     });
 

@@ -6,7 +6,6 @@ describe('Core', function() {
     require('./keys.spec');
     require('./ranges.spec');
     require('./integers.spec');
-    require('./messages.spec');
     require('./max-paths.spec');
     require('./multi-indexer.spec');
 });

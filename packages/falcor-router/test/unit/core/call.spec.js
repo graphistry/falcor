@@ -143,6 +143,50 @@ describe('Call', function() {
             });
     });
 
+    it('should return references when no suffixes are specified.', function(done) {
+        var router = new R([{
+            route: 'genrelist[{integers:indices}].titles.push',
+            call: function(callPath, args) {
+                return callPath.indices.reduce(function(acc, genreIndex) {
+                    return acc.concat(
+                        args.map(function(title, titleIndex) {
+                            return {
+                                value: $ref(['videos', titleIndex]),
+                                path: ['genrelist', genreIndex, 'titles', titleIndex]
+                            };
+                        }),
+                        {
+                            value: args.length,
+                            path: ['genrelist', genreIndex, 'titles', 'length']
+                        }
+                    );
+                }, []);
+            }
+        }]);
+
+        var onNext = sinon.spy();
+        router.
+            call(['genrelist', 0, 'titles', 'push'], ['title 1', 'title 2']).
+            do(onNext, noOp, function() {
+                expect(onNext.calledOnce).to.be.ok;
+                expect(onNext.getCall(0).args[0]).to.deep.equals({
+                    paths: [['genrelist', 0, 'titles', [0, 1, 'length']]],
+                    jsonGraph: {
+                        genrelist: {
+                            0: {
+                                titles: {
+                                    length: 2,
+                                    0: $ref(['videos', 0]),
+                                    1: $ref(['videos', 1])
+                                }
+                            }
+                        }
+                    },
+                });
+            }).
+            subscribe(noOp, done, done);
+    });
+
     it('should return invalidations.', function(done) {
         var router = new R([{
             route: 'genrelist[{integers:indices}].titles.remove',
@@ -184,7 +228,6 @@ describe('Call', function() {
                 });
             }).
             subscribe(noOp, done, done);
-
     });
 
     it('should onError when a Promise.reject of Error is returned from call.', function(done) {

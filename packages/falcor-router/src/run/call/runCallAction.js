@@ -93,7 +93,6 @@ function validateAndEnhanceCallOutput(callOperation, matchedPath, callPath,
 
         // If there are path values, report their paths in the output.
         values.forEach(function(pathValue) {
-            // callResults[++callResultsLen] = pathValue;
             callResults[++callResultsLen] = {
                 isMessage: true, value: pathValue
             };
@@ -145,7 +144,7 @@ function validateAndEnhanceCallOutput(callOperation, matchedPath, callPath,
         else {
             references.forEach(function(refPathValue) {
                 callResults[++callResultsLen] = {
-                    isMessage: true, path: refPathValue.path
+                    isMessage: true, value: refPathValue
                 };
             });
         }

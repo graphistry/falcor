@@ -22,10 +22,15 @@ Call.prototype = Object.create(Source.prototype);
 
 Call.prototype.lift = function(operator, source) {
     source = new Call(source || this);
-    source.operator = operator;
     source.type = this.type;
     source.model = this.model;
     source._args = this._args;
+    source.operator = operator;
+    operator.data = operator.data || this.operator.data;
+    operator.errors = operator.errors || this.operator.errors;
+    operator.operation = operator.operation || this.operator.operation;
+    operator.progressive = operator.progressive || this.operator.progressive;
+    operator.maxRetryCount = operator.maxRetryCount || this.operator.maxRetryCount;
     return source;
 }
 
