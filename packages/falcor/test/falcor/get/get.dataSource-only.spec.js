@@ -209,7 +209,7 @@ describe('DataSource Only', function() {
                 }
             });
             var model = new Model({
-                source: new LocalDataSource(cacheGenerator(0, 2, ['title', 'art']), {onGet: get})
+                source: new LocalDataSource(cacheGenerator(0, 2, ['title', 'art']), {onGet: get, batch: true})
 
             });
             var onNext = sinon.spy();

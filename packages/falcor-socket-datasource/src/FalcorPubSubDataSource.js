@@ -50,12 +50,16 @@ function request(method, parameters, observer, ...rest) {
             dispose() {
                 socket.removeListener(responseToken, handler);
                 if (!finalized) {
+                    finalized = true;
                     socket.emit(cancellationToken);
                 }
             }
         };
 
         function handler({ kind, value, error }) {
+            if (finalized) {
+                return;
+            }
             switch (kind) {
                 case 'N':
                     observer.onNext && observer.onNext(value);

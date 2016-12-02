@@ -38,7 +38,7 @@ describe('Get', function() {
             var router = new R(
                 Routes().Videos.Ranges.Summary(function(pathSet) {
                     TestRunner.comparePath(['videos', [{from:0, to:2}], 'summary'], pathSet);
-                }, [50, 10, 1]),
+                }, [25, 10, 1]),
                 { streaming: true }
             );
             var obs = router.
@@ -230,7 +230,7 @@ describe('Get', function() {
         });
         it('should get partial values streamed in over time in the order in which they emit.', function(done) {
             var router = new R([].concat(
-                    Routes().Genrelists.Ranges(null, [50, 10, 1]),
+                    Routes().Genrelists.Ranges(null, [25, 10, 1]),
                     Routes().Videos.Ranges.Summary(null)
                 ),
                 { streaming: true }

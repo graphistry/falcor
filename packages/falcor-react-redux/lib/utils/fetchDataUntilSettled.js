@@ -41,7 +41,8 @@ function fetchDataUntilSettled(_ref) {
     var data = _ref.data,
         props = _ref.props,
         falcor = _ref.falcor,
-        fragment = _ref.fragment;
+        fragment = _ref.fragment,
+        renderLoading = _ref.renderLoading;
 
 
     var memo = {
@@ -72,7 +73,7 @@ function _fetchDataUntilSettled(memo) {
         if (error) {
             return handleParseError(memo, error);
         }
-        return _Observable.Observable.from(falcor.get(ast)).map(memo.mapNext).catch(memo.catchError);
+        return _Observable.Observable.from(!memo.renderLoading ? falcor.get(ast) : falcor.get(ast).progressively()).map(memo.mapNext).catch(memo.catchError);
     }
     return _Observable.Observable.of({
         loading: false,

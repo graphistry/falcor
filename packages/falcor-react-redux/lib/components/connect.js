@@ -58,10 +58,6 @@ var _wrapDisplayName = require('recompose/wrapDisplayName');
 
 var _wrapDisplayName2 = _interopRequireDefault(_wrapDisplayName);
 
-var _mapToFalcorJSON = require('../utils/mapToFalcorJSON');
-
-var _mapToFalcorJSON2 = _interopRequireDefault(_mapToFalcorJSON);
-
 var _bindActionCreators = require('../utils/bindActionCreators');
 
 var _bindActionCreators2 = _interopRequireDefault(_bindActionCreators);
@@ -74,13 +70,13 @@ var _rxjsObservableConfig = require('recompose/rxjsObservableConfig');
 
 var _rxjsObservableConfig2 = _interopRequireDefault(_rxjsObservableConfig);
 
-var _falcor = require('@graphistry/falcor');
-
 var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = require('react-redux');
+
+var _falcor = require('@graphistry/falcor');
 
 var _Observable = require('rxjs/Observable');
 
@@ -130,9 +126,18 @@ var contextTypes = {
 var connect = function connect(BaseComponent) {
     return (0, _compose2.default)((0, _reactRedux.connect)(function (data, _ref) {
         var falcor = _ref.falcor;
-        return {
-            data: (0, _mapToFalcorJSON2.default)(data, falcor)
-        };
+
+        if (!falcor._seed) {
+            falcor._seed = {
+                __proto__: _falcor.FalcorJSON.prototype,
+                json: data = { __proto__: _falcor.FalcorJSON.prototype }
+            };
+        } else if (!falcor._seed.json) {
+            data = falcor._seed.json = { __proto__: _falcor.FalcorJSON.prototype };
+        } else {
+            data = falcor._seed.json;
+        }
+        return { data: data };
     }), (0, _setDisplayName2.default)((0, _wrapDisplayName2.default)(BaseComponent, 'Falcor')), (0, _mapPropsStream2.default)(function (props) {
         return props.switchMap(function (_ref2) {
             var falcor = _ref2.falcor;

@@ -31,12 +31,13 @@ LocalSource.prototype = {
     },
     get: function(paths) {
         var self = this;
-        var options = this._options;
-        var miss = options.miss;
-        var onGet = options.onGet;
-        var onResults = options.onResults;
-        var wait = +options.wait;
-        var errorSelector = options.errorSelector;
+        var opts = this._options;
+        var wait = +opts.wait;
+        var miss = opts.miss;
+        var batch = opts.batch;
+        var onGet = opts.onGet;
+        var onResults = opts.onResults;
+        var errorSelector = opts.errorSelector;
         return Rx.Observable.create(function(observer) {
             function exec() {
                 var results;
@@ -49,7 +50,7 @@ LocalSource.prototype = {
                 }
 
                 onResults(seed);
-                observer.onNext(seed);
+                observer.onNext(batch ? [seed] : seed);
                 observer.onCompleted();
             }
             if (wait > 0) {

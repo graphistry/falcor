@@ -17,6 +17,10 @@ function whenEmitValuesIsTrue(state) {
     return state.emitValues === true;
 }
 
+function whenBufferHasValues(buffer) {
+    return buffer.length > 0;
+}
+
 function runStreaming(match, actionRunner, requestedPaths, method,
                       router, jsonGraph, unhandledRunner) {
 
@@ -46,24 +50,33 @@ function runStreaming(match, actionRunner, requestedPaths, method,
         .multicast(newSubject, concatUnhandledAndMaterialize)
         .map(toJSONGraphEnvelope);
 
-    function concatUnhandledAndMaterialize(streaming) {
-        return streaming
+    function concatUnhandledAndMaterialize(source) {
+
+        var streamingValues = source
             .scan(aggregateStreamingValues, {
                 _paths: [], _invalidated: []
             })
-            .filter(whenEmitValuesIsTrue)
-            .merge(streaming
-                .reduce(aggregateUnhandledPaths, {})
-                .mergeMap(fetchUnhandledRunner));
+            .filter(whenEmitValuesIsTrue);
+
+        if (router._bufferTime > 0) {
+            streamingValues = streamingValues
+                .bufferTime(router._bufferTime)
+                .filter(whenBufferHasValues)
+                .map(flattenJSONGraphsBuffer);
+        }
+
+        return streamingValues.merge(source
+            .reduce(aggregateUnhandledPaths, {})
+            .mergeMap(fetchUnhandledRunner));
     }
 
     function aggregateStreamingValues(memo, next) {
 
-        var graph, paths;
+        var graph, paths, invalidated;
         var _paths = memo._paths;
         var nextPaths = next.paths;
         var emitValues = next.emitValues;
-        var invalidated = memo._invalidated;
+        var _invalidated = memo._invalidated;
         var nextInvalidated = next.invalidated;
 
         if (nextPaths && nextPaths.length) {
@@ -72,33 +85,63 @@ function runStreaming(match, actionRunner, requestedPaths, method,
         }
 
         if (nextInvalidated && nextInvalidated.length) {
-            invalidated.push.apply(invalidated, nextInvalidated);
+            _invalidated.push.apply(_invalidated, nextInvalidated);
         }
 
-        if (emitValues && _paths.length) {
-
-            paths = jsongMerge(graph = {}, {
-                paths: _paths, jsonGraph: jsonGraph
-            }).paths;
-
-            if (paths.length) {
-                _paths = [];
-            } else {
-                paths = undefined;
-                graph = undefined;
-                emitValues = invalidated.length > 0;
+        if (emitValues) {
+            if (_paths.length) {
+                paths = jsongMerge(graph = {}, {
+                    paths: _paths, jsonGraph: jsonGraph
+                }).paths;
+                if (paths.length) {
+                    _paths = [];
+                } else {
+                    paths = undefined;
+                    graph = undefined;
+                    emitValues = _invalidated.length > 0;
+                }
             }
+            invalidated = _invalidated;
+            _invalidated = [];
         }
 
-        if (memo.emitValues = emitValues) {
-            memo._paths = _paths;
-            memo._invalidated = [];
-            memo.paths = paths;
-            memo.jsonGraph = graph;
-            memo.invalidated = invalidated;
-        }
-
+        memo = {
+            paths: paths,
+            _paths: _paths,
+            jsonGraph: graph,
+            emitValues: emitValues,
+            invalidated: invalidated,
+            _invalidated: _invalidated
+        };
 
         return memo;
     }
+}
+
+function flattenJSONGraphsBuffer(buffer) {
+    if (buffer.length === 1) {
+        return buffer[0];
+    }
+    return buffer.reduce(reduceJSONGraphsBuffer, {
+        paths: [], jsonGraph: {}, invalidated: []
+    });
+}
+
+function reduceJSONGraphsBuffer(memo, env) {
+
+    var paths = memo.paths;
+    var nextPaths = env.paths;
+    var invalidated = memo.invalidated;
+    var nextInvalidated = env.invalidated;
+
+    if (nextPaths && nextPaths.length) {
+        jsongMerge(memo.jsonGraph, env);
+        paths.push.apply(paths, nextPaths);
+    }
+
+    if (nextInvalidated && nextInvalidated.length) {
+        invalidated.push.apply(invalidated, nextInvalidated);
+    }
+
+    return memo;
 }

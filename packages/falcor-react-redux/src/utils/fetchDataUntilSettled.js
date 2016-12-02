@@ -12,7 +12,7 @@ import 'rxjs/add/observable/empty';
 const memoizedQuerySyntax = memoizeQueryies(100);
 
 export default function fetchDataUntilSettled({
-    data, props, falcor, fragment
+    data, props, falcor, fragment, renderLoading
 }) {
 
     const memo = {
@@ -38,7 +38,9 @@ function _fetchDataUntilSettled(memo) {
             return handleParseError(memo, error);
         }
         return Observable
-            .from(falcor.get(ast))
+            .from(!memo.renderLoading ?
+                   falcor.get(ast) :
+                   falcor.get(ast).progressively())
             .map(memo.mapNext)
             .catch(memo.catchError);
     }

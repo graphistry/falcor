@@ -9,9 +9,10 @@ var TestRunner = require('./../TestRunner');
 
 describe('Get Progressively', function() {
     generateTests(false);
-    describe('Recycle JSON', function() {
-        generateTests(true);
-    });
+});
+
+describe('Get Progressively (recycle JSON)', function() {
+    generateTests(true);
 });
 
 function generateTests(recycleJSON) {
@@ -35,6 +36,34 @@ function generateTests(recycleJSON) {
                     _.merge(
                         Expected().Videos[0].summary
                     ),
+                    _.merge(
+                        Expected().Videos[0].summary,
+                        Expected().Videos[1].summary
+                    ),
+                    _.merge(
+                        Expected().Videos[0].summary,
+                        Expected().Videos[1].summary,
+                        Expected().Videos[2].summary
+                    )
+                ].map(toJSONEnv)).
+                subscribe(noOp, done, done);
+        });
+        it('should get partial buffered values streamed in over time.', function(done) {
+            var router = new R(
+                Routes().Videos.Ranges.Summary(function(pathSet) {
+                    TestRunner.comparePath(['videos', [{from:0, to:2}], 'summary'], pathSet);
+                }, 100),
+                { streaming: true, bufferTime: 250 }
+            );
+
+            var model = new falcor.Model({ source: router, recycleJSON: recycleJSON });
+            var obs = Observable.from(model.
+                    get(['videos', {from: 0, to: 2}, 'summary']).
+                    progressively()
+                )
+                .map(toJSON);
+
+            TestRunner.runStreaming(obs, [
                     _.merge(
                         Expected().Videos[0].summary,
                         Expected().Videos[1].summary
@@ -96,19 +125,16 @@ function generateTests(recycleJSON) {
                 .map(toJSON);
 
             TestRunner.runStreaming(obs, [
-
                     _.merge(
                         Expected().Genrelists[0].genreLists,
                         Expected().Videos[0].summary
                     ),
-
                     _.merge(
                         Expected().Genrelists[0].genreLists,
                         Expected().Genrelists[1].genreLists,
                         Expected().Videos[0].summary,
                         Expected().Videos[1].summary
                     ),
-
                     _.merge(
                         Expected().Genrelists[0].genreLists,
                         Expected().Genrelists[1].genreLists,

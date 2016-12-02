@@ -104,7 +104,7 @@ function derefEachPropUpdate(update) {
 function fetchEachPropUpdate({ container, data, props, falcor }) {
     const { fragment, renderLoading } = container;
     return fetchDataUntilSettled({
-        data, props, falcor, fragment
+        data, props, falcor, fragment, renderLoading
     }).let((source) => renderLoading === true ?
         source : source.takeLast(1)
     );

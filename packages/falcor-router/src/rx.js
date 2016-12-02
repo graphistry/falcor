@@ -8,6 +8,7 @@ require('rxjs/add/observable/fromPromise');
 require('rxjs/add/observable/of');
 require('rxjs/add/observable/throw');
 
+require('rxjs/add/operator/bufferTime');
 require('rxjs/add/operator/catch');
 require('rxjs/add/operator/concat');
 require('rxjs/add/operator/defaultIfEmpty');
@@ -19,7 +20,6 @@ require('rxjs/add/operator/scan');
 require('rxjs/add/operator/multicast');
 require('rxjs/add/operator/materialize');
 require('rxjs/add/operator/merge');
-require('rxjs/add/operator/mergeAll');
 require('rxjs/add/operator/mergeMap');
 require('rxjs/add/operator/reduce');
 require('rxjs/add/operator/takeLast');

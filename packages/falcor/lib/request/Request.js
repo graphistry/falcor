@@ -1,3 +1,4 @@
+var isArray = Array.isArray;
 var Subject = require('./Subject');
 var $error = require('../types/error');
 var Subscriber = require('./Subscriber');
@@ -33,12 +34,23 @@ function Request(type, queue, source, scheduler) {
 Request.prototype = Object.create(Subject.prototype);
 
 Request.prototype.next =
-Request.prototype.onNext = function(env) {
+Request.prototype.onNext = function(envelopes) {
 
     var queue = this.parent;
 
     if (!queue) {
         return;
+    }
+
+    var env = envelopes,
+        envelopeIndex = 0,
+        envelopeCount = 0;
+
+    if (isArray(envelopes)) {
+        if ((envelopeCount = envelopes.length) <= 0) {
+            return;
+        }
+        env = envelopes[0];
     }
 
     if (this.responded === false) {
@@ -49,24 +61,27 @@ Request.prototype.onNext = function(env) {
         queue.remove(this);
     }
 
-    var jsonGraph = env.jsonGraph;
-    var requested = this.requested;
-    var modelRoot = queue.modelRoot;
-    var invalidated = env.invalidated;
-    var paths = env.paths || this.paths;
+    do {
 
-    // Run invalidations first.
-    if (invalidated && invalidated.length) {
-        invalidatePaths({ _root: modelRoot, _path: [] }, invalidated, false);
-    }
+        var jsonGraph = env.jsonGraph;
+        var requested = this.requested;
+        var modelRoot = queue.modelRoot;
+        var invalidated = env.invalidated;
+        var paths = env.paths || this.paths;
 
-    if (paths && paths.length && !(!jsonGraph || typeof jsonGraph !== 'object')) {
-        setJSONGraphs(
-            { _root: modelRoot },
-            [{ paths: paths, jsonGraph: jsonGraph }],
-            modelRoot.errorSelector, modelRoot.comparator, false
-        );
-    }
+        // Run invalidations first.
+        if (invalidated && invalidated.length) {
+            invalidatePaths({ _root: modelRoot, _path: [] }, invalidated, false);
+        }
+
+        if (paths && paths.length && !(!jsonGraph || typeof jsonGraph !== 'object')) {
+            setJSONGraphs(
+                { _root: modelRoot },
+                [{ paths: paths, jsonGraph: jsonGraph }],
+                modelRoot.errorSelector, modelRoot.comparator, false
+            );
+        }
+    } while (++envelopeIndex < envelopeCount && (env = envelopes[envelopeIndex]))
 
     this.observers.slice(0).forEach(function(observer, index) {
         observer.onNext({

@@ -10,15 +10,13 @@ import shouldUpdate from 'recompose/shouldUpdate';
 import mapPropsStream from 'recompose/mapPropsStream';
 import setDisplayName from 'recompose/setDisplayName';
 import wrapDisplayName from 'recompose/wrapDisplayName';
-import mapToFalcorJSON from '../utils/mapToFalcorJSON';
 import bindActionCreators from '../utils/bindActionCreators';
 import setObservableConfig from 'recompose/setObservableConfig';
 import rxjsObservableConfig from 'recompose/rxjsObservableConfig';
 
-import { Model } from '@graphistry/falcor';
 import React, { PropTypes, Children } from 'react';
 import { connect as connectRedux } from 'react-redux';
-
+import { Model, FalcorJSON } from '@graphistry/falcor';
 import { Observable } from 'rxjs/Observable';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { animationFrame } from 'rxjs/scheduler/animationFrame';
@@ -51,9 +49,19 @@ const contextTypes = {
 };
 
 const connect = (BaseComponent) => compose(
-    connectRedux((data, { falcor }) => ({
-        data: mapToFalcorJSON(data, falcor)
-    })),
+    connectRedux((data, { falcor }) => {
+        if (!falcor._seed) {
+            falcor._seed = {
+                __proto__: FalcorJSON.prototype,
+                json: data = { __proto__: FalcorJSON.prototype }
+            };
+        } else if (!falcor._seed.json) {
+            data = falcor._seed.json = { __proto__: FalcorJSON.prototype };
+        } else {
+            data = falcor._seed.json;
+        }
+        return { data };
+    }),
     setDisplayName(wrapDisplayName(
         BaseComponent, 'Falcor'
     )),

@@ -209,7 +209,7 @@ function fetchEachPropUpdate(_ref) {
         renderLoading = container.renderLoading;
 
     return (0, _fetchDataUntilSettled2.default)({
-        data: data, props: props, falcor: falcor, fragment: fragment
+        data: data, props: props, falcor: falcor, fragment: fragment, renderLoading: renderLoading
     }).let(function (source) {
         return renderLoading === true ? source : source.takeLast(1);
     });

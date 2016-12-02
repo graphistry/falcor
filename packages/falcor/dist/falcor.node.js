@@ -141,13 +141,13 @@ module.exports = createErrorClass;
 
 function createErrorClass(name, init) {
     function E(message) {
+        this.message = message;
+        init && init.apply(this, arguments);
         if (!Error.captureStackTrace) {
             this.stack = (new Error()).stack;
         } else {
             Error.captureStackTrace(this, this.constructor);
         }
-        this.message = message;
-        init && init.apply(this, arguments);
     }
     E.prototype = new Error();
     E.prototype.name = name;
@@ -5064,6 +5064,7 @@ module.exports = {
 };
 
 function json(model, args, data, progressive, expireImmediate) {
+    // debugger
     args = groupCacheArguments(args);
     var set = setGroupsIntoCache(model, args /*, expireImmediate */);
     var get = progressive && getJSON(model, set.relative, data, progressive, expireImmediate);
@@ -5075,7 +5076,7 @@ function json(model, args, data, progressive, expireImmediate) {
         args: args,
         data: data,
         fragments: jsong.data,
-        missing: set.optimized,
+        missing: jsong.data.paths,
         relative: set.relative,
         error: get && get.error,
         errors: get && get.errors,
@@ -5097,7 +5098,7 @@ function jsonGraph(model, args, data, progressive, expireImmediate) {
         data: data,
         error: jsong.error,
         fragments: jsong.data,
-        missing: set.optimized,
+        missing: jsong.data.paths,
         relative: set.relative,
         hasValue: jsong.hasValue,
         requested: jsong.requested
@@ -5592,7 +5593,7 @@ CallSubscriber.prototype.onNext = function(seed) {
     var operation = this.operation;
     var progressive = this.progressive;
 
-    var seedIsImmutable = progressive && data;// && !model._recycleJSON;
+    var seedIsImmutable = progressive && data;
 
     // If we request paths as JSON in progressive mode, ensure each progressive
     // valueNode is immutable. If not in progressive mode, we can write into the
@@ -5915,6 +5916,7 @@ Dedupe.prototype.subscribe = function(destination) {
 /* 87 */
 /***/ function(module, exports, __webpack_require__) {
 
+var isArray = Array.isArray;
 var Subject = __webpack_require__(88);
 var $error = __webpack_require__(15);
 var Subscriber = __webpack_require__(13);
@@ -5950,12 +5952,23 @@ function Request(type, queue, source, scheduler) {
 Request.prototype = Object.create(Subject.prototype);
 
 Request.prototype.next =
-Request.prototype.onNext = function(env) {
+Request.prototype.onNext = function(envelopes) {
 
     var queue = this.parent;
 
     if (!queue) {
         return;
+    }
+
+    var env = envelopes,
+        envelopeIndex = 0,
+        envelopeCount = 0;
+
+    if (isArray(envelopes)) {
+        if ((envelopeCount = envelopes.length) <= 0) {
+            return;
+        }
+        env = envelopes[0];
     }
 
     if (this.responded === false) {
@@ -5966,24 +5979,27 @@ Request.prototype.onNext = function(env) {
         queue.remove(this);
     }
 
-    var jsonGraph = env.jsonGraph;
-    var requested = this.requested;
-    var modelRoot = queue.modelRoot;
-    var invalidated = env.invalidated;
-    var paths = env.paths || this.paths;
+    do {
 
-    // Run invalidations first.
-    if (invalidated && invalidated.length) {
-        invalidatePaths({ _root: modelRoot, _path: [] }, invalidated, false);
-    }
+        var jsonGraph = env.jsonGraph;
+        var requested = this.requested;
+        var modelRoot = queue.modelRoot;
+        var invalidated = env.invalidated;
+        var paths = env.paths || this.paths;
 
-    if (paths && paths.length && !(!jsonGraph || typeof jsonGraph !== 'object')) {
-        setJSONGraphs(
-            { _root: modelRoot },
-            [{ paths: paths, jsonGraph: jsonGraph }],
-            modelRoot.errorSelector, modelRoot.comparator, false
-        );
-    }
+        // Run invalidations first.
+        if (invalidated && invalidated.length) {
+            invalidatePaths({ _root: modelRoot, _path: [] }, invalidated, false);
+        }
+
+        if (paths && paths.length && !(!jsonGraph || typeof jsonGraph !== 'object')) {
+            setJSONGraphs(
+                { _root: modelRoot },
+                [{ paths: paths, jsonGraph: jsonGraph }],
+                modelRoot.errorSelector, modelRoot.comparator, false
+            );
+        }
+    } while (++envelopeIndex < envelopeCount && (env = envelopes[envelopeIndex]))
 
     this.observers.slice(0).forEach(function(observer, index) {
         observer.onNext({

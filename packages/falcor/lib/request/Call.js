@@ -137,7 +137,7 @@ CallSubscriber.prototype.onNext = function(seed) {
     var operation = this.operation;
     var progressive = this.progressive;
 
-    var seedIsImmutable = progressive && data;// && !model._recycleJSON;
+    var seedIsImmutable = progressive && data;
 
     // If we request paths as JSON in progressive mode, ensure each progressive
     // valueNode is immutable. If not in progressive mode, we can write into the

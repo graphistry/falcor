@@ -92,7 +92,7 @@ describe('DataSource and Cache', function() {
                 subscribe(noOp, done, done);
         });
     });
-    describe('PathMap', function() {
+    describe('JSON', function() {
         it('should ensure empty paths do not cause dataSource requests {from:1, to:0}', function(done) {
             var onGet = sinon.spy();
             var model = new Model({

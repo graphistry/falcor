@@ -23,11 +23,22 @@ var _falcor = require('@graphistry/falcor');
 function mapToFalcorJSON(data, falcor) {
     if (!data || (typeof data === 'undefined' ? 'undefined' : _typeof(data)) !== 'object') {
         data = { __proto__: _falcor.FalcorJSON.prototype };
+        if (falcor && falcor._recycleJSON) {
+            if (falcor._seed) {
+                falcor._seed.json = data;
+            } else {
+                falcor._seed = { json: data, __proto__: _falcor.FalcorJSON.prototype };
+            }
+        }
     } else if (!(data instanceof _falcor.FalcorJSON)) {
         data.__proto__ = _falcor.FalcorJSON.prototype;
-    }
-    if (falcor && falcor._recycleJSON) {
-        falcor._seed = { json: data };
+        if (falcor && falcor._recycleJSON) {
+            if (falcor._seed) {
+                falcor._seed.json = data;
+            } else {
+                falcor._seed = { json: data, __proto__: _falcor.FalcorJSON.prototype };
+            }
+        }
     }
     return data;
 }

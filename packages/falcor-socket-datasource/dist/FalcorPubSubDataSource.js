@@ -104,6 +104,9 @@ function request(method, parameters, observer) {
                     value = _ref.value,
                     error = _ref.error;
 
+                if (finalized) {
+                    return;
+                }
                 switch (kind) {
                     case 'N':
                         observer.onNext && observer.onNext(value);
@@ -138,6 +141,7 @@ function request(method, parameters, observer) {
                     dispose: function dispose() {
                         socket.removeListener(responseToken, handler);
                         if (!finalized) {
+                            finalized = true;
                             socket.emit(cancellationToken);
                         }
                     }

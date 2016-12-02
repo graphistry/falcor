@@ -12,6 +12,7 @@ module.exports = {
 };
 
 function json(model, args, data, progressive, expireImmediate) {
+    // debugger
     args = groupCacheArguments(args);
     var set = setGroupsIntoCache(model, args /*, expireImmediate */);
     var get = progressive && getJSON(model, set.relative, data, progressive, expireImmediate);
@@ -23,7 +24,7 @@ function json(model, args, data, progressive, expireImmediate) {
         args: args,
         data: data,
         fragments: jsong.data,
-        missing: set.optimized,
+        missing: jsong.data.paths,
         relative: set.relative,
         error: get && get.error,
         errors: get && get.errors,
@@ -45,7 +46,7 @@ function jsonGraph(model, args, data, progressive, expireImmediate) {
         data: data,
         error: jsong.error,
         fragments: jsong.data,
-        missing: set.optimized,
+        missing: jsong.data.paths,
         relative: set.relative,
         hasValue: jsong.hasValue,
         requested: jsong.requested

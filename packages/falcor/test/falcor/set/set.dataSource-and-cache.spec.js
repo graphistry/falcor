@@ -195,6 +195,41 @@ describe('DataSource and Cache', function() {
             }).
             subscribe(noOp, done, done);
     });
+
+    it('should ensure that the jsong sent to server is optimized with a null last key.', function(done) {
+        // debugger
+        var model = new Model({
+            cache: Cache(),
+            source: new LocalDataSource(Cache(), {
+                onSet: function(source, tmp, jsongEnv) {
+                    sourceCalled = true;
+                    testRunner.compare({
+                        jsonGraph: {
+                            videos: {
+                                1234: {
+                                    summary: 5
+                                }
+                            }
+                        },
+                        paths: [['videos', 1234, 'summary']]
+                    }, jsongEnv);
+                    return jsongEnv;
+                }
+            })
+        });
+        var called = false;
+        var sourceCalled = false;
+        toObservable(model.
+            set({path: ['genreList', 0, 0, 'summary', null], value: 5})).
+            doAction(function(x) {
+                called = true;
+            }, noOp, function() {
+                testRunner.compare(true, called, 'Expected onNext to be called');
+                testRunner.compare(true, sourceCalled, 'Expected source.set to be called.');
+            }).
+            subscribe(noOp, done, done);
+    });
+
     it('should project an error from the datasource.', function(done) {
         var model = new Model({
             source: new ErrorDataSource(503, 'Timeout'),
