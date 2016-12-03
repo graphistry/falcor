@@ -4,6 +4,7 @@ import Chai from 'chai';
 import { devDependencies } from '../package';
 import socketDataSourceTests from './tests.socket';
 import eventEmitterDataSourceTests from './tests.events';
+import postMessageDataSourceTests from './tests.postmessage';
 
 Chai.config.showDiff = true;
 
@@ -21,6 +22,22 @@ describe(`Falcor Event Emitter DataSource with Rx v${devDependencies.rxjs}`, fun
 
 describe(`Falcor Event Emitter DataSource with Rx v${devDependencies.rxjs} and recycled JSON`, function() {
     eventEmitterDataSourceTests(Rx5, true);
+});
+
+describe(`Falcor PostMessage DataSource with Rx v${devDependencies.rx}`, function() {
+    postMessageDataSourceTests(Rx4, false);
+});
+
+describe(`Falcor PostMessage DataSource with Rx v${devDependencies.rx} and recycled JSON`, function() {
+    postMessageDataSourceTests(Rx4, true);
+});
+
+describe(`Falcor PostMessage DataSource with Rx v${devDependencies.rxjs}`, function() {
+    postMessageDataSourceTests(Rx5, false);
+});
+
+describe(`Falcor PostMessage DataSource with Rx v${devDependencies.rxjs} and recycled JSON`, function() {
+    postMessageDataSourceTests(Rx5, true);
 });
 
 describe(`Falcor Socket DataSource with Rx v${devDependencies.rx}`, function() {

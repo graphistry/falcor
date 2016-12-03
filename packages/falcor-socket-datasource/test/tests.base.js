@@ -6,15 +6,21 @@ export const cancelName = 'cancel-falcor-operation';
 
 export default function tests({ Observable }, context, runBefore, runAfter) {
 
-    before(runBefore);
-    after(runAfter);
+    beforeEach(runBefore);
+    afterEach(runAfter);
 
     it('should get data from the server', function(done) {
         const { model } = context;
         Observable
             .defer(() => model.get(['foo', 'bar']))
             .do((data) => {
-                expect(data.json.foo.bar).to.equal('foo');
+                expect(data.toJSON()).to.deep.equal({
+                    json: {
+                        foo: {
+                            bar: 'foo'
+                        }
+                    }
+                });
             })
             .subscribe(() => {}, done, done);
     });
@@ -23,7 +29,13 @@ export default function tests({ Observable }, context, runBefore, runAfter) {
         Observable
             .defer(() => model.set({ path: ['foo', 'bar'], value: 'bar' }))
             .do((data) => {
-                expect(data.json.foo.bar).to.equal('bar');
+                expect(data.toJSON()).to.deep.equal({
+                    json: {
+                        foo: {
+                            bar: 'bar'
+                        }
+                    }
+                });
             })
             .subscribe(() => {}, done, done);
     });
@@ -32,25 +44,31 @@ export default function tests({ Observable }, context, runBefore, runAfter) {
         Observable
             .defer(() => model.call('bar', ['foo']))
             .do((data) => {
-                expect(data.json.foo.bar).to.equal('foo');
+                expect(data.toJSON()).to.deep.equal({
+                    json: {
+                        foo: {
+                            bar: 'foo'
+                        }
+                    }
+                });
             })
             .subscribe(() => {}, done, done);
     });
     it('should cancel a get operation', (done) => {
         const messages = [];
         const { model } = context;
-        const { _source: { socket } } = model;
+        const { _source: { emitter } } = model;
 
-        model._source.socket = {
+        model._source.emitter = {
             on(...args) {
-                return socket.on(...args);
+                return emitter.on(...args);
             },
             emit(event, data, ...rest) {
                 messages.push({ data, event });
-                socket.emit(event, data, ...rest);
+                emitter.emit(event, data, ...rest);
             },
             removeListener(...args) {
-                return socket.removeListener(...args);
+                return emitter.removeListener(...args);
             }
         };
 
@@ -93,8 +111,57 @@ export default function tests({ Observable }, context, runBefore, runAfter) {
             })
             .subscribe(() => {}, done, done);
     });
-    it('should get streaming data from the server', function(done) {
+    it('should get data from the local model when disconnected', function(done) {
         const { model } = context;
+        model._source.emitter.connected = false;
+        Observable
+            .defer(() => model.get(['foo', 'bar']))
+            .do((data) => {
+                expect(data.toJSON()).to.deep.equal({
+                    json: {
+                        foo: {
+                            bar: { $type: 'atom' }
+                        }
+                    }
+                });
+            })
+            .subscribe(() => {}, done, done);
+    });
+    it('should set data on the local model when disconnected', (done) => {
+        const { model } = context;
+        model._source.emitter.connected = false;
+        Observable
+            .defer(() => model.set({ path: ['foo', 'bar'], value: 'bar' }))
+            .do((data) => {
+                expect(data.toJSON()).to.deep.equal({
+                    json: {
+                        foo: {
+                            bar: 'bar'
+                        }
+                    }
+                });
+            })
+            .subscribe(() => {}, done, done);
+    });
+    it('should call a function on the local model when disconnected', (done) => {
+        const { model } = context;
+        model._source.emitter.connected = false;
+        Observable
+            .defer(() => model.call('bar', ['foo'], [], ['foo', 'bar']))
+            .do((data) => {
+                expect(data.toJSON()).to.deep.equal({
+                    json: {
+                        foo: {
+                            bar: { $type: 'atom' }
+                        }
+                    }
+                });
+            })
+            .subscribe(() => {}, done, done);
+    });
+    it('should get streaming data from the server', function(done) {
+        const {sink,  model } = context;
+        sink.getDataSource = getStreamingDataSource(sink.getDataSource);
         // sort same as collapse
         const keys = [1, 3, 'cinco', 'four', 'two'];
         const expected = expectedProgressive(keys);
@@ -109,7 +176,8 @@ export default function tests({ Observable }, context, runBefore, runAfter) {
             .subscribe(() => {}, done, done);
     });
     it('should set streaming data on the server', function(done) {
-        const { model } = context;
+        const { sink, model } = context;
+        sink.getDataSource = getStreamingDataSource(sink.getDataSource);
         // sort same as collapse
         const keys = [1, 3, 'cinco', 'four', 'two'];
         const vals = ['val-1', 'val-3', 'val-cinco', 'val-four', 'val-two'];
@@ -135,7 +203,8 @@ export default function tests({ Observable }, context, runBefore, runAfter) {
             .subscribe(() => {}, done, done);
     });
     it('should stream function call results from the server', (done) => {
-        const { model } = context;
+        const { sink, model } = context;
+        sink.getDataSource = getStreamingDataSource(sink.getDataSource);
         const keys = [1, 'two', 3, 'four', 'cinco'];
         const vals = [
             'call-1-val',
@@ -167,6 +236,14 @@ export default function tests({ Observable }, context, runBefore, runAfter) {
             })
             .subscribe(() => {}, done, done);
     });
+}
+
+function getStreamingDataSource(getDataSource) {
+    return function(...args) {
+        const dataSource = getDataSource(...args);
+        dataSource._streaming = true;
+        return dataSource;
+    }
 }
 
 function expectedProgressive(keys, vals = []) {

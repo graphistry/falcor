@@ -1,8 +1,8 @@
 export class FalcorPubSubDataSink {
-    constructor(socket, getDataSource, event = 'falcor-operation', cancel = 'cancel-falcor-operation') {
+    constructor(emitter, getDataSource, event = 'falcor-operation', cancel = 'cancel-falcor-operation') {
         this.event = event;
         this.cancel = cancel;
-        this.socket = socket;
+        this.emitter = emitter;
         this.getDataSource = getDataSource;
         this.response = response.bind(this);
     }
@@ -10,7 +10,7 @@ export class FalcorPubSubDataSink {
 
 function response({ id, callPath, callArgs,
                     jsonGraphEnvelope, method,
-                    pathSets, suffixes, thisPaths }, socket = this.socket) {
+                    pathSets, suffixes, thisPaths }, emitter = this.emitter) {
 
     let parameters;
 
@@ -29,13 +29,15 @@ function response({ id, callPath, callArgs,
     const cancellationToken = `${cancel}-${id}`;
 
     let handleCancellationForId = null;
-    let disposed = false, finalized = false;
+    let disposed = false, finalized = false, value = undefined;
 
-    const DataSource = getDataSource(socket);
+    const DataSource = getDataSource(emitter);
+    const streaming = DataSource._streaming || false;
     const operation = DataSource[method](...parameters).subscribe(
-        (value) => {
-            if (!disposed && !finalized) {
-                socket.emit(responseToken, { kind: 'N', value });
+        (x) => {
+            value = x;
+            if (!disposed && !finalized && streaming) {
+                emitter.emit(responseToken, { kind: 'N', value });
             }
         },
         (error) => {
@@ -44,12 +46,16 @@ function response({ id, callPath, callArgs,
             }
             disposed = finalized = true;
             if (handleCancellationForId) {
-                socket.removeListener(
+                emitter.removeListener(
                     cancellationToken,
                     handleCancellationForId);
                 handleCancellationForId = null;
             }
-            socket.emit(responseToken, { kind: 'E', error });
+            if (streaming || value === undefined) {
+                emitter.emit(responseToken, { kind: 'E', error });
+            } else {
+                emitter.emit(responseToken, { kind: 'E', error, value });
+            }
         },
         () => {
             if (disposed || finalized) {
@@ -57,12 +63,16 @@ function response({ id, callPath, callArgs,
             }
             disposed = finalized = true;
             if (handleCancellationForId) {
-                socket.removeListener(
+                emitter.removeListener(
                     cancellationToken,
                     handleCancellationForId);
                 handleCancellationForId = null;
             }
-            socket.emit(responseToken, { kind: 'C' });
+            if (streaming || value === undefined) {
+                emitter.emit(responseToken, { kind: 'C' });
+            } else {
+                emitter.emit(responseToken, { kind: 'C', value });
+            }
         }
     );
 
@@ -72,7 +82,7 @@ function response({ id, callPath, callArgs,
                 return;
             }
             disposed = finalized = true;
-            socket.removeListener(
+            emitter.removeListener(
                 cancellationToken,
                 handleCancellationForId);
             handleCancellationForId = null;
@@ -84,6 +94,6 @@ function response({ id, callPath, callArgs,
                 operation();
             }
         };
-        socket.on(cancellationToken, handleCancellationForId);
+        emitter.on(cancellationToken, handleCancellationForId);
     }
 }

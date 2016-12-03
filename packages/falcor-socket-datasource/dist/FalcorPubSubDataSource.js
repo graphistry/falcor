@@ -34,7 +34,7 @@ var _simpleflakes = require('simpleflakes');
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var FalcorPubSubDataSource = exports.FalcorPubSubDataSource = function () {
-    function FalcorPubSubDataSource(socket, model) {
+    function FalcorPubSubDataSource(emitter, model) {
         var event = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'falcor-operation';
         var cancel = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'cancel-falcor-operation';
 
@@ -43,7 +43,7 @@ var FalcorPubSubDataSource = exports.FalcorPubSubDataSource = function () {
         this.event = event;
         this.model = model;
         this.cancel = cancel;
-        this.socket = socket;
+        this.emitter = emitter;
     }
 
     _createClass(FalcorPubSubDataSource, [{
@@ -94,10 +94,10 @@ function request(method, parameters, observer) {
     var event = this.event,
         cancel = this.cancel,
         model = this.model,
-        socket = this.socket;
+        emitter = this.emitter;
 
 
-    if (socket.connected !== false) {
+    if (emitter.connected !== false) {
         var _ret = function () {
             var handler = function handler(_ref) {
                 var kind = _ref.kind,
@@ -130,8 +130,8 @@ function request(method, parameters, observer) {
             var responseToken = event + '-' + id;
             var cancellationToken = cancel + '-' + id;
 
-            socket.on(responseToken, handler);
-            socket.emit(event, _extends({ id: id, method: method }, parameters));
+            emitter.on(responseToken, handler);
+            emitter.emit(event, _extends({ id: id, method: method }, parameters));
 
             return {
                 v: {
@@ -139,10 +139,10 @@ function request(method, parameters, observer) {
                         this.dispose();
                     },
                     dispose: function dispose() {
-                        socket.removeListener(responseToken, handler);
+                        emitter.removeListener(responseToken, handler);
                         if (!finalized) {
                             finalized = true;
-                            socket.emit(cancellationToken);
+                            emitter.emit(cancellationToken);
                         }
                     }
                 }

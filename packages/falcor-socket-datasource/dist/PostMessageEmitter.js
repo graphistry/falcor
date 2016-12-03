@@ -23,11 +23,16 @@ function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in ob
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var PostMessageEmitter = exports.PostMessageEmitter = function () {
-    function PostMessageEmitter(source, target) {
+    function PostMessageEmitter(source, sink) {
+        var event = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'falcor-operation';
+        var cancel = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'cancel-falcor-operation';
+
         _classCallCheck(this, PostMessageEmitter);
 
+        this.sink = sink;
+        this.event = event;
+        this.cancel = cancel;
         this.source = source;
-        this.target = target;
         this.listeners = {};
         this.connected = true;
         this.onPostMessage = this.onPostMessage.bind(this);
@@ -38,24 +43,22 @@ var PostMessageEmitter = exports.PostMessageEmitter = function () {
         key: 'onPostMessage',
         value: function onPostMessage() {
             var event = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-            var _event$data = event.data,
-                data = _event$data === undefined ? {} : _event$data;
 
-            var type = data.type,
+            var _event$data = event.data,
+                data = _event$data === undefined ? {} : _event$data,
+                type = data.type,
                 rest = _objectWithoutProperties(data, ['type']);
 
-            if (!type || type.indexOf('falcor-operation') === -1) {
+            if (!type) {
                 return;
             }
-            var listeners = this.listeners;
-
-            var handlers = listeners[type];
-            if (!handlers) {
-                return;
+            if (~type.indexOf(this.event) || ~type.indexOf(this.cancel)) {
+                var listeners = this.listeners,
+                    handlers = listeners[type];
+                handlers && handlers.slice(0).forEach(function (handler) {
+                    return handler && handler(rest);
+                });
             }
-            handlers.slice(0).forEach(function (handler) {
-                return handler && handler(rest);
-            });
         }
     }, {
         key: 'on',
@@ -74,55 +77,28 @@ var PostMessageEmitter = exports.PostMessageEmitter = function () {
             var listeners = this.listeners;
 
             var handlers = listeners[eventName];
-            if (!handlers) {
-                return;
-            }
-            var handlerIndex = handlers.indexOf(handler);
-            if (handlerIndex !== -1) {
-                handlers.splice(handlerIndex, 1);
-            }
-            if (handlers.length === 0) {
+            var handlerIndex = handlers && handlers.indexOf(handler) || -1;
+            ~handlerIndex && handlers.splice(handlerIndex, 1);
+            if (handlers && handlers.length === 0) {
                 delete listeners[eventName];
             }
         }
     }, {
         key: 'emit',
-        value: function emit(eventName) {
-            var _ref = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-                kind = _ref.kind,
-                value = _ref.value,
-                error = _ref.error;
+        value: function emit(eventName, data) {
+            this.sink && this.sink.postMessage(_extends({
+                type: eventName }, data), '*');
+        }
+    }, {
+        key: 'dispose',
+        value: function dispose() {
+            var source = this.source;
 
-            var finalized = false,
-                payload = void 0;
-            var source = this.source,
-                target = this.target;
-
-            switch (kind) {
-                case 'N':
-                    payload = { kind: kind, value: value };
-                    break;
-                case 'E':
-                    payload = { kind: kind, error: error };
-                    finalized = true;
-                    break;
-                case 'C':
-                    payload = { kind: kind };
-                    finalized = true;
-                    break;
-            }
-            if (finalized) {
-                this.target = null;
-                this.source = null;
-                this.listeners = null;
-                this.connected = false;
-                if (source) {
-                    source.removeEventListener('message', this.onPostMessage);
-                }
-            }
-            if (payload && target) {
-                target.postMessage(_extends({ type: eventName }, payload), '*');
-            }
+            this.sink = null;
+            this.target = null;
+            this.source = null;
+            this.listeners = null;
+            source && source.removeEventListener('message', this.onPostMessage);
         }
     }]);
 

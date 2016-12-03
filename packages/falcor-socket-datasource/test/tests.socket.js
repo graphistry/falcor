@@ -11,8 +11,8 @@ export default function socketDataSourceTests(Rx, recycleJSON) {
 
     const context = {};
 
-    let model = null, source = null;
     let socketServer = null, server = null;
+    let model = null, sink = null, source = null;
 
     tests(Rx, context,
         function before(done) {
@@ -32,16 +32,18 @@ export default function socketDataSourceTests(Rx, recycleJSON) {
 
                 socketServer.sockets.removeListener('connection', onConnection);
 
-                socket.on(eventName, new FalcorPubSubDataSink(
-                    socket, () => new Router({ streaming: true }), eventName, cancelName
-                ).response);
+                sink = context.sink = context.sink = new FalcorPubSubDataSink(
+                    socket, () => new Router(), eventName, cancelName
+                );
 
-                if (source.socket.connected) {
+                socket.on(eventName, sink.response);
+
+                if (source.emitter.connected) {
                     setImmediate(() => done());
                 } else {
-                    source.socket.on('connect', onClientConnect);
+                    source.emitter.on('connect', onClientConnect);
                     function onClientConnect(clientSocket) {
-                        source.socket.off('connect', onClientConnect);
+                        source.emitter.off('connect', onClientConnect);
                         setImmediate(() => done());
                     }
                 }

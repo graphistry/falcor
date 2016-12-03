@@ -2,9 +2,10 @@
   "version": "2.5.7",
   "name": "@graphistry/falcor-socket-datasource",
   "scripts": {
-    "prepublish": "npm test && babel src --out-dir dist",
+    "prepublish": "npm test && npm run build",
     "d": "npm run test-debug",
     "td": "npm run test-detail",
+    "build": "babel src --out-dir dist",
     "test": "_mocha --bail --colors --reporter dot --full-trace --timeout 5000 --require babel-register",
     "test-coverage": "cross-env NODE_ENV=test nyc npm test",
     "test-debug": "cross-env NODE_ENV=development node --inspect --debug-brk ./node_modules/.bin/_mocha --bail --colors --full-trace --reporter nyan --timeout 0 --require babel-register",

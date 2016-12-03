@@ -9,15 +9,19 @@ export default function eventEmitterDataSourceTests(Rx, recycleJSON) {
 
     const context = {};
 
-    let source = null, sink = null;
-    let model = null, emitter = null;
+    let emitter = null;
+    let model = null, source = null, sink = null;
 
     tests(Rx, context,
         function before() {
             emitter = new EventEmitter();
             model = context.model = new Falcor.Model({ recycleJSON });
-            source = model._source = new FalcorPubSubDataSource(emitter, model, eventName, cancelName);
-            sink = new FalcorPubSubDataSink(emitter, () => new Router({ streaming: true }), eventName, cancelName);
+            source = model._source = new FalcorPubSubDataSource(
+                emitter, model, eventName, cancelName
+            );
+            sink = context.sink = new FalcorPubSubDataSink(
+                emitter, () => new Router(), eventName, cancelName
+            );
             emitter.on(eventName, sink.response);
         },
         function after() {

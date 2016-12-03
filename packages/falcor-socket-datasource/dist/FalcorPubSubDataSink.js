@@ -14,7 +14,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var FalcorPubSubDataSink = exports.FalcorPubSubDataSink = function FalcorPubSubDataSink(socket, getDataSource) {
+var FalcorPubSubDataSink = exports.FalcorPubSubDataSink = function FalcorPubSubDataSink(emitter, getDataSource) {
     var event = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'falcor-operation';
     var cancel = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'cancel-falcor-operation';
 
@@ -22,7 +22,7 @@ var FalcorPubSubDataSink = exports.FalcorPubSubDataSink = function FalcorPubSubD
 
     this.event = event;
     this.cancel = cancel;
-    this.socket = socket;
+    this.emitter = emitter;
     this.getDataSource = getDataSource;
     this.response = response.bind(this);
 };
@@ -36,7 +36,7 @@ function response(_ref) {
         pathSets = _ref.pathSets,
         suffixes = _ref.suffixes,
         thisPaths = _ref.thisPaths;
-    var socket = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this.socket;
+    var emitter = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this.emitter;
 
 
     var parameters = void 0;
@@ -60,12 +60,15 @@ function response(_ref) {
 
     var _handleCancellationForId = null;
     var disposed = false,
-        finalized = false;
+        finalized = false,
+        value = undefined;
 
-    var DataSource = getDataSource(socket);
-    var operation = DataSource[method].apply(DataSource, _toConsumableArray(parameters)).subscribe(function (value) {
-        if (!disposed && !finalized) {
-            socket.emit(responseToken, { kind: 'N', value: value });
+    var DataSource = getDataSource(emitter);
+    var streaming = DataSource._streaming || false;
+    var operation = DataSource[method].apply(DataSource, _toConsumableArray(parameters)).subscribe(function (x) {
+        value = x;
+        if (!disposed && !finalized && streaming) {
+            emitter.emit(responseToken, { kind: 'N', value: value });
         }
     }, function (error) {
         if (disposed || finalized) {
@@ -73,20 +76,28 @@ function response(_ref) {
         }
         disposed = finalized = true;
         if (_handleCancellationForId) {
-            socket.removeListener(cancellationToken, _handleCancellationForId);
+            emitter.removeListener(cancellationToken, _handleCancellationForId);
             _handleCancellationForId = null;
         }
-        socket.emit(responseToken, { kind: 'E', error: error });
+        if (streaming || value === undefined) {
+            emitter.emit(responseToken, { kind: 'E', error: error });
+        } else {
+            emitter.emit(responseToken, { kind: 'E', error: error, value: value });
+        }
     }, function () {
         if (disposed || finalized) {
             return;
         }
         disposed = finalized = true;
         if (_handleCancellationForId) {
-            socket.removeListener(cancellationToken, _handleCancellationForId);
+            emitter.removeListener(cancellationToken, _handleCancellationForId);
             _handleCancellationForId = null;
         }
-        socket.emit(responseToken, { kind: 'C' });
+        if (streaming || value === undefined) {
+            emitter.emit(responseToken, { kind: 'C' });
+        } else {
+            emitter.emit(responseToken, { kind: 'C', value: value });
+        }
     });
 
     if (!finalized) {
@@ -95,7 +106,7 @@ function response(_ref) {
                 return;
             }
             disposed = finalized = true;
-            socket.removeListener(cancellationToken, _handleCancellationForId);
+            emitter.removeListener(cancellationToken, _handleCancellationForId);
             _handleCancellationForId = null;
             if (typeof operation.dispose === 'function') {
                 operation.dispose();
@@ -105,6 +116,6 @@ function response(_ref) {
                 operation();
             }
         };
-        socket.on(cancellationToken, _handleCancellationForId);
+        emitter.on(cancellationToken, _handleCancellationForId);
     }
 }

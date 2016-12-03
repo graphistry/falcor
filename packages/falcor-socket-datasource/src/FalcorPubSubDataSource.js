@@ -1,11 +1,11 @@
 import { simpleflake } from 'simpleflakes';
 
 export class FalcorPubSubDataSource {
-    constructor(socket, model, event = 'falcor-operation', cancel = 'cancel-falcor-operation') {
+    constructor(emitter, model, event = 'falcor-operation', cancel = 'cancel-falcor-operation') {
         this.event = event;
         this.model = model;
         this.cancel = cancel;
-        this.socket = socket;
+        this.emitter = emitter;
     }
     call(callPath, callArgs, suffixes, thisPaths) {
         if (!Array.isArray(callPath)) { callPath = [callPath]; }
@@ -33,25 +33,25 @@ function request(method, parameters, observer, ...rest) {
         observer = { onNext: observer, onError: rest[0], onCompleted: rest[1] };
     }
 
-    const { event, cancel, model, socket } = this;
+    const { event, cancel, model, emitter } = this;
 
-    if (socket.connected !== false) {
+    if (emitter.connected !== false) {
 
         let finalized = false;
         const id = simpleflake().toJSON();
         const responseToken = `${event}-${id}`;
         const cancellationToken = `${cancel}-${id}`;
 
-        socket.on(responseToken, handler);
-        socket.emit(event, { id, method, ...parameters });
+        emitter.on(responseToken, handler);
+        emitter.emit(event, { id, method, ...parameters });
 
         return {
             unsubscribe() { this.dispose(); },
             dispose() {
-                socket.removeListener(responseToken, handler);
+                emitter.removeListener(responseToken, handler);
                 if (!finalized) {
                     finalized = true;
-                    socket.emit(cancellationToken);
+                    emitter.emit(cancellationToken);
                 }
             }
         };
@@ -77,7 +77,6 @@ function request(method, parameters, observer, ...rest) {
                     break;
             }
         };
-
     } else if (model) {
         let thisPath, callPath, pathSets, jsonGraphEnvelope;
         if (method === 'set') {

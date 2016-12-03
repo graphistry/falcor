@@ -32,16 +32,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var PostMessageDataSource = exports.PostMessageDataSource = function (_FalcorPubSubDataSour) {
     _inherits(PostMessageDataSource, _FalcorPubSubDataSour);
 
-    function PostMessageDataSource(source, target) {
-        var _ref;
+    function PostMessageDataSource(source, target, model) {
+        var event = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'falcor-operation';
+        var cancel = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 'cancel-falcor-operation';
 
         _classCallCheck(this, PostMessageDataSource);
 
-        for (var _len = arguments.length, args = Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
-            args[_key - 2] = arguments[_key];
-        }
-
-        return _possibleConstructorReturn(this, (_ref = PostMessageDataSource.__proto__ || (0, _getPrototypeOf2.default)(PostMessageDataSource)).call.apply(_ref, [this, new _PostMessageEmitter.PostMessageEmitter(source, target)].concat(args)));
+        return _possibleConstructorReturn(this, (PostMessageDataSource.__proto__ || (0, _getPrototypeOf2.default)(PostMessageDataSource)).call(this, new _PostMessageEmitter.PostMessageEmitter(source, target, event, cancel), model, event, cancel));
     }
 
     return PostMessageDataSource;
