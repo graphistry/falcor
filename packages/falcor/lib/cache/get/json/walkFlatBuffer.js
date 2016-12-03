@@ -64,7 +64,7 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
             json = undefined;
         } else if (f_meta = json[f_meta_data]) {
             if (!branchSelector && !(json instanceof FalcorJSON)) {
-                json = { [f_meta_data]: f_meta, __proto__: FalcorJSON.prototype };
+                json = { __proto__: new FalcorJSON(f_meta) };
             } else if (
                 f_meta[f_meta_version]  === node[f_version] &&
                 f_meta['$code']         === path['$code'] &&
@@ -213,9 +213,13 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
                     // Empower developers to instrument branch node creation by
                     // providing a custom function. If they do, delegate branch
                     // node creation to them.
-                    json = branchSelector && branchSelector({
-                        [f_meta_data]: f_meta, __proto__: FalcorJSON.prototype }) || {
-                        [f_meta_data]: f_meta, __proto__: FalcorJSON.prototype };
+                    if (branchSelector && (json = branchSelector(f_meta))) {
+                        json[f_meta_data] = f_meta;
+                    } else {
+                        json = { __proto__: FalcorJSON.prototype };
+                        json[f_meta_data] = f_meta;
+                        json = { __proto__: json };
+                    }
                 }
 
                 f_new_keys[nextKey] = true;
@@ -282,9 +286,9 @@ function onMissing(path, depth, results,
         wrapMaterializedBranchSelector(branchSelector);
 
     return paths.reduce(function(json, restPath) {
-        requestedLength = depth + restPath.length;
+        var restLength = depth + restPath.length;
         return originalOnMissing(rPath.concat(restPath), depth,
-                                 results, requestedPath, requestedLength, fromReference,
+                                 results, requestedPath, restLength, fromReference,
                                  optimizedPath, optimizedLength, reportMissing, json,
                                  reportMaterialized, createMaterializedBranch);
     }, json);
@@ -292,9 +296,10 @@ function onMissing(path, depth, results,
 
 function wrapMaterializedBranchSelector(branchSelector) {
     return function(path, _depth, node) {
-        return branchSelector(
-            node = createDefaultMaterializedBranch(path, _depth, node)
-        ) || node;
+        var f_meta = {};
+        f_meta[f_meta_version] = 0;
+        f_meta[f_meta_abs_path] = path.slice(0, _depth);
+        return branchSelector(f_meta);
     }
 }
 
@@ -302,5 +307,7 @@ function createDefaultMaterializedBranch(path, _depth, node) {
     var f_meta = {};
     f_meta[f_meta_version] = 0;
     f_meta[f_meta_abs_path] = path.slice(0, _depth);
-    return { [f_meta_data]: f_meta, __proto__: FalcorJSON.prototype };
- }
+    node = { __proto__: FalcorJSON.prototype };
+    node[f_meta_data] = f_meta;
+    return { __proto__: node };
+}

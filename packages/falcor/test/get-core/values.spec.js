@@ -3,6 +3,7 @@ var cacheGenerator = require('./../CacheGenerator');
 var outputGenerator = require('./../outputGenerator');
 var jsonGraph = require('@graphistry/falcor-json-graph');
 var Model = require('./../../falcor.js').Model;
+var FalcorJSON = require('./../../falcor.js').FalcorJSON;
 var atom = jsonGraph.atom;
 var ref = jsonGraph.ref;
 var _ = require('lodash');
@@ -204,8 +205,8 @@ describe('Values', function() {
             stripMetadata: false,
 
             // branchSelector = (metadata) => Object
-            branchSelector: function(meta) {
-                return Object.assign({ $__userGenerated: true }, meta);
+            branchSelector: function(metadata) {
+                return { $__userGenerated: true };
             },
             output: {
                 json: {
@@ -256,7 +257,7 @@ describe('Values', function() {
             cache: cacheGenerator(0, 2)
         });
 
-        var seed = {};
+        var seed = { __proto__: FalcorJSON.prototype };
 
         model._getPathValuesAsPathMap(
             model,
@@ -265,7 +266,9 @@ describe('Values', function() {
         );
 
         expect(seed).to.deep.equals({
+            __proto__: FalcorJSON.prototype,
             json: {
+                __proto__: FalcorJSON.prototype,
                 [f_meta_data]: {
                     '$code':          '2076667107',
                     [f_meta_keys]:        { videos: true },
@@ -275,6 +278,7 @@ describe('Values', function() {
                     [f_meta_version]:     0
                 },
                 videos: {
+                    __proto__: FalcorJSON.prototype,
                     [f_meta_data]: {
                         '$code':          '1720011066',
                         [f_meta_keys]:        { 0: true, 1: true },
@@ -284,6 +288,7 @@ describe('Values', function() {
                         [f_meta_version]:     0
                     },
                     0: {
+                        __proto__: FalcorJSON.prototype,
                         [f_meta_data]: {
                             '$code':          '165499941',
                             [f_meta_keys]:        { title: true },
@@ -295,6 +300,7 @@ describe('Values', function() {
                         title: 'Video 0'
                     },
                     1: {
+                        __proto__: FalcorJSON.prototype,
                         [f_meta_data]: {
                             '$code':          '165499941',
                             [f_meta_keys]:        { title: true },
@@ -322,7 +328,7 @@ describe('Values', function() {
             cache: cacheGenerator(0, 2)
         });
 
-        var seed = {};
+        var seed = { __proto__: FalcorJSON.prototype };
 
         model._getPathValuesAsPathMap(
             model,
@@ -340,7 +346,9 @@ describe('Values', function() {
         expect(seed.json.videos[1]).to.equal(undefined);
 
         expect(seed).to.deep.equals({
+            __proto__: FalcorJSON.prototype,
             json: {
+                __proto__: FalcorJSON.prototype,
                 [f_meta_data]: {
                     '$code':          '580640226',
                     [f_meta_keys]:        { videos: true },
@@ -350,6 +358,7 @@ describe('Values', function() {
                     [f_meta_version]:     0
                 },
                 videos: {
+                    __proto__: FalcorJSON.prototype,
                     [f_meta_data]: {
                         '$code':          '1405226223',
                         [f_meta_keys]:        { 0: true },
@@ -359,6 +368,7 @@ describe('Values', function() {
                         [f_meta_version]:     0
                     },
                     0: {
+                        __proto__: FalcorJSON.prototype,
                         [f_meta_data]: {
                             '$code':          '165499941',
                             [f_meta_keys]:        { title: true },

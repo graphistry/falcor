@@ -4,48 +4,51 @@ var FalcorJSON = require('../cache/get/json/FalcorJSON');
 var getCachePosition = require('../cache/getCachePosition');
 var InvalidDerefInputError = require('../errors/InvalidDerefInputError');
 
-module.exports = function deref(boundJSONArg) {
+module.exports = function deref(json) {
 
-    if (!boundJSONArg || typeof boundJSONArg !== 'object') {
+    if (!json || typeof json !== 'object') {
         throw new InvalidDerefInputError();
     }
 
     var referenceContainer, currentRefPath, i, len;
-    var jsonMetadata = boundJSONArg && boundJSONArg[f_meta_data];
+    var f_meta = json && json[f_meta_data];
 
-    if (!jsonMetadata || typeof jsonMetadata !== 'object') {
+    if (!f_meta || typeof f_meta !== 'object') {
         return this._clone({
-            _node: undefined
+            _node: undefined,
+            _seed: recycleJSON && {
+                __proto__: FalcorJSON.prototype
+            } || undefined
         });
     }
 
+    var cacheRoot = this._root.cache;
     var recycleJSON = this._recycleJSON;
-    var absolutePath = jsonMetadata[f_meta_abs_path];
+    var absolutePath = f_meta[f_meta_abs_path];
 
     if (!absolutePath) {
         return this._clone({
             _node: undefined,
             _seed: recycleJSON && {
-                json: boundJSONArg, __proto__: FalcorJSON.prototype
+                json: json, __proto__: FalcorJSON.prototype
             } || undefined
         });
     } else if (absolutePath.length === 0) {
         return this._clone({
+            _node: cacheRoot,
             _path: absolutePath,
-            _node: this._root.cache,
             _referenceContainer: true,
             _seed: recycleJSON && {
-                json: boundJSONArg, __proto__: FalcorJSON.prototype
+                json: json, __proto__: FalcorJSON.prototype
             } || undefined
         });
     }
 
-    var originalRefPath = jsonMetadata[f_meta_deref_to];
-    var originalAbsPath = jsonMetadata[f_meta_deref_from];
+    var originalRefPath = f_meta[f_meta_deref_to];
+    var originalAbsPath = f_meta[f_meta_deref_from];
 
     // We deref and then ensure that the reference container is attached to
     // the model.
-    var cacheRoot = this._root.cache;
     var cacheNode = getCachePosition(cacheRoot, absolutePath);
     var validContainer = CONTAINER_DOES_NOT_EXIST;
 
@@ -67,18 +70,15 @@ module.exports = function deref(boundJSONArg) {
         // the reference value with refPath.  If they are the same, then the
         // model is still valid.
         if (originalRefPath && referenceContainer && referenceContainer.$type === $ref) {
-            i = 0;
+            validContainer = true;
             len = originalRefPath.length;
             currentRefPath = referenceContainer.value;
-
-            validContainer = true;
-            for (; validContainer && i < len; ++i) {
+            for (i = 0; i < len; ++i) {
                 if (currentRefPath[i] !== originalRefPath[i]) {
+                    cacheNode = undefined;
                     validContainer = false;
+                    break;
                 }
-            }
-            if (validContainer === false) {
-                cacheNode = undefined;
             }
         }
     }
@@ -100,7 +100,7 @@ module.exports = function deref(boundJSONArg) {
         _path: absolutePath,
         _referenceContainer: referenceContainer,
         _seed: recycleJSON && {
-            json: boundJSONArg, __proto__: FalcorJSON.prototype
+            json: json, __proto__: FalcorJSON.prototype
         } || undefined
     });
 };

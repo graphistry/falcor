@@ -49,14 +49,20 @@ Call.prototype._subscribe = function(subscriber) {
     return subscriber;
 }
 
-Call.prototype._toJSON = function(data = { __proto__: FalcorJSON.prototype }, errors) {
+Call.prototype._toJSON = function(data, errors) {
+    if (data === undefined) {
+        data = { __proto__: FalcorJSON.prototype };
+    }
     return this.lift(new CallOperator(
         data, errors || this.operator.errors, 'json',
         this.operator.progressive, this.operator.maxRetryCount
     ), this.source);
 }
 
-Call.prototype._toJSONG = function(data = { __proto__: FalcorJSON.prototype }, errors) {
+Call.prototype._toJSONG = function(data, errors) {
+    if (data === undefined) {
+        data = { __proto__: FalcorJSON.prototype };
+    }
     return this.lift(new CallOperator(
         data, errors || this.operator.errors, 'jsonGraph',
         this.operator.progressive, this.operator.maxRetryCount

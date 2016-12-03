@@ -22,7 +22,7 @@ module.exports = function setPathMaps(model, pathMapEnvelopes, errorSelector, co
     var modelRoot = model._root;
     var lru = modelRoot;
     var expired = modelRoot.expired;
-    var version = modelRoot.version++;
+    var version = modelRoot.version;
     var bound = model._path;
     var cache = modelRoot.cache;
     var node = getCachePosition(cache, bound);
@@ -56,8 +56,9 @@ module.exports = function setPathMaps(model, pathMapEnvelopes, errorSelector, co
     var newVersion = cache[f_version];
     var rootChangeHandler = modelRoot.onChange;
 
-    if (rootChangeHandler && initialVersion !== newVersion) {
-        rootChangeHandler();
+    if (initialVersion !== newVersion) {
+        modelRoot.version = version + 1;
+        rootChangeHandler && rootChangeHandler();
     }
 
     return [requestedPaths, optimizedPaths];

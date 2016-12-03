@@ -44,6 +44,7 @@
   "devDependencies": {
     "@graphistry/falcor": "^2.5.7",
     "@graphistry/falcor-json-graph": "^2.5.3",
+    "babel-plugin-transform-runtime": "~6.15.0",
     "babel-preset-es2016": "6.16.0",
     "babel-preset-stage-0": "6.16.0",
     "babel-register": "6.18.0",

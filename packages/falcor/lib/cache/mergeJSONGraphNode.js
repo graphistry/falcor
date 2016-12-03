@@ -31,40 +31,31 @@ module.exports = function mergeJSONGraphNode(
     // - If they're both edges, continue below.
     if (node === message) {
 
-        // There should not be undefined values.  Those should always be
+        // The message and cache are both undefined, return undefined.
+        if (message === undefined) {
+            return message;
+        }
+        // There should not be undefined values. Those should always be
         // wrapped in an $atom
-        if (message === null) {
+        else if (message === null) {
             node = wrapNode(message, undefined, message);
             parent = updateNodeAncestors(parent, -node.$size, lru, version);
             node = insertNode(node, parent, key, undefined, optimizedPath);
             return node;
         }
-
-        // The message and cache are both undefined, return undefined.
-        else if (message === undefined) {
-            return message;
-        }
-
-        else {
-            cIsObject = !(!node || typeof node !== 'object');
-            if (cIsObject) {
-                // Is the cache node a branch? If so, return the cache branch.
-                cType = node.$type;
-                if (cType == null) {
-                    // Has the branch been introduced to the cache yet? If not,
-                    // give it a parent, key, and absolute path.
-                    if (node[f_parent] == null) {
-                        insertNode(node, parent, key, version, optimizedPath);
-                    }
-                    return node;
-                }
+        // Is the cache node a branch? If so, return the cache branch.
+        else if ((
+            cIsObject = !(!node || typeof node !== 'object')) && (
+            cType = node.$type) === undefined) {
+            // Has the branch been introduced to the cache yet? If not,
+            // give it a parent, key, and absolute path.
+            if (node[f_parent] === undefined) {
+                insertNode(node, parent, key, version, optimizedPath);
             }
+            return node;
         }
-    } else {
-        cIsObject = !(!node || typeof node !== 'object');
-        if (cIsObject) {
-            cType = node.$type;
-        }
+    } else if (cIsObject = !(!node || typeof node !== 'object')) {
+        cType = node.$type;
     }
 
     // If the cache isn't a reference, we might be able to return early.
@@ -133,7 +124,10 @@ module.exports = function mergeJSONGraphNode(
 
     // If the cache is a leaf but the message is a branch, merge the branch over the leaf.
     if (cType && mIsObject && !mType) {
-        return insertNode(replaceNode(node, message, parent, key, lru, version), parent, key, undefined, optimizedPath);
+        return insertNode(replaceNode(
+                node, message, parent, key, lru, version),
+            parent, key, undefined, optimizedPath
+        );
     }
     // If the message is a sentinel or primitive, insert it into the cache.
     else if (mType || !mIsObject) {
@@ -161,17 +155,26 @@ module.exports = function mergeJSONGraphNode(
             var isDistinct = true;
             // If the cache is a branch, but the message is a leaf, replace the
             // cache branch with the message leaf.
-            if ((cType && !isExpired(node, expireImmediate)) || !cIsObject) {
+            if (!cIsObject || (cType && !isExpired(node, expireImmediate))) {
+
                 // Compare the current cache value with the new value. If either of
                 // them don't have a timestamp, or the message's timestamp is newer,
                 // replace the cache value with the message value. If a comparator
                 // is specified, the comparator takes precedence over timestamps.
-                //
-                // Comparing either Number or undefined to undefined always results in false.
-                isDistinct = (getTimestamp(message) < getTimestamp(node)) === false;
-                // If at least one of the cache/message are sentinels, compare them.
-                if (isDistinct && (cType || mType) && comparator) {
-                    isDistinct = !comparator(node, message, optimizedPath.slice(0, optimizedPath.index));
+                if (comparator) {
+                    isDistinct = !comparator(
+                        node, message, optimizedPath.slice(0, optimizedPath.index)
+                    );
+                } else if (!mType) {
+                    isDistinct = !node || node.value !== message;
+                } else {
+                    isDistinct = !cType || ((
+                        // Comparing either Number or undefined to undefined always results in false.
+                        getTimestamp(message) < getTimestamp(node)) === false) || !(
+                        // They're the same if the following fields are the same.
+                        cType !== mType ||
+                        node.value !== message.value ||
+                        node.$expires !== message.$expires);
                 }
             }
             if (isDistinct) {

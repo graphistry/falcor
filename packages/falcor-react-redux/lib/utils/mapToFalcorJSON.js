@@ -1,27 +1,21 @@
 'use strict';
 
-var _iterator = require('babel-runtime/core-js/symbol/iterator');
-
-var _iterator2 = _interopRequireDefault(_iterator);
-
-var _symbol = require('babel-runtime/core-js/symbol');
-
-var _symbol2 = _interopRequireDefault(_symbol);
-
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _typeof = typeof _symbol2.default === "function" && typeof _iterator2.default === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof _symbol2.default === "function" && obj.constructor === _symbol2.default && obj !== _symbol2.default.prototype ? "symbol" : typeof obj; };
+var _typeof2 = require('babel-runtime/helpers/typeof');
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _typeof3 = _interopRequireDefault(_typeof2);
 
 exports.default = mapToFalcorJSON;
 
 var _falcor = require('@graphistry/falcor');
 
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 function mapToFalcorJSON(data, falcor) {
-    if (!data || (typeof data === 'undefined' ? 'undefined' : _typeof(data)) !== 'object') {
+    if (!data || (typeof data === 'undefined' ? 'undefined' : (0, _typeof3.default)(data)) !== 'object') {
         data = { __proto__: _falcor.FalcorJSON.prototype };
         if (falcor && falcor._recycleJSON) {
             if (falcor._seed) {

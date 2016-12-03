@@ -1,5 +1,5 @@
 var ModelRoot = require('./../../lib/ModelRoot');
-var comparator = new ModelRoot({}).comparator;
+var comparator = ModelRoot.comparator;
 var jsonGraphUtil = require('@graphistry/falcor-json-graph');
 var atom = jsonGraphUtil.atom;
 var error = jsonGraphUtil.error;

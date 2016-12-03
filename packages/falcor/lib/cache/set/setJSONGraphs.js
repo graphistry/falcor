@@ -20,7 +20,7 @@ module.exports = function setJSONGraphs(model, jsonGraphEnvelopes, errorSelector
     var modelRoot = model._root;
     var lru = modelRoot;
     var expired = modelRoot.expired;
-    var version = modelRoot.version++;
+    var version = modelRoot.version;
     var cache = modelRoot.cache;
     var initialVersion = cache[f_version];
 
@@ -64,8 +64,9 @@ module.exports = function setJSONGraphs(model, jsonGraphEnvelopes, errorSelector
     var newVersion = cache[f_version];
     var rootChangeHandler = modelRoot.onChange;
 
-    if (rootChangeHandler && initialVersion !== newVersion) {
-        rootChangeHandler();
+    if (initialVersion !== newVersion) {
+        modelRoot.version = version + 1;
+        rootChangeHandler && rootChangeHandler();
     }
 
     return [requestedPaths, optimizedPaths];

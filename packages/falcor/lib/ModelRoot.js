@@ -50,16 +50,20 @@ function ModelRoot(o, model) {
     }
 }
 
-ModelRoot.prototype.errorSelector = function errorSelector(x, y) {
-    return y;
-};
-
-ModelRoot.prototype.comparator = function comparator(cacheNode, messageNode) {
-    if (hasOwn(cacheNode, 'value') && hasOwn(messageNode, 'value')) {
-        // They are the same only if the following fields are the same.
-        return cacheNode.value === messageNode.value &&
-            cacheNode.$type === messageNode.$type &&
-            cacheNode.$expires === messageNode.$expires;
+ModelRoot.comparator = function comparator(cacheNode, messageNode) {
+    var cType = cacheNode && cacheNode.$type;
+    var mType = messageNode && messageNode.$type;
+    if (cType) {
+        if (!mType) {
+            return cacheNode.value === messageNode;
+        } else {
+            // They are the same only if the following fields are the same.
+            return !(cType !== mType ||
+                     cacheNode.value !== messageNode.value ||
+                     cacheNode.$expires !== messageNode.$expires);
+        }
+    } else if (mType) {
+        return false;
     }
     return cacheNode === messageNode;
 };

@@ -2,43 +2,46 @@ function FalcorJSON(f_meta) {
     this[f_meta_data] = f_meta || {};
 }
 
-FalcorJSON.prototype = Object.create(Object.prototype, Object.assign({
-        toJSON: { value: toJSON },
-        toProps: { value: toProps },
-        toString: { value: toString },
+FalcorJSON.prototype.toJSON = toJSON;
+FalcorJSON.prototype.toProps = toProps;
+FalcorJSON.prototype.toString = toString;
+FalcorJSON.prototype.constructor = FalcorJSON;
+
+Object.defineProperties(FalcorJSON.prototype, [
+        'concat', 'copyWithin', 'entries', 'every', 'fill', 'filter',
+        'find', 'findIndex', 'forEach', 'includes', 'indexOf', 'join',
+        'keys', 'lastIndexOf', 'map', 'pop', 'push', 'reduce', 'reduceRight',
+        'reverse', 'shift', 'slice', 'some', 'sort', 'splice', 'unshift', 'values'
+    ]
+    .reduce(function (descriptors, name) {
+        descriptors[name] = {
+            writable: true, enumerable: false,
+            value: bindArrayMethod(Array.prototype[name])
+        };
+        return descriptors;
+    }, {
         $__hash: {
             enumerable: false,
-            get() {
+            get: function() {
                 var f_meta = this[f_meta_data];
                 return f_meta && f_meta['$code'] || '';
             }
         },
         $__version: {
             enumerable: false,
-            get() {
+            get: function() {
                 var f_meta = this[f_meta_data];
                 return f_meta && f_meta[f_meta_version] || 0;
             }
         }
-    },
-    arrayProtoMethods().reduce(function (falcorJSONProto, methodName) {
-        var method = Array.prototype[methodName];
-        falcorJSONProto[methodName] = {
-            writable: true, enumerable: false, value() {
-                return method.apply(this, arguments);
-            }
-        };
-        return falcorJSONProto;
-    }, {}))
+    })
 );
 
-function arrayProtoMethods() {
-    return [
-        'concat', 'copyWithin', 'entries', 'every', 'fill', 'filter', 'find',
-        'findIndex', 'forEach', 'includes', 'indexOf', 'join', 'keys',
-        'lastIndexOf', 'map', 'pop', 'push', 'reduce', 'reduceRight',
-        'reverse', 'shift', 'slice', 'some', 'sort', 'splice', 'unshift', 'values'
-    ];
+function bindArrayMethod(fn) {
+    return (bound.fn = fn) && bound;
+    function bound() {
+        return bound.fn.apply(this, arguments);
+    }
 }
 
 var isArray = Array.isArray;
@@ -63,14 +66,13 @@ function getInst(inst) {
 }
 
 function toJSON() {
-    return serialize(
-        getInst.apply(this, arguments), toJSON, false
-    );
+    return serialize(getInst.apply(this, arguments), toJSON);
 }
 
 function toString(includeMetadata) {
     return JSON.stringify(serialize(
-        getInst.call(this, this), serialize, includeMetadata === true
+        getInst.call(this, this),
+        serialize, includeMetadata === true
     ));
 }
 
@@ -79,14 +81,13 @@ function toProps(inst) {
     inst = getInst.apply(this, arguments);
 
     var f_meta_inst, f_meta_json, version = 0;
-    var json = serialize(inst, toProps, true);
+    var json = serialize(inst, toProps, true, true);
 
     if (inst && (f_meta_inst = inst[f_meta_data])) {
         version = f_meta_inst[f_meta_version];
     }
 
     if (!(!json || typeof json !== typeofObject)) {
-        json.__proto__ = FalcorJSON.prototype;
         if (f_meta_json = json[f_meta_data]) {
             f_meta_json[f_meta_version] = version;
         }
@@ -95,7 +96,7 @@ function toProps(inst) {
     return json;
 }
 
-function serialize(inst, serializer, includeMetadata) {
+function serialize(inst, serializer, includeMetadata, createWithProto) {
 
     if (!inst || typeof inst !== typeofObject) {
         return inst;
@@ -125,11 +126,16 @@ function serialize(inst, serializer, includeMetadata) {
             var deref_to = f_meta[f_meta_deref_to];
             var deref_from = f_meta[f_meta_deref_from];
 
-            f_meta = xs[f_meta_data] = {};
+            f_meta = {};
             $code && (f_meta['$code'] = $code);
             abs_path && (f_meta[f_meta_abs_path] = abs_path);
             deref_to && (f_meta[f_meta_deref_to] = deref_to);
             deref_from && (f_meta[f_meta_deref_from] = deref_from);
+            if (!createWithProto) {
+                xs[f_meta_data] = f_meta;
+            } else {
+                xs.__proto__ = new FalcorJSON(f_meta);
+            }
         }
 
         while (++count < total) {

@@ -6,9 +6,9 @@ import mapToFalcorJSON from '../utils/mapToFalcorJSON';
 import wrapDisplayName from 'recompose/wrapDisplayName';
 import fetchDataUntilSettled from '../utils/fetchDataUntilSettled';
 
-import { Subject } from 'rxjs/Subject';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/switchMap';
+import { Subject } from 'rxjs/Subject';
 
 const defaultMapFragmentToProps = (data) => data;
 const defaultMapDispatchToProps = (dispatch, props, falcor) => ({});
@@ -111,7 +111,7 @@ function fetchEachPropUpdate({ container, data, props, falcor }) {
 }
 
 function mergeEachPropUpdate(
-    { props, falcor, dispatch },
+    { falcor, dispatch },
     { data, error, version, loading }
 ) {
     return {
@@ -164,10 +164,7 @@ class FalcorContainer extends React.Component {
         this.propsStream = new Subject();
         this.propsAction = this.propsStream
             .map(derefEachPropUpdate)
-            .switchMap(
-                fetchEachPropUpdate,
-                mergeEachPropUpdate
-            );
+            .switchMap(fetchEachPropUpdate, mergeEachPropUpdate);
     }
     getChildContext() {
         const { falcor, dispatch } = this.state;
@@ -230,19 +227,24 @@ class FalcorContainer extends React.Component {
         });
     }
     // componentWillUpdate() {
+    //     if (!global['__trace_container_updates__']) {
+    //         return;
+    //     }
     //     const { state = {} } = this;
     //     const { falcor } = state;
     //     if (falcor) {
-    //         const pathString = falcor.getPath().reduce((xs, key, idx) => {
-    //             if (idx === 0) {
-    //                 return key;
-    //             } else if (typeof key === 'number') {
-    //                 return `${xs}[${key}]`;
-    //             }
-    //             return `${xs}['${key}']`;
-    //         }, '');
-    //         console.log(`cwu:`, pathString);
+    //         console.log(`cwu:`, this.getFalcorPathString());
     //     }
+    // }
+    // getFalcorPathString() {
+    //     return this.state && this.state.falcor && this.state.falcor.getPath().reduce((xs, key, idx) => {
+    //         if (idx === 0) {
+    //             return key;
+    //         } else if (typeof key === 'number') {
+    //             return `${xs}[${key}]`;
+    //         }
+    //         return `${xs}['${key}']`;
+    //     }, '') || '';
     // }
     componentWillUnmount() {
         // Clean-up subscription before un-mounting

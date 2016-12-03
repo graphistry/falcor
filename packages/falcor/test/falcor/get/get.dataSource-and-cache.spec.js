@@ -1,7 +1,7 @@
 var $ref = require('@graphistry/falcor-json-graph').ref;
 var $atom = require('@graphistry/falcor-json-graph').atom;
-var falcor = require('./../../../falcor.js');
-var Model = falcor.Model;
+var Model = require('./../../../falcor.js').Model;
+var FalcorJSON = require('./../../../falcor.js').FalcorJSON;
 var Rx = require('rx');
 var noOp = function() {};
 var LocalDataSource = require('../../data/LocalDataSource');
@@ -434,15 +434,17 @@ describe('DataSource and Cache', function() {
                 get(['lolomo', 0, 0, 'item', 'title'], ['lolomo', 0, 1, 'item', 'title'])).
                 doAction(function(x) {
                     count++;
-                    x.json[f_meta_data] = x.json[f_meta_data];
-                    x.json['lolomo'][f_meta_data] = x.json['lolomo'][f_meta_data];
-                    x.json['lolomo'][0][f_meta_data] = x.json['lolomo'][0][f_meta_data];
-                    x.json['lolomo'][0][0][f_meta_data] = x.json['lolomo'][0][0][f_meta_data];
-                    x.json['lolomo'][0][1][f_meta_data] = x.json['lolomo'][0][1][f_meta_data];
-                    x.json['lolomo'][0][0]['item'][f_meta_data] = x.json['lolomo'][0][0]['item'][f_meta_data];
-                    x.json['lolomo'][0][1]['item'][f_meta_data] = x.json['lolomo'][0][1]['item'][f_meta_data];
+                    // x.json[f_meta_data] = x.json[f_meta_data];
+                    // x.json['lolomo'][f_meta_data] = x.json['lolomo'][f_meta_data];
+                    // x.json['lolomo'][0][f_meta_data] = x.json['lolomo'][0][f_meta_data];
+                    // x.json['lolomo'][0][0][f_meta_data] = x.json['lolomo'][0][0][f_meta_data];
+                    // x.json['lolomo'][0][1][f_meta_data] = x.json['lolomo'][0][1][f_meta_data];
+                    // x.json['lolomo'][0][0]['item'][f_meta_data] = x.json['lolomo'][0][0]['item'][f_meta_data];
+                    // x.json['lolomo'][0][1]['item'][f_meta_data] = x.json['lolomo'][0][1]['item'][f_meta_data];
                     expect(x).to.deep.equals({
+                        __proto__: FalcorJSON.prototype,
                         json: {
+                            __proto__: FalcorJSON.prototype,
                             [f_meta_data]: {
                                 '$code':          '350990479',
                                 [f_meta_keys]:        { lolomo: true },
@@ -452,6 +454,7 @@ describe('DataSource and Cache', function() {
                                 [f_meta_version]:     1
                             },
                             lolomo: {
+                                __proto__: FalcorJSON.prototype,
                                 [f_meta_data]: {
                                     '$code':          '1437563678',
                                     [f_meta_keys]:        { 0: true },
@@ -461,6 +464,7 @@ describe('DataSource and Cache', function() {
                                     [f_meta_version]:     1
                                 },
                                 0: {
+                                    __proto__: FalcorJSON.prototype,
                                     [f_meta_data]: {
                                         '$code':          '2823858104',
                                         [f_meta_keys]:        { 0: true, 1: true },
@@ -470,6 +474,7 @@ describe('DataSource and Cache', function() {
                                         [f_meta_version]:     1
                                     },
                                     0: {
+                                        __proto__: FalcorJSON.prototype,
                                         [f_meta_data]: {
                                             '$code':          '3681981706',
                                             [f_meta_keys]:        { item: true },
@@ -479,6 +484,7 @@ describe('DataSource and Cache', function() {
                                             [f_meta_version]:     0
                                         },
                                         item: {
+                                            __proto__: FalcorJSON.prototype,
                                             [f_meta_data]: {
                                                 '$code':          '165499941',
                                                 [f_meta_keys]:        { title: true },
@@ -491,6 +497,7 @@ describe('DataSource and Cache', function() {
                                         }
                                     },
                                     1: {
+                                        __proto__: FalcorJSON.prototype,
                                         [f_meta_data]: {
                                             '$code':          '3681981706',
                                             [f_meta_keys]:        { item: true },
@@ -500,6 +507,7 @@ describe('DataSource and Cache', function() {
                                             [f_meta_version]:     1
                                         },
                                         item: {
+                                            __proto__: FalcorJSON.prototype,
                                             [f_meta_data]: {
                                                 '$code':          '165499941',
                                                 [f_meta_keys]:        { title: true },
@@ -534,15 +542,17 @@ describe('DataSource and Cache', function() {
                 get(['lolomo', 0, 0, 'item', 'title'], ['lolomo', 0, 1, 'item', 'title'])).
                 doAction(function(x) {
                     count++;
-                    x.json[f_meta_data] = x.json[f_meta_data];
-                    x.json['lolomo'][f_meta_data] = x.json['lolomo'][f_meta_data];
-                    x.json['lolomo'][0][f_meta_data] = x.json['lolomo'][0][f_meta_data];
-                    x.json['lolomo'][0][0][f_meta_data] = x.json['lolomo'][0][0][f_meta_data];
-                    x.json['lolomo'][0][1][f_meta_data] = x.json['lolomo'][0][1][f_meta_data];
-                    x.json['lolomo'][0][0]['item'][f_meta_data] = x.json['lolomo'][0][0]['item'][f_meta_data];
-                    x.json['lolomo'][0][1]['item'][f_meta_data] = x.json['lolomo'][0][1]['item'][f_meta_data];
+                    // x.json[f_meta_data] = x.json[f_meta_data];
+                    // x.json['lolomo'][f_meta_data] = x.json['lolomo'][f_meta_data];
+                    // x.json['lolomo'][0][f_meta_data] = x.json['lolomo'][0][f_meta_data];
+                    // x.json['lolomo'][0][0][f_meta_data] = x.json['lolomo'][0][0][f_meta_data];
+                    // x.json['lolomo'][0][1][f_meta_data] = x.json['lolomo'][0][1][f_meta_data];
+                    // x.json['lolomo'][0][0]['item'][f_meta_data] = x.json['lolomo'][0][0]['item'][f_meta_data];
+                    // x.json['lolomo'][0][1]['item'][f_meta_data] = x.json['lolomo'][0][1]['item'][f_meta_data];
                     expect(x).to.deep.equals({
+                        __proto__: FalcorJSON.prototype,
                         json: {
+                            __proto__: FalcorJSON.prototype,
                             [f_meta_data]: {
                                 '$code':          '350990479',
                                 [f_meta_keys]:        { lolomo: true },
@@ -552,6 +562,7 @@ describe('DataSource and Cache', function() {
                                 [f_meta_version]:     1
                             },
                             lolomo: {
+                                __proto__: FalcorJSON.prototype,
                                 [f_meta_data]: {
                                     '$code':          '1437563678',
                                     [f_meta_keys]:        { 0: true },
@@ -561,6 +572,7 @@ describe('DataSource and Cache', function() {
                                     [f_meta_version]:     0
                                 },
                                 0: {
+                                    __proto__: FalcorJSON.prototype,
                                     [f_meta_data]: {
                                         '$code':          '2823858104',
                                         [f_meta_keys]:        { 0: true, 1: true },
@@ -570,6 +582,7 @@ describe('DataSource and Cache', function() {
                                         [f_meta_version]:     0
                                     },
                                     0: {
+                                        __proto__: FalcorJSON.prototype,
                                         [f_meta_data]: {
                                             '$code':          '3681981706',
                                             [f_meta_keys]:        { item: true },
@@ -579,6 +592,7 @@ describe('DataSource and Cache', function() {
                                             [f_meta_version]:     0
                                         },
                                         item: {
+                                            __proto__: FalcorJSON.prototype,
                                             [f_meta_data]: {
                                                 '$code':          '165499941',
                                                 [f_meta_keys]:        { title: true },
@@ -591,6 +605,7 @@ describe('DataSource and Cache', function() {
                                         }
                                     },
                                     1: {
+                                        __proto__: FalcorJSON.prototype,
                                         [f_meta_data]: {
                                             '$code':          '3681981706',
                                             [f_meta_keys]:        { item: true },
@@ -600,6 +615,7 @@ describe('DataSource and Cache', function() {
                                             [f_meta_version]:     0
                                         },
                                         item: {
+                                            __proto__: FalcorJSON.prototype,
                                             [f_meta_data]: {
                                                 '$code':          '165499941',
                                                 [f_meta_keys]:        { title: true },

@@ -12,7 +12,6 @@ module.exports = {
 };
 
 function json(model, args, data, progressive, expireImmediate) {
-    // debugger
     args = groupCacheArguments(args);
     var set = setGroupsIntoCache(model, args /*, expireImmediate */);
     var get = progressive && getJSON(model, set.relative, data, progressive, expireImmediate);

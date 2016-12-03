@@ -1,14 +1,16 @@
 'use strict';
 
-var _assign = require('babel-runtime/core-js/object/assign');
-
-var _assign2 = _interopRequireDefault(_assign);
-
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _extends = _assign2.default || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+var _extends2 = require('babel-runtime/helpers/extends');
+
+var _extends3 = _interopRequireDefault(_extends2);
+
+var _objectWithoutProperties2 = require('babel-runtime/helpers/objectWithoutProperties');
+
+var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 
 var _compose = require('recompose/compose');
 
@@ -92,8 +94,6 @@ require('rxjs/add/operator/distinctUntilKeyChanged');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
-
 _falcor.Model.prototype.changes = function () {
     var _this = this;
 
@@ -143,9 +143,8 @@ var connect = function connect(BaseComponent) {
             var falcor = _ref2.falcor;
             return falcor.changes();
         }, function (_ref3, falcor) {
-            var props = _objectWithoutProperties(_ref3, []);
-
-            return _extends({}, props, { falcor: falcor, version: falcor.getVersion()
+            var props = (0, _objectWithoutProperties3.default)(_ref3, []);
+            return (0, _extends3.default)({}, props, { falcor: falcor, version: falcor.getVersion()
             });
         }).distinctUntilKeyChanged('version').auditTime(0, _animationFrame.animationFrame);
     }), (0, _withContext2.default)(contextTypes, function (_ref4) {

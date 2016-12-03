@@ -198,43 +198,46 @@ module.exports = function createHardlink(from, to) {
     this["ƒ_meta"] = f_meta || {};
 }
 
-FalcorJSON.prototype = Object.create(Object.prototype, Object.assign({
-        toJSON: { value: toJSON },
-        toProps: { value: toProps },
-        toString: { value: toString },
+FalcorJSON.prototype.toJSON = toJSON;
+FalcorJSON.prototype.toProps = toProps;
+FalcorJSON.prototype.toString = toString;
+FalcorJSON.prototype.constructor = FalcorJSON;
+
+Object.defineProperties(FalcorJSON.prototype, [
+        'concat', 'copyWithin', 'entries', 'every', 'fill', 'filter',
+        'find', 'findIndex', 'forEach', 'includes', 'indexOf', 'join',
+        'keys', 'lastIndexOf', 'map', 'pop', 'push', 'reduce', 'reduceRight',
+        'reverse', 'shift', 'slice', 'some', 'sort', 'splice', 'unshift', 'values'
+    ]
+    .reduce(function (descriptors, name) {
+        descriptors[name] = {
+            writable: true, enumerable: false,
+            value: bindArrayMethod(Array.prototype[name])
+        };
+        return descriptors;
+    }, {
         $__hash: {
             enumerable: false,
-            get() {
+            get: function() {
                 var f_meta = this["ƒ_meta"];
                 return f_meta && f_meta['$code'] || '';
             }
         },
         $__version: {
             enumerable: false,
-            get() {
+            get: function() {
                 var f_meta = this["ƒ_meta"];
                 return f_meta && f_meta["version"] || 0;
             }
         }
-    },
-    arrayProtoMethods().reduce(function (falcorJSONProto, methodName) {
-        var method = Array.prototype[methodName];
-        falcorJSONProto[methodName] = {
-            writable: true, enumerable: false, value() {
-                return method.apply(this, arguments);
-            }
-        };
-        return falcorJSONProto;
-    }, {}))
+    })
 );
 
-function arrayProtoMethods() {
-    return [
-        'concat', 'copyWithin', 'entries', 'every', 'fill', 'filter', 'find',
-        'findIndex', 'forEach', 'includes', 'indexOf', 'join', 'keys',
-        'lastIndexOf', 'map', 'pop', 'push', 'reduce', 'reduceRight',
-        'reverse', 'shift', 'slice', 'some', 'sort', 'splice', 'unshift', 'values'
-    ];
+function bindArrayMethod(fn) {
+    return (bound.fn = fn) && bound;
+    function bound() {
+        return bound.fn.apply(this, arguments);
+    }
 }
 
 var isArray = Array.isArray;
@@ -259,14 +262,13 @@ function getInst(inst) {
 }
 
 function toJSON() {
-    return serialize(
-        getInst.apply(this, arguments), toJSON, false
-    );
+    return serialize(getInst.apply(this, arguments), toJSON);
 }
 
 function toString(includeMetadata) {
     return JSON.stringify(serialize(
-        getInst.call(this, this), serialize, includeMetadata === true
+        getInst.call(this, this),
+        serialize, includeMetadata === true
     ));
 }
 
@@ -275,14 +277,13 @@ function toProps(inst) {
     inst = getInst.apply(this, arguments);
 
     var f_meta_inst, f_meta_json, version = 0;
-    var json = serialize(inst, toProps, true);
+    var json = serialize(inst, toProps, true, true);
 
     if (inst && (f_meta_inst = inst["ƒ_meta"])) {
         version = f_meta_inst["version"];
     }
 
     if (!(!json || typeof json !== typeofObject)) {
-        json.__proto__ = FalcorJSON.prototype;
         if (f_meta_json = json["ƒ_meta"]) {
             f_meta_json["version"] = version;
         }
@@ -291,7 +292,7 @@ function toProps(inst) {
     return json;
 }
 
-function serialize(inst, serializer, includeMetadata) {
+function serialize(inst, serializer, includeMetadata, createWithProto) {
 
     if (!inst || typeof inst !== typeofObject) {
         return inst;
@@ -321,11 +322,16 @@ function serialize(inst, serializer, includeMetadata) {
             var deref_to = f_meta["deref_to"];
             var deref_from = f_meta["deref_from"];
 
-            f_meta = xs["ƒ_meta"] = {};
+            f_meta = {};
             $code && (f_meta['$code'] = $code);
             abs_path && (f_meta["abs_path"] = abs_path);
             deref_to && (f_meta["deref_to"] = deref_to);
             deref_from && (f_meta["deref_from"] = deref_from);
+            if (!createWithProto) {
+                xs["ƒ_meta"] = f_meta;
+            } else {
+                xs.__proto__ = new FalcorJSON(f_meta);
+            }
         }
 
         while (++count < total) {
@@ -682,7 +688,7 @@ module.exports = function setJSONGraphs(model, jsonGraphEnvelopes, errorSelector
     var modelRoot = model._root;
     var lru = modelRoot;
     var expired = modelRoot.expired;
-    var version = modelRoot.version++;
+    var version = modelRoot.version;
     var cache = modelRoot.cache;
     var initialVersion = cache["ƒ_version"];
 
@@ -726,8 +732,9 @@ module.exports = function setJSONGraphs(model, jsonGraphEnvelopes, errorSelector
     var newVersion = cache["ƒ_version"];
     var rootChangeHandler = modelRoot.onChange;
 
-    if (rootChangeHandler && initialVersion !== newVersion) {
-        rootChangeHandler();
+    if (initialVersion !== newVersion) {
+        modelRoot.version = version + 1;
+        rootChangeHandler && rootChangeHandler();
     }
 
     return [requestedPaths, optimizedPaths];
@@ -931,7 +938,7 @@ module.exports = function setPathMaps(model, pathMapEnvelopes, errorSelector, co
     var modelRoot = model._root;
     var lru = modelRoot;
     var expired = modelRoot.expired;
-    var version = modelRoot.version++;
+    var version = modelRoot.version;
     var bound = model._path;
     var cache = modelRoot.cache;
     var node = getCachePosition(cache, bound);
@@ -965,8 +972,9 @@ module.exports = function setPathMaps(model, pathMapEnvelopes, errorSelector, co
     var newVersion = cache["ƒ_version"];
     var rootChangeHandler = modelRoot.onChange;
 
-    if (rootChangeHandler && initialVersion !== newVersion) {
-        rootChangeHandler();
+    if (initialVersion !== newVersion) {
+        modelRoot.version = version + 1;
+        rootChangeHandler && rootChangeHandler();
     }
 
     return [requestedPaths, optimizedPaths];
@@ -1827,7 +1835,7 @@ module.exports = function setPathValues(model, pathValues, errorSelector, compar
     var modelRoot = model._root;
     var lru = modelRoot;
     var expired = modelRoot.expired;
-    var version = modelRoot.version++;
+    var version = modelRoot.version;
     var bound = model._path;
     var cache = modelRoot.cache;
     var node = getCachePosition(cache, bound);
@@ -1863,8 +1871,9 @@ module.exports = function setPathValues(model, pathValues, errorSelector, compar
     var newVersion = cache["ƒ_version"];
     var rootChangeHandler = modelRoot.onChange;
 
-    if (rootChangeHandler && initialVersion !== newVersion) {
-        rootChangeHandler();
+    if (initialVersion !== newVersion) {
+        modelRoot.version = version + 1;
+        rootChangeHandler && rootChangeHandler();
     }
 
     return [requestedPaths, optimizedPaths];
@@ -3088,18 +3097,29 @@ module.exports = function mergeValueOrInsertBranch(
         }
     } else {
         var message = value;
+        var isDistinct = true;
         var mType = getType(message);
+
         // Compare the current cache value with the new value. If either of
         // them don't have a timestamp, or the message's timestamp is newer,
         // replace the cache value with the message value. If a comparator
         // is specified, the comparator takes precedence over timestamps.
-        //
-        // Comparing either Number or undefined to undefined always results in false.
-        var isDistinct = (getTimestamp(message) < getTimestamp(node)) === false;
-        // If at least one of the cache/message are sentinels, compare them.
-        if ((type || mType) && comparator) {
-            isDistinct = !comparator(node, message, optimizedPath.slice(0, optimizedPath.index));
+        if (comparator) {
+            isDistinct = !comparator(
+                node, message, optimizedPath.slice(0, optimizedPath.index)
+            );
+        } else if (!mType) {
+            isDistinct = !node || node.value !== message;
+        } else {
+            isDistinct = !type || ((
+                // Comparing either Number or undefined to undefined always results in false.
+                getTimestamp(message) < getTimestamp(node)) === false) || !(
+                // They're the same if the following fields are the same.
+                type !== mType ||
+                node.value !== message.value ||
+                node.$expires !== message.$expires);
         }
+
         if (isDistinct) {
 
             if (errorSelector && mType === $error) {
@@ -4464,16 +4484,20 @@ function ModelRoot(o, model) {
     }
 }
 
-ModelRoot.prototype.errorSelector = function errorSelector(x, y) {
-    return y;
-};
-
-ModelRoot.prototype.comparator = function comparator(cacheNode, messageNode) {
-    if (hasOwn(cacheNode, 'value') && hasOwn(messageNode, 'value')) {
-        // They are the same only if the following fields are the same.
-        return cacheNode.value === messageNode.value &&
-            cacheNode.$type === messageNode.$type &&
-            cacheNode.$expires === messageNode.$expires;
+ModelRoot.comparator = function comparator(cacheNode, messageNode) {
+    var cType = cacheNode && cacheNode.$type;
+    var mType = messageNode && messageNode.$type;
+    if (cType) {
+        if (!mType) {
+            return cacheNode.value === messageNode;
+        } else {
+            // They are the same only if the following fields are the same.
+            return !(cType !== mType ||
+                     cacheNode.value !== messageNode.value ||
+                     cacheNode.$expires !== messageNode.$expires);
+        }
+    } else if (mType) {
+        return false;
     }
     return cacheNode === messageNode;
 };
@@ -4648,7 +4672,7 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
             json = undefined;
         } else if (f_meta = json["ƒ_meta"]) {
             if (!branchSelector && !(json instanceof FalcorJSON)) {
-                json = { ["ƒ_meta"]: f_meta, __proto__: FalcorJSON.prototype };
+                json = { __proto__: new FalcorJSON(f_meta) };
             } else if (
                 f_meta["version"]  === node["ƒ_version"] &&
                 f_meta['$code']         === path['$code'] &&
@@ -4797,9 +4821,13 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path, depth, seed, result
                     // Empower developers to instrument branch node creation by
                     // providing a custom function. If they do, delegate branch
                     // node creation to them.
-                    json = branchSelector && branchSelector({
-                        ["ƒ_meta"]: f_meta, __proto__: FalcorJSON.prototype }) || {
-                        ["ƒ_meta"]: f_meta, __proto__: FalcorJSON.prototype };
+                    if (branchSelector && (json = branchSelector(f_meta))) {
+                        json["ƒ_meta"] = f_meta;
+                    } else {
+                        json = { __proto__: FalcorJSON.prototype };
+                        json["ƒ_meta"] = f_meta;
+                        json = { __proto__: json };
+                    }
                 }
 
                 f_new_keys[nextKey] = true;
@@ -4866,9 +4894,9 @@ function onMissing(path, depth, results,
         wrapMaterializedBranchSelector(branchSelector);
 
     return paths.reduce(function(json, restPath) {
-        requestedLength = depth + restPath.length;
+        var restLength = depth + restPath.length;
         return originalOnMissing(rPath.concat(restPath), depth,
-                                 results, requestedPath, requestedLength, fromReference,
+                                 results, requestedPath, restLength, fromReference,
                                  optimizedPath, optimizedLength, reportMissing, json,
                                  reportMaterialized, createMaterializedBranch);
     }, json);
@@ -4876,9 +4904,10 @@ function onMissing(path, depth, results,
 
 function wrapMaterializedBranchSelector(branchSelector) {
     return function(path, _depth, node) {
-        return branchSelector(
-            node = createDefaultMaterializedBranch(path, _depth, node)
-        ) || node;
+        var f_meta = {};
+        f_meta["version"] = 0;
+        f_meta["abs_path"] = path.slice(0, _depth);
+        return branchSelector(f_meta);
     }
 }
 
@@ -4886,8 +4915,10 @@ function createDefaultMaterializedBranch(path, _depth, node) {
     var f_meta = {};
     f_meta["version"] = 0;
     f_meta["abs_path"] = path.slice(0, _depth);
-    return { ["ƒ_meta"]: f_meta, __proto__: FalcorJSON.prototype };
- }
+    node = { __proto__: FalcorJSON.prototype };
+    node["ƒ_meta"] = f_meta;
+    return { __proto__: node };
+}
 
 
 /***/ },
@@ -5121,10 +5152,10 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path,
                     f_meta["deref_from"] = refContainerAbsPath;
                     // Empower developers to instrument branch node creation by
                     // providing a custom function. If they do, delegate branch
-                    // node creation to them.
-                    json = branchSelector && branchSelector({
-                        ["ƒ_meta"]: f_meta, __proto__: FalcorJSON.prototype }) || {
-                        ["ƒ_meta"]: f_meta, __proto__: FalcorJSON.prototype };
+                    if (json = branchSelector ? branchSelector(f_meta) : {
+                                                __proto__: FalcorJSON.prototype }) {
+                        json["ƒ_meta"] = f_meta;
+                    }
                 }
 
                 // Set the reported branch or leaf into this branch.
@@ -5168,9 +5199,10 @@ function onMissing(path, depth, results,
 
 function wrapMaterializedBranchSelector(branchSelector) {
     return function(path, _depth, node) {
-        return branchSelector(
-            node = createDefaultMaterializedBranch(path, _depth, node)
-        ) || node;
+        var f_meta = {};
+        f_meta["version"] = 0;
+        f_meta["abs_path"] = path.slice(0, _depth);
+        return branchSelector(f_meta);
     }
 }
 
@@ -5178,8 +5210,10 @@ function createDefaultMaterializedBranch(path, _depth, node) {
     var f_meta = {};
     f_meta["version"] = 0;
     f_meta["abs_path"] = path.slice(0, _depth);
-    return { ["ƒ_meta"]: f_meta, __proto__: FalcorJSON.prototype };
- }
+    node = { __proto__: FalcorJSON.prototype };
+    node["ƒ_meta"] = f_meta;
+    return node;
+}
 
 
 /***/ },
@@ -5754,40 +5788,31 @@ module.exports = function mergeJSONGraphNode(
     // - If they're both edges, continue below.
     if (node === message) {
 
-        // There should not be undefined values.  Those should always be
+        // The message and cache are both undefined, return undefined.
+        if (message === undefined) {
+            return message;
+        }
+        // There should not be undefined values. Those should always be
         // wrapped in an $atom
-        if (message === null) {
+        else if (message === null) {
             node = wrapNode(message, undefined, message);
             parent = updateNodeAncestors(parent, -node.$size, lru, version);
             node = insertNode(node, parent, key, undefined, optimizedPath);
             return node;
         }
-
-        // The message and cache are both undefined, return undefined.
-        else if (message === undefined) {
-            return message;
-        }
-
-        else {
-            cIsObject = !(!node || typeof node !== 'object');
-            if (cIsObject) {
-                // Is the cache node a branch? If so, return the cache branch.
-                cType = node.$type;
-                if (cType == null) {
-                    // Has the branch been introduced to the cache yet? If not,
-                    // give it a parent, key, and absolute path.
-                    if (node["ƒ_parent"] == null) {
-                        insertNode(node, parent, key, version, optimizedPath);
-                    }
-                    return node;
-                }
+        // Is the cache node a branch? If so, return the cache branch.
+        else if ((
+            cIsObject = !(!node || typeof node !== 'object')) && (
+            cType = node.$type) === undefined) {
+            // Has the branch been introduced to the cache yet? If not,
+            // give it a parent, key, and absolute path.
+            if (node["ƒ_parent"] === undefined) {
+                insertNode(node, parent, key, version, optimizedPath);
             }
+            return node;
         }
-    } else {
-        cIsObject = !(!node || typeof node !== 'object');
-        if (cIsObject) {
-            cType = node.$type;
-        }
+    } else if (cIsObject = !(!node || typeof node !== 'object')) {
+        cType = node.$type;
     }
 
     // If the cache isn't a reference, we might be able to return early.
@@ -5856,7 +5881,10 @@ module.exports = function mergeJSONGraphNode(
 
     // If the cache is a leaf but the message is a branch, merge the branch over the leaf.
     if (cType && mIsObject && !mType) {
-        return insertNode(replaceNode(node, message, parent, key, lru, version), parent, key, undefined, optimizedPath);
+        return insertNode(replaceNode(
+                node, message, parent, key, lru, version),
+            parent, key, undefined, optimizedPath
+        );
     }
     // If the message is a sentinel or primitive, insert it into the cache.
     else if (mType || !mIsObject) {
@@ -5884,17 +5912,26 @@ module.exports = function mergeJSONGraphNode(
             var isDistinct = true;
             // If the cache is a branch, but the message is a leaf, replace the
             // cache branch with the message leaf.
-            if ((cType && !isExpired(node, expireImmediate)) || !cIsObject) {
+            if (!cIsObject || (cType && !isExpired(node, expireImmediate))) {
+
                 // Compare the current cache value with the new value. If either of
                 // them don't have a timestamp, or the message's timestamp is newer,
                 // replace the cache value with the message value. If a comparator
                 // is specified, the comparator takes precedence over timestamps.
-                //
-                // Comparing either Number or undefined to undefined always results in false.
-                isDistinct = (getTimestamp(message) < getTimestamp(node)) === false;
-                // If at least one of the cache/message are sentinels, compare them.
-                if (isDistinct && (cType || mType) && comparator) {
-                    isDistinct = !comparator(node, message, optimizedPath.slice(0, optimizedPath.index));
+                if (comparator) {
+                    isDistinct = !comparator(
+                        node, message, optimizedPath.slice(0, optimizedPath.index)
+                    );
+                } else if (!mType) {
+                    isDistinct = !node || node.value !== message;
+                } else {
+                    isDistinct = !cType || ((
+                        // Comparing either Number or undefined to undefined always results in false.
+                        getTimestamp(message) < getTimestamp(node)) === false) || !(
+                        // They're the same if the following fields are the same.
+                        cType !== mType ||
+                        node.value !== message.value ||
+                        node.$expires !== message.$expires);
                 }
             }
             if (isDistinct) {
@@ -5942,7 +5979,6 @@ module.exports = {
 };
 
 function json(model, args, data, progressive, expireImmediate) {
-    // debugger
     args = groupCacheArguments(args);
     var set = setGroupsIntoCache(model, args /*, expireImmediate */);
     var get = progressive && getJSON(model, set.relative, data, progressive, expireImmediate);
@@ -6129,48 +6165,51 @@ var FalcorJSON = __webpack_require__(7);
 var getCachePosition = __webpack_require__(11);
 var InvalidDerefInputError = __webpack_require__(91);
 
-module.exports = function deref(boundJSONArg) {
+module.exports = function deref(json) {
 
-    if (!boundJSONArg || typeof boundJSONArg !== 'object') {
+    if (!json || typeof json !== 'object') {
         throw new InvalidDerefInputError();
     }
 
     var referenceContainer, currentRefPath, i, len;
-    var jsonMetadata = boundJSONArg && boundJSONArg["ƒ_meta"];
+    var f_meta = json && json["ƒ_meta"];
 
-    if (!jsonMetadata || typeof jsonMetadata !== 'object') {
+    if (!f_meta || typeof f_meta !== 'object') {
         return this._clone({
-            _node: undefined
+            _node: undefined,
+            _seed: recycleJSON && {
+                __proto__: FalcorJSON.prototype
+            } || undefined
         });
     }
 
+    var cacheRoot = this._root.cache;
     var recycleJSON = this._recycleJSON;
-    var absolutePath = jsonMetadata["abs_path"];
+    var absolutePath = f_meta["abs_path"];
 
     if (!absolutePath) {
         return this._clone({
             _node: undefined,
             _seed: recycleJSON && {
-                json: boundJSONArg, __proto__: FalcorJSON.prototype
+                json: json, __proto__: FalcorJSON.prototype
             } || undefined
         });
     } else if (absolutePath.length === 0) {
         return this._clone({
+            _node: cacheRoot,
             _path: absolutePath,
-            _node: this._root.cache,
             _referenceContainer: true,
             _seed: recycleJSON && {
-                json: boundJSONArg, __proto__: FalcorJSON.prototype
+                json: json, __proto__: FalcorJSON.prototype
             } || undefined
         });
     }
 
-    var originalRefPath = jsonMetadata["deref_to"];
-    var originalAbsPath = jsonMetadata["deref_from"];
+    var originalRefPath = f_meta["deref_to"];
+    var originalAbsPath = f_meta["deref_from"];
 
     // We deref and then ensure that the reference container is attached to
     // the model.
-    var cacheRoot = this._root.cache;
     var cacheNode = getCachePosition(cacheRoot, absolutePath);
     var validContainer = CONTAINER_DOES_NOT_EXIST;
 
@@ -6192,18 +6231,15 @@ module.exports = function deref(boundJSONArg) {
         // the reference value with refPath.  If they are the same, then the
         // model is still valid.
         if (originalRefPath && referenceContainer && referenceContainer.$type === $ref) {
-            i = 0;
+            validContainer = true;
             len = originalRefPath.length;
             currentRefPath = referenceContainer.value;
-
-            validContainer = true;
-            for (; validContainer && i < len; ++i) {
+            for (i = 0; i < len; ++i) {
                 if (currentRefPath[i] !== originalRefPath[i]) {
+                    cacheNode = undefined;
                     validContainer = false;
+                    break;
                 }
-            }
-            if (validContainer === false) {
-                cacheNode = undefined;
             }
         }
     }
@@ -6225,7 +6261,7 @@ module.exports = function deref(boundJSONArg) {
         _path: absolutePath,
         _referenceContainer: referenceContainer,
         _seed: recycleJSON && {
-            json: boundJSONArg, __proto__: FalcorJSON.prototype
+            json: json, __proto__: FalcorJSON.prototype
         } || undefined
     });
 };
@@ -6383,14 +6419,20 @@ Call.prototype._subscribe = function(subscriber) {
     return subscriber;
 }
 
-Call.prototype._toJSON = function(data = { __proto__: FalcorJSON.prototype }, errors) {
+Call.prototype._toJSON = function(data, errors) {
+    if (data === undefined) {
+        data = { __proto__: FalcorJSON.prototype };
+    }
     return this.lift(new CallOperator(
         data, errors || this.operator.errors, 'json',
         this.operator.progressive, this.operator.maxRetryCount
     ), this.source);
 }
 
-Call.prototype._toJSONG = function(data = { __proto__: FalcorJSON.prototype }, errors) {
+Call.prototype._toJSONG = function(data, errors) {
+    if (data === undefined) {
+        data = { __proto__: FalcorJSON.prototype };
+    }
     return this.lift(new CallOperator(
         data, errors || this.operator.errors, 'jsonGraph',
         this.operator.progressive, this.operator.maxRetryCount

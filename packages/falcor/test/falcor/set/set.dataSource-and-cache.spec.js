@@ -197,7 +197,6 @@ describe('DataSource and Cache', function() {
     });
 
     it('should ensure that the jsong sent to server is optimized with a null last key.', function(done) {
-        // debugger
         var model = new Model({
             cache: Cache(),
             source: new LocalDataSource(Cache(), {

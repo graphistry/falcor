@@ -225,10 +225,10 @@ function walkPathAndBuildOutput(cacheRoot, node, json, path,
                     f_meta[f_meta_deref_from] = refContainerAbsPath;
                     // Empower developers to instrument branch node creation by
                     // providing a custom function. If they do, delegate branch
-                    // node creation to them.
-                    json = branchSelector && branchSelector({
-                        [f_meta_data]: f_meta, __proto__: FalcorJSON.prototype }) || {
-                        [f_meta_data]: f_meta, __proto__: FalcorJSON.prototype };
+                    if (json = branchSelector ? branchSelector(f_meta) : {
+                                                __proto__: FalcorJSON.prototype }) {
+                        json[f_meta_data] = f_meta;
+                    }
                 }
 
                 // Set the reported branch or leaf into this branch.
@@ -272,9 +272,10 @@ function onMissing(path, depth, results,
 
 function wrapMaterializedBranchSelector(branchSelector) {
     return function(path, _depth, node) {
-        return branchSelector(
-            node = createDefaultMaterializedBranch(path, _depth, node)
-        ) || node;
+        var f_meta = {};
+        f_meta[f_meta_version] = 0;
+        f_meta[f_meta_abs_path] = path.slice(0, _depth);
+        return branchSelector(f_meta);
     }
 }
 
@@ -282,5 +283,7 @@ function createDefaultMaterializedBranch(path, _depth, node) {
     var f_meta = {};
     f_meta[f_meta_version] = 0;
     f_meta[f_meta_abs_path] = path.slice(0, _depth);
-    return { [f_meta_data]: f_meta, __proto__: FalcorJSON.prototype };
- }
+    node = { __proto__: FalcorJSON.prototype };
+    node[f_meta_data] = f_meta;
+    return node;
+}

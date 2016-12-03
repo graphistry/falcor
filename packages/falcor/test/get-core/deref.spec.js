@@ -7,6 +7,7 @@ var _ = require('lodash');
 var error = jsonGraph.error;
 var expect = require('chai').expect;
 var Model = require('./../../falcor.js').Model;
+var FalcorJSON = require('./../../falcor.js').FalcorJSON;
 var BoundJSONGraphModelError = require('./../../lib/errors/BoundJSONGraphModelError');
 var sinon = require('sinon');
 var noOp = function() {};
@@ -140,7 +141,9 @@ describe('Deref', function() {
                 x.json[f_meta_data] = x.json[f_meta_data];
                 expect(onNext.calledOnce).to.be.ok;
                 expect(onNext.getCall(0).args[0]).to.deep.equals({
+                    __proto__: FalcorJSON.prototype,
                     json: {
+                        __proto__: FalcorJSON.prototype,
                         [f_meta_data]: {
                             [f_meta_abs_path]:   ['a', 'b'],
                             [f_meta_deref_from]: undefined,

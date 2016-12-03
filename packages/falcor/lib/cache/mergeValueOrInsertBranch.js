@@ -36,18 +36,29 @@ module.exports = function mergeValueOrInsertBranch(
         }
     } else {
         var message = value;
+        var isDistinct = true;
         var mType = getType(message);
+
         // Compare the current cache value with the new value. If either of
         // them don't have a timestamp, or the message's timestamp is newer,
         // replace the cache value with the message value. If a comparator
         // is specified, the comparator takes precedence over timestamps.
-        //
-        // Comparing either Number or undefined to undefined always results in false.
-        var isDistinct = (getTimestamp(message) < getTimestamp(node)) === false;
-        // If at least one of the cache/message are sentinels, compare them.
-        if ((type || mType) && comparator) {
-            isDistinct = !comparator(node, message, optimizedPath.slice(0, optimizedPath.index));
+        if (comparator) {
+            isDistinct = !comparator(
+                node, message, optimizedPath.slice(0, optimizedPath.index)
+            );
+        } else if (!mType) {
+            isDistinct = !node || node.value !== message;
+        } else {
+            isDistinct = !type || ((
+                // Comparing either Number or undefined to undefined always results in false.
+                getTimestamp(message) < getTimestamp(node)) === false) || !(
+                // They're the same if the following fields are the same.
+                type !== mType ||
+                node.value !== message.value ||
+                node.$expires !== message.$expires);
         }
+
         if (isDistinct) {
 
             if (errorSelector && mType === $error) {
