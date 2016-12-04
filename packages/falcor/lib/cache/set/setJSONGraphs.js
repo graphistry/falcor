@@ -69,7 +69,7 @@ module.exports = function setJSONGraphs(model, jsonGraphEnvelopes, errorSelector
         rootChangeHandler && rootChangeHandler();
     }
 
-    return [requestedPaths, optimizedPaths];
+    return [requestedPaths, optimizedPaths, initialVersion !== newVersion];
 };
 
 /* eslint-disable no-constant-condition */

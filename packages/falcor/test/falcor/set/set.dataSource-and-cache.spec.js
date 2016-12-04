@@ -83,6 +83,40 @@ describe('DataSource and Cache', function() {
                 }).
                 subscribe(noOp, done, done);
         });
+        it('should not send a request to the datasource when the same value is set.', function(done) {
+            var datasourceSetCalled = false;
+            var model = new Model({
+                source: new LocalDataSource(Cache(), {
+                    onSet: function(x, y, z) {
+                        datasourceSetCalled = true;
+                        return z;
+                    }
+                }),
+                cache: {
+                    videos: {
+                        766: { title: 'Die Hard' },
+                        1234: { title: 'House of Cards' }
+                    }
+                }
+            });
+            var next = false;
+            toObservable(model.
+                set({ path: ['videos', 766, 'title'], value: 'Die Hard' },
+                    { path: ['videos', 1234, 'title'], value: 'House of Cards' })).
+                doAction(function(x) {
+                    next = true;
+                    testRunner.compare({ json: {
+                        videos: {
+                            766: { title: 'Die Hard' },
+                            1234: { title: 'House of Cards' }
+                        }
+                    }}, strip(x));
+                }, noOp, function() {
+                    testRunner.compare(true, next, 'Expect to be onNext at least 1 time.');
+                    testRunner.compare(false, datasourceSetCalled, 'Expect data source set not to be called.');
+                }).
+                subscribe(noOp, done, done);
+        });
         it('should get a complex argument into a single arg.', function(done) {
             var model = new Model({cache: M(), source: new LocalDataSource(Cache())});
             var expected = {

@@ -62,7 +62,7 @@ module.exports = function setPathValues(model, pathValues, errorSelector, compar
         rootChangeHandler && rootChangeHandler();
     }
 
-    return [requestedPaths, optimizedPaths];
+    return [requestedPaths, optimizedPaths, initialVersion !== newVersion];
 };
 
 /* eslint-disable no-constant-condition */
