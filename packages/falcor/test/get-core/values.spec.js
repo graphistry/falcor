@@ -28,9 +28,75 @@ describe('Values', function() {
             cache: cacheGenerator(0, 1)
         });
     });
-    it('should get a value of type atom when in materialized mode.', function() {
+    it('should get branches to undefined values in materialized mode.', function() {
         getCoreRunner({
             input: [['videos', {to:2}, 'title']],
+            materialize: true,
+            stripMetadata: false,
+            output: {
+                json: {
+                    [f_meta_data]: {
+                        [f_meta_abs_path]:    undefined,
+                        [f_meta_deref_from]:  undefined,
+                        [f_meta_deref_to]:    undefined,
+                        [f_meta_version]:     0
+                    },
+                    videos: {
+                        [f_meta_data]: {
+                            [f_meta_abs_path]:    ['videos'],
+                            [f_meta_deref_from]:  undefined,
+                            [f_meta_deref_to]:    undefined,
+                            [f_meta_version]:     0
+                        },
+                        0: {
+                            [f_meta_data]: {
+                                [f_meta_abs_path]:    ['videos', 0],
+                                [f_meta_deref_from]:  undefined,
+                                [f_meta_deref_to]:    undefined,
+                                [f_meta_version]:     0
+                            },
+                            title: undefined
+                        },
+                        1: {
+                            [f_meta_data]: {
+                                [f_meta_abs_path]:    ['videos', 1],
+                                [f_meta_deref_from]:  undefined,
+                                [f_meta_deref_to]:    undefined,
+                                [f_meta_version]:     0
+                            },
+                            title: undefined
+                        },
+                        2: {
+                            [f_meta_data]: {
+                                [f_meta_abs_path]:    ['videos', 2],
+                                [f_meta_version]:     0
+                            },
+                            title: undefined
+                        }
+                    }
+                }
+            },
+            cache: {
+                jsonGraph: {
+                    videos: {
+                        0: {
+                            title: {$type: 'atom'}
+                        },
+                        1: {
+                            title: {$type: 'atom'}
+                        }
+                    }
+                },
+                paths: [
+                    ['videos', {to: 1}, 'title']
+                ]
+            }
+        });
+    });
+    it('should get a value of type atom when in boxed and materialized mode.', function() {
+        getCoreRunner({
+            input: [['videos', {to:2}, 'title']],
+            boxValues: true,
             materialize: true,
             stripMetadata: false,
             output: {
@@ -204,9 +270,9 @@ describe('Values', function() {
             cache: cacheGenerator(0, 2),
             stripMetadata: false,
 
-            // branchSelector = (metadata) => Object
-            branchSelector: function(metadata) {
-                return { $__userGenerated: true };
+            // branchSelector = (json) => Object
+            branchSelector: function(json) {
+                return Object.assign({}, json, { $__userGenerated: true });
             },
             output: {
                 json: {

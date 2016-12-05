@@ -10,7 +10,7 @@ module.exports = _.zip(
         return tests.reduce(function(suite, test) {
             return test && suite.add(test) || suite;
         }, suite);
-    }, new Benchmark.Suite('Get Tests', { async: false }));
+    }, new Benchmark.Suite('Get Tests', { async: true }));
 
 function netflixGetSuiteDescription() {
     var Model = require('falcor/dist/falcor.browser.min').Model;
@@ -21,19 +21,19 @@ function netflixGetSuiteDescription() {
     // hard-link all refs in the memoized Model's cache.
     memoizedModel._getPathValuesAsPathMap(memoizedModel, allTitlesPaths, [{}]);
     return [{
-        async: false,
+        async: true,
         name: '   @netflix/falcor getJSON - 100 paths from cache',
         fn: function() {
             memoizedModel._getPathValuesAsPathMap(memoizedModel, allTitlesPaths, [{}]);
         }
     }, {
-        async: false,
+        async: true,
         name: '   @netflix/falcor getJSONGraph - 100 paths from cache',
         fn: function() {
             memoizedModel._getPathValuesAsJSONG(memoizedModel, allTitlesPaths, [{}]);
         }
     }, {
-        async: false,
+        async: true,
         name: '   @netflix/falcor getVersion',
         fn: function() {
             memoizedBoundModel.getVersion();
@@ -42,8 +42,7 @@ function netflixGetSuiteDescription() {
 }
 
 function graphistryGetSuiteDescription() {
-    var jsonSeed = {};
-    var jsonGraphSeed = {};
+    var seed = {};
     var f_meta = require('../lib/internal/f_meta_data');
     var Model = require('../dist/falcor.all.min').Model;
     var createCacheWith100Videos = require('./createCacheWith100Videos');
@@ -53,19 +52,19 @@ function graphistryGetSuiteDescription() {
     // hard-link all refs in the memoized Model's cache.
     memoizedModel._getPathValuesAsPathMap(memoizedModel, allTitlesPaths, {}, false, true);
     return [{
-        async: false,
+        async: true,
         name: '@graphistry/falcor getJSON - 100 paths from cache',
         fn: function() {
-            memoizedModel._getPathValuesAsPathMap(memoizedModel, allTitlesPaths, jsonSeed, false, true);
+            memoizedModel._getPathValuesAsPathMap(memoizedModel, allTitlesPaths, seed, false, true);
         }
     }, {
-        async: false,
+        async: true,
         name: '@graphistry/falcor getJSONGraph - 100 paths from cache',
         fn: function() {
-            memoizedModel._getPathValuesAsJSONG(memoizedModel, allTitlesPaths, jsonGraphSeed, false, true);
+            memoizedModel._getPathValuesAsJSONG(memoizedModel, allTitlesPaths, {}, false, true);
         }
     }, {
-        async: false,
+        async: true,
         name: '@graphistry/falcor getVersion',
         fn: function() {
             memoizedBoundModel.getVersion();
@@ -74,7 +73,7 @@ function graphistryGetSuiteDescription() {
 }
 
 function graphistryGetRecycledSuiteDescription() {
-    var jsonSeed = {};
+    var seed = {};
     var Model = require('../dist/falcor.all.min').Model;
     var createCacheWith100Videos = require('./createCacheWith100Videos');
     var toFlatBuffer = require('@graphistry/falcor-path-utils/lib/toFlatBuffer');
@@ -83,15 +82,15 @@ function graphistryGetRecycledSuiteDescription() {
     var allTitlesPaths = [['lolomo', {from: 0, to: 9}, {from: 0, to: 9}, 'item', 'title']];
     // hard-link all refs in the memoized Model's cache.
     memoizedModel._getPathValuesAsPathMap(memoizedModel, allTitlesPaths, {}, false, true);
-    memoizedModel._seed = jsonSeed;
+    memoizedModel._seed = seed;
     memoizedModel._recycleJSON = true;
     allTitlesPaths = [computeFlatBufferHash(toFlatBuffer(allTitlesPaths))];
     return [{
-        async: false,
+        async: true,
         name: '@graphistry/falcor getJSON - 100 paths from cache',
         suffix: ' (recycled JSON)',
         fn: function() {
-            memoizedModel._getPathValuesAsPathMap(memoizedModel, allTitlesPaths, jsonSeed, false, true);
+            memoizedModel._getPathValuesAsPathMap(memoizedModel, allTitlesPaths, seed, false, true);
         }
     }];
 }

@@ -41,7 +41,47 @@ describe('References', function() {
         };
     };
 
-    it('should follow a reference to reference', function() {
+    it('should follow a reference to a value', function() {
+        getCoreRunner({
+            input: [['to', 'reference', 'title']],
+            output: {
+                json: {
+                    to: {
+                        reference: {
+                            title: 'Title'
+                        }
+                    }
+                }
+            },
+            cache: referenceCache
+        });
+    });
+
+    it('should report a value when a reference short-circuits', function() {
+        getCoreRunner({
+            input: [['short', 'title']],
+            output: {
+                json: {
+                    short: 'Short'
+                }
+            },
+            cache: referenceCache
+        });
+        getCoreRunner({
+            isJSONG: true,
+            input: [['short', 'title']],
+            output: {
+                paths: [['short', null]],
+                jsonGraph: {
+                    short: ref(['toShort', 'next']),
+                    toShort: 'Short'
+                }
+            },
+            cache: referenceCache
+        });
+    });
+
+    it('should follow a reference to a reference', function() {
         // Should be the second references reference not
         // toReferences reference.
         getCoreRunner({
@@ -68,14 +108,19 @@ describe('References', function() {
             },
             cache: referenceCache
         });
-    });
-
-    it('should follow a reference to value', function() {
         getCoreRunner({
-            input: [['short', 'title']],
+            isJSONG: true,
+            input: [['toReference', 'title']],
             output: {
-                json: {
-                    short: 'Short'
+                paths: [['toReference', 'title']],
+                jsonGraph: {
+                    toReference: ref(['to', 'reference']),
+                    to: {
+                        reference: ref(['too'])
+                    },
+                    too: {
+                        title: 'Title'
+                    }
                 }
             },
             cache: referenceCache
@@ -162,128 +207,7 @@ describe('References', function() {
         }
     });
 
-    xit('should log in debug mode if we follow at least 50 references', function() {
-
-        runTestWithConsoleFn(null, false);
-        runTestWithConsoleFn('log', true);
-
-        function runTestWithConsoleFn(reportFnName, hasConsole) {
-
-            var realConsole = console;
-
-            if (!hasConsole) {
-                global.console = undefined;
-            } else {
-                var realConsoleLog = console.log;
-                console.log = undefined;
-
-                var reportSpy = sinon.spy();
-                console[reportFnName] = reportSpy;
-            }
-
-            // It only warns in debug mode
-            global.DEBUG = true;
-
-            getCoreRunner({
-                stripMetadata: false,
-                input: [['ref-0', 'title']],
-                output: {
-                    json: {
-                        [f_meta_data]: {
-                            [f_meta_abs_path]:    undefined,
-                            [f_meta_deref_from]:  undefined,
-                            [f_meta_deref_to]:    undefined,
-                            [f_meta_version]:     0
-                        },
-                        'ref-0': {
-                            [f_meta_data]: {
-                                [f_meta_abs_path]:    ['too'],
-                                [f_meta_deref_from]:  undefined,
-                                [f_meta_deref_to]:    undefined,
-                                [f_meta_version]:     0
-                            },
-                            title: 'Title'
-                        }
-                    }
-                },
-                cache: addRefChainToCache(referenceCache(), 50, ['toReference'])
-            });
-
-            global.DEBUG = false;
-
-            if (!hasConsole) {
-                global.console = realConsole;
-            } else {
-                console.log = realConsoleLog;
-
-                expect(reportSpy.callCount).to.equal(1);
-                expect(reportSpy.getCall(0).args[0]).to.equal(new Error(
-                    'Followed 50 references. ' +
-                    'This might indicate the presence of an indirect ' +
-                    'circular reference chain.'
-                ).toString());
-            }
-        }
-    });
-
-    xit('should warn getting JSONGraph in debug mode if we follow at least 50 references', function() {
-
-        runTestWithConsoleFn(null, false);
-        runTestWithConsoleFn('log', true);
-
-        function runTestWithConsoleFn(reportFnName, hasConsole) {
-
-            var realConsole = console;
-
-            if (!hasConsole) {
-                global.console = undefined;
-            } else {
-                var realConsoleLog = console.log;
-                console.log = undefined;
-
-                var reportSpy = sinon.spy();
-                console[reportFnName] = reportSpy;
-            }
-
-            // It only warns in debug mode
-            global.DEBUG = true;
-
-            getCoreRunner({
-                isJSONG: true,
-                input: [['ref-0', 'title']],
-                output: {
-                    paths: [['ref-0', 'title']],
-                    jsonGraph: addRefChainToCache({
-                        toReference: ref(['to', 'reference']),
-                        to: {
-                            reference: ref(['too'])
-                        },
-                        too: {
-                            title: 'Title'
-                        }
-                    }, 50, ['toReference'])
-                },
-                cache: addRefChainToCache(referenceCache(), 50, ['toReference'])
-            });
-
-            global.DEBUG = false;
-
-            if (!hasConsole) {
-                global.console = realConsole;
-            } else {
-                console.log = realConsoleLog;
-
-                expect(reportSpy.callCount).to.equal(1);
-                expect(reportSpy.getCall(0).args[0]).to.equal(new Error(
-                    'Followed 50 references. ' +
-                    'This might indicate the presence of an indirect ' +
-                    'circular reference chain.'
-                ).toString());
-            }
-        }
-    });
-
-    it('should ensure that values are followed correctly when through references and previous paths have longer lengths to litter the requested path.', function() {
+    it('should ensure that values are followed correctly through references when previous paths have longer lengths to litter the requested path.', function() {
         getCoreRunner({
             stripMetadata: false,
             input: [
@@ -296,7 +220,6 @@ describe('References', function() {
                         [f_meta_deref_from]:  undefined,
                         [f_meta_deref_to]:    undefined,
                         [f_meta_version]:     0
-
                     },
                     to: {
                         [f_meta_data]: {

@@ -10,39 +10,43 @@ function onValueType(node, type, json,
                      optimizedPath, optimizedLength,
                      fromReference, modelRoot, expired, expireImmediate,
                      branchSelector, boxValues, materialized, reportMissing,
-                     treatErrorsAsValues, onValue, onMissing) {
+                     treatErrorsAsValues, onValue, onMissing, onMaterialize) {
 
-    var reportMaterialized = materialized;
+    var reportMaterialized = reportMissing;
 
-    if (!node || !type) {
-        if (materialized) {
-            reportMaterialized = true;
-            seed && (results.hasValue = true);
+    if (type) {
+        if (isExpired(node, expireImmediate)) {
+            if (!node[f_invalidated]) {
+                expireNode(node, expired, modelRoot);
+            }
+        } else {
+            lruPromote(modelRoot, node);
+            if (node.value === undefined) {
+                reportMissing = false;
+                reportMaterialized = materialized;
+            } else {
+                if (seed) {
+                    if (fromReference) {
+                        requestedPath[depth] = null;
+                    }
+                    return onValue(node, type, depth, seed, results,
+                                   requestedPath, optimizedPath, optimizedLength,
+                                   fromReference, boxValues, materialized, treatErrorsAsValues);
+                }
+                return undefined;
+            }
         }
-        return onMissing(path, depth, results,
-                         requestedPath, requestedLength, fromReference,
-                         optimizedPath, optimizedLength, reportMissing,
-                         json, reportMaterialized, branchSelector);
-    } else if (isExpired(node, expireImmediate)) {
-        if (!node[f_invalidated]) {
-            expireNode(node, expired, modelRoot);
-        }
-        return onMissing(path, depth, results,
-                         requestedPath, requestedLength, fromReference,
-                         optimizedPath, optimizedLength, reportMissing,
-                         json, reportMaterialized, branchSelector);
     }
 
-    lruPromote(modelRoot, node);
-
-    if (seed) {
-        if (fromReference) {
-            requestedPath[depth] = null;
-        }
-        return onValue(node, type, depth, seed, results,
-                       requestedPath, optimizedPath, optimizedLength,
-                       fromReference, boxValues, materialized, treatErrorsAsValues);
+    if (materialized) {
+        seed && (results.hasValue = true);
+    } else if (!reportMaterialized) {
+        return undefined;
     }
 
-    return undefined;
+    return onMissing(path, depth, results,
+                     requestedPath, requestedLength, fromReference,
+                     optimizedPath, optimizedLength, reportMissing,
+                     materialized, json, branchSelector,
+                     boxValues, onMaterialize);
 }

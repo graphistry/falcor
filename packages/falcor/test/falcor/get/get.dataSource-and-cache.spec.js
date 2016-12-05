@@ -268,6 +268,36 @@ describe('DataSource and Cache', function() {
                 }).
                 subscribe(noOp, done, done);
         });
+
+        it('should go to the datasource when a branch is an atom of undefined.', function(done) {
+            var model = new Model({
+                materialized: true,
+                cache: {
+                    paths: $atom(undefined)
+                },
+                source: new LocalDataSource({
+                    paths: $atom(undefined)
+                }, { materialize: true })
+            });
+
+            var onNext = sinon.spy();
+            toObservable(model.
+                get(['paths', {to:3}])).
+                doAction(onNext, noOp, function() {
+                    expect(onNext.calledOnce, 'onNext called').to.be.ok;
+                    expect(strip(onNext.getCall(0).args[0])).to.deep.equals({
+                        json: {
+                            paths: {
+                                0: undefined,
+                                1: undefined,
+                                2: undefined,
+                                3: undefined
+                            }
+                        }
+                    });
+                }).
+                subscribe(noOp, done, done);
+        });
     });
     describe('_toJSONG', function() {
         it('should get multiple arguments into a single _toJSONG response.', function(done) {

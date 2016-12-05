@@ -1,6 +1,7 @@
 var path = require('path');
 var webpack = require('webpack');
 var internalKeys = require('../lib/internal');
+var OptimizeJsPlugin = require('optimize-js-plugin');
 var WebpackVisualizer = require('webpack-visualizer-plugin');
 var ClosureCompilerPlugin = require('webpack-closure-compiler');
 
@@ -48,7 +49,7 @@ function baseConfig(isDev) {
         },
         entry: { falcor: ['./lib/index.js'] },
         module: {
-            loaders: [], //loaders(isDev),
+            loaders: loaders(isDev),
             noParse: [
                 /\@graphistry\/falcor-query-syntax\/lib\/paths\-parser\.js$/,
                 /\@graphistry\/falcor-query-syntax\/lib\/route\-parser\.js$/
@@ -71,6 +72,7 @@ function loaders(isDev) {
             exclude: /(node_modules(?!\/rxjs))/,
             loader: 'babel-loader',
             query: {
+                babelrc: false,
                 plugins: [
                    [require.resolve('babel-plugin-transform-es2015-template-literals'), { loose: true }],
                     require.resolve('babel-plugin-transform-es2015-literals'),
@@ -96,7 +98,6 @@ function plugins(config, isDev) {
         }, {});
 
     var plugins = [
-        license(),
         new webpack.NoErrorsPlugin(),
         new webpack.DefinePlugin({ DEBUG: isDev }),
         new webpack.DefinePlugin(internalKeyDefinitions),
@@ -133,6 +134,10 @@ function plugins(config, isDev) {
             concurrency: 3,
         }));
     }
+    // plugins.push(new OptimizeJsPlugin({
+    //     sourceMap: true
+    // }));
+    plugins.push(license());
     return plugins;
 }
 

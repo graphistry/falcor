@@ -47,13 +47,17 @@ describe('Error cases', function() {
             });
     });
 
-    it('should throw on invalid input.', function(done) {
-        try {
-            new Model().deref('testing');
-        } catch (e) {
-            expect(InvalidDerefInputError.is(e), 'expected InvalidDerefInputError').to.equal(true);
-            return done();
-        }
-        done(new Error('should of thrown an error.'));
+    it('should return null on invalid input.', function() {
+        expect(new Model().deref('testing'), 'invalid deref should return null').to.equal(null);
     });
+
+    // it('should throw on invalid input.', function(done) {
+    //     try {
+    //         new Model().deref('testing');
+    //     } catch (e) {
+    //         expect(InvalidDerefInputError.is(e), 'expected InvalidDerefInputError').to.equal(true);
+    //         return done();
+    //     }
+    //     done(new Error('should of thrown an error.'));
+    // });
 });

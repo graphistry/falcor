@@ -1,5 +1,6 @@
 var get = require('./../lib/cache/get');
-var Model = require('./../falcor.js');
+var Model = require('./../falcor.js').Model;
+var FalcorJSON = require('./../falcor.js').FalcorJSON;
 var expect = require('chai').expect;
 var clean = require('./cleanData').clean;
 var convertKey = require('./cleanData').convertKey;
@@ -74,12 +75,12 @@ module.exports = function(testConfig) {
     var out;
 
     if (testConfig.input) {
-        out = fn(model, testConfig.input, {}, true, true);
+        out = fn(model, testConfig.input, { __proto__: FalcorJSON.prototype }, true, true);
     }
 
     else {
         testConfig.inputs.forEach(function(input) {
-            out = fn(model, input, {}, true, true);
+            out = fn(model, input, { __proto__: FalcorJSON.prototype }, true, true);
         });
     }
 
@@ -91,7 +92,7 @@ module.exports = function(testConfig) {
             [f_meta_data]: function(x) { return x; }
         });
     } else if (testConfig.recycleJSON === true) {
-        valueNode = JSON.parse(JSON.stringify(valueNode));
+        valueNode = valueNode.toJSON();
     }
 
     // $size is stripped out of basic core tests.
@@ -101,15 +102,15 @@ module.exports = function(testConfig) {
     expectedOutput = clean(expectedOutput, {strip: ['$size'].concat(stripMetadataKeys)});
 
     if (expectedOutput) {
-        expect(valueNode).to.deep.equals(expectedOutput);
+        expect(valueNode, 'value').to.deep.equals(expectedOutput);
     }
-    if (requestedMissingPaths) {
-        expect(out.requested).to.deep.equals(requestedMissingPaths);
+    if (testConfig.hasOwnProperty('requestedMissingPaths')) {
+        expect(out.requested, 'requestedMissingPaths').to.deep.equals(requestedMissingPaths);
     }
-    if (optimizedMissingPaths) {
-        expect(out.missing).to.deep.equals(optimizedMissingPaths);
+    if (testConfig.hasOwnProperty('optimizedMissingPaths')) {
+        expect(out.missing, 'optimizedMissingPaths').to.deep.equals(optimizedMissingPaths);
     }
     if (errors) {
-        expect(out.errors).to.deep.equals(errors);
+        expect(out.errors, 'errors').to.deep.equals(errors);
     }
 };

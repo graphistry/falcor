@@ -1,4 +1,3 @@
-var $ref = require('../../types/ref');
 var isExpired = require('../isExpired');
 var expireNode = require('../expireNode');
 var lruPromote = require('../../lru/promote');

@@ -1,5 +1,3 @@
-var $ref = require('../types/ref');
-var $error = require('../types/error');
 var $now = require('../values/expires-now');
 var getType = require('../support/getType');
 var getSize = require('../support/getSize');
@@ -12,6 +10,7 @@ var insertNode = require('./insertNode');
 var replaceNode = require('./replaceNode');
 var reconstructPath = require('./reconstructPath');
 var updateNodeAncestors = require('./updateNodeAncestors');
+var removeNodeAndDescendants = require('./removeNodeAndDescendants');
 
 module.exports = function mergeValueOrInsertBranch(
     parent, node, key, value,
@@ -65,9 +64,8 @@ module.exports = function mergeValueOrInsertBranch(
                 message = errorSelector(reconstructPath(requestedPath, key), message);
             }
 
-            message = wrapNode(message, mType, mType ? message.value : message);
-
-            var sizeOffset = getSize(node) - getSize(message);
+            var sizeOffset = getSize(node) - getSize(message =
+                wrapNode(message, mType, mType ? message.value : message));
 
             node = replaceNode(node, message, parent, key, lru, version);
             parent = updateNodeAncestors(parent, sizeOffset, lru, version);

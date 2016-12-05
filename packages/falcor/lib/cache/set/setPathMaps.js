@@ -1,6 +1,5 @@
 var arr = new Array(3);
 var isArray = Array.isArray;
-var $ref = require('../../types/ref');
 var isExpired = require('../isExpired');
 var expireNode = require('../expireNode');
 var createHardlink = require('../createHardlink');
@@ -20,9 +19,8 @@ var mergeValueOrInsertBranch = require('../mergeValueOrInsertBranch');
 module.exports = function setPathMaps(model, pathMapEnvelopes, errorSelector, comparator, expireImmediate) {
 
     var modelRoot = model._root;
-    var lru = modelRoot;
     var expired = modelRoot.expired;
-    var version = modelRoot.version;
+    var version = modelRoot.version + 1;
     var bound = model._path;
     var cache = modelRoot.cache;
     var node = getCachePosition(cache, bound);
@@ -45,7 +43,7 @@ module.exports = function setPathMaps(model, pathMapEnvelopes, errorSelector, co
         setPathMap(
             pathMapEnvelope.json, 0, cache, parent, node,
             requestedPaths, optimizedPaths, requestedPath, optimizedPath,
-            version, expired, lru, comparator, errorSelector, expireImmediate
+            version, expired, modelRoot, comparator, errorSelector, expireImmediate
         );
     }
 
@@ -57,7 +55,7 @@ module.exports = function setPathMaps(model, pathMapEnvelopes, errorSelector, co
     var rootChangeHandler = modelRoot.onChange;
 
     if (initialVersion !== newVersion) {
-        modelRoot.version = version + 1;
+        modelRoot.version = version;
         rootChangeHandler && rootChangeHandler();
     }
 

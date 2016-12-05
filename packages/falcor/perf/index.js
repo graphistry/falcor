@@ -1,5 +1,4 @@
 global.DEBUG = false;
-// global.require = require;
 
 var suites = [
     require('./get'),
@@ -27,5 +26,5 @@ function run() {
         }).join('\n') + '\n');
         setTimeout(run, 1000);
     })
-    .run({ async: false });
+    .run({ async: true });
 }

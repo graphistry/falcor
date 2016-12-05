@@ -31,7 +31,7 @@ function _fetchDataUntilSettled(memo) {
         return Observable.empty();
     }
     const { query, version, falcor, fragment } = memo;
-    if ((query !== (memo.query = fragment(memo.data, memo.props))) /*||
+    if ((query !== (memo.query = fragment(memo.data || {}, memo.props))) /*||
         (version !== (memo.version = falcor.getVersion()))*/) {
         const { ast, error } = memoizedQuerySyntax(memo.query);
         if (error) {

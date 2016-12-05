@@ -26,7 +26,12 @@ describe('getCache', function() {
     it('should serialize part of the cache', function() {
         var model = new Model({ cache: cacheGenerator(0, 10) });
         var cache = model.getCache(['lolomo', 0, 3, 'item', 'title']);
-        expect(clean(cache)).to.deep.equals(cacheGenerator(3, 1));
+        expect(clean(cache)).to.deep.equals({
+            jsonGraph: cacheGenerator(3, 1),
+            paths: [
+                ['lolomo', '0', '3', 'item', 'title']
+            ]
+        });
     });
 
     it('serialized cache should not contain internal keys (including $size, on boxedValues)', function(done) {

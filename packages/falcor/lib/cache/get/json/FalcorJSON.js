@@ -1,5 +1,9 @@
 function FalcorJSON(f_meta) {
-    this[f_meta_data] = f_meta || {};
+    if (!f_meta) {
+        this[f_meta_data] = {};
+    } else if (!(this[f_meta_data] = f_meta[f_meta_data])) {
+        this[f_meta_data] = f_meta;
+    }
 }
 
 FalcorJSON.prototype.toJSON = toJSON;
@@ -106,18 +110,14 @@ function serialize(inst, serializer, includeMetadata, createWithProto) {
 
     if (isArray(inst)) {
         xs = inst;
-        // count = -1;
-        // total = inst.length;
-        // xs = new Array(total);
-        // while (++count < total) {
-        //     xs[count] = inst[count];
-        // }
     } else {
 
-        xs = {};
         count = -1;
         keys = Object.keys(inst);
         total = keys.length;
+        xs = !createWithProto && {} || {
+            __proto__: FalcorJSON.prototype
+        };
 
         if (includeMetadata && (f_meta = inst[f_meta_data])) {
 
@@ -126,15 +126,16 @@ function serialize(inst, serializer, includeMetadata, createWithProto) {
             var deref_to = f_meta[f_meta_deref_to];
             var deref_from = f_meta[f_meta_deref_from];
 
-            f_meta = {};
+            f_meta = { __proto__: null };
             $code && (f_meta['$code'] = $code);
             abs_path && (f_meta[f_meta_abs_path] = abs_path);
             deref_to && (f_meta[f_meta_deref_to] = deref_to);
             deref_from && (f_meta[f_meta_deref_from] = deref_from);
-            if (!createWithProto) {
-                xs[f_meta_data] = f_meta;
-            } else {
-                xs.__proto__ = new FalcorJSON(f_meta);
+
+            xs[f_meta_data] = f_meta;
+
+            if (createWithProto) {
+                xs = { __proto__: xs };
             }
         }
 

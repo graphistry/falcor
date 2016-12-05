@@ -1,6 +1,5 @@
 var isArray = Array.isArray;
 var Subject = require('./Subject');
-var $error = require('../types/error');
 var Subscriber = require('./Subscriber');
 var Subscription = require('./Subscription');
 var InvalidSourceError = require('../errors/InvalidSourceError');

@@ -1,4 +1,3 @@
-var $ref = require('../types/ref');
 var lruSplice = require('../lru/splice');
 var unlinkBackReferences = require('./unlinkBackReferences');
 var unlinkForwardReference = require('./unlinkForwardReference');

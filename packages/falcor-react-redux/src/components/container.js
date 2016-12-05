@@ -2,68 +2,66 @@ import invariant from 'invariant';
 import React, { PropTypes, Children } from 'react';
 import hoistStatics from 'recompose/hoistStatics';
 import shallowEqual from 'recompose/shallowEqual';
-import mapToFalcorJSON from '../utils/mapToFalcorJSON';
 import wrapDisplayName from 'recompose/wrapDisplayName';
 import fetchDataUntilSettled from '../utils/fetchDataUntilSettled';
 
 import 'rxjs/add/operator/map';
+import 'rxjs/add/observable/of';
+import 'rxjs/add/observable/empty';
 import 'rxjs/add/operator/switchMap';
 import { Subject } from 'rxjs/Subject';
+import { Observable } from 'rxjs/Observable';
+import { FalcorJSON } from '@graphistry/falcor';
 
+const typeofNumber = 'number';
+const typeofObject = 'object';
+const typeofFunction = 'function';
 const defaultMapFragmentToProps = (data) => data;
 const defaultMapDispatchToProps = (dispatch, props, falcor) => ({});
 const defaultMergeProps = (stateProps, dispatchProps, parentProps) => ({
     ...parentProps, ...stateProps, ...dispatchProps
 });
 
-export default function container(fragmentDesc, ...rest) {
+export { container };
+export default container;
+
+function container(fragmentDesc, ...rest) {
 
     invariant(fragmentDesc && (
-        typeof fragmentDesc === 'function' || (
-        typeof fragmentDesc === 'object' &&
-        typeof fragmentDesc.fragment === 'function')),
+              typeofFunction === typeof fragmentDesc || (
+              typeofObject   === typeof fragmentDesc &&
+              typeofFunction === typeof fragmentDesc.fragment)),
 `Attempted to create a Falcor container component without a fragment.
-Falcor containers must be created with either a fragment function or an Object with a fragment function.`);
+Falcor containers must be created with a fragment function, or an Object with a "fragment" function.`);
 
     let renderErrors = false,
         renderLoading = false,
         fragment, mapFragment,
         mapDispatch, mapFragmentAndProps;
 
-    if (typeof fragmentDesc === 'object') {
+    if (typeofObject !== typeof fragmentDesc) {
+        fragment = fragmentDesc;
+        mapFragment = rest[0];
+        mapDispatch = rest[1];
+        mapFragmentAndProps = rest[2];
+    } else {
         fragment = fragmentDesc.fragment;
         mapFragment = fragmentDesc.mapFragment;
         renderErrors = fragmentDesc.renderErrors;
         renderLoading = fragmentDesc.renderLoading;
         mapFragmentAndProps = fragmentDesc.mapFragmentAndProps;
         mapDispatch = fragmentDesc.mapDispatch || fragmentDesc.dispatchers;
-    } else {
-        fragment = fragmentDesc;
-        mapFragment = rest[0];
-        mapDispatch = rest[1];
-        mapFragmentAndProps = rest[2];
     }
 
     mapFragment = mapFragment || defaultMapFragmentToProps;
     mapDispatch = mapDispatch || defaultMapDispatchToProps;
     mapFragmentAndProps = mapFragmentAndProps || defaultMergeProps;
 
-    if (typeof mapDispatch !== 'function') {
-        if (mapDispatch && typeof mapDispatch !== 'object') {
+    if (typeofFunction !== typeof mapDispatch) {
+        if (mapDispatch && typeofObject !== typeof mapDispatch) {
             mapDispatch = defaultMapDispatchToProps;
         } else {
-            mapDispatch = function(actionCreators) {
-                return function(container) {
-                    return Object.keys(actionCreators).reduce((dispatchers, key) => {
-                        const actionCreator = actionCreators[key];
-                        dispatchers[key] = (...args) => {
-                            const { falcor, dispatch } = container.state;
-                            return dispatch({ falcor, ...actionCreator(...args) });
-                        };
-                        return dispatchers;
-                    }, {});
-                }
-            }(mapDispatch);
+            mapDispatch = bindActionCreators(mapDispatch);
         }
     }
 
@@ -81,7 +79,7 @@ Falcor containers must be created with either a fragment function or an Object w
 }
 
 const fragments = function(items = []) {
-    if (!items || typeof items !== 'object') {
+    if (!items || typeofObject !== typeof items) {
         return `{ length }`;
     } else if (!items.hasOwnProperty('length')) {
         items = Object.keys(items).map((key) => items[key]);
@@ -92,32 +90,43 @@ const fragments = function(items = []) {
     }}`;
 }
 
-function derefEachPropUpdate(update) {
-    let { data, falcor } = update;
-    update.data = data = mapToFalcorJSON(data);
-    if (!falcor._seed || !falcor._seed.json || falcor._seed.json !== data) {
-        update.falcor = falcor.deref(data);
+function bindActionCreators(actionCreators) {
+    return function mapDispatch(container) {
+        return Object.keys(actionCreators).reduce((dispatchers, key) => {
+            const actionCreator = actionCreators[key];
+            dispatchers[key] = (...args) => {
+                const { falcor, dispatch } = container.state;
+                if (falcor) {
+                    return dispatch({ falcor, ...actionCreator(...args) });
+                }
+            };
+            return dispatchers;
+        }, {});
     }
-    return update;
 }
 
-function fetchEachPropUpdate({ container, data, props, falcor }) {
-    const { fragment, renderLoading } = container;
-    return fetchDataUntilSettled({
-        data, props, falcor, fragment, renderLoading
-    }).let((source) => renderLoading === true ?
-        source : source.takeLast(1)
-    );
+function tryDeref({ data, falcor }) {
+    return !data || !falcor ?
+        falcor : falcor.deref(data);
+}
+
+function fetchEachPropUpdate(update) {
+    if (!(update.falcor = tryDeref(update))) {
+        return Observable.of(update);
+    } else if (update.renderLoading === true) {
+        return fetchDataUntilSettled(update);
+    }
+    return fetchDataUntilSettled(update).takeLast(1);
 }
 
 function mergeEachPropUpdate(
-    { falcor, dispatch },
+    { props, falcor, dispatch },
     { data, error, version, loading }
 ) {
     return {
-        data, error, loading,
-        falcor, dispatch, version,
-        hash: data && data.$__hash
+        props, falcor, dispatch,
+        hash: data && data.$__hash,
+        data, error, loading, version
     };
 }
 
@@ -132,10 +141,9 @@ class FalcorContainer extends React.Component {
     static childContextTypes = contextTypes;
 
     constructor(props, context) {
+
         super(props, context);
 
-        let { data } = props;
-        let { falcor, dispatch } = context;
         const { fragment,
                 Component,
                 mapFragment,
@@ -148,23 +156,15 @@ class FalcorContainer extends React.Component {
         this.fragment = fragment;
         this.Component = Component;
         this.mapFragment = mapFragment;
+        this.propsStream = new Subject();
         this.renderErrors = renderErrors;
         this.renderLoading = renderLoading;
         this.dispatchers = mapDispatch(this);
+        this.state = { hash: '', version: 0 };
         this.mapFragmentAndProps = mapFragmentAndProps;
-
-        falcor = falcor.deref(data = mapToFalcorJSON(data));
-
-        this.state = {
-            hash: data.$__hash,
-            data, falcor, dispatch,
-            version: falcor.getVersion()
-        };
-
-        this.propsStream = new Subject();
-        this.propsAction = this.propsStream
-            .map(derefEachPropUpdate)
-            .switchMap(fetchEachPropUpdate, mergeEachPropUpdate);
+        this.propsAction = this.propsStream.switchMap(
+            fetchEachPropUpdate, mergeEachPropUpdate
+        );
     }
     getChildContext() {
         const { falcor, dispatch } = this.state;
@@ -206,11 +206,13 @@ class FalcorContainer extends React.Component {
     componentWillReceiveProps(nextProps, nextContext) {
         // Receive new props from the owner
         this.propsStream.next({
-            container: this,
-            props: nextProps,
+            loading: false,
             data: nextProps.data,
+            fragment: this.fragment,
             falcor: nextContext.falcor,
-            dispatch: nextContext.dispatch
+            dispatch: nextContext.dispatch,
+            renderLoading: this.renderLoading,
+            props: { ...nextProps, data: undefined },
         });
     }
     componentWillMount() {
@@ -219,11 +221,13 @@ class FalcorContainer extends React.Component {
             this.setState(nextState);
         });
         this.propsStream.next({
-            container: this,
-            props: this.props,
+            loading: false,
             data: this.props.data,
+            fragment: this.fragment,
             falcor: this.context.falcor,
-            dispatch: this.context.dispatch
+            dispatch: this.context.dispatch,
+            renderLoading: this.renderLoading,
+            props: { ...this.props, data: undefined },
         });
     }
     // componentWillUpdate() {
@@ -240,7 +244,7 @@ class FalcorContainer extends React.Component {
     //     return this.state && this.state.falcor && this.state.falcor.getPath().reduce((xs, key, idx) => {
     //         if (idx === 0) {
     //             return key;
-    //         } else if (typeof key === 'number') {
+    //         } else if (typeofNumber === typeof key) {
     //             return `${xs}[${key}]`;
     //         }
     //         return `${xs}['${key}']`;
@@ -260,22 +264,16 @@ class FalcorContainer extends React.Component {
     }
     render() {
 
-        const { Component,
-                dispatchers,
-                mapFragment,
-                renderErrors,
-                renderLoading,
-                mapFragmentAndProps } = this;
+        const { Component, dispatchers,
+                mapFragment, renderErrors,
+                renderLoading, mapFragmentAndProps } = this;
 
         if (!Component) {
             return null;
         }
 
-        const { data: outerData, ...props } = this.props;
-        const { data, error, loading, falcor, dispatch } = this.state;
-
-        const mappedFragment = mapFragment(data, props);
-
+        const { data, props, falcor, error, loading } = this.state;
+        const mappedFragment = data ? mapFragment(data, props) : new FalcorJSON();
         const allMergedProps = mapFragmentAndProps(mappedFragment, dispatchers, props);
 
         if (error && renderErrors === true) {

@@ -1,6 +1,4 @@
 var isArray = Array.isArray;
-var pathToTree = require('@graphistry/falcor-path-utils/lib/toTree').pathToTree;
-var materializedAtom = require('@graphistry/falcor-path-utils/lib/support/materializedAtom');
 
 module.exports = onMissing;
 
@@ -8,7 +6,8 @@ module.exports = onMissing;
 function onMissing(path, depth, results,
                    requestedPath, requestedLength, fromReference,
                    optimizedPath, optimizedLength, reportMissing,
-                   json, reportMaterialized, createMaterializedBranch) {
+                   reportMaterialized, json, branchSelector,
+                   boxValues, onMaterialize) {
 
     if (!reportMissing && !reportMaterialized) {
         return;
@@ -26,7 +25,6 @@ function onMissing(path, depth, results,
         }
         restPath[restPathIndex] = keyset;
     }
-
 
     var index, count, mPath;
     var lastKeyIsNull = keyset === null;
@@ -75,11 +73,7 @@ function onMissing(path, depth, results,
     } while (true);
 
     if (reportMaterialized) {
-        if (restPathCount === 0) {
-            return materializedAtom;
-        }
-        return pathToTree(json, mPath, missDepth, missTotal,
-                          materializedAtom, createMaterializedBranch);
+        return onMaterialize(json, mPath, missDepth, missTotal, branchSelector, boxValues);
     }
 }
 /* eslint-enable */

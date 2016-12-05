@@ -19,7 +19,7 @@ describe('invalidatePathMaps', function() {
 
         setPathValues(
             getModel({ lru: lru, cache: cache, version: version++ }), [
-            $pathValue('movies["pulp-fiction"].title')
+            $pathValue('movies["pulp-fiction"].title', 'Pulp Fiction')
         ]);
 
         invalidatePathMaps(

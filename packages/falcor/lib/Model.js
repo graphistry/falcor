@@ -4,6 +4,7 @@ var FalcorJSON = require('./cache/get/json/FalcorJSON');
 var ModelDataSourceAdapter = require('./ModelDataSourceAdapter');
 var TimeoutScheduler = require('./schedulers/TimeoutScheduler');
 var ImmediateScheduler = require('./schedulers/ImmediateScheduler');
+var collapse = require('@graphistry/falcor-path-utils/lib/collapse');
 
 var lruCollect = require('./lru/collect');
 var getSize = require('./support/getSize');
@@ -285,31 +286,42 @@ Model.prototype.setValue = function setValue(path, value) {
  * @param {JSONGraph} jsonGraph - the {@link JSONGraph} fragment to use as the local cache
  */
 Model.prototype.setCache = function modelSetCache(cacheOrJSONGraphEnvelope) {
-    var cache = this._root.cache;
+
+    var modelRoot = this._root;
+    var cache = modelRoot.cache;
+
     if (cacheOrJSONGraphEnvelope !== cache) {
-        var modelRoot = this._root;
-        var boundPath = this._path;
-        this._path = [];
-        this._node = this._root.cache = {};
+
+        var options = {
+            _path: [],
+            _boxed: false,
+            _root: modelRoot,
+            _materialized: false,
+            _treatErrorsAsValues: false
+        };
+
+        modelRoot.cache = this._node = {};
+
         if (typeof cache !== 'undefined') {
             lruCollect(modelRoot, modelRoot.expired, getSize(cache), 0);
             if (this._recycleJSON) {
                 this._seed = { __proto__: FalcorJSON.prototype };
             }
         }
+
         var paths;
         if (isJSONGraphEnvelope(cacheOrJSONGraphEnvelope)) {
-            paths = setJSONGraphs(this, [cacheOrJSONGraphEnvelope])[0];
+            paths = setJSONGraphs(options, [cacheOrJSONGraphEnvelope])[0];
         } else if (isJSONEnvelope(cacheOrJSONGraphEnvelope)) {
-            paths = setCache(this, [cacheOrJSONGraphEnvelope])[0];
+            paths = setCache(options, [cacheOrJSONGraphEnvelope])[0];
         } else if (isObject(cacheOrJSONGraphEnvelope)) {
-            paths = setCache(this, [{ json: cacheOrJSONGraphEnvelope }])[0];
+            paths = setCache(options, [{ json: cacheOrJSONGraphEnvelope }])[0];
         }
+
         // performs promotion without producing output.
         if (paths) {
-            getJSON(this, paths, null, false, true);
+            getJSON(options, paths, null, false, false);
         }
-        this._path = boundPath;
     } else if (typeof cache === 'undefined') {
         this._root.cache = {};
     }
@@ -325,16 +337,24 @@ Model.prototype.setCache = function modelSetCache(cacheOrJSONGraphEnvelope) {
  localStorage.setItem('cache', JSON.stringify(model.getCache('genreLists[0...10][0...10].boxshot')));
  */
 Model.prototype.getCache = function _getCache() {
+
     var paths = Array.prototype.slice.call(arguments, 0);
+
     if (paths.length === 0) {
         return getCache(this._root.cache);
     }
-    var result = {};
-    var path = this._path;
-    this._path = [];
-    getJSONGraph(this, paths, result);
-    this._path = path;
-    return result.jsonGraph;
+
+    var env = getJSONGraph({
+        _path: [],
+        _root: this._root,
+        _boxed: this._boxed,
+        _materialized: this._materialized,
+        _treatErrorsAsValues: this._treatErrorsAsValues
+    }, paths, { __proto__: FalcorJSON.prototype }).data;
+
+    env.paths = collapse(paths);
+
+    return env;
 };
 
 /**
@@ -342,7 +362,8 @@ Model.prototype.getCache = function _getCache() {
  * @param {Path?} path - a path at which to retrieve the version number
  * @return {Number} a version number which changes whenever a value is changed underneath the Model or provided Path
  */
-Model.prototype.getVersion = function getVersion(path = []) {
+Model.prototype.getVersion = function getVersion(path) {
+    path = path || [];
     if (Array.isArray(path) === false) {
         throw new Error('Model#getVersion must be called with an Array path.');
     }

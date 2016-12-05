@@ -34,7 +34,6 @@ describe('DataSource Only', function() {
             })).
             doAction(noOp, noOp, function() {
                 expect(onSet.calledOnce).to.be.ok;
-
                 var cleaned = onSet.getCall(0).args[2];
                 cleaned.paths[0][1] = cleaned.paths[0][1].concat();
                 expect(cleaned).to.deep.equals({
@@ -56,7 +55,7 @@ describe('DataSource Only', function() {
             subscribe(noOp, done, done);
     });
 
-    it('should send off an empty string on a set to the server.', function(done) {
+    it('set and send an an empty string to the server.', function(done) {
         var onSet = sinon.spy(function(source, tmpGraph, jsonGraphFromSet) {
             return jsonGraphFromSet;
         });
@@ -70,7 +69,6 @@ describe('DataSource Only', function() {
             setValue('videos[1234].another_prop', '')).
             doAction(noOp, noOp, function() {
                 expect(onSet.calledOnce).to.be.ok;
-
                 var cleaned = onSet.getCall(0).args[2];
                 expect(cleaned).to.deep.equals({
                     jsonGraph: {
@@ -88,7 +86,7 @@ describe('DataSource Only', function() {
             subscribe(noOp, done, done);
     });
 
-    it('should send off undefined on a set to the server.', function(done) {
+    it('should set and send an undefined value to the server.', function(done) {
         var onSet = sinon.spy(function(source, tmpGraph, jsonGraphFromSet) {
             return jsonGraphFromSet;
         });
@@ -109,8 +107,50 @@ describe('DataSource Only', function() {
                 }
             })).
             doAction(noOp, noOp, function() {
-                expect(onSet.calledOnce).to.be.ok;
+                expect(onSet.calledOnce, 'expected datasource set to be called').to.equal(true);
+                var cleaned = onSet.getCall(0).args[2];
+                expect(cleaned).to.deep.equals({
+                    jsonGraph: {
+                        videos: {
+                            1234: {
+                                another_prop: {
+                                    $type: 'atom'
+                                }
+                            }
+                        }
+                    },
+                    paths: [
+                        ['videos', 1234, 'another_prop']
+                    ]
+                });
+            }).
+            subscribe(noOp, done, done);
+    });
 
+    it('should set and send an atom of undefined to the server.', function(done) {
+        var onSet = sinon.spy(function(source, tmpGraph, jsonGraphFromSet) {
+            return jsonGraphFromSet;
+        });
+        var dataSource = new LocalDataSource(Cache(), {
+            onSet: onSet
+        });
+        var model = new Model({
+            source: dataSource
+        });
+        toObservable(model.
+            set({
+                json: {
+                    videos: {
+                        1234: {
+                            another_prop: {
+                                $type: 'atom'
+                            }
+                        }
+                    }
+                }
+            })).
+            doAction(noOp, noOp, function() {
+                expect(onSet.calledOnce, 'expected datasource set to be called').to.equal(true);
                 var cleaned = onSet.getCall(0).args[2];
                 expect(cleaned).to.deep.equals({
                     jsonGraph: {

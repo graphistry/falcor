@@ -13,53 +13,78 @@ module.exports = {
 
 function json(model, _args, data, progressive, expireImmediate) {
 
-    var set, json, jsong,
+    var set, get, jsong,
+        changed, relative, optimized,
+        missing, fragments, requested,
         args = groupCacheArguments(_args);
 
     set = setGroupsIntoCache(model, args /*, expireImmediate */);
-    get = (progressive || !set.changed) &&
-           getJSON(model, set.requested, data, progressive, expireImmediate);
 
-    if (set.changed) {
-        jsong = getJSONGraph({
-            _root: model._root, _boxed: model._boxed, _materialized: true,
-            _treatErrorsAsValues: model._treatErrorsAsValues
-        }, set.optimized, {}, progressive, expireImmediate)
+    if ((relative = set.requested).length) {
+
+        if (!(changed = set.changed) || progressive) {
+            get = getJSON(model, relative, data, progressive, expireImmediate);
+        }
+
+        if (changed) {
+
+            jsong = getJSONGraph({
+                _root: model._root,
+                _boxed: model._boxed, _materialized: true,
+                _treatErrorsAsValues: model._treatErrorsAsValues
+            }, set.optimized, {}, progressive, expireImmediate);
+
+            fragments = jsong.data;
+            missing = fragments.paths;
+            requested = jsong.requested;
+        }
     }
 
     return {
-        args: args, data: data,
-        relative: set.requested,
+        args: args,
+        data: data,
+        missing: missing,
+        relative: relative,
+        fragments: fragments,
+        requested: requested,
         error: get && get.error,
         errors: get && get.errors,
-        hasValue: get && get.hasValue,
-        fragments: jsong && jsong.data,
-        missing: jsong && jsong.data.paths,
-        requested: jsong && jsong.requested
+        hasValue: get && get.hasValue
     };
 }
 
 function jsonGraph(model, _args, data, progressive, expireImmediate) {
 
-    var set, jsong, args = groupCacheArguments(_args);
+    var set, jsong,
+        changed, relative, optimized,
+        missing, fragments, requested,
+        args = groupCacheArguments(_args);
+
     set = setGroupsIntoCache(model, args /*, expireImmediate */);
 
-    if (progressive || set.changed) {
+    if ((relative = set.requested).length && (
+         progressive || set.changed)) {
+
         jsong = getJSONGraph({
             _root: model._root,
             _boxed: model._boxed, _materialized: true,
             _treatErrorsAsValues: model._treatErrorsAsValues
         }, set.optimized, data, progressive, expireImmediate);
+
+        fragments = jsong.data;
+        missing = fragments.paths;
+        requested = jsong.requested;
     }
 
     return {
-        args: args, data: data,
-        relative: set.requested,
+        args: args,
+        data: data,
+        missing: missing,
+        relative: relative,
+        fragments: fragments,
+        requested: requested,
         error: jsong && jsong.error,
-        fragments: jsong && jsong.data,
-        hasValue: jsong && jsong.hasValue,
-        missing: jsong && jsong.data.paths,
-        requested: jsong && jsong.requested
+        hasValue: jsong && jsong.hasValue
     };
 }
 

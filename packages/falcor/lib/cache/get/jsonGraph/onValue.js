@@ -1,8 +1,6 @@
+var typeofObject = 'object';
 var clone = require('../../clone');
-var $ref = require('../../../types/ref');
-var $error = require('../../../types/error');
 var inlineValue = require('./inlineValue');
-var materializedAtom = require('@graphistry/falcor-path-utils/lib/support/materializedAtom');
 
 module.exports = onJSONGraphValue;
 
@@ -10,26 +8,21 @@ function onJSONGraphValue(node, type, depth, seed, results,
                           requestedPath, optimizedPath, optimizedLength,
                           fromReference, boxValues, materialized) {
 
-    var value = node && node.value;
-    var requiresMaterializedToReport = type && value === undefined;
+    var value = node.value;
 
-    if (requiresMaterializedToReport) {
-        if (materialized) {
-            value = materializedAtom;
-        } else {
-            return undefined;
-        }
-    }
     // boxValues always clones the node
-    else if (boxValues ||
-            /*
-             * JSON Graph should always clone errors, refs, atoms we didn't
-             * create, and atoms we created to wrap Object values.
-             */
-             $ref === type ||
-             $error === type ||
-             !node[f_wrapped_value] ||
-             'object' === typeof value) {
+    if (boxValues || !(
+        /**
+         * JSON Graph should always clone:
+         * - refs
+         * - errors
+         * - atoms we didn't create
+         * - atoms we created to wrap Objects
+         **/
+        $ref !== type &&
+        $error !== type &&
+        node[f_wrapped_value] &&
+        typeofObject !== typeof value)) {
         value = clone(node);
     }
 

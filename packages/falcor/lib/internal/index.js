@@ -1,4 +1,7 @@
 module.exports = {
+    '$ref':              'ref',
+    '$atom':             'atom',
+    '$error':            'error',
     'f_':                require('./f_'),
     'f_key':             require('./f_key'),
     'f_ref':             require('./f_ref'),
@@ -21,5 +24,5 @@ module.exports = {
     'f_meta_version':    require('./f_meta_version'),
     'f_meta_abs_path':   require('./f_meta_abs_path'),
     'f_meta_deref_to':   require('./f_meta_deref_to'),
-    'f_meta_deref_from': require('./f_meta_deref_from'),
+    'f_meta_deref_from': require('./f_meta_deref_from')
 };

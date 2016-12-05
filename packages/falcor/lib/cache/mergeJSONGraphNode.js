@@ -1,14 +1,11 @@
-var $ref = require('../types/ref');
-var $error = require('../types/error');
-var getSize = require('../support/getSize');
-var getTimestamp = require('../support/getTimestamp');
-
 var wrapNode = require('./wrapNode');
 var isExpired = require('./isExpired');
 var insertNode = require('./insertNode');
 var expireNode = require('./expireNode');
 var replaceNode = require('./replaceNode');
+var getSize = require('../support/getSize');
 var reconstructPath = require('./reconstructPath');
+var getTimestamp = require('../support/getTimestamp');
 var updateNodeAncestors = require('./updateNodeAncestors');
 
 module.exports = function mergeJSONGraphNode(

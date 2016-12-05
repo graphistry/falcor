@@ -61,18 +61,15 @@ function getJSON(model, paths, seed, progressive, expireImmediate) {
             if (!paths[0].$keys) {
                 paths = [computeFlatBufferHash(toFlatBuffer(paths, {}))];
             }
-            do {
-                path = paths[pathsIndex];
-                arr = walkFlatBufferAndBuildOutput(cache, node, json, path, 0, seed, results,
-                                                   requestedPath, optimizedPath, optimizedLength,
-                                                   /* fromReference = */ false, referenceContainer,
-                                                   modelRoot, expired, expireImmediate, branchSelector,
-                                                   boxValues, materialized, hasDataSource,
-                                                   treatErrorsAsValues, allowFromWhenceYouCame);
-                json = arr[0];
-                arr[0] = undefined;
-                arr[1] = undefined;
-            } while (++pathsIndex < pathsCount)
+            arr = walkFlatBufferAndBuildOutput(cache, node, json, paths[0], 0, seed, results,
+                                               requestedPath, optimizedPath, optimizedLength,
+                                               /* fromReference = */ false, referenceContainer,
+                                               modelRoot, expired, expireImmediate, branchSelector,
+                                               boxValues, materialized, hasDataSource,
+                                               treatErrorsAsValues, allowFromWhenceYouCame);
+            json = arr[0];
+            arr[0] = undefined;
+            arr[1] = undefined;
         } else {
             do {
                 path = paths[pathsIndex];
@@ -94,7 +91,7 @@ function getJSON(model, paths, seed, progressive, expireImmediate) {
     results.args = isFlatBuffer && paths || requested;
 
     if (requested && requested.length) {
-        results.relative = results.args;//requested;
+        results.relative = results.args;
         if (optimizedLength) {
             var boundRequested = [];
             for (var i = 0, len = requested.length; i < len; ++i) {

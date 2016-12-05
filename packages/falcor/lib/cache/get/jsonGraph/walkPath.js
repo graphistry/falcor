@@ -1,10 +1,10 @@
 var isArray = Array.isArray;
 var clone = require('../../clone');
-var $ref = require('../../../types/ref');
 var onValue = require('./onValue');
 var inlineValue = require('./inlineValue');
-var onValueType = require('../onValueType');
 var isExpired = require('../../isExpired');
+var onValueType = require('../onValueType');
+var onMaterialize = require('../onMaterialize');
 var originalOnMissing = require('../onMissing');
 var getReferenceTarget = require('./getReferenceTarget');
 var NullInPathError = require('../../../errors/NullInPathError');
@@ -15,7 +15,7 @@ module.exports = walkPathAndBuildOutput;
 
 /* eslint-disable no-cond-assign */
 /* eslint-disable no-constant-condition */
-function walkPathAndBuildOutput(cacheRoot, node, path,
+function walkPathAndBuildOutput(root, node, path,
                                 depth, seed, results,
                                 requestedPath, requestedLength,
                                 optimizedPath, optimizedLength,
@@ -37,7 +37,7 @@ function walkPathAndBuildOutput(cacheRoot, node, path,
                            optimizedPath, optimizedLength,
                            fromReference, modelRoot, expired, expireImmediate,
                            undefined, boxValues, materialized, hasDataSource,
-                           treatErrorsAsValues, onValue, onMissing);
+                           treatErrorsAsValues, onValue, onMissing, onMaterialize);
     }
 
     var next, nextKey,
@@ -159,7 +159,7 @@ function walkPathAndBuildOutput(cacheRoot, node, path,
                 // following the path. If the reference resolves to a missing
                 // path or leaf node, it will be handled in the next call to
                 // walkPath.
-                refTarget = getReferenceTarget(cacheRoot, next, modelRoot, seed, expireImmediate);
+                refTarget = getReferenceTarget(root, next, modelRoot, seed, expireImmediate);
 
                 next = refTarget[0];
                 fromReference = true;
@@ -169,7 +169,7 @@ function walkPathAndBuildOutput(cacheRoot, node, path,
             }
 
             walkPathAndBuildOutput(
-                cacheRoot, next, path, nextDepth, seed,
+                root, next, path, nextDepth, seed,
                 results, requestedPath, requestedLength, nextOptimizedPath,
                 nextOptimizedLength, fromReference, modelRoot, expired, expireImmediate,
                 boxValues, materialized, hasDataSource, treatErrorsAsValues
@@ -197,7 +197,8 @@ function walkPathAndBuildOutput(cacheRoot, node, path,
 function onMissing(path, depth, results,
                    requestedPath, requestedLength, fromReference,
                    optimizedPath, optimizedLength, reportMissing,
-                   seed, reportMaterialized, branchSelector) {
+                   reportMaterialized, seed, branchSelector,
+                   boxValues, onMaterialize) {
 
     var json, isLeaf;
 
@@ -211,12 +212,13 @@ function onMissing(path, depth, results,
                     .slice(depth, requestedLength + !!fromReference))
         );
 
-        json = inlineValue(isLeaf && materializedAtom || undefined,
+        json = inlineValue(isLeaf && clone(materializedAtom) || undefined,
                            optimizedPath, optimizedLength, seed, !isLeaf);
     }
 
     return originalOnMissing(path, depth, results,
                              requestedPath, requestedLength, fromReference,
                              optimizedPath, optimizedLength, reportMissing,
-                             json, reportMaterialized);
+                             !isLeaf && reportMaterialized, json,
+                             branchSelector, true, onMaterialize);
 }

@@ -1,5 +1,3 @@
-var $ref = require('./../types/ref');
-
 /**
  * getCachePosition makes a fast walk to the bound value since all bound
  * paths are the most possible optimized path.

@@ -1,5 +1,4 @@
 var arr = new Array(3);
-var $ref = require('../../../types/ref');
 var promote = require('../../../lru/promote');
 var isExpired = require('../../isExpired');
 var createHardlink = require('../../createHardlink');

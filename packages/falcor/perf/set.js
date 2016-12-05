@@ -9,7 +9,7 @@ module.exports = _.zip(
         return tests.reduce(function(suite, test) {
             return test && suite.add(test) || suite;
         }, suite);
-    }, new Benchmark.Suite('Set Tests', { async: false }));
+    }, new Benchmark.Suite('Set Tests', { async: true }));
 
 function netflixSetSuiteDescription() {
 
@@ -33,7 +33,7 @@ function netflixSetSuiteDescription() {
     }
 
     return [{
-        async: false,
+        async: true,
         name: '   @netflix/falcor setJSONGraph - 100 paths into cache',
         fn: function() {
             resetModelVideosState();
@@ -43,7 +43,7 @@ function netflixSetSuiteDescription() {
             }]);
         }
     }, {
-        async: false,
+        async: true,
         name: '   @netflix/falcor setPathMaps - 100 paths into cache',
         fn: function() {
             resetModelVideosState();
@@ -52,7 +52,7 @@ function netflixSetSuiteDescription() {
             }]);
         }
     }, {
-        async: false,
+        async: true,
         name: '   @netflix/falcor setPathValues - 100 paths into cache',
         fn: function() {
             resetModelVideosState();
@@ -84,7 +84,7 @@ function graphistrySetSuiteDescription() {
     }
 
     return [{
-        async: false,
+        async: true,
         name: '@graphistry/falcor setJSONGraph - 100 paths into cache',
         fn: function() {
             resetModelVideosState();
@@ -94,7 +94,7 @@ function graphistrySetSuiteDescription() {
             }]);
         }
     }, {
-        async: false,
+        async: true,
         name: '@graphistry/falcor setPathMaps - 100 paths into cache',
         fn: function() {
             resetModelVideosState();
@@ -103,7 +103,7 @@ function graphistrySetSuiteDescription() {
             }]);
         }
     }, {
-        async: false,
+        async: true,
         name: '@graphistry/falcor setPathValues - 100 paths into cache',
         fn: function() {
             resetModelVideosState();

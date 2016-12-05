@@ -11,7 +11,7 @@ module.exports = _.zip(
         return tests.reduce(function(suite, test) {
             return test && suite.add(test) || suite;
         }, suite);
-    }, new Benchmark.Suite('DataSource Tests', { async: false }));
+    }, new Benchmark.Suite('DataSource Tests', { async: true }));
 
 function netflixGetDataSourceSuiteDescription() {
 
@@ -36,7 +36,7 @@ function netflixGetDataSourceSuiteDescription() {
     }
 
     return [{
-        async: false,
+        async: true,
         name: '   @netflix/falcor getJSON + setJSONGraph + getJSON - 100 paths from DataSource',
         fn: function() {
             Rx.Observable
@@ -46,7 +46,7 @@ function netflixGetDataSourceSuiteDescription() {
             dataSource.trigger();
         }
     }, {
-        async: false,
+        async: true,
         name: '   @netflix/falcor getJSONGraph + setJSONGraph + getJSONGraph - 100 paths from DataSource',
         fn: function() {
             Rx.Observable
@@ -81,7 +81,7 @@ function graphistryGetDataSourceSuiteDescription() {
     }
 
     return [{
-        async: false,
+        async: true,
         name: '@graphistry/falcor getJSON + setJSONGraph + getJSON - 100 paths from DataSource',
         fn: function() {
             Rx.Observable
@@ -91,7 +91,7 @@ function graphistryGetDataSourceSuiteDescription() {
             dataSource.trigger();
         }
     }, {
-        async: false,
+        async: true,
         name: '@graphistry/falcor getJSONGraph + setJSONGraph + getJSONGraph - 100 paths from DataSource',
         fn: function() {
             Rx.Observable
@@ -131,7 +131,7 @@ function graphistryGetDataSourceRecycledSuiteDescription() {
     }
 
     return [{
-        async: false,
+        async: true,
         name: '@graphistry/falcor getJSON + setJSONGraph + getJSON - 100 paths from DataSource',
         suffix: ' (recycled JSON)',
         fn: function() {

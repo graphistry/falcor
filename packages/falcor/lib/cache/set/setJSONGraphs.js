@@ -1,5 +1,4 @@
 var arr = new Array(5);
-var $ref = require('../../types/ref');
 var isExpired = require('../isExpired');
 var expireNode = require('../expireNode');
 var createHardlink = require('../createHardlink');
@@ -20,7 +19,7 @@ module.exports = function setJSONGraphs(model, jsonGraphEnvelopes, errorSelector
     var modelRoot = model._root;
     var lru = modelRoot;
     var expired = modelRoot.expired;
-    var version = modelRoot.version;
+    var version = modelRoot.version + 1;
     var cache = modelRoot.cache;
     var initialVersion = cache[f_version];
 
@@ -65,7 +64,7 @@ module.exports = function setJSONGraphs(model, jsonGraphEnvelopes, errorSelector
     var rootChangeHandler = modelRoot.onChange;
 
     if (initialVersion !== newVersion) {
-        modelRoot.version = version + 1;
+        modelRoot.version = version;
         rootChangeHandler && rootChangeHandler();
     }
 

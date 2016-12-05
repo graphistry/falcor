@@ -1,6 +1,5 @@
 var arr = new Array(2);
 var clone = require('../../clone');
-var $ref = require('../../../types/ref');
 var inlineValue = require('./inlineValue');
 var promote = require('../../../lru/promote');
 var isExpired = require('../../isExpired');

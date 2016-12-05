@@ -1,16 +1,13 @@
 var arr = new Array(2);
-var $ref = require('../../types/ref');
-
-var getBoundCacheNode = require('../getBoundCacheNode');
-
 var isExpired = require('../isExpired');
 var expireNode = require('../expireNode');
 var lruPromote = require('../../lru/promote');
 var getSize = require('../../support/getSize');
 var createHardlink = require('../createHardlink');
-var iterateKeySet = require('@graphistry/falcor-path-utils/lib/iterateKeySet');
+var getBoundCacheNode = require('../getBoundCacheNode');
 var updateNodeAncestors = require('../updateNodeAncestors');
 var removeNodeAndDescendants = require('../removeNodeAndDescendants');
+var iterateKeySet = require('@graphistry/falcor-path-utils/lib/iterateKeySet');
 
 /**
  * Invalidates a list of Paths in a JSON Graph.

@@ -3,14 +3,15 @@
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
+exports.connect = undefined;
 
 var _extends2 = require('babel-runtime/helpers/extends');
 
 var _extends3 = _interopRequireDefault(_extends2);
 
-var _objectWithoutProperties2 = require('babel-runtime/helpers/objectWithoutProperties');
+var _typeof2 = require('babel-runtime/helpers/typeof');
 
-var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
+var _typeof3 = _interopRequireDefault(_typeof2);
 
 var _compose = require('recompose/compose');
 
@@ -72,17 +73,21 @@ var _rxjsObservableConfig = require('recompose/rxjsObservableConfig');
 
 var _rxjsObservableConfig2 = _interopRequireDefault(_rxjsObservableConfig);
 
+var _invariant = require('invariant');
+
+var _invariant2 = _interopRequireDefault(_invariant);
+
 var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = require('react-redux');
 
-var _falcor = require('@graphistry/falcor');
-
 var _Observable = require('rxjs/Observable');
 
 var _BehaviorSubject = require('rxjs/BehaviorSubject');
+
+var _falcor = require('@graphistry/falcor');
 
 var _animationFrame = require('rxjs/scheduler/animationFrame');
 
@@ -115,41 +120,22 @@ _falcor.Model.prototype.changes = function () {
     }
     return changes;
 };
+// import { asap as asapScheduler } from 'rxjs/scheduler/asap';
 
 (0, _setObservableConfig2.default)(_rxjsObservableConfig2.default);
 
+var typeofObject = 'object';
+var reduxOptions = { pure: false };
 var contextTypes = {
     falcor: _react.PropTypes.object,
     dispatch: _react.PropTypes.func
 };
 
 var connect = function connect(BaseComponent) {
-    return (0, _compose2.default)((0, _reactRedux.connect)(function (data, _ref) {
-        var falcor = _ref.falcor;
-
-        if (!falcor._seed) {
-            falcor._seed = {
-                __proto__: _falcor.FalcorJSON.prototype,
-                json: data = { __proto__: _falcor.FalcorJSON.prototype }
-            };
-        } else if (!falcor._seed.json) {
-            data = falcor._seed.json = { __proto__: _falcor.FalcorJSON.prototype };
-        } else {
-            data = falcor._seed.json;
-        }
-        return { data: data };
-    }), (0, _setDisplayName2.default)((0, _wrapDisplayName2.default)(BaseComponent, 'Falcor')), (0, _mapPropsStream2.default)(function (props) {
-        return props.switchMap(function (_ref2) {
-            var falcor = _ref2.falcor;
-            return falcor.changes();
-        }, function (_ref3, falcor) {
-            var props = (0, _objectWithoutProperties3.default)(_ref3, []);
-            return (0, _extends3.default)({}, props, { falcor: falcor, version: falcor.getVersion()
-            });
-        }).distinctUntilKeyChanged('version').auditTime(0, _animationFrame.animationFrame);
-    }), (0, _withContext2.default)(contextTypes, function (_ref4) {
-        var falcor = _ref4.falcor,
-            dispatch = _ref4.dispatch;
+    var scheduler = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _animationFrame.animationFrame;
+    return (0, _compose2.default)((0, _reactRedux.connect)(mapReduxStoreToProps, 0, mergeReduxProps, reduxOptions), (0, _setDisplayName2.default)((0, _wrapDisplayName2.default)(BaseComponent, 'Falcor')), (0, _mapPropsStream2.default)(mapPropsToDistinctChanges(scheduler)), (0, _withContext2.default)(contextTypes, function (_ref) {
+        var falcor = _ref.falcor,
+            dispatch = _ref.dispatch;
         return {
             falcor: falcor, dispatch: dispatch
         };
@@ -163,5 +149,50 @@ var connect = function connect(BaseComponent) {
     }))(BaseComponent);
 };
 
+exports.connect = connect;
 exports.default = connect;
+
+
+function mapReduxStoreToProps(store, _ref2) {
+    var falcor = _ref2.falcor;
+
+    (0, _invariant2.default)(falcor, 'The top level "connect" container requires a root falcor model.');
+    if (!store || typeofObject !== (typeof store === 'undefined' ? 'undefined' : (0, _typeof3.default)(store))) {
+        store = !falcor._recycleJSON ? new _falcor.FalcorJSON() : falcor._seed && falcor._seed.json || undefined;
+    } else if (!(store instanceof _falcor.FalcorJSON)) {
+        if (!falcor._recycleJSON) {
+            store = new _falcor.FalcorJSON(store);
+        } else if (!falcor._seed || !falcor._seed.json) {
+            falcor._seed = { json: store = {
+                    __proto__: new _falcor.FalcorJSON(store) },
+                __proto__: _falcor.FalcorJSON.prototype
+            };
+        }
+    }
+    return { data: store };
+}
+
+function mergeReduxProps(_ref3, _ref4, _ref5) {
+    var data = _ref3.data;
+    var dispatch = _ref4.dispatch;
+    var falcor = _ref5.falcor;
+
+    return { data: data, falcor: falcor, dispatch: dispatch };
+}
+
+function mapPropsToDistinctChanges(scheduler) {
+    return function innerMapPropsToDistinctChanges(prop$) {
+        return prop$.switchMap(mapPropsToChanges, mapChangeToProps).distinctUntilKeyChanged('version').auditTime(0, scheduler);
+    };
+}
+
+function mapPropsToChanges(_ref6) {
+    var falcor = _ref6.falcor;
+
+    return falcor.changes();
+}
+
+function mapChangeToProps(props, falcor) {
+    return (0, _extends3.default)({}, props, { falcor: falcor, version: falcor.getVersion() });
+}
 //# sourceMappingURL=connect.js.map

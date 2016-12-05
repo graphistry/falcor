@@ -1,30 +1,22 @@
+var typeofObject = 'object';
 var CONTAINER_DOES_NOT_EXIST = 'e';
-var $ref = require('../types/ref');
 var FalcorJSON = require('../cache/get/json/FalcorJSON');
 var getCachePosition = require('../cache/getCachePosition');
 var InvalidDerefInputError = require('../errors/InvalidDerefInputError');
 
 module.exports = function deref(json) {
 
-    if (!json || typeof json !== 'object') {
-        throw new InvalidDerefInputError();
-    }
+    var f_meta;
 
-    var referenceContainer, currentRefPath, i, len;
-    var f_meta = json && json[f_meta_data];
-
-    if (!f_meta || typeof f_meta !== 'object') {
-        return this._clone({
-            _node: undefined,
-            _seed: recycleJSON && {
-                __proto__: FalcorJSON.prototype
-            } || undefined
-        });
+    if (!json || typeofObject !== typeof json || ! (
+        f_meta = json[f_meta_data]) || typeofObject !== typeof f_meta) {
+        return null;
     }
 
     var cacheRoot = this._root.cache;
     var recycleJSON = this._recycleJSON;
     var absolutePath = f_meta[f_meta_abs_path];
+    var referenceContainer, currentRefPath, i, len;
 
     if (!absolutePath) {
         return this._clone({

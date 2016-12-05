@@ -22,7 +22,7 @@
     "td": "npm run test-detail",
     "test-coverage": "cross-env NODE_ENV=test gulp test-coverage",
     "test-debug": "cross-env NODE_ENV=test node --inspect --debug-brk ./node_modules/.bin/_mocha --bail --full-trace --reporter nyan --timeout 0 --require babel-register ./test/index.js",
-    "test-detail": "cross-env NODE_ENV=test _mocha --bail --full-trace --reporter nyan --timeout 5000 --require babel-register ./test/index.js"
+    "test-detail": "cross-env NODE_ENV=test _mocha --full-trace --reporter nyan --timeout 5000 --require babel-register ./test/index.js"
   },
   "author": {
     "name": "Netflix",
@@ -66,7 +66,7 @@
     "babel-plugin-transform-es2015-spread": "~6.8.0",
     "babel-plugin-transform-es2015-template-literals": "~6.8.0",
     "babel-plugin-transform-es2015-unicode-regex": "~6.11.0",
-    "babel-preset-es2016": "6.16.0",
+    "babel-preset-es2016": "~6.16.0",
     "babel-preset-stage-0": "6.16.0",
     "babel-register": "6.18.0",
     "benchmark": "2.1.2",
@@ -106,6 +106,7 @@
     "minimist": "1.1.0",
     "mkdirp": "0.5.1",
     "npm-run-all": "3.1.1",
+    "optimize-js-plugin": "0.0.4",
     "rimraf": "2.5.4",
     "rx": "4.1.0",
     "rxjs": ">=5.0.0-rc.4",

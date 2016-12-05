@@ -1,5 +1,4 @@
 var functionTypeof = 'function';
-var hasOwn = require('./support/hasOwn');
 var Requests = require('./request/Queue');
 
 function ModelRoot(o, model) {
@@ -7,7 +6,7 @@ function ModelRoot(o, model) {
     var options = o || {};
 
     this.cache = {};
-    this.version = 0;
+    this.version = -1;
     this.syncRefCount = 0;
     this.maxRetryCount = 10;
     this.topLevelModel = model;

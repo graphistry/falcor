@@ -22,18 +22,17 @@ function memoizeQueryies() {
     var limit = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 100;
 
     var count = 0;
-    var map = {};
-    var lru = {};
+    var map = {},
+        lru = {};
     return function memoizedQuerySyntax(query) {
         var entry = map[query];
-        if (entry === undefined) {
-            if (++count > limit) {
-                delete map[lru.tail.query];
-                splice(lru, lru.tail);
-            }
-            entry = map[query] = (0, _extends3.default)({ query: query }, (0, _pegjsUtil.parse)(_falcorQuerySyntax2.default.parser, query));
-        } else if (entry.error) {
-            entry = map[query] = (0, _extends3.default)({ query: query }, (0, _pegjsUtil.parse)(_falcorQuerySyntax2.default.parser, query));
+        if (entry === undefined && ++count > limit) {
+            delete map[lru.tail.query];
+            splice(lru, lru.tail);
+        }
+        if (!entry || entry.error) {
+            entry = map[query] = (0, _extends3.default)({
+                query: query }, (0, _pegjsUtil.parse)(_falcorQuerySyntax2.default.parser, query));
         }
         promote(lru, entry);
         return entry;

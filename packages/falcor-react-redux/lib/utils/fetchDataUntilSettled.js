@@ -61,8 +61,8 @@ function _fetchDataUntilSettled(memo) {
         falcor = memo.falcor,
         fragment = memo.fragment;
 
-    if (query !== (memo.query = fragment(memo.data, memo.props))) /*||
-                                                                  (version !== (memo.version = falcor.getVersion()))*/{
+    if (query !== (memo.query = fragment(memo.data || {}, memo.props))) /*||
+                                                                        (version !== (memo.version = falcor.getVersion()))*/{
             var _memoizedQuerySyntax = memoizedQuerySyntax(memo.query),
                 ast = _memoizedQuerySyntax.ast,
                 error = _memoizedQuerySyntax.error;

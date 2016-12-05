@@ -20,7 +20,8 @@ describe('Missing', function() {
                 1: {
                     0: ref(['toMissing1'])
                 }
-            }
+            },
+            undefinedRef: atom(undefined)
         };
     };
 
@@ -53,13 +54,88 @@ describe('Missing', function() {
             getCoreRunner({
                 input: [
                     ['missing', 'title'],
+                    ['undefinedRef', 'title'],
                     ['multi', {to: 1}, 'title'],
                     ['multi', {to: 1}, {to: 1}, 'title']
                 ],
                 materialize: true,
+                requestedMissingPaths: [
+                    ['missing', 'title'],
+                    // ['undefinedRef', 'title'],
+                    ['multi', 0, 'title'],
+                    ['multi', 1, 'title'],
+                    ['multi', 0, {to: 1}, 'title'],
+                    ['multi', 1, 0, 'title'],
+                    ['multi', 1, 1, 'title']
+                ],
+                optimizedMissingPaths: [
+                    ['toMissing', 'title'],
+                    // ['undefinedRef', 'title'],
+                    ['toMissing0', 'title'],
+                    ['multi', 1, 'title'],
+                    ['toMissing0', {to: 1}, 'title'],
+                    ['toMissing1', 'title'],
+                    ['multi', 1, 1, 'title']
+                ],
                 output: {
                     json: {
                         missing: {
+                            title: undefined
+                        },
+                        undefinedRef: {
+                            title: undefined
+                        },
+                        multi: {
+                            0: {
+                                title: undefined,
+                                0: { title: undefined },
+                                1: { title: undefined }
+                            },
+                            1: {
+                                title: undefined,
+                                0: { title: undefined },
+                                1: { title: undefined }
+                            }
+                        }
+                    }
+                },
+                cache: missingCache
+            });
+        });
+        it('should report fully materialized boxed values.', function() {
+            getCoreRunner({
+                input: [
+                    ['missing', 'title'],
+                    ['undefinedRef', 'title'],
+                    ['multi', {to: 1}, 'title'],
+                    ['multi', {to: 1}, {to: 1}, 'title']
+                ],
+                boxValues: true,
+                materialize: true,
+                requestedMissingPaths: [
+                    ['missing', 'title'],
+                    // ['undefinedRef', 'title'],
+                    ['multi', 0, 'title'],
+                    ['multi', 1, 'title'],
+                    ['multi', 0, {to: 1}, 'title'],
+                    ['multi', 1, 0, 'title'],
+                    ['multi', 1, 1, 'title']
+                ],
+                optimizedMissingPaths: [
+                    ['toMissing', 'title'],
+                    // ['undefinedRef', 'title'],
+                    ['toMissing0', 'title'],
+                    ['multi', 1, 'title'],
+                    ['toMissing0', {to: 1}, 'title'],
+                    ['toMissing1', 'title'],
+                    ['multi', 1, 1, 'title']
+                ],
+                output: {
+                    json: {
+                        missing: {
+                            title: { $type: 'atom' }
+                        },
+                        undefinedRef: {
                             title: { $type: 'atom' }
                         },
                         multi: {
@@ -79,6 +155,82 @@ describe('Missing', function() {
                 cache: missingCache
             });
         });
+        it('should report fully materialized values without paths when no datasource.', function() {
+            getCoreRunner({
+                input: [
+                    ['missing', 'title'],
+                    ['undefinedRef', 'title'],
+                    ['multi', {to: 1}, 'title'],
+                    ['multi', {to: 1}, {to: 1}, 'title']
+                ],
+                source: false,
+                materialize: true,
+                requestedMissingPaths: undefined,
+                optimizedMissingPaths: undefined,
+                output: {
+                    json: {
+                        missing: {
+                            title: undefined
+                        },
+                        undefinedRef: {
+                            title: undefined
+                        },
+                        multi: {
+                            0: {
+                                title: undefined,
+                                0: { title: undefined },
+                                1: { title: undefined }
+                            },
+                            1: {
+                                title: undefined,
+                                0: { title: undefined },
+                                1: { title: undefined }
+                            }
+                        }
+                    }
+                },
+                cache: missingCache
+            });
+        });
+        it('should report fully materialized boxed values without paths when no datasource.', function() {
+            getCoreRunner({
+                input: [
+                    ['missing', 'title'],
+                    ['undefinedRef', 'title'],
+                    ['multi', {to: 1}, 'title'],
+                    ['multi', {to: 1}, {to: 1}, 'title']
+                ],
+                source: false,
+                boxValues: true,
+                materialize: true,
+                requestedMissingPaths: undefined,
+                optimizedMissingPaths: undefined,
+                output: {
+                    json: {
+                        missing: {
+                            title: { $type: 'atom' }
+                        },
+                        undefinedRef: {
+                            title: { $type: 'atom' }
+                        },
+                        multi: {
+                            0: {
+                                title: { $type: 'atom' },
+                                0: { title: { $type: 'atom' } },
+                                1: { title: { $type: 'atom' } }
+                            },
+                            1: {
+                                title: { $type: 'atom' },
+                                0: { title: { $type: 'atom' } },
+                                1: { title: { $type: 'atom' } }
+                            }
+                        }
+                    }
+                },
+                cache: missingCache
+            });
+        });
+
         it('should report missing paths through many complex keys.', function() {
             getCoreRunner({
                 input: [[{to:1}, {to:1}, {to:1}, 'summary']],
@@ -110,19 +262,176 @@ describe('Missing', function() {
             });
         });
 
-        describe('Recycled JSON', function() {
+        describe('Recycle JSON', function() {
             it('should report fully materialized values.', function() {
                 getCoreRunner({
                     input: [
                         ['missing', 'title'],
+                        ['undefinedRef', 'title'],
                         ['multi', {to: 1}, 'title'],
                         ['multi', {to: 1}, {to: 1}, 'title']
                     ],
                     materialize: true,
                     recycleJSON: true,
+                    requestedMissingPaths: [
+                        ['missing', 'title'],
+                        // ['undefinedRef', 'title'],
+                        ['multi', 0, 'title'],
+                        ['multi', 0, 0, 'title'],
+                        ['multi', 0, 1, 'title'],
+                        ['multi', 1, 'title'],
+                        ['multi', 1, 0, 'title'],
+                        ['multi', 1, 1, 'title'],
+                    ],
+                    optimizedMissingPaths: [
+                        ['toMissing','title'],
+                        // ['undefinedRef', 'title'],
+                        ['toMissing0','title'],
+                        ['toMissing0',0,'title'],
+                        ['toMissing0',1,'title'],
+                        ['multi',1,'title'],
+                        ['toMissing1','title'],
+                        ['multi',1,1,'title']
+                    ],
                     output: {
                         json: {
                             missing: {
+                                title: undefined
+                            },
+                            undefinedRef: {
+                                title: undefined
+                            },
+                            multi: {
+                                0: {
+                                    title: undefined,
+                                    0: { title: undefined },
+                                    1: { title: undefined }
+                                },
+                                1: {
+                                    title: undefined,
+                                    0: { title: undefined },
+                                    1: { title: undefined }
+                                }
+                            }
+                        }
+                    },
+                    cache: missingCache
+                });
+            });
+            it('should report fully materialized boxed values.', function() {
+                getCoreRunner({
+                    input: [
+                        ['missing', 'title'],
+                        ['undefinedRef', 'title'],
+                        ['multi', {to: 1}, 'title'],
+                        ['multi', {to: 1}, {to: 1}, 'title']
+                    ],
+                    boxValues: true,
+                    materialize: true,
+                    recycleJSON: true,
+                    requestedMissingPaths: [
+                        ['missing', 'title'],
+                        // ['undefinedRef', 'title'],
+                        ['multi', 0, 'title'],
+                        ['multi', 0, 0, 'title'],
+                        ['multi', 0, 1, 'title'],
+                        ['multi', 1, 'title'],
+                        ['multi', 1, 0, 'title'],
+                        ['multi', 1, 1, 'title'],
+                    ],
+                    optimizedMissingPaths: [
+                        ['toMissing','title'],
+                        // ['undefinedRef', 'title'],
+                        ['toMissing0','title'],
+                        ['toMissing0',0,'title'],
+                        ['toMissing0',1,'title'],
+                        ['multi',1,'title'],
+                        ['toMissing1','title'],
+                        ['multi',1,1,'title']
+                    ],
+                    output: {
+                        json: {
+                            missing: {
+                                title: { $type: 'atom' }
+                            },
+                            undefinedRef: {
+                                title: { $type: 'atom' }
+                            },
+                            multi: {
+                                0: {
+                                    title: { $type: 'atom' },
+                                    0: { title: { $type: 'atom' } },
+                                    1: { title: { $type: 'atom' } }
+                                },
+                                1: {
+                                    title: { $type: 'atom' },
+                                    0: { title: { $type: 'atom' } },
+                                    1: { title: { $type: 'atom' } }
+                                }
+                            }
+                        }
+                    },
+                    cache: missingCache
+                });
+            });
+            it('should report fully materialized values without paths when no datasource.', function() {
+                getCoreRunner({
+                    input: [
+                        ['missing', 'title'],
+                        ['undefinedRef', 'title'],
+                        ['multi', {to: 1}, 'title'],
+                        ['multi', {to: 1}, {to: 1}, 'title']
+                    ],
+                    source: false,
+                    materialize: true,
+                    recycleJSON: true,
+                    requestedMissingPaths: undefined,
+                    optimizedMissingPaths: undefined,
+                    output: {
+                        json: {
+                            missing: {
+                                title: undefined
+                            },
+                            undefinedRef: {
+                                title: undefined
+                            },
+                            multi: {
+                                0: {
+                                    title: undefined,
+                                    0: { title: undefined },
+                                    1: { title: undefined }
+                                },
+                                1: {
+                                    title: undefined,
+                                    0: { title: undefined },
+                                    1: { title: undefined }
+                                }
+                            }
+                        }
+                    },
+                    cache: missingCache
+                });
+            });
+            it('should report fully materialized boxed values without paths when no datasource.', function() {
+                getCoreRunner({
+                    input: [
+                        ['missing', 'title'],
+                        ['undefinedRef', 'title'],
+                        ['multi', {to: 1}, 'title'],
+                        ['multi', {to: 1}, {to: 1}, 'title']
+                    ],
+                    source: false,
+                    boxValues: true,
+                    materialize: true,
+                    recycleJSON: true,
+                    requestedMissingPaths: undefined,
+                    optimizedMissingPaths: undefined,
+                    output: {
+                        json: {
+                            missing: {
+                                title: { $type: 'atom' }
+                            },
+                            undefinedRef: {
                                 title: { $type: 'atom' }
                             },
                             multi: {
@@ -279,7 +588,10 @@ describe('Missing', function() {
         it('should report a missing ref and a missing leaf.', function() {
             getCoreRunner({
                 isJSONG: true,
-                input: [['missing', 'title'], ['multi', 1, 'title']],
+                input: [
+                    ['missing', 'title'],
+                    ['multi', 1, 'title']
+                ],
                 output: {
                     jsonGraph: {
                         missing: ref(['toMissing'])
@@ -320,13 +632,33 @@ describe('Missing', function() {
                 isJSONG: true,
                 input: [
                     ['missing', 'title'],
+                    ['undefinedRef', 'title'],
                     ['multi', {to: 1}, 'title'],
                     ['multi', {to: 1}, {to: 1}, 'title']
                 ],
                 materialize: true,
+                requestedMissingPaths: [
+                    ['missing', 'title'],
+                    // ['undefinedRef', 'title'],
+                    ['multi', 0, 'title'],
+                    ['multi', 1, 'title'],
+                    ['multi', 0, {to: 1}, 'title'],
+                    ['multi', 1, 0, 'title'],
+                    ['multi', 1, 1, 'title']
+                ],
+                optimizedMissingPaths: [
+                    ['toMissing', 'title'],
+                    // ['undefinedRef', 'title'],
+                    ['toMissing0', 'title'],
+                    ['multi', 1, 'title'],
+                    ['toMissing0', {to: 1}, 'title'],
+                    ['toMissing1', 'title'],
+                    ['multi', 1, 1, 'title']
+                ],
                 output: {
                     paths: [
                         ['missing', 'title'],
+                        ['undefinedRef', 'title'],
                         ['multi', '0', 'title'],
                         ['multi', '1', 'title'],
                         ['multi', '0', {'to': '1'}, 'title'],
@@ -335,6 +667,9 @@ describe('Missing', function() {
                     ],
                     jsonGraph: {
                         missing: ref(['toMissing']),
+                        undefinedRef: {
+                            title: { $type: 'atom' }
+                        },
                         multi: {
                             0: ref(['toMissing0']),
                             1: {

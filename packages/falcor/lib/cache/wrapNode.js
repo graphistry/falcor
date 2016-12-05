@@ -1,11 +1,9 @@
 var isArray = Array.isArray;
 var now = require('../support/now');
-var expiresNow = require('../values/expires-now');
-
-var $atom = require('../types/atom');
 var clone = require('./../support/clone');
 var getSize = require('./../support/getSize');
 var getExpires = require('../support/getExpires');
+var expiresNow = require('../values/expires-now');
 
 var atomSize = 50;
 

@@ -3,18 +3,19 @@ import FalcorQuerySyntax from '@graphistry/falcor-query-syntax';
 
 export default function memoizeQueryies(limit = 100) {
     let count = 0;
-    const map = {};
-    const lru = {};
+    const map = {}, lru = {};
     return function memoizedQuerySyntax(query) {
         let entry = map[query];
-        if (entry === undefined) {
-            if (++count > limit) {
-                delete map[lru.tail.query];
-                splice(lru, lru.tail);
-            }
-            entry = map[query] = { query, ...parseUtil(FalcorQuerySyntax.parser, query) };
-        } else if (entry.error) {
-            entry = map[query] = { query, ...parseUtil(FalcorQuerySyntax.parser, query) };
+        if (entry === undefined && ++count > limit) {
+            delete map[lru.tail.query];
+            splice(lru, lru.tail);
+        }
+        if (!entry || entry.error) {
+            entry = map[query] = {
+                query, ...parseUtil(
+                    FalcorQuerySyntax.parser, query
+                )
+            };
         }
         promote(lru, entry);
         return entry;
