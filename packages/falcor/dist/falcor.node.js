@@ -930,6 +930,11 @@ module.exports = function setPathMaps(model, pathMapEnvelopes, errorSelector, co
     var bound = model._path;
     var cache = modelRoot.cache;
     var node = getCachePosition(cache, bound);
+
+    if (!node) {
+        return [[], [], false];
+    }
+
     var parent = node["ƒ_parent"] || cache;
     var initialVersion = cache["ƒ_version"];
 
@@ -1517,6 +1522,11 @@ module.exports = function setPathValues(model, pathValues, errorSelector, compar
     var bound = model._path;
     var cache = modelRoot.cache;
     var node = getCachePosition(cache, bound);
+
+    if (!node) {
+        return [[], [], false];
+    }
+
     var parent = node["ƒ_parent"] || cache;
     var initialVersion = cache["ƒ_version"];
 

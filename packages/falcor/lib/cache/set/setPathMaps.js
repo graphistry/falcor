@@ -24,6 +24,11 @@ module.exports = function setPathMaps(model, pathMapEnvelopes, errorSelector, co
     var bound = model._path;
     var cache = modelRoot.cache;
     var node = getCachePosition(cache, bound);
+
+    if (!node) {
+        return [[], [], false];
+    }
+
     var parent = node[f_parent] || cache;
     var initialVersion = cache[f_version];
 
