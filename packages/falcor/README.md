@@ -26,78 +26,29 @@ This is the [Graphistry](http://graphistry.com) fork of the FalcorJS client libr
 ## Performance Comparison
 
 ```
-running Get Tests
-finished Get Tests
-@netflix/falcor    getJSON - 100 paths from cache:
-    13641.702484548276 ops/s
-    0.07 ms/op
-    0.42% of 1 frame @ 60FPS
+Get Tests:
+   @netflix/falcor getJSON - 100 paths from cache x 13,715 ops/sec ±16.34% (70 runs sampled) (0.42% of 1 frame @ 60FPS)
+@graphistry/falcor getJSON - 100 paths from cache x 26,009 ops/sec ±3.15% (75 runs sampled) (0.24% of 1 frame @ 60FPS)
+@graphistry/falcor getJSON - 100 paths from cache x 3,100,760 ops/sec ±10.00% (78 runs sampled) (0% of 1 frame @ 60FPS) (recycled JSON)
+   @netflix/falcor getJSONGraph - 100 paths from cache x 2,920 ops/sec ±2.10% (85 runs sampled) (2.04% of 1 frame @ 60FPS)
+@graphistry/falcor getJSONGraph - 100 paths from cache x 2,516 ops/sec ±11.44% (67 runs sampled) (2.4% of 1 frame @ 60FPS)
+   @netflix/falcor getVersion x 2,979,980 ops/sec ±2.41% (79 runs sampled) (0% of 1 frame @ 60FPS)
+@graphistry/falcor getVersion x 5,019,760 ops/sec ±5.46% (78 runs sampled) (0% of 1 frame @ 60FPS)
 
-@graphistry/falcor getJSON - 100 paths from cache:
-    25234.675291722833 ops/s
-    0.04 ms/op
-    0.24% of 1 frame @ 60FPS
+Set Tests:
+   @netflix/falcor setJSONGraph - 100 paths into cache x 5,800 ops/sec ±11.90% (77 runs sampled) (1.02% of 1 frame @ 60FPS)
+@graphistry/falcor setJSONGraph - 100 paths into cache x 4,987 ops/sec ±10.68% (75 runs sampled) (1.2% of 1 frame @ 60FPS)
+   @netflix/falcor setPathMaps - 100 paths into cache x 4,331 ops/sec ±1.67% (80 runs sampled) (1.38% of 1 frame @ 60FPS)
+@graphistry/falcor setPathMaps - 100 paths into cache x 3,852 ops/sec ±6.05% (76 runs sampled) (1.56% of 1 frame @ 60FPS)
+   @netflix/falcor setPathValues - 100 paths into cache x 2,354 ops/sec ±12.83% (68 runs sampled) (2.52% of 1 frame @ 60FPS)
+@graphistry/falcor setPathValues - 100 paths into cache x 2,441 ops/sec ±9.82% (68 runs sampled) (2.46% of 1 frame @ 60FPS)
 
-@graphistry/falcor getJSON - 100 paths from cache recycling the JSON:
-    7213181.673262027 ops/s
-    0 ms/op
-    0% of 1 frame @ 60FPS
-
-running Set Tests
-finished Set Tests
-@netflix/falcor    setCache - cache with 100 videos:
-    1018.530835522926 ops/s
-    0.98 ms/op
-    5.88% of 1 frame @ 60FPS
-
-@graphistry/falcor setCache - cache with 100 videos:
-    1055.6024924166336 ops/s
-    0.95 ms/op
-    5.7% of 1 frame @ 60FPS
-
-@netflix/falcor    setJSONGraph - 100 paths into Cache:
-    5850.27883921989 ops/s
-    0.17 ms/op
-    1.02% of 1 frame @ 60FPS
-
-@graphistry/falcor setJSONGraph - 100 paths into Cache:
-    5605.451411415314 ops/s
-    0.18 ms/op
-    1.08% of 1 frame @ 60FPS
-
-running Get Version Tests
-finished Get Version Tests
-@netflix/falcor    getVersion:
-    2210081.781511778 ops/s
-    0 ms/op
-    0% of 1 frame @ 60FPS
-
-@graphistry/falcor getVersion:
-    3240285.470425864 ops/s
-    0 ms/op
-    0% of 1 frame @ 60FPS
-
-running DataSource Tests
-finished DataSource Tests
-@netflix/falcor    getJSON + setJSONGraph + getJSON - 100 paths from DataSource:
-    589.3084623349998 ops/s
-    1.7 ms/op
-    10.2% of 1 frame @ 60FPS
-
-@graphistry/falcor getJSON + setJSONGraph + getJSON - 100 paths from DataSource:
-    609.0614300007979 ops/s
-    1.64 ms/op
-    9.84% of 1 frame @ 60FPS
-
-@netflix/falcor    getJSONGraph + setJSONGraph + getJSONGraph - 100 paths from DataSource:
-    434.5908427320259 ops/s
-    2.3 ms/op
-    13.8% of 1 frame @ 60FPS
-
-@graphistry/falcor getJSONGraph + setJSONGraph + getJSONGraph - 100 paths from DataSource:
-    406.08557299248673 ops/s
-    2.46 ms/op
-    14.76% of 1 frame @ 60FPS
+DataSource Tests:
+   @netflix/falcor getJSON - 50 of 100 paths from DataSource x 1,100 ops/sec ±2.03% (81 runs sampled) (5.46% of 1 frame @ 60FPS)
+@graphistry/falcor getJSON - 50 of 100 paths from DataSource x 1,557 ops/sec ±6.89% (73 runs sampled) (3.84% of 1 frame @ 60FPS)
+@graphistry/falcor getJSON - 50 of 100 paths from DataSource x 47,791 ops/sec ±7.21% (78 runs sampled) (0.12% of 1 frame @ 60FPS) (recycled JSON)
+   @netflix/falcor getJSONGraph - 50 of 100 paths from DataSource x 635 ops/sec ±8.75% (79 runs sampled) (9.42% of 1 frame @ 60FPS)
+@graphistry/falcor getJSONGraph - 50 of 100 paths from DataSource x 614 ops/sec ±6.47% (73 runs sampled) (9.78% of 1 frame @ 60FPS)
 ```
 
 ## Getting Started
