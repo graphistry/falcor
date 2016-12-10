@@ -36,17 +36,18 @@ function onMaterialize(json, path, depth, length,
     keyset = path[depth];
 
     if (!json || typeofObject !== typeof json) {
-        json = { __proto__: FalcorJSON.prototype };
-        json[f_meta_data] = f_meta = { __proto__: null };
-        f_meta[f_meta_version] = 0;
-        f_meta[f_meta_abs_path] = path.slice(0, depth);
+        json = { __proto__: FalcorJSON.prototype, [f_meta_data]: f_meta = {
+                [f_meta_version]: 0,
+                [f_meta_abs_path]: path.slice(0, depth)
+        }};
         if (branchSelector) {
             json = branchSelector(json);
         }
     } else if (!(f_meta = json[f_meta_data])) {
-        json[f_meta_data] = f_meta = { __proto__: null };
-        f_meta[f_meta_version] = 0;
-        f_meta[f_meta_abs_path] = path.slice(0, depth);
+        json[f_meta_data] = f_meta = {
+            [f_meta_version]: 0,
+            [f_meta_abs_path]: path.slice(0, depth)
+        };
     } else {
         f_meta[f_meta_version] = 0;
         f_meta[f_meta_abs_path] = path.slice(0, depth);

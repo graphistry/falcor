@@ -126,7 +126,7 @@ function serialize(inst, serializer, includeMetadata, createWithProto) {
             var deref_to = f_meta[f_meta_deref_to];
             var deref_from = f_meta[f_meta_deref_from];
 
-            f_meta = { __proto__: null };
+            f_meta = {};
             $code && (f_meta['$code'] = $code);
             abs_path && (f_meta[f_meta_abs_path] = abs_path);
             deref_to && (f_meta[f_meta_deref_to] = deref_to);

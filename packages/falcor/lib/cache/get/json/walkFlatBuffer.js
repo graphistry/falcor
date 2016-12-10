@@ -63,31 +63,29 @@ function walkPathAndBuildOutput(root, node, json, path,
         refContainerAbsPath = referenceContainer[f_abs_path];
     }
 
-    if (json) {
-        if (typeofObject !== typeof json) {
-            json = undefined;
-        } else if (f_meta = json[f_meta_data]) {
-            if (!branchSelector && !(json instanceof FalcorJSON)) {
-                json.__proto__ = { __proto__: FalcorJSON.prototype };
-                json.__proto__[f_meta_data] = f_meta;
-            } else if (
-                f_meta[f_meta_version]  === node[f_version] &&
-                f_meta['$code']         === path['$code'] &&
-                f_meta[f_meta_abs_path] === node[f_abs_path]) {
-                results.hasValue = true;
-                arr[0] = json;
-                arr[1] = false;
-                return arr;
-            }
-            f_old_keys = f_meta[f_meta_keys];
-            f_meta[f_meta_version] = node[f_version];
-            f_meta[f_meta_abs_path] = node[f_abs_path];
-            f_meta[f_meta_deref_to] = refContainerRefPath;
-            f_meta[f_meta_deref_from] = refContainerAbsPath;
+    if (!json || typeofObject !== typeof json) {
+        json = undefined;
+    } else if (f_meta = json[f_meta_data]) {
+        if (!branchSelector && !(json instanceof FalcorJSON)) {
+            json.__proto__ = { __proto__: FalcorJSON.prototype };
+            json.__proto__[f_meta_data] = f_meta;
+        } else if (!(
+            f_meta[f_meta_version]  !== node[f_version]  ||
+            f_meta[f_meta_abs_path] !== node[f_abs_path] ||
+            f_meta['$code']         !== path['$code'])) {
+            results.hasValue = true;
+            arr[0] = json;
+            arr[1] = false;
+            return arr;
         }
+        f_old_keys = f_meta[f_meta_keys];
+        f_meta[f_meta_version] = node[f_version];
+        f_meta[f_meta_abs_path] = node[f_abs_path];
+        f_meta[f_meta_deref_to] = refContainerRefPath;
+        f_meta[f_meta_deref_from] = refContainerAbsPath;
     }
 
-    f_new_keys = { __proto__: null };
+    f_new_keys = {};
 
     var keysIndex = -1;
     var keysLength = keys.length;
@@ -232,13 +230,12 @@ function walkPathAndBuildOutput(root, node, json, path,
             // then at least one leaf value was encountered, so create a
             // branch to contain it.
             if (f_meta === undefined) {
-                f_meta = { __proto__: null };
+                f_meta = {};
                 f_meta[f_meta_version] = node[f_version];
                 f_meta[f_meta_abs_path] = node[f_abs_path];
                 f_meta[f_meta_deref_to] = refContainerRefPath;
                 f_meta[f_meta_deref_from] = refContainerAbsPath;
-                json = { __proto__: FalcorJSON.prototype };
-                json[f_meta_data] = f_meta;
+                json = { __proto__: FalcorJSON.prototype, [f_meta_data]: f_meta };
                 // Empower developers to instrument branch node creation by
                 // providing a custom function. If they do, delegate branch
                 // node creation to them.

@@ -24,6 +24,11 @@ module.exports = function invalidatePathSets(model, paths, expireImmediate) {
     var version = modelRoot.version++;
     var cache = modelRoot.cache;
     var node = getBoundCacheNode(model);
+
+    if (!node) {
+        return;
+    }
+
     var parent = node[f_parent] || cache;
     var initialVersion = cache[f_version];
 

@@ -26,18 +26,15 @@ function netflixGetDataSourceSuiteDescription() {
     });
     var dataSourceModel = new Model({ source: dataSource });
     var allTitlesPath = ['lolomo', {from: 0, to: 9}, {from: 0, to: 9}, 'item', 'title'];
+    var missingTitlesPaths = [['lolomo', [1, 3, 5, 7, 9], {from: 0, to: 9}, 'item', 'title']];
 
     function resetDataSourceModelCache() {
-        dataSourceModel._root.cache = {};
-        dataSourceModel._root[head] = null;
-        dataSourceModel._root[tail] = null;
-        dataSourceModel._root.expired = [];
-        dataSourceModel._root.version = 0;
+        dataSourceModel._invalidatePathValues(dataSourceModel, missingTitlesPaths);
     }
 
     return [{
         async: true,
-        name: '   @netflix/falcor getJSON + setJSONGraph + getJSON - 100 paths from DataSource',
+        name: '   @netflix/falcor getJSON - 50 of 100 paths from DataSource',
         fn: function() {
             Rx.Observable
                 .from(dataSourceModel.get(allTitlesPath))
@@ -47,7 +44,7 @@ function netflixGetDataSourceSuiteDescription() {
         }
     }, {
         async: true,
-        name: '   @netflix/falcor getJSONGraph + setJSONGraph + getJSONGraph - 100 paths from DataSource',
+        name: '   @netflix/falcor getJSONGraph - 50 of 100 paths from DataSource',
         fn: function() {
             Rx.Observable
                 .from(dataSourceModel.get(allTitlesPath)._toJSONG())
@@ -71,18 +68,15 @@ function graphistryGetDataSourceSuiteDescription() {
     });
     var dataSourceModel = new Model({ source: dataSource });
     var allTitlesPath = ['lolomo', {from: 0, to: 9}, {from: 0, to: 9}, 'item', 'title'];
+    var missingTitlesPaths = [['lolomo', [1, 3, 5, 7, 9], {from: 0, to: 9}, 'item', 'title']];
 
     function resetDataSourceModelCache() {
-        dataSourceModel._root.cache = {};
-        dataSourceModel._root[head] = null;
-        dataSourceModel._root[tail] = null;
-        dataSourceModel._root.expired = [];
-        dataSourceModel._root.version = 0;
+        dataSourceModel._invalidatePathValues(dataSourceModel, missingTitlesPaths);
     }
 
     return [{
         async: true,
-        name: '@graphistry/falcor getJSON + setJSONGraph + getJSON - 100 paths from DataSource',
+        name: '@graphistry/falcor getJSON - 50 of 100 paths from DataSource',
         fn: function() {
             Rx.Observable
                 .from(dataSourceModel.get(allTitlesPath))
@@ -92,7 +86,7 @@ function graphistryGetDataSourceSuiteDescription() {
         }
     }, {
         async: true,
-        name: '@graphistry/falcor getJSONGraph + setJSONGraph + getJSONGraph - 100 paths from DataSource',
+        name: '@graphistry/falcor getJSONGraph - 50 of 100 paths from DataSource',
         fn: function() {
             Rx.Observable
                 .from(dataSourceModel.get(allTitlesPath)._toJSONG())
@@ -117,22 +111,18 @@ function graphistryGetDataSourceRecycledSuiteDescription() {
         return { jsonGraph: createCacheWith100Videos() };
     });
     var dataSourceModel = new Model({ source: dataSource, recycleJSON: true });
+    var missingTitlesPaths = [['lolomo', [1, 3, 5, 7, 9], {from: 0, to: 9}, 'item', 'title']];
     var allTitlesPath = computeFlatBufferHash(toFlatBuffer(
         [['lolomo', {from: 0, to: 9}, {from: 0, to: 9}, 'item', 'title']]
     ));
 
     function resetDataSourceModelCache() {
-        dataSourceModel._seed = {};
-        dataSourceModel._root.cache = {};
-        dataSourceModel._root[head] = null;
-        dataSourceModel._root[tail] = null;
-        dataSourceModel._root.expired = [];
-        dataSourceModel._root.version = 0;
+        dataSourceModel._invalidatePathValues(dataSourceModel, missingTitlesPaths);
     }
 
     return [{
         async: true,
-        name: '@graphistry/falcor getJSON + setJSONGraph + getJSON - 100 paths from DataSource',
+        name: '@graphistry/falcor getJSON - 50 of 100 paths from DataSource',
         suffix: ' (recycled JSON)',
         fn: function() {
             Rx.Observable

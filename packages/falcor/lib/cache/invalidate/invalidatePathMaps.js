@@ -24,6 +24,11 @@ module.exports = function invalidatePathMaps(model, pathMapEnvelopes, expireImme
     var comparator = modelRoot._comparator;
     var cache = modelRoot.cache;
     var node = getBoundCacheNode(model);
+
+    if (!node) {
+        return;
+    }
+
     var parent = node[f_parent] || cache;
     var initialVersion = cache[f_version];
 

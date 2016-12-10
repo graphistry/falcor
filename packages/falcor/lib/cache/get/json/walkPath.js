@@ -79,15 +79,13 @@ function walkPathAndBuildOutput(root, node, json, path,
         refContainerAbsPath = referenceContainer[f_abs_path];
     }
 
-    if (json) {
-        if (typeofObject !== typeof json) {
-            json = undefined;
-        } else if (f_meta = json[f_meta_data]) {
-            f_meta[f_meta_version] = node[f_version];
-            f_meta[f_meta_abs_path] = node[f_abs_path];
-            f_meta[f_meta_deref_to] = refContainerRefPath;
-            f_meta[f_meta_deref_from] = refContainerAbsPath;
-        }
+    if (!json || typeofObject !== typeof json) {
+        json = undefined;
+    } else if (f_meta = json[f_meta_data]) {
+        f_meta[f_meta_version] = node[f_version];
+        f_meta[f_meta_abs_path] = node[f_abs_path];
+        f_meta[f_meta_deref_to] = refContainerRefPath;
+        f_meta[f_meta_deref_from] = refContainerAbsPath;
     }
 
     // Iterate over every key in the keyset. This loop is perhaps a bit clever,
@@ -235,13 +233,12 @@ function walkPathAndBuildOutput(root, node, json, path,
             // then at least one leaf value was encountered, so create a
             // branch to contain it.
             if (f_meta === undefined) {
-                f_meta = { __proto__: null };
+                f_meta = {};
                 f_meta[f_meta_version] = node[f_version];
                 f_meta[f_meta_abs_path] = node[f_abs_path];
                 f_meta[f_meta_deref_to] = refContainerRefPath;
                 f_meta[f_meta_deref_from] = refContainerAbsPath;
-                json = { __proto__: FalcorJSON.prototype };
-                json[f_meta_data] = f_meta;
+                json = { __proto__: FalcorJSON.prototype, [f_meta_data]: f_meta };
                 // Empower developers to instrument branch node creation by
                 // providing a custom function. If they do, delegate branch
                 if (branchSelector) {

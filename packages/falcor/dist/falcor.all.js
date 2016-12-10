@@ -247,7 +247,7 @@ function serialize(inst, serializer, includeMetadata, createWithProto) {
             var deref_to = f_meta["deref_to"];
             var deref_from = f_meta["deref_from"];
 
-            f_meta = { __proto__: null };
+            f_meta = {};
             $code && (f_meta['$code'] = $code);
             abs_path && (f_meta["abs_path"] = abs_path);
             deref_to && (f_meta["deref_to"] = deref_to);
@@ -1511,6 +1511,11 @@ module.exports = function invalidatePathSets(model, paths, expireImmediate) {
     var version = modelRoot.version++;
     var cache = modelRoot.cache;
     var node = getBoundCacheNode(model);
+
+    if (!node) {
+        return;
+    }
+
     var parent = node["ƒ_parent"] || cache;
     var initialVersion = cache["ƒ_version"];
 
@@ -2555,17 +2560,18 @@ function onMaterialize(json, path, depth, length, branchSelector, boxValues) {
     keyset = path[depth];
 
     if (!json || typeofObject !== typeof json) {
-        json = { __proto__: FalcorJSON.prototype };
-        json["ƒ_meta"] = f_meta = { __proto__: null };
-        f_meta["version"] = 0;
-        f_meta["abs_path"] = path.slice(0, depth);
+        json = { __proto__: FalcorJSON.prototype, ["ƒ_meta"]: f_meta = {
+                ["version"]: 0,
+                ["abs_path"]: path.slice(0, depth)
+            } };
         if (branchSelector) {
             json = branchSelector(json);
         }
     } else if (!(f_meta = json["ƒ_meta"])) {
-        json["ƒ_meta"] = f_meta = { __proto__: null };
-        f_meta["version"] = 0;
-        f_meta["abs_path"] = path.slice(0, depth);
+        json["ƒ_meta"] = f_meta = {
+            ["version"]: 0,
+            ["abs_path"]: path.slice(0, depth)
+        };
     } else {
         f_meta["version"] = 0;
         f_meta["abs_path"] = path.slice(0, depth);
@@ -2712,6 +2718,11 @@ module.exports = function invalidatePathMaps(model, pathMapEnvelopes, expireImme
     var comparator = modelRoot._comparator;
     var cache = modelRoot.cache;
     var node = getBoundCacheNode(model);
+
+    if (!node) {
+        return;
+    }
+
     var parent = node["ƒ_parent"] || cache;
     var initialVersion = cache["ƒ_version"];
 
@@ -4522,28 +4533,26 @@ function walkPathAndBuildOutput(root, node, json, path, depth, seed, results, re
         refContainerAbsPath = referenceContainer["ƒ_abs_path"];
     }
 
-    if (json) {
-        if (typeofObject !== typeof json) {
-            json = undefined;
-        } else if (f_meta = json["ƒ_meta"]) {
-            if (!branchSelector && !(json instanceof FalcorJSON)) {
-                json.__proto__ = { __proto__: FalcorJSON.prototype };
-                json.__proto__["ƒ_meta"] = f_meta;
-            } else if (f_meta["version"] === node["ƒ_version"] && f_meta['$code'] === path['$code'] && f_meta["abs_path"] === node["ƒ_abs_path"]) {
-                results.hasValue = true;
-                arr[0] = json;
-                arr[1] = false;
-                return arr;
-            }
-            f_old_keys = f_meta["keys"];
-            f_meta["version"] = node["ƒ_version"];
-            f_meta["abs_path"] = node["ƒ_abs_path"];
-            f_meta["deref_to"] = refContainerRefPath;
-            f_meta["deref_from"] = refContainerAbsPath;
+    if (!json || typeofObject !== typeof json) {
+        json = undefined;
+    } else if (f_meta = json["ƒ_meta"]) {
+        if (!branchSelector && !(json instanceof FalcorJSON)) {
+            json.__proto__ = { __proto__: FalcorJSON.prototype };
+            json.__proto__["ƒ_meta"] = f_meta;
+        } else if (!(f_meta["version"] !== node["ƒ_version"] || f_meta["abs_path"] !== node["ƒ_abs_path"] || f_meta['$code'] !== path['$code'])) {
+            results.hasValue = true;
+            arr[0] = json;
+            arr[1] = false;
+            return arr;
         }
+        f_old_keys = f_meta["keys"];
+        f_meta["version"] = node["ƒ_version"];
+        f_meta["abs_path"] = node["ƒ_abs_path"];
+        f_meta["deref_to"] = refContainerRefPath;
+        f_meta["deref_from"] = refContainerAbsPath;
     }
 
-    f_new_keys = { __proto__: null };
+    f_new_keys = {};
 
     var keysIndex = -1;
     var keysLength = keys.length;
@@ -4675,13 +4684,12 @@ function walkPathAndBuildOutput(root, node, json, path, depth, seed, results, re
             // then at least one leaf value was encountered, so create a
             // branch to contain it.
             if (f_meta === undefined) {
-                f_meta = { __proto__: null };
+                f_meta = {};
                 f_meta["version"] = node["ƒ_version"];
                 f_meta["abs_path"] = node["ƒ_abs_path"];
                 f_meta["deref_to"] = refContainerRefPath;
                 f_meta["deref_from"] = refContainerAbsPath;
-                json = { __proto__: FalcorJSON.prototype };
-                json["ƒ_meta"] = f_meta;
+                json = { __proto__: FalcorJSON.prototype, ["ƒ_meta"]: f_meta };
                 // Empower developers to instrument branch node creation by
                 // providing a custom function. If they do, delegate branch
                 // node creation to them.
@@ -4825,15 +4833,13 @@ function walkPathAndBuildOutput(root, node, json, path, depth, seed, results, re
         refContainerAbsPath = referenceContainer["ƒ_abs_path"];
     }
 
-    if (json) {
-        if (typeofObject !== typeof json) {
-            json = undefined;
-        } else if (f_meta = json["ƒ_meta"]) {
-            f_meta["version"] = node["ƒ_version"];
-            f_meta["abs_path"] = node["ƒ_abs_path"];
-            f_meta["deref_to"] = refContainerRefPath;
-            f_meta["deref_from"] = refContainerAbsPath;
-        }
+    if (!json || typeofObject !== typeof json) {
+        json = undefined;
+    } else if (f_meta = json["ƒ_meta"]) {
+        f_meta["version"] = node["ƒ_version"];
+        f_meta["abs_path"] = node["ƒ_abs_path"];
+        f_meta["deref_to"] = refContainerRefPath;
+        f_meta["deref_from"] = refContainerAbsPath;
     }
 
     // Iterate over every key in the keyset. This loop is perhaps a bit clever,
@@ -4968,13 +4974,12 @@ function walkPathAndBuildOutput(root, node, json, path, depth, seed, results, re
             // then at least one leaf value was encountered, so create a
             // branch to contain it.
             if (f_meta === undefined) {
-                f_meta = { __proto__: null };
+                f_meta = {};
                 f_meta["version"] = node["ƒ_version"];
                 f_meta["abs_path"] = node["ƒ_abs_path"];
                 f_meta["deref_to"] = refContainerRefPath;
                 f_meta["deref_from"] = refContainerAbsPath;
-                json = { __proto__: FalcorJSON.prototype };
-                json["ƒ_meta"] = f_meta;
+                json = { __proto__: FalcorJSON.prototype, ["ƒ_meta"]: f_meta };
                 // Empower developers to instrument branch node creation by
                 // providing a custom function. If they do, delegate branch
                 if (branchSelector) {
@@ -5385,23 +5390,24 @@ function onMaterializeFlatBuffer(json, path, depth, length, branchSelector, boxV
         nextOptimizedLength = optimizedLength + 1;
 
     if (!json || typeofObject !== typeof json) {
-        json = { __proto__: FalcorJSON.prototype };
-        json["ƒ_meta"] = f_meta = { __proto__: null };
-        f_meta["version"] = 0;
-        f_meta["abs_path"] = optimizedPath.slice(0, optimizedLength);
+        json = { __proto__: FalcorJSON.prototype, ["ƒ_meta"]: f_meta = {
+                ["version"]: 0,
+                ["abs_path"]: optimizedPath.slice(0, optimizedLength)
+            } };
         if (branchSelector) {
             json = branchSelector(json);
         }
     } else if (!(f_meta = json["ƒ_meta"])) {
-        json["ƒ_meta"] = f_meta = { __proto__: null };
-        f_meta["version"] = 0;
-        f_meta["abs_path"] = optimizedPath.slice(0, optimizedLength);
+        json["ƒ_meta"] = f_meta = {
+            ["version"]: 0,
+            ["abs_path"]: optimizedPath.slice(0, optimizedLength)
+        };
     } else {
         f_old_keys = f_meta["keys"];
         f_meta["abs_path"] = optimizedPath.slice(0, optimizedLength);
     }
 
-    f_new_keys = { __proto__: null };
+    f_new_keys = {};
 
     var nextPath;
     var keysIndex = -1;
