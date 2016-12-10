@@ -1,4 +1,4 @@
-var jsonGraph = require("./jsonGraph");
+var jsonGraph = require('./jsonGraph');
 module.exports = function jsonGraphEnvelope(pathValues) {
     return {
         jsonGraph: jsonGraph(pathValues),

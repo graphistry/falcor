@@ -14,8 +14,9 @@ module.exports = function parseTree(routes) {
         // converts the virtual string path to a real path with
         // extended syntax on.
         if (typeof route.route === 'string') {
+            var routeString = route.route;
             route.route = pathSyntax(route.route, true);
-            convertTypes(route);
+            convertTypes(route, routeString);
         }
         if (route.get) {
             route.getId = ++ROUTE_ID;

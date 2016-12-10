@@ -1,4 +1,4 @@
-var falcor = require('./../../../lib');
+var falcor = require('./../../../falcor.js');
 var Model = falcor.Model;
 var expect = require('chai').expect;
 var sinon = require('sinon');
@@ -28,8 +28,8 @@ describe('Caching Issues', function() {
             }
         });
         var clone = source._clone({});
-        var resSource = source._getPathValuesAsPathMap(source, [['lolomo', 'summary']], [{}]);
-        var resClone = clone._getPathValuesAsPathMap(clone, [['lolomo', 'summary']], [{}]);
+        var resSource = source._getPathValuesAsPathMap(source, [['lolomo', 'summary']], {});
+        var resClone = clone._getPathValuesAsPathMap(clone, [['lolomo', 'summary']], {});
         expect(resClone).to.deep.equals(resSource);
 
         source.setCache({
@@ -37,8 +37,8 @@ describe('Caching Issues', function() {
                 name: 'Terminator 2'
             }
         });
-        resSource = source._getPathValuesAsPathMap(source, [['lolomo', 'name']], [{}]);
-        resClone = clone._getPathValuesAsPathMap(clone, [['lolomo', 'name']], [{}]);
+        resSource = source._getPathValuesAsPathMap(source, [['lolomo', 'name']], {});
+        resClone = clone._getPathValuesAsPathMap(clone, [['lolomo', 'name']], {});
         expect(resClone).to.deep.equals(resSource);
     });
 });

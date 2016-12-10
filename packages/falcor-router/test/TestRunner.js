@@ -11,7 +11,23 @@ var TestRunner = {
                 });
                 count++;
             }, undefined, function() {
-                expect(count, 'The observable should of onNext one time').to.equal(1);
+                expect(count, 'The observable should have emitted once').to.equal(1);
+            });
+    },
+    runStreaming: function(obs, compares) {
+        var count = 0;
+        var total = compares.length;
+        return obs.
+            do(function(x) {
+                try {
+                    expect(x).to.deep.equals(compares[count++]);
+                } catch (e) {
+                    e.message = (count - 1) + ': ' + e.message;
+                    throw e;
+                }
+                // jsongPartialCompare(compares[count++].jsonGraph, x.jsonGraph);
+            }, undefined, function() {
+                expect(count, 'The observable should have emitted ' + total + ' times').to.equal(total);
             });
     },
 
@@ -33,7 +49,7 @@ var TestRunner = {
         var out = [];
         ranges.forEach(function(range) {
             var to = range.to;
-            for (var i = 0; i <= to; ++i) {
+            for (var i = range.from || 0; i <= to; ++i) {
                 out[out.length] = i;
             }
         });

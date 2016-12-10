@@ -7,8 +7,13 @@
  * @param {Object} cache
  * @param {PathSet} path
  */
-module.exports = function getValue(cache, path) {
-    return path.reduce(function(acc, key) {
-        return acc[key];
-    }, cache);
+module.exports = function getValue(node, path) {
+    var index = -1;
+    var count = path.length;
+    while (node &&
+           typeof node === 'object' &&
+           !node.$type && ++index < count) {
+        node = node[path[index]];
+    }
+    return node;
 };

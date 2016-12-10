@@ -1,1 +1,1 @@
-module.exports = "ref";
+module.exports = 'ref';

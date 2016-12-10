@@ -1,4 +1,4 @@
-var falcor = require("./../../../lib/");
+var falcor = require('./../../../falcor.js');
 var Model = falcor.Model;
 var noOp = function() {};
 var LocalDataSource = require('../../data/LocalDataSource');
@@ -16,7 +16,6 @@ function M() {
 describe('DataSource and Deref', function() {
     it('should get a value from from dataSource when bound.', function(done) {
         var model = new Model({cache: M(), source: new LocalDataSource(Cache())});
-        model._root.unsafeMode = true;
         var onNext = sinon.spy();
         toObservable(model.
             get(['lolomo', 0, 0, 'item', 'title'])).

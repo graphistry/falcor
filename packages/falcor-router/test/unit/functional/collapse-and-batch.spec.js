@@ -6,17 +6,18 @@ var expect = chai.expect;
 var falcor = require('@graphistry/falcor');
 var $ref = falcor.Model.ref;
 var $atom = falcor.Model.atom;
+var Scheduler = require('rxjs').Scheduler;
 var Observable = require('rxjs').Observable;
 var Promise = require('promise');
 
 describe('Collapse and Batch', function() {
-    it('should ensure that collapse is being ran.', function(done) {
+    it('should ensure that collapse is being run.', function(done) {
         var videos = Routes().Videos.Integers.Summary(function(path) {
             expect(path.concat()).to.deep.equal(['videos', [0, 1], 'summary']);
         });
-        var genreLists = Routes().Genrelists.Integers(function(incomingPaths) {
+        var genreLists = Routes().Genrelists.Ranges(function(incomingPaths) {
             expect(incomingPaths.concat()).to.deep.equal(['genreLists', [{from: 0, to: 1}]]);
-        });
+        }, 0, true);
         var router = new R(videos.concat(genreLists));
         var obs = router.
             get([['genreLists', [0, 1], 'summary']]);
@@ -24,6 +25,7 @@ describe('Collapse and Batch', function() {
         obs.
             do(function(res) {
                 expect(res).to.deep.equals({
+                    paths: [['genreLists', {'from': 0, 'to': 1}, 'summary']],
                     jsonGraph: {
                         genreLists: {
                             0: $ref('videos[0]'),
@@ -31,10 +33,10 @@ describe('Collapse and Batch', function() {
                         },
                         videos: {
                             0: {
-                                summary: $atom({title: 'Some Movie 0'})
+                                summary: 'Some Movie 0'
                             },
                             1: {
-                                summary: $atom({title: 'Some Movie 1'})
+                                summary: 'Some Movie 1'
                             }
                         }
                     }
@@ -46,8 +48,7 @@ describe('Collapse and Batch', function() {
             subscribe(noOp, done, done);
     });
 
-    it('should validate that paths are ran in parallel, not sequentially.', function(done) {
-        this.timeout(10000);
+    it('should validate that paths are run in parallel, not sequentially.', function(done) {
         var calls;
         var serviceCalls = 0;
         var testedTwo = false;
@@ -73,7 +74,7 @@ describe('Collapse and Batch', function() {
             get: function(aliasMap) {
                 return Observable.
                     from(aliasMap.ids).
-                    delay(100).
+                    delay(50).
                     map(function(id) {
                         if (id === 0) {
                             return {
@@ -93,7 +94,7 @@ describe('Collapse and Batch', function() {
                 called(1);
                 return Observable.
                     from(aliasMap.ids).
-                    delay(2000).
+                    delay(200).
                     map(function(id) {
                         return {
                             path: ['two', 'be', id, 'summary'],
@@ -107,7 +108,7 @@ describe('Collapse and Batch', function() {
                 called(2);
                 return Observable.
                     from(aliasMap.ids).
-                    delay(2000).
+                    delay(200).
                     map(function(id) {
                         return {
                             path: ['three', 'four', id, 'summary'],
@@ -124,7 +125,7 @@ describe('Collapse and Batch', function() {
         obs.
             do(function(res) {
                 var nextTime = Date.now();
-                expect(nextTime - time >= 4000).to.equal(false);
+                expect(nextTime - time >= 400).to.equal(false);
                 count++;
             }, noOp, function() {
                 expect(count, 'expect onNext called 1 time.').to.equal(1);
@@ -177,6 +178,7 @@ describe('Collapse and Batch', function() {
         obs.
             do(function(res) {
                 expect(res).to.deep.equals({
+                    paths: [['lists', {from: 0, to: 1}, 'summary']],
                     jsonGraph: {
                         lists: {
                             0: $ref('two.be[956]'),
@@ -195,6 +197,70 @@ describe('Collapse and Batch', function() {
             }, noOp, function() {
                 expect(count, 'expect onNext called 1 time.').to.equal(1);
                 expect(serviceCalls).to.equal(1);
+            }).
+            subscribe(noOp, done, done);
+    });
+
+    xit('should validate that optimizedPathSets strips out already found data and collapse makes two requests.', function(done) {
+        var serviceCalls = 0;
+        var routes = [{
+            route: 'lists[{keys:ids}]',
+            get: function(aliasMap) {
+                return Observable.
+                    from(aliasMap.ids).
+                    map(function(id) {
+                        if (id === 0) {
+                            return {
+                                path: ['lists', id],
+                                value: $ref('lists[1]')
+                            };
+                        }
+                        return {
+                            path: ['lists', id],
+                            value: $ref('two.be[956]')
+                        };
+                    });
+            }
+        }, {
+            route: 'two.be[{integers:ids}].summary',
+            get: function(aliasMap) {
+                serviceCalls++;
+                return Observable.
+                    from(aliasMap.ids).
+                    map(function(id) {
+                        return {
+                            path: ['two', 'be', id, 'summary'],
+                            value: 'hello world'
+                        };
+                    });
+            }
+        }];
+        var router = new R(routes);
+        var obs = router.
+            get([['lists', [0, 1], 'summary']]);
+        var count = 0;
+        obs.
+            do(function(res) {
+                expect(res).to.deep.equals({
+                    paths: [['lists', {from: 0, to: 1}, 'summary']],
+                    jsonGraph: {
+                        lists: {
+                            0: $ref('lists[1]'),
+                            1: $ref('two.be[956]')
+                        },
+                        two: {
+                            be: {
+                                956: {
+                                    summary: 'hello world'
+                                }
+                            }
+                        }
+                    }
+                });
+                count++;
+            }, noOp, function() {
+                expect(count, 'expect onNext called 1 time.').to.equal(1);
+                expect(serviceCalls).to.equal(2);
             }).
             subscribe(noOp, done, done);
     });

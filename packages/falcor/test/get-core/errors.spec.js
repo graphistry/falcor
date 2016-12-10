@@ -53,18 +53,18 @@ describe('Errors', function() {
             input: [['to', 'error']],
             output: {
                 json: {
-                    [ƒ_meta]: {
-                        [ƒm_abs_path]:    undefined,
-                        [ƒm_deref_from]:  undefined,
-                        [ƒm_deref_to]:    undefined,
-                        [ƒm_version]:     0
+                    [f_meta_data]: {
+                        [f_meta_abs_path]:    undefined,
+                        [f_meta_deref_from]:  undefined,
+                        [f_meta_deref_to]:    undefined,
+                        [f_meta_version]:     0
                     },
                     to: {
-                        [ƒ_meta]: {
-                            [ƒm_abs_path]:    ['to'],
-                            [ƒm_deref_from]:  undefined,
-                            [ƒm_deref_to]:    undefined,
-                            [ƒm_version]:     0
+                        [f_meta_data]: {
+                            [f_meta_abs_path]:    ['to'],
+                            [f_meta_deref_from]:  undefined,
+                            [f_meta_deref_to]:    undefined,
+                            [f_meta_version]:     0
                         },
                         error: 'Oops!'
                     }
@@ -80,18 +80,18 @@ describe('Errors', function() {
             input: [['to', 'error']],
             output: {
                 json: {
-                    [ƒ_meta]: {
-                        [ƒm_abs_path]:    undefined,
-                        [ƒm_deref_from]:  undefined,
-                        [ƒm_deref_to]:    undefined,
-                        [ƒm_version]:     0
+                    [f_meta_data]: {
+                        [f_meta_abs_path]:    undefined,
+                        [f_meta_deref_from]:  undefined,
+                        [f_meta_deref_to]:    undefined,
+                        [f_meta_version]:     0
                     },
                     to: {
-                        [ƒ_meta]: {
-                            [ƒm_abs_path]:    ['to'],
-                            [ƒm_deref_from]:  undefined,
-                            [ƒm_deref_to]:    undefined,
-                            [ƒm_version]:     0
+                        [f_meta_data]: {
+                            [f_meta_abs_path]:    ['to'],
+                            [f_meta_deref_from]:  undefined,
+                            [f_meta_deref_to]:    undefined,
+                            [f_meta_version]:     0
                         },
                         error: error('Oops!')
                     }
@@ -121,25 +121,25 @@ describe('Errors', function() {
             ],
             output: {
                 json: {
-                    [ƒ_meta]: {
-                        [ƒm_abs_path]:    undefined,
-                        [ƒm_deref_from]:  undefined,
-                        [ƒm_deref_to]:    undefined,
-                        [ƒm_version]:     0
+                    [f_meta_data]: {
+                        [f_meta_abs_path]:    undefined,
+                        [f_meta_deref_from]:  undefined,
+                        [f_meta_deref_to]:    undefined,
+                        [f_meta_version]:     0
                     },
                     list: {
-                        [ƒ_meta]: {
-                            [ƒm_abs_path]:    ['list'],
-                            [ƒm_deref_from]:  undefined,
-                            [ƒm_deref_to]:    undefined,
-                            [ƒm_version]:     0
+                        [f_meta_data]: {
+                            [f_meta_abs_path]:    ['list'],
+                            [f_meta_deref_from]:  undefined,
+                            [f_meta_deref_to]:    undefined,
+                            [f_meta_version]:     0
                         },
                         0: {
-                            [ƒ_meta]: {
-                                [ƒm_abs_path]:    ['to'],
-                                [ƒm_deref_from]:  undefined,
-                                [ƒm_deref_to]:    undefined,
-                                [ƒm_version]:     0
+                            [f_meta_data]: {
+                                [f_meta_abs_path]:    ['to'],
+                                [f_meta_deref_from]:  undefined,
+                                [f_meta_deref_to]:    undefined,
+                                [f_meta_version]:     0
                             },
                             title: 'Hello World'
                         }

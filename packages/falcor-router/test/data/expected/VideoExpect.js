@@ -1,7 +1,10 @@
 var $atom = require('./../../../src/support/types').$atom;
 module.exports = function() {
     var retVal = {
+        state: generateState,
+        summary: generateSummary,
         Summary: {
+            paths: [['videos', 'summary']],
             jsonGraph: {
                 videos: {
                     summary: {
@@ -14,7 +17,8 @@ module.exports = function() {
     };
     [0, 1, 2, 'someKey'].forEach(function(key) {
         retVal[key] = {
-            summary: generateSummary(key)
+            summary: generateSummary(key),
+            missingSummary: generateMissingSummary(key)
         };
     });
     retVal.state = {};
@@ -24,19 +28,30 @@ module.exports = function() {
     return retVal;
 };
 
+module.exports.state = generateState;
+module.exports.summary = generateSummary;
+
 function generateSummary(id) {
     var videos = {};
     videos[id] = {
-        summary: {
-            $type: $atom,
-            value: {
-                title: 'Some Movie ' + id
-            }
-        }
+        summary: 'Some Movie ' + id
     };
 
     return {
-        jsonGraph: {videos: videos}
+        jsonGraph: {videos: videos},
+        paths: [['videos', id, 'summary']]
+    };
+}
+
+function generateMissingSummary(id) {
+    var videos = {};
+    videos[id] = {
+        summary: { $type: $atom }
+    };
+
+    return {
+        jsonGraph: {videos: videos},
+        paths: [['videos', id, 'summary']]
     };
 }
 
@@ -50,6 +65,7 @@ function generateState(id) {
     };
 
     return {
-        jsonGraph: {videos: videos}
+        jsonGraph: {videos: videos},
+        paths: [['videos', 'state', id]]
     };
 }

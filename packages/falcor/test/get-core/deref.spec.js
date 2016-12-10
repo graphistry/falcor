@@ -6,7 +6,8 @@ var atom = jsonGraph.atom;
 var _ = require('lodash');
 var error = jsonGraph.error;
 var expect = require('chai').expect;
-var Model = require('./../../lib').Model;
+var Model = require('./../../falcor.js').Model;
+var FalcorJSON = require('./../../falcor.js').FalcorJSON;
 var BoundJSONGraphModelError = require('./../../lib/errors/BoundJSONGraphModelError');
 var sinon = require('sinon');
 var noOp = function() {};
@@ -31,7 +32,7 @@ describe('Deref', function() {
 
         // Cheating in how we are creating the output.  'path' key should not exist
         // at the top level of output.
-        delete output[ƒ_meta];
+        delete output[f_meta_data];
 
         getCoreRunner({
             input: [
@@ -68,14 +69,13 @@ describe('Deref', function() {
         });
     });
 
-    xit('should throw an error when bound and calling jsonGraph.', function() {
+    it('should throw an error when bound and calling jsonGraph.', function() {
         var model = new Model({
+            _path: ['videos', 0],
             cache: cacheGenerator(0, 1)
-        })._derefSync(['videos', 0]);
-
-        var res = model._getPathValuesAsJSONG(model, [['summary']], [{}]);
-        expect(res.criticalError.name).to.equals(BoundJSONGraphModelError.name);
-        expect(res.criticalError.message).to.equals(BoundJSONGraphModelError.message);
+        });
+        var res = model._getPathValuesAsJSONG(model, [['summary']], {});
+        expect(BoundJSONGraphModelError.is(res.error), 'expected BoundJSONGraphModelError').to.equal(true);
     });
 
     it('should ensure that correct parents are produced for non-paths.', function(done) {
@@ -97,15 +97,15 @@ describe('Deref', function() {
                 var json = onNext.getCall(0).args[0].json;
 
                 // Top level
-                expect(json[ƒ_meta][ƒm_abs_path]).to.be.not.ok;
+                expect(json[f_meta_data][f_meta_abs_path]).to.be.not.ok;
 
                 // a
                 var a = json.a;
-                expect(a[ƒ_meta][ƒm_abs_path]).to.deep.equals(['a']);
+                expect(a[f_meta_data][f_meta_abs_path]).to.deep.equals(['a']);
 
                 // b
                 var b = a.b;
-                expect(b[ƒ_meta][ƒm_abs_path]).to.deep.equals(['a', 'b']);
+                expect(b[f_meta_data][f_meta_abs_path]).to.deep.equals(['a', 'b']);
 
                 // e
                 var e = b.e;
@@ -125,12 +125,12 @@ describe('Deref', function() {
             }
         });
 
-        model.get(['a', 'b', 'e']).subscribe(function(json) {
-            model = model.deref(json.json.a);
+        model.get(['a', 'b', 'e']).subscribe(function(data) {
+            model = model.deref(data.json.a);
         });
 
-        model.get(['b', 'e']).subscribe(function(json) {
-            model = model.deref(json.json.b);
+        model.get(['b', 'e']).subscribe(function(data) {
+            model = model.deref(data.json.b);
         });
 
         var onNext = sinon.spy();
@@ -138,15 +138,17 @@ describe('Deref', function() {
             get(['e'])).
             doAction(onNext, noOp, function() {
                 var x = onNext.getCall(0).args[0];
-                x.json[ƒ_meta] = x.json[ƒ_meta];
+                x.json[f_meta_data] = x.json[f_meta_data];
                 expect(onNext.calledOnce).to.be.ok;
                 expect(onNext.getCall(0).args[0]).to.deep.equals({
+                    __proto__: FalcorJSON.prototype,
                     json: {
-                        [ƒ_meta]: {
-                            [ƒm_abs_path]:   ['a', 'b'],
-                            [ƒm_deref_from]: undefined,
-                            [ƒm_deref_to]:   undefined,
-                            [ƒm_version]:    0
+                        __proto__: FalcorJSON.prototype,
+                        [f_meta_data]: {
+                            [f_meta_abs_path]:   ['a', 'b'],
+                            [f_meta_deref_from]: undefined,
+                            [f_meta_deref_to]:   undefined,
+                            [f_meta_version]:    0
                         },
                         e: '&'
                     }

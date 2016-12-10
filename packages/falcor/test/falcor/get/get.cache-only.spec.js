@@ -1,4 +1,4 @@
-var falcor = require("./../../../lib");
+var falcor = require('./../../../falcor.js');
 var Model = falcor.Model;
 var Rx = require('rx');
 var clean = require('./../../cleanData').clean;
@@ -10,7 +10,7 @@ var expect = require('chai').expect;
 var clean = require('./../../cleanData').stripDerefAndVersionKeys;
 
 describe('Cache Only', function() {
-    describe('PathMap', function() {
+    describe('_toJSON', function() {
         it('should get a value from falcor.', function(done) {
             var model = new Model({
                 cache: cacheGenerator(0, 1)

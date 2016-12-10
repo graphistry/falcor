@@ -1,7 +1,7 @@
 var toTree = require('../lib/toTree');
 var toPaths = require('../lib/toPaths');
 var expect = require('chai').expect;
-var nullTerminator = require('../lib/support/nullTerminator');
+var materializedAtom = require('../lib/support/materializedAtom');
 
 describe('toTree', function() {
     it('should explode a simplePath.', function() {
@@ -59,12 +59,12 @@ describe('toTree', function() {
         ];
         var out = {
             one: {
-                three: nullTerminator,
-                two: nullTerminator,
-                0: nullTerminator,
-                1: nullTerminator,
-                2: nullTerminator,
-                3: nullTerminator
+                three: materializedAtom,
+                two: materializedAtom,
+                0: materializedAtom,
+                1: materializedAtom,
+                2: materializedAtom,
+                3: materializedAtom
             }
         };
 

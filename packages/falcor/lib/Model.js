@@ -1,31 +1,24 @@
-var ModelRoot = require("./ModelRoot");
-var ModelDataSourceAdapter = require("./ModelDataSourceAdapter");
+var Call = require('./request/Call');
+var ModelRoot = require('./ModelRoot');
+var FalcorJSON = require('./cache/get/json/FalcorJSON');
+var ModelDataSourceAdapter = require('./ModelDataSourceAdapter');
+var TimeoutScheduler = require('./schedulers/TimeoutScheduler');
+var ImmediateScheduler = require('./schedulers/ImmediateScheduler');
+var collapse = require('@graphistry/falcor-path-utils/lib/collapse');
 
-var RequestQueue = require("./request/RequestQueue");
-var ModelResponse = require("./response/ModelResponse");
-var CallResponse = require("./response/CallResponse");
-var InvalidateResponse = require("./response/InvalidateResponse");
+var lruCollect = require('./lru/collect');
+var getSize = require('./support/getSize');
+var isObject = require('./support/isObject');
+var isJSONEnvelope = require('./support/isJSONEnvelope');
+var getCachePosition = require('./cache/getCachePosition');
+var isJSONGraphEnvelope = require('./support/isJSONGraphEnvelope');
 
-var TimeoutScheduler = require("./schedulers/TimeoutScheduler");
-var ImmediateScheduler = require("./schedulers/ImmediateScheduler");
+var setCache = require('./cache/set/setPathMaps');
+var setJSONGraphs = require('./cache/set/setJSONGraphs');
 
-var collectLru = require("./lru/collect");
-
-var getSize = require("./support/getSize");
-var isObject = require("./support/isObject");
-var isFunction = require("./support/isFunction");
-var isPrimitive = require("./support/isPrimitive");
-var isJSONEnvelope = require("./support/isJSONEnvelope");
-var getCachePosition = require("./get/getCachePosition");
-var isJSONGraphEnvelope = require("./support/isJSONGraphEnvelope");
-
-var setCache = require("./set/setPathMaps");
-var setJSONGraphs = require("./set/setJSONGraphs");
-var validateInput = require("./support/validateInput");
-var noOp = function() {};
-var getCache = require("./get/getCache");
-var get = require("./get");
-var GET_VALID_INPUT = require("./response/get/validInput");
+var getJSON = require('./cache/get/json');
+var getCache = require('./cache/getCache');
+var getJSONGraph = require('./cache/get/jsonGraph');
 
 module.exports = Model;
 
@@ -61,53 +54,30 @@ module.exports = Model;
  * @param {?Model~onChange} options.onChange - a function called whenever the Model's cache is changed
  * @param {?Model~comparator} options.comparator - a function called whenever a value in the Model's cache is about to be replaced with a new value.
  */
-function Model(o) {
+function Model(opts) {
 
-    var options = o || {};
-    this._root = options._root || new ModelRoot(options, this);
-    this._path = options.path || options._path || [];
-    this._node = options._node || this._root.cache;
+    var options = opts || {};
+
+    this._node = options._node;
+    this._path = options._path || [];
     this._source = options.source || options._source;
-    this._recycleJSON = options.recycleJSON || options._recycleJSON;
-    this._request = options.request || options._request || new RequestQueue(
-        this, options.scheduler || new ImmediateScheduler()
-    );
-
-    if (typeof options.maxSize === "number") {
-        this._maxSize = options.maxSize;
-    } else {
-        this._maxSize = options._maxSize || Model.prototype._maxSize;
-    }
+    this._root = options._root || new ModelRoot(options, this);
+    this._recycleJSON = options.recycleJSON === true || options._recycleJSON;
+    this._scheduler = options.scheduler || options._scheduler || new ImmediateScheduler();
 
     if (options._seed) {
-        this._seed = options._seed;
         this._recycleJSON = true;
-    }
-
-    if (typeof options.collectRatio === "number") {
-        this._collectRatio = options.collectRatio;
-    } else {
-        this._collectRatio = options._collectRatio || Model.prototype._collectRatio;
-    }
-
-    if (options.boxed || options.hasOwnProperty("_boxed")) {
-        this._boxed = options.boxed || options._boxed;
-    }
-
-    if (options.materialized || options.hasOwnProperty("_materialized")) {
-        this._materialized = options.materialized || options._materialized;
-    }
-
-    if (typeof options.treatErrorsAsValues === "boolean") {
-        this._treatErrorsAsValues = options.treatErrorsAsValues;
-    } else if (options.hasOwnProperty("_treatErrorsAsValues")) {
-        this._treatErrorsAsValues = options._treatErrorsAsValues;
+        this._seed = options._seed;
+        this._treatErrorsAsValues = true;
     } else if (this._recycleJSON) {
         this._treatErrorsAsValues = true;
+        this._seed = { __proto__: FalcorJSON.prototype };
     }
 
-    this._allowFromWhenceYouCame = options.allowFromWhenceYouCame ||
-        options._allowFromWhenceYouCame || false;
+    this._boxed = options.boxed === true || options._boxed || false;
+    this._materialized = options.materialized === true || options._materialized || false;
+    this._treatErrorsAsValues = options.treatErrorsAsValues === true || options._treatErrorsAsValues || false;
+    this._allowFromWhenceYouCame = options.allowFromWhenceYouCame === true || options._allowFromWhenceYouCame || false;
 
     if (options.cache) {
         this.setCache(options.cache);
@@ -116,27 +86,28 @@ function Model(o) {
 
 Model.prototype.constructor = Model;
 
-Model.prototype._materialized = false;
-Model.prototype._boxed = false;
-Model.prototype._progressive = false;
-Model.prototype._treatErrorsAsValues = false;
-Model.prototype._maxSize = Math.pow(2, 53) - 1;
-Model.prototype._collectRatio = 0.75;
-
 /**
  * The get method retrieves several {@link Path}s or {@link PathSet}s from a {@link Model}. The get method loads each value into a JSON object and returns in a ModelResponse.
  * @function
  * @param {...PathSet} path - the path(s) to retrieve
  * @return {ModelResponse.<JSONEnvelope>} - the requested data as JSON
  */
-Model.prototype.get = require("./response/get");
+Model.prototype.get = function get() {
+    return new Call(
+        'get', this, Array.prototype.slice.call(arguments, 0)
+    )._toJSON(this._seed || { __proto__: FalcorJSON.prototype }, []);
+}
 
 /**
  * Sets the value at one or more places in the JSONGraph model. The set method accepts one or more {@link PathValue}s, each of which is a combination of a location in the document and the value to place there.  In addition to accepting  {@link PathValue}s, the set method also returns the values after the set operation is complete.
  * @function
  * @return {ModelResponse.<JSONEnvelope>} - an {@link Observable} stream containing the values in the JSONGraph model after the set was attempted
  */
-Model.prototype.set = require("./response/set");
+Model.prototype.set = function set() {
+    return new Call(
+        'set', this, Array.prototype.slice.call(arguments, 0)
+    )._toJSON({ __proto__: FalcorJSON.prototype }, []);
+}
 
 /**
  * The preload method retrieves several {@link Path}s or {@link PathSet}s from a {@link Model} and loads them into the Model cache.
@@ -145,23 +116,10 @@ Model.prototype.set = require("./response/set");
  * @return {ModelResponse.<JSONEnvelope>} - a ModelResponse that completes when the data has been loaded into the cache.
  */
 Model.prototype.preload = function preload() {
-    var out = validateInput(arguments, GET_VALID_INPUT, "preload");
-    if (out !== true) {
-        return new ModelResponse(function(o) {
-            o.onError(out);
-        });
-    }
-    var args = Array.prototype.slice.call(arguments);
-    var self = this;
-    return new ModelResponse(function(obs) {
-        return self.get.apply(self, args).subscribe(function() {
-        }, function(err) {
-            obs.onError(err);
-        }, function() {
-            obs.onCompleted();
-        });
-    });
-};
+    return new Call(
+        'get', this, Array.prototype.slice.call(arguments, 0)
+    )._toJSON(null, []);
+}
 
 /**
  * Invokes a function in the JSON Graph.
@@ -172,28 +130,12 @@ Model.prototype.preload = function preload() {
  * @param {Array.<PathSet>} thisPaths - the paths to retrieve from function's this object after successful function execution
  * @return {ModelResponse.<JSONEnvelope> - a JSONEnvelope contains the values returned from the function
  */
-Model.prototype.call = function call() {
-    var args;
-    var argsIdx = -1;
-    var argsLen = arguments.length;
-    args = new Array(argsLen);
-    while (++argsIdx < argsLen) {
-        var arg = arguments[argsIdx];
-        args[argsIdx] = arg;
-        var argType = typeof arg;
-        if (argsIdx > 1 && !Array.isArray(arg) ||
-            argsIdx === 0 && !Array.isArray(arg) && argType !== "string" ||
-            argsIdx === 1 && !Array.isArray(arg) && !isPrimitive(arg)) {
-            /* eslint-disable no-loop-func */
-            return new ModelResponse(function(o) {
-                o.onError(new Error("Invalid argument"));
-            });
-            /* eslint-enable no-loop-func */
-        }
-    }
 
-    return new CallResponse(this, args[0], args[1], args[2], args[3]);
-};
+Model.prototype.call = function call() {
+    return new Call(
+        'call', this, Array.prototype.slice.call(arguments, 0)
+    )._toJSON({ __proto__: FalcorJSON.prototype }, []);
+}
 
 /**
  * The invalidate method synchronously removes several {@link Path}s or {@link PathSet}s from a {@link Model} cache.
@@ -201,23 +143,10 @@ Model.prototype.call = function call() {
  * @param {...PathSet} path - the  paths to remove from the {@link Model}'s cache.
  */
 Model.prototype.invalidate = function invalidate() {
-    var args;
-    var argsIdx = -1;
-    var argsLen = arguments.length;
-    args = [];
-    while (++argsIdx < argsLen) {
-        args[argsIdx] = arguments[argsIdx];
-        // if (!Array.isArray(args[argsIdx])) {
-        //     throw new Error("Invalid argument");
-        // }
-    }
-
-    // creates the obs, subscribes and will throw the errors if encountered.
-    (new InvalidateResponse(this, args)).
-        subscribe(noOp, function(e) {
-            throw e;
-        });
-};
+    return new Call(
+        'invalidate', this, Array.prototype.slice.call(arguments, 0)
+    )._toJSON(null, null).then();
+}
 
 /**
  * Returns a new {@link Model} bound to a location within the {@link
@@ -240,12 +169,12 @@ var Model = falcor.Model;
 var model = new Model({
   cache: {
     users: [
-      Model.ref(["usersById", 32])
+      Model.ref(['usersById', 32])
     ],
     usersById: {
       32: {
-        name: "Steve",
-        surname: "McGuire"
+        name: 'Steve',
+        surname: 'McGuire'
       }
     }
   }
@@ -262,9 +191,9 @@ model.
 
 // prints the following:
 // []
-// ["usersById", 32] - because userModel refers to target of reference at ["users", 0]
+// ['usersById', 32] - because userModel refers to target of reference at ['users', 0]
  */
-Model.prototype.deref = require("./deref");
+Model.prototype.deref = require('./deref');
 
 /**
  * A dereferenced model can become invalid when the reference from which it was
@@ -277,14 +206,14 @@ Model.prototype.deref = require("./deref");
  * @return {Boolean} - If the currently deref'd model is still considered a
  * valid deref.
  */
-Model.prototype._hasValidParentReference = require("./deref/hasValidParentReference");
+Model.prototype._hasValidParentReference = require('./deref/hasValidParentReference');
 
 /**
  * Get data for a single {@link Path}.
  * @param {Path} path - the path to retrieve
  * @return {Observable.<*>} - the value for the path
  * @example
- var model = new falcor.Model({source: new falcor.HttpDataSource("/model.json") });
+ var model = new falcor.Model({source: new falcor.HttpDataSource('/model.json') });
 
  model.
      getValue('user.name').
@@ -292,9 +221,27 @@ Model.prototype._hasValidParentReference = require("./deref/hasValidParentRefere
          console.log(name);
      });
 
- // The code above prints "Jim" to the console.
+ // The code above prints 'Jim' to the console.
  */
-Model.prototype.getValue = require("./get/getValue");
+Model.prototype.getValue = function getValue(path) {
+    return new Call('get', this, [path])
+        ._toJSON({ __proto__: FalcorJSON.prototype }, [])
+        .lift(function(subscriber) {
+            return this.subscribe({
+                onNext: function(data) {
+                    var depth = -1;
+                    var x = data.json;
+                    var length = path.length;
+                    while (x && !x.$type && ++depth < length) {
+                        x = x[path[depth]];
+                    }
+                    subscriber.onNext(x);
+                },
+                onError: subscriber.onError.bind(subscriber),
+                onCompleted: subscriber.onCompleted.bind(subscriber)
+            })
+        });
+}
 
 /**
  * Set value for a single {@link Path}.
@@ -302,7 +249,7 @@ Model.prototype.getValue = require("./get/getValue");
  * @param {Object} value - the value to set
  * @return {Observable.<*>} - the value for the path
  * @example
- var model = new falcor.Model({source: new falcor.HttpDataSource("/model.json") });
+ var model = new falcor.Model({source: new falcor.HttpDataSource('/model.json') });
 
  model.
      setValue('user.name', 'Jim').
@@ -310,39 +257,72 @@ Model.prototype.getValue = require("./get/getValue");
          console.log(name);
      });
 
- // The code above prints "Jim" to the console.
+ // The code above prints 'Jim' to the console.
  */
-Model.prototype.setValue = require("./set/setValue");
+Model.prototype.setValue = function setValue(path, value) {
+    path = arguments.length === 1 ? path.path : path;
+    value = arguments.length === 1 ? path : {path:path,value:value};
+    return new Call('set', this, [value])
+        ._toJSON({ __proto__: FalcorJSON.prototype }, [])
+        .lift(function(subscriber) {
+            return this.subscribe({
+                onNext: function(data) {
+                    var depth = -1;
+                    var x = data.json;
+                    var length = path.length;
+                    while (x && !x.$type && ++depth < length) {
+                        x = x[path[depth]];
+                    }
+                    subscriber.onNext(x);
+                },
+                onError: subscriber.onError.bind(subscriber),
+                onCompleted: subscriber.onCompleted.bind(subscriber)
+            })
+        });
+}
 
 /**
  * Set the local cache to a {@link JSONGraph} fragment. This method can be a useful way of mocking a remote document, or restoring the local cache from a previously stored state.
  * @param {JSONGraph} jsonGraph - the {@link JSONGraph} fragment to use as the local cache
  */
 Model.prototype.setCache = function modelSetCache(cacheOrJSONGraphEnvelope) {
-    var cache = this._root.cache;
+
+    var modelRoot = this._root;
+    var cache = modelRoot.cache;
+
     if (cacheOrJSONGraphEnvelope !== cache) {
-        var modelRoot = this._root;
-        var boundPath = this._path;
-        this._path = [];
-        this._root.cache = {};
-        if (typeof cache !== "undefined") {
-            collectLru(modelRoot, modelRoot.expired, getSize(cache), 0);
+
+        var options = {
+            _path: [],
+            _boxed: false,
+            _root: modelRoot,
+            _materialized: false,
+            _treatErrorsAsValues: false
+        };
+
+        modelRoot.cache = this._node = {};
+
+        if (typeof cache !== 'undefined') {
+            lruCollect(modelRoot, modelRoot.expired, getSize(cache), 0);
+            if (this._recycleJSON) {
+                this._seed = { __proto__: FalcorJSON.prototype };
+            }
         }
-        var out;
+
+        var paths;
         if (isJSONGraphEnvelope(cacheOrJSONGraphEnvelope)) {
-            out = setJSONGraphs(this, [cacheOrJSONGraphEnvelope])[0];
+            paths = setJSONGraphs(options, [cacheOrJSONGraphEnvelope])[0];
         } else if (isJSONEnvelope(cacheOrJSONGraphEnvelope)) {
-            out = setCache(this, [cacheOrJSONGraphEnvelope])[0];
+            paths = setCache(options, [cacheOrJSONGraphEnvelope])[0];
         } else if (isObject(cacheOrJSONGraphEnvelope)) {
-            out = setCache(this, [{ json: cacheOrJSONGraphEnvelope }])[0];
+            paths = setCache(options, [{ json: cacheOrJSONGraphEnvelope }])[0];
         }
 
         // performs promotion without producing output.
-        if (out) {
-            get.getWithPathsAsPathMap(this, out, [], true);
+        if (paths) {
+            getJSON(options, paths, null, false, false);
         }
-        this._path = boundPath;
-    } else if (typeof cache === "undefined") {
+    } else if (typeof cache === 'undefined') {
         this._root.cache = {};
     }
     return this;
@@ -354,19 +334,27 @@ Model.prototype.setCache = function modelSetCache(cacheOrJSONGraphEnvelope) {
  * @return {JSONGraph} all of the {@link JSONGraph} data in the {@link Model} cache.
  * @example
  // Storing the boxshot of the first 10 titles in the first 10 genreLists to local storage.
- localStorage.setItem('cache', JSON.stringify(model.getCache("genreLists[0...10][0...10].boxshot")));
+ localStorage.setItem('cache', JSON.stringify(model.getCache('genreLists[0...10][0...10].boxshot')));
  */
-Model.prototype.getCache = function _getCache(...paths) {
+Model.prototype.getCache = function _getCache() {
+
+    var paths = Array.prototype.slice.call(arguments, 0);
 
     if (paths.length === 0) {
         return getCache(this._root.cache);
     }
 
-    var result = [{}];
-    var path = this._path;
-    get.getWithPathsAsJSONGraph(this, paths, result);
-    this._path = path;
-    return result[0].jsonGraph;
+    var env = getJSONGraph({
+        _path: [],
+        _root: this._root,
+        _boxed: this._boxed,
+        _materialized: this._materialized,
+        _treatErrorsAsValues: this._treatErrorsAsValues
+    }, paths, { __proto__: FalcorJSON.prototype }).data;
+
+    env.paths = collapse(paths);
+
+    return env;
 };
 
 /**
@@ -374,21 +362,15 @@ Model.prototype.getCache = function _getCache(...paths) {
  * @param {Path?} path - a path at which to retrieve the version number
  * @return {Number} a version number which changes whenever a value is changed underneath the Model or provided Path
  */
-Model.prototype.getVersion = function getVersion(path = []) {
+Model.prototype.getVersion = function getVersion(path) {
+    path = path || [];
     if (Array.isArray(path) === false) {
-        throw new Error("Model#getVersion must be called with an Array path.");
+        throw new Error('Model#getVersion must be called with an Array path.');
     }
     if (this._path.length) {
         path = this._path.concat(path);
     }
     return this._getVersion(this, path);
-};
-
-Model.prototype._syncCheck = function syncCheck(name) {
-    if (Boolean(this._source) && this._root.syncRefCount <= 0 && this._root.unsafeMode === false) {
-        throw new Error("Model#" + name + " may only be called within the context of a request selector.");
-    }
-    return true;
 };
 
 /* eslint-disable guard-for-in */
@@ -397,12 +379,12 @@ Model.prototype._clone = function cloneModel(opts) {
     if (opts) {
         for (var key in opts) {
             var value = opts[key];
-            if (value === "delete") {
+            if (value === 'delete') {
                 delete clone[key];
-            } else if (key === "_path") {
+            } else if (key === '_path') {
                 clone[key] = value;
-                if (false === opts.hasOwnProperty("_node")) {
-                    delete clone["_node"];
+                if (false === opts.hasOwnProperty('_node')) {
+                    delete clone['_node'];
                 }
             } else {
                 clone[key] = value;
@@ -425,20 +407,17 @@ Model.prototype.batch = function batch(schedulerOrDelay) {
 
     var scheduler;
 
-    if (typeof schedulerOrDelay === "number") {
+    if (typeof schedulerOrDelay === 'number') {
         scheduler = new TimeoutScheduler(Math.round(Math.abs(schedulerOrDelay)));
     } else if (!schedulerOrDelay) {
         scheduler = new TimeoutScheduler(1);
-    } else if (isFunction(schedulerOrDelay.schedule)) {
+    } else if (typeof schedulerOrDelay.schedule === 'function') {
         scheduler = schedulerOrDelay;
-    } else if (isFunction(schedulerOrDelay)) {
+    } else if (typeof schedulerOrDelay === 'function') {
         scheduler = { scheudle: schedulerOrDelay };
     }
 
-    var clone = this._clone();
-    clone._request = new RequestQueue(clone, scheduler);
-
-    return clone;
+    return this._clone({ _scheduler: scheduler });
 };
 
 /**
@@ -449,9 +428,7 @@ Model.prototype.batch = function batch(schedulerOrDelay) {
  * @return {Model} a {@link Model} that batches requests of the same type and sends them to the data source together
  */
 Model.prototype.unbatch = function unbatch() {
-    var clone = this._clone();
-    clone._request = new RequestQueue(clone, new ImmediateScheduler());
-    return clone;
+    return this._clone({ _scheduler: new ImmediateScheduler() });
 };
 
 /**
@@ -459,9 +436,7 @@ Model.prototype.unbatch = function unbatch() {
  * @return {Model}
  */
 Model.prototype.treatErrorsAsValues = function treatErrorsAsValues() {
-    return this._clone({
-        _treatErrorsAsValues: true
-    });
+    return this._clone({ _treatErrorsAsValues: true });
 };
 
 /**
@@ -472,15 +447,15 @@ var model =
     new falcor.Model({
         cache: {
             user: {
-                name: "Steve",
-                surname: "McGuire"
+                name: 'Steve',
+                surname: 'McGuire'
             }
         }
     }),
     proxyModel = new falcor.Model({ source: model.asDataSource() });
 
-// Prints "Steve"
-proxyModel.getValue("user.name").
+// Prints 'Steve'
+proxyModel.getValue('user.name').
     then(function(name) {
         console.log(name);
     });
@@ -497,7 +472,7 @@ Model.prototype._materialize = function materialize() {
 
 Model.prototype._dematerialize = function dematerialize() {
     return this._clone({
-        _materialized: "delete"
+        _materialized: 'delete'
     });
 };
 
@@ -517,7 +492,7 @@ Model.prototype.boxValues = function boxValues() {
  */
 Model.prototype.unboxValues = function unboxValues() {
     return this._clone({
-        _boxed: "delete"
+        _boxed: 'delete'
     });
 };
 
@@ -527,14 +502,14 @@ Model.prototype.unboxValues = function unboxValues() {
  */
 Model.prototype.withoutDataSource = function withoutDataSource() {
     return this._clone({
-        _source: "delete"
+        _source: 'delete'
     });
 };
 
 Model.prototype.toJSON = function toJSON() {
     return {
-        $type: "ref",
-        value: this._path
+        $type: 'ref',
+        value: this.getPath()
     };
 };
 
@@ -546,12 +521,12 @@ var Model = falcor.Model;
 var model = new Model({
   cache: {
     users: [
-      Model.ref(["usersById", 32])
+      Model.ref(['usersById', 32])
     ],
     usersById: {
       32: {
-        name: "Steve",
-        surname: "McGuire"
+        name: 'Steve',
+        surname: 'McGuire'
       }
     }
   }
@@ -568,7 +543,7 @@ model.
 
 // prints the following:
 // []
-// ["usersById", 32] - because userModel refers to target of reference at ["users", 0]
+// ['usersById', 32] - because userModel refers to target of reference at ['users', 0]
  */
 Model.prototype.getPath = function getPath() {
     return this._path.slice(0);
@@ -587,18 +562,18 @@ Model.prototype._fromWhenceYouCame = function fromWhenceYouCame(allow) {
 
 Model.prototype._optimizePath = function _optimizePath(path) {
     var node = getCachePosition(this._root.cache, path);
-    var abs_path = node && node[ƒ_abs_path] || [];
+    var abs_path = node && node[f_abs_path] || [];
     return abs_path.slice(0);
 };
 
-Model.prototype._getVersion = require("./get/getVersion");
-Model.prototype._getPathValuesAsPathMap = get.getWithPathsAsPathMap;
-Model.prototype._getPathValuesAsJSONG = get.getWithPathsAsJSONGraph;
+Model.prototype._getVersion = require('./cache/getVersion');
+Model.prototype._getPathValuesAsPathMap = getJSON;
+Model.prototype._getPathValuesAsJSONG = getJSONGraph;
 
-Model.prototype._setPathValues = require("./set/setPathValues");
-Model.prototype._setPathMaps = require("./set/setPathMaps");
-Model.prototype._setJSONGs = require("./set/setJSONGraphs");
-Model.prototype._setCache = require("./set/setPathMaps");
+Model.prototype._setPathValues = require('./cache/set/setPathValues');
+Model.prototype._setPathMaps = require('./cache/set/setPathMaps');
+Model.prototype._setJSONGs = require('./cache/set/setJSONGraphs');
+Model.prototype._setCache = require('./cache/set/setPathMaps');
 
-Model.prototype._invalidatePathValues = require("./invalidate/invalidatePathSets");
-Model.prototype._invalidatePathMaps = require("./invalidate/invalidatePathMaps");
+Model.prototype._invalidatePathValues = require('./cache/invalidate/invalidatePathSets');
+Model.prototype._invalidatePathMaps = require('./cache/invalidate/invalidatePathMaps');

@@ -23,15 +23,14 @@ describe('#set', function() {
                        summary: 5
                    }
                },
-               paths: [
-                   ['videos', 'summary']
-               ]
+               paths: [['videos', 'summary']]
             });
         var onNext = sinon.spy();
         obs.
             do(onNext, noOp, function() {
                 expect(onNext.calledOnce).to.be.ok;
                 expect(onNext.getCall(0).args[0]).to.deep.equals({
+                    paths: [['videos', 'summary']],
                     jsonGraph: {
                         videos: {
                             summary: {$type: $atom}
@@ -45,9 +44,7 @@ describe('#set', function() {
                             summary: 5
                         }
                     },
-                    paths: [
-                        ['videos', 'summary']
-                    ]
+                    paths: [['videos', 'summary']]
                 });
             }).
             subscribe(noOp, done, done);
@@ -74,15 +71,14 @@ describe('#set', function() {
                        summary: 5
                    }
                },
-               paths: [
-                   ['videos', 'summary']
-               ]
+               paths: [['videos', 'summary']]
             });
         var onNext = sinon.spy();
         obs.
             do(onNext, noOp, function() {
                 expect(onNext.calledOnce).to.be.ok;
                 expect(onNext.getCall(0).args[0]).to.deep.equals({
+                    paths: [['videos', 'summary']],
                     jsonGraph: {
                         videos: {
                             summary: 'missing'
@@ -96,9 +92,7 @@ describe('#set', function() {
                             summary: 5
                         }
                     },
-                    paths: [
-                        ['videos', 'summary']
-                    ]
+                    paths: [['videos', 'summary']]
                 });
             }).
             subscribe(noOp, done, done);
@@ -134,15 +128,14 @@ describe('#set', function() {
                        length: 5
                    }
                },
-               paths: [
-                   ['videos', ['length', 'summary']]
-               ]
+               paths: [['videos', ['length', 'summary']]]
             });
         var onNext = sinon.spy();
         obs.
             do(onNext, noOp, function() {
                 expect(onNext.calledOnce).to.be.ok;
                 expect(onNext.getCall(0).args[0]).to.deep.equals({
+                    paths: [['videos', ['length', 'summary']]],
                     jsonGraph: {
                         videos: {
                             summary: 'missing',
@@ -157,16 +150,13 @@ describe('#set', function() {
                             summary: 5
                         }
                     },
-                    paths: [
-                        ['videos', 'summary']
-                    ]
+                    paths: [['videos', 'summary']]
                 });
             }).
             subscribe(noOp, done, done);
     });
 
-    it('should be able to send correctly constructed jsonGraph when set passes' +
-       'through referencs.', function(done) {
+    it('should be able to send correctly constructed jsonGraph when set passes through references.', function(done) {
         var router = new R([{
             route: 'videos.summary',
             set: function() {
@@ -221,15 +211,14 @@ describe('#set', function() {
                        }
                    }
                },
-               paths: [
-                   ['lists', {to:2}, 'summary']
-               ]
+               paths: [['lists', {to:2}, 'summary']]
             });
         var onNext = sinon.spy();
         obs.
             do(onNext, noOp, function() {
                 expect(onNext.calledOnce).to.be.ok;
                 expect(onNext.getCall(0).args[0]).to.deep.equals({
+                    paths: [['lists', {from: 0, to:2}, 'summary']],
                     jsonGraph: {
                         lists: {
                             0: {$type: $ref, value: ['videos']},

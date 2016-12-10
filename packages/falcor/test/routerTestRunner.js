@@ -1,6 +1,6 @@
 var chai = require('chai');
 var expect = chai.expect;
-var TestRunner = require('falcor-router/test/TestRunner');
+var TestRunner = require('@graphistry/falcor-router/test/TestRunner');
 var RouterTestRunner = {
     run: function(obs, expected) {
         var count = 0;
@@ -16,7 +16,7 @@ var RouterTestRunner = {
             });
 
     },
-    
+
     partialCompare: function(expectedPartials, returnMessage) {
         expectedPartials.forEach(function(expected) {
             TestRunner.partialCompare(expected, returnMessage);

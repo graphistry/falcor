@@ -1,12 +1,10 @@
-var iterateKeySet = require('@graphistry/falcor-path-utils').iterateKeySet;
-var catAndSlice = require('./../support/catAndSlice');
-var $types = require('./../support/types');
-var $ref = $types.$ref;
 var errors = require('./../exceptions');
-// var followReference = require('./followReference');
+var $ref = require('./../support/types').$ref;
+var catAndSlice = require('./../support/catAndSlice');
+var iterateKeySet = require('@graphistry/falcor-path-utils/lib/iterateKeySet');
 
 /**
- * The fastest possible optimize of paths.
+ * Find paths from the input list that aren't in the JSON Graph.
  *
  * What it does:
  * - Any atom short-circuit / found value will be removed from the path.
@@ -15,12 +13,10 @@ var errors = require('./../exceptions');
  * - Any missing path will be optimized as much as possible.
  */
 module.exports = function optimizePathSets(cache, paths, maxRefFollow) {
-    var optimized = [];
-    paths.forEach(function(p) {
-        optimizePathSet(cache, cache, p, 0, optimized, [], maxRefFollow, 0);
-    });
-
-    return optimized;
+    return paths.reduce(function(optimized, path) {
+        optimizePathSet(cache, cache, path, 0, optimized, [], maxRefFollow, 0);
+        return optimized;
+    }, []);
 };
 
 
@@ -79,16 +75,8 @@ function optimizePathSet(cache, cacheRoot, pathSet,
                             out, nextOptimized, maxRefFollow, referenceCount+1);
             optimizedPath.length = optimizedPathLength;
         } else {
-            // if (isBranchKey && type === $ref) {
-            //     var refResults =
-            //         followReference(cacheRoot, next.value, maxRefFollow);
-            //     next = refResults[0];
 
-            //     // `followReference` clones the refPath before returning it.
-            //     nextOptimized = refResults[1];
-            // } else {
-                nextOptimized = optimizedPath;
-            // }
+            nextOptimized = optimizedPath;
 
             optimizePathSet(next, cacheRoot, pathSet, nextDepth,
                             out, nextOptimized, maxRefFollow, referenceCount);

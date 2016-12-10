@@ -1,7 +1,7 @@
 var $ref = require('@graphistry/falcor-json-graph').ref;
 var $atom = require('@graphistry/falcor-json-graph').atom;
-var falcor = require("./../../../lib/");
-var Model = falcor.Model;
+var Model = require('./../../../falcor.js').Model;
+var FalcorJSON = require('./../../../falcor.js').FalcorJSON;
 var Rx = require('rx');
 var noOp = function() {};
 var LocalDataSource = require('../../data/LocalDataSource');
@@ -21,7 +21,7 @@ var Cache = function(c) {
     return cacheGenerator(0, 40);
 };
 
-describe('DataSource and Partial Cache', function() {
+describe('DataSource and Cache', function() {
     describe('Preload Functions', function() {
         it('should get multiple arguments.', function(done) {
             var model = new Model({cache: M(), source: new LocalDataSource(Cache())});
@@ -92,7 +92,7 @@ describe('DataSource and Partial Cache', function() {
                 subscribe(noOp, done, done);
         });
     });
-    describe('PathMap', function() {
+    describe('JSON', function() {
         it('should ensure empty paths do not cause dataSource requests {from:1, to:0}', function(done) {
             var onGet = sinon.spy();
             var model = new Model({
@@ -236,8 +236,7 @@ describe('DataSource and Partial Cache', function() {
                 subscribe(noOp, done, noOp);
         });
 
-        it('should ensure that a response where only materialized atoms come ' +
-           'through still onNexts a value if one is present in cache.', function(done) {
+        it('should ensure that a response where only materialized atoms come through still onNexts a value if one is present in cache.', function(done) {
             var model = new Model({
                 cache: {
                     paths: {
@@ -263,6 +262,36 @@ describe('DataSource and Partial Cache', function() {
                             paths: {
                                 0: 'test',
                                 1: 'test'
+                            }
+                        }
+                    });
+                }).
+                subscribe(noOp, done, done);
+        });
+
+        it('should go to the datasource when a branch is an atom of undefined.', function(done) {
+            var model = new Model({
+                materialized: true,
+                cache: {
+                    paths: $atom(undefined)
+                },
+                source: new LocalDataSource({
+                    paths: $atom(undefined)
+                }, { materialize: true })
+            });
+
+            var onNext = sinon.spy();
+            toObservable(model.
+                get(['paths', {to:3}])).
+                doAction(onNext, noOp, function() {
+                    expect(onNext.calledOnce, 'onNext called').to.be.ok;
+                    expect(strip(onNext.getCall(0).args[0])).to.deep.equals({
+                        json: {
+                            paths: {
+                                0: undefined,
+                                1: undefined,
+                                2: undefined,
+                                3: undefined
                             }
                         }
                     });
@@ -412,7 +441,7 @@ describe('DataSource and Partial Cache', function() {
             var model = new Model({cache: M(), source: new LocalDataSource(Cache())});
             var revisions = [];
             toObservable(model.
-                get(['lolomo', 0, 0, 'item', 'title'], ['lolomo', 0, 1, 'item', 'title']).
+                get(['lolomo', 0, [0, 1], 'item', 'title']).
                 progressively()).
                 doAction(function(x) {
                     revisions.push(x);
@@ -421,7 +450,7 @@ describe('DataSource and Partial Cache', function() {
                     expect(revisions[1]).to.not.equal(revisions[0]);
                     expect(revisions[1].json.lolomo[0]).to.not.equal(revisions[0].json.lolomo[0]);
                     expect(revisions[1].json.lolomo[0][0]).to.equal(revisions[0].json.lolomo[0][0]);
-
+                    expect(revisions[1].json.lolomo[0][1]).to.not.equal(revisions[0].json.lolomo[0][1]);
                 }).
                 subscribe(noOp, done, done);
         });
@@ -435,79 +464,87 @@ describe('DataSource and Partial Cache', function() {
                 get(['lolomo', 0, 0, 'item', 'title'], ['lolomo', 0, 1, 'item', 'title'])).
                 doAction(function(x) {
                     count++;
-                    x.json[ƒ_meta] = x.json[ƒ_meta];
-                    x.json['lolomo'][ƒ_meta] = x.json['lolomo'][ƒ_meta];
-                    x.json['lolomo'][0][ƒ_meta] = x.json['lolomo'][0][ƒ_meta];
-                    x.json['lolomo'][0][0][ƒ_meta] = x.json['lolomo'][0][0][ƒ_meta];
-                    x.json['lolomo'][0][1][ƒ_meta] = x.json['lolomo'][0][1][ƒ_meta];
-                    x.json['lolomo'][0][0]['item'][ƒ_meta] = x.json['lolomo'][0][0]['item'][ƒ_meta];
-                    x.json['lolomo'][0][1]['item'][ƒ_meta] = x.json['lolomo'][0][1]['item'][ƒ_meta];
+                    // x.json[f_meta_data] = x.json[f_meta_data];
+                    // x.json['lolomo'][f_meta_data] = x.json['lolomo'][f_meta_data];
+                    // x.json['lolomo'][0][f_meta_data] = x.json['lolomo'][0][f_meta_data];
+                    // x.json['lolomo'][0][0][f_meta_data] = x.json['lolomo'][0][0][f_meta_data];
+                    // x.json['lolomo'][0][1][f_meta_data] = x.json['lolomo'][0][1][f_meta_data];
+                    // x.json['lolomo'][0][0]['item'][f_meta_data] = x.json['lolomo'][0][0]['item'][f_meta_data];
+                    // x.json['lolomo'][0][1]['item'][f_meta_data] = x.json['lolomo'][0][1]['item'][f_meta_data];
                     expect(x).to.deep.equals({
+                        __proto__: FalcorJSON.prototype,
                         json: {
-                            [ƒ_meta]: {
+                            __proto__: FalcorJSON.prototype,
+                            [f_meta_data]: {
                                 '$code':          '350990479',
-                                [ƒm_keys]:        { lolomo: true },
-                                [ƒm_abs_path]:    undefined,
-                                [ƒm_deref_from]:  undefined,
-                                [ƒm_deref_to]:    undefined,
-                                [ƒm_version]:     1
+                                [f_meta_keys]:        { lolomo: true },
+                                [f_meta_abs_path]:    undefined,
+                                [f_meta_deref_from]:  undefined,
+                                [f_meta_deref_to]:    undefined,
+                                [f_meta_version]:     1
                             },
                             lolomo: {
-                                [ƒ_meta]: {
+                                __proto__: FalcorJSON.prototype,
+                                [f_meta_data]: {
                                     '$code':          '1437563678',
-                                    [ƒm_keys]:        { 0: true },
-                                    [ƒm_abs_path]:    ['lolomos', '1234'],
-                                    [ƒm_deref_from]:  undefined,
-                                    [ƒm_deref_to]:    undefined,
-                                    [ƒm_version]:     1
+                                    [f_meta_keys]:        { 0: true },
+                                    [f_meta_abs_path]:    ['lolomos', '1234'],
+                                    [f_meta_deref_from]:  undefined,
+                                    [f_meta_deref_to]:    undefined,
+                                    [f_meta_version]:     1
                                 },
                                 0: {
-                                    [ƒ_meta]: {
+                                    __proto__: FalcorJSON.prototype,
+                                    [f_meta_data]: {
                                         '$code':          '2823858104',
-                                        [ƒm_keys]:        { 0: true, 1: true },
-                                        [ƒm_abs_path]:    ['lists', 'A'],
-                                        [ƒm_deref_from]:  undefined,
-                                        [ƒm_deref_to]:    undefined,
-                                        [ƒm_version]:     1
+                                        [f_meta_keys]:        { 0: true, 1: true },
+                                        [f_meta_abs_path]:    ['lists', 'A'],
+                                        [f_meta_deref_from]:  undefined,
+                                        [f_meta_deref_to]:    undefined,
+                                        [f_meta_version]:     1
                                     },
                                     0: {
-                                        [ƒ_meta]: {
+                                        __proto__: FalcorJSON.prototype,
+                                        [f_meta_data]: {
                                             '$code':          '3681981706',
-                                            [ƒm_keys]:        { item: true },
-                                            [ƒm_abs_path]:    ['lists', 'A', '0'],
-                                            [ƒm_deref_from]:  undefined,
-                                            [ƒm_deref_to]:    undefined,
-                                            [ƒm_version]:     0
+                                            [f_meta_keys]:        { item: true },
+                                            [f_meta_abs_path]:    ['lists', 'A', '0'],
+                                            [f_meta_deref_from]:  undefined,
+                                            [f_meta_deref_to]:    undefined,
+                                            [f_meta_version]:     0
                                         },
                                         item: {
-                                            [ƒ_meta]: {
+                                            __proto__: FalcorJSON.prototype,
+                                            [f_meta_data]: {
                                                 '$code':          '165499941',
-                                                [ƒm_keys]:        { title: true },
-                                                [ƒm_abs_path]:    ['videos', '0'],
-                                                [ƒm_deref_from]:  undefined,
-                                                [ƒm_deref_to]:    undefined,
-                                                [ƒm_version]:     0
+                                                [f_meta_keys]:        { title: true },
+                                                [f_meta_abs_path]:    ['videos', '0'],
+                                                [f_meta_deref_from]:  undefined,
+                                                [f_meta_deref_to]:    undefined,
+                                                [f_meta_version]:     0
                                             },
                                             title: 'Video 0'
                                         }
                                     },
                                     1: {
-                                        [ƒ_meta]: {
+                                        __proto__: FalcorJSON.prototype,
+                                        [f_meta_data]: {
                                             '$code':          '3681981706',
-                                            [ƒm_keys]:        { item: true },
-                                            [ƒm_abs_path]:    ['lists', 'A', 1],
-                                            [ƒm_deref_from]:  undefined,
-                                            [ƒm_deref_to]:    undefined,
-                                            [ƒm_version]:     1
+                                            [f_meta_keys]:        { item: true },
+                                            [f_meta_abs_path]:    ['lists', 'A', 1],
+                                            [f_meta_deref_from]:  undefined,
+                                            [f_meta_deref_to]:    undefined,
+                                            [f_meta_version]:     1
                                         },
                                         item: {
-                                            [ƒ_meta]: {
+                                            __proto__: FalcorJSON.prototype,
+                                            [f_meta_data]: {
                                                 '$code':          '165499941',
-                                                [ƒm_keys]:        { title: true },
-                                                [ƒm_abs_path]:    ['videos', '1'],
-                                                [ƒm_deref_from]:  undefined,
-                                                [ƒm_deref_to]:    undefined,
-                                                [ƒm_version]:     1
+                                                [f_meta_keys]:        { title: true },
+                                                [f_meta_abs_path]:    ['videos', '1'],
+                                                [f_meta_deref_from]:  undefined,
+                                                [f_meta_deref_to]:    undefined,
+                                                [f_meta_version]:     1
                                             },
                                             title: 'Video 1'
                                         }
@@ -535,79 +572,87 @@ describe('DataSource and Partial Cache', function() {
                 get(['lolomo', 0, 0, 'item', 'title'], ['lolomo', 0, 1, 'item', 'title'])).
                 doAction(function(x) {
                     count++;
-                    x.json[ƒ_meta] = x.json[ƒ_meta];
-                    x.json['lolomo'][ƒ_meta] = x.json['lolomo'][ƒ_meta];
-                    x.json['lolomo'][0][ƒ_meta] = x.json['lolomo'][0][ƒ_meta];
-                    x.json['lolomo'][0][0][ƒ_meta] = x.json['lolomo'][0][0][ƒ_meta];
-                    x.json['lolomo'][0][1][ƒ_meta] = x.json['lolomo'][0][1][ƒ_meta];
-                    x.json['lolomo'][0][0]['item'][ƒ_meta] = x.json['lolomo'][0][0]['item'][ƒ_meta];
-                    x.json['lolomo'][0][1]['item'][ƒ_meta] = x.json['lolomo'][0][1]['item'][ƒ_meta];
+                    // x.json[f_meta_data] = x.json[f_meta_data];
+                    // x.json['lolomo'][f_meta_data] = x.json['lolomo'][f_meta_data];
+                    // x.json['lolomo'][0][f_meta_data] = x.json['lolomo'][0][f_meta_data];
+                    // x.json['lolomo'][0][0][f_meta_data] = x.json['lolomo'][0][0][f_meta_data];
+                    // x.json['lolomo'][0][1][f_meta_data] = x.json['lolomo'][0][1][f_meta_data];
+                    // x.json['lolomo'][0][0]['item'][f_meta_data] = x.json['lolomo'][0][0]['item'][f_meta_data];
+                    // x.json['lolomo'][0][1]['item'][f_meta_data] = x.json['lolomo'][0][1]['item'][f_meta_data];
                     expect(x).to.deep.equals({
+                        __proto__: FalcorJSON.prototype,
                         json: {
-                            [ƒ_meta]: {
+                            __proto__: FalcorJSON.prototype,
+                            [f_meta_data]: {
                                 '$code':          '350990479',
-                                [ƒm_keys]:        { lolomo: true },
-                                [ƒm_abs_path]:    undefined,
-                                [ƒm_deref_from]:  undefined,
-                                [ƒm_deref_to]:    undefined,
-                                [ƒm_version]:     1
+                                [f_meta_keys]:        { lolomo: true },
+                                [f_meta_abs_path]:    undefined,
+                                [f_meta_deref_from]:  undefined,
+                                [f_meta_deref_to]:    undefined,
+                                [f_meta_version]:     1
                             },
                             lolomo: {
-                                [ƒ_meta]: {
+                                __proto__: FalcorJSON.prototype,
+                                [f_meta_data]: {
                                     '$code':          '1437563678',
-                                    [ƒm_keys]:        { 0: true },
-                                    [ƒm_abs_path]:    ['lolomos', '1234'],
-                                    [ƒm_deref_from]:  undefined,
-                                    [ƒm_deref_to]:    undefined,
-                                    [ƒm_version]:     0
+                                    [f_meta_keys]:        { 0: true },
+                                    [f_meta_abs_path]:    ['lolomos', '1234'],
+                                    [f_meta_deref_from]:  undefined,
+                                    [f_meta_deref_to]:    undefined,
+                                    [f_meta_version]:     0
                                 },
                                 0: {
-                                    [ƒ_meta]: {
+                                    __proto__: FalcorJSON.prototype,
+                                    [f_meta_data]: {
                                         '$code':          '2823858104',
-                                        [ƒm_keys]:        { 0: true, 1: true },
-                                        [ƒm_abs_path]:    ['lists', 'A'],
-                                        [ƒm_deref_from]:  undefined,
-                                        [ƒm_deref_to]:    undefined,
-                                        [ƒm_version]:     0
+                                        [f_meta_keys]:        { 0: true, 1: true },
+                                        [f_meta_abs_path]:    ['lists', 'A'],
+                                        [f_meta_deref_from]:  undefined,
+                                        [f_meta_deref_to]:    undefined,
+                                        [f_meta_version]:     0
                                     },
                                     0: {
-                                        [ƒ_meta]: {
+                                        __proto__: FalcorJSON.prototype,
+                                        [f_meta_data]: {
                                             '$code':          '3681981706',
-                                            [ƒm_keys]:        { item: true },
-                                            [ƒm_abs_path]:    ['lists', 'A', '0'],
-                                            [ƒm_deref_from]:  undefined,
-                                            [ƒm_deref_to]:    undefined,
-                                            [ƒm_version]:     0
+                                            [f_meta_keys]:        { item: true },
+                                            [f_meta_abs_path]:    ['lists', 'A', '0'],
+                                            [f_meta_deref_from]:  undefined,
+                                            [f_meta_deref_to]:    undefined,
+                                            [f_meta_version]:     0
                                         },
                                         item: {
-                                            [ƒ_meta]: {
+                                            __proto__: FalcorJSON.prototype,
+                                            [f_meta_data]: {
                                                 '$code':          '165499941',
-                                                [ƒm_keys]:        { title: true },
-                                                [ƒm_abs_path]:    ['videos', '0'],
-                                                [ƒm_deref_from]:  undefined,
-                                                [ƒm_deref_to]:    undefined,
-                                                [ƒm_version]:     0
+                                                [f_meta_keys]:        { title: true },
+                                                [f_meta_abs_path]:    ['videos', '0'],
+                                                [f_meta_deref_from]:  undefined,
+                                                [f_meta_deref_to]:    undefined,
+                                                [f_meta_version]:     0
                                             },
                                             title: 'Video 0'
                                         }
                                     },
                                     1: {
-                                        [ƒ_meta]: {
+                                        __proto__: FalcorJSON.prototype,
+                                        [f_meta_data]: {
                                             '$code':          '3681981706',
-                                            [ƒm_keys]:        { item: true },
-                                            [ƒm_abs_path]:    ['lists', 'A', '1'],
-                                            [ƒm_deref_from]:  undefined,
-                                            [ƒm_deref_to]:    undefined,
-                                            [ƒm_version]:     0
+                                            [f_meta_keys]:        { item: true },
+                                            [f_meta_abs_path]:    ['lists', 'A', '1'],
+                                            [f_meta_deref_from]:  undefined,
+                                            [f_meta_deref_to]:    undefined,
+                                            [f_meta_version]:     0
                                         },
                                         item: {
-                                            [ƒ_meta]: {
+                                            __proto__: FalcorJSON.prototype,
+                                            [f_meta_data]: {
                                                 '$code':          '165499941',
-                                                [ƒm_keys]:        { title: true },
-                                                [ƒm_abs_path]:    ['videos', '1'],
-                                                [ƒm_deref_from]:  undefined,
-                                                [ƒm_deref_to]:    undefined,
-                                                [ƒm_version]:     1
+                                                [f_meta_keys]:        { title: true },
+                                                [f_meta_abs_path]:    ['videos', 1],
+                                                [f_meta_deref_from]:  undefined,
+                                                [f_meta_deref_to]:    undefined,
+                                                [f_meta_version]:     1
                                             },
                                             title: 'Video 1'
                                         }
@@ -624,12 +669,12 @@ describe('DataSource and Partial Cache', function() {
     });
     describe('Error Selector (during merge)', function() {
 
-        function generateErrorSelectorSpy(expectedPath) {
+        function generateErrorSelectorSpy() {
             return sinon.spy(function(path, atom) {
 
                 // Needs to be asserted before mutation.
                 expect(atom.$type).to.equal('error');
-                expect(atom.value).to.deep.equals({message:'errormsg'});
+                expect(atom.value).to.deep.equals({ message:'errormsg' });
 
                 atom.$custom = 'custom';
                 atom.value.customtype = 'customtype';
@@ -653,7 +698,7 @@ describe('DataSource and Partial Cache', function() {
             });
         }
 
-        xit('should get invoked with the right arguments for branches in cache', function(done) {
+        it('should get invoked with the right arguments for branches in cache', function(done) {
 
             // Cache has [lolomo,0,0,item]
             var testPath = ['lolomo',0,0,'item','errorPath'];
@@ -661,11 +706,11 @@ describe('DataSource and Partial Cache', function() {
             var modelCache = M();
             var dataSourceCache = Cache();
             // [lolomo,0,0,item]->[videos,0]
-            dataSourceCache.videos[0].errorPath = jsonGraph.error({message:'errormsg'});
+            dataSourceCache.videos[0].errorPath = jsonGraph.error({ message:'errormsg' });
 
             var onNextSpy = sinon.spy();
             var onErrorSpy = sinon.spy();
-            var errorSelectorSpy = generateErrorSelectorSpy(testPath);
+            var errorSelectorSpy = generateErrorSelectorSpy();
 
             var model = new Model({
                 cache: modelCache,
@@ -677,27 +722,21 @@ describe('DataSource and Partial Cache', function() {
                 boxValues().
                 get(testPath)).
                 doAction(onNextSpy, onErrorSpy, noOp).
-                subscribe(
-                    noOp,
-                    function(e) {
-                        expect(errorSelectorSpy.callCount).to.equal(1);
-                        expect(errorSelectorSpy.getCall(0).args[0]).to.deep.equals(testPath);
-
-                        expect(onErrorSpy.callCount).to.equal(1);
-
-                        expect(e.length).to.equal(1);
-                        assertExpectedErrorPayload(e[0], testPath);
-
-                        done();
-                    },
-                    function() {
-                        expect(onNextSpy.callCount).to.equal(0);
-                        expect(onErrorSpy.callCount).to.equal(1);
-                        done();
-                    });
+                doAction(null, function(e) {
+                    expect(e.length).to.equal(1);
+                    expect(onNextSpy.callCount).to.equal(0);
+                    expect(onErrorSpy.callCount).to.equal(1);
+                    expect(errorSelectorSpy.callCount).to.equal(1);
+                    assertExpectedErrorPayload(e[0], ['videos', '0', 'errorPath']);
+                })
+                .subscribe(
+                    done.bind(null, 'onNext should not have been called'),
+                    function() { done() },
+                    done.bind(null, 'onCompleted should not have been called')
+                );
         });
 
-        xit('should get invoked with the right arguments for branches not in cache', function(done) {
+        it('should get invoked with the right arguments for branches not in cache', function(done) {
 
             // Cache doesn't have [lolomo,1,0,item]
             var testPath = ['lolomo',1,0,'item','errorPath'];
@@ -706,11 +745,11 @@ describe('DataSource and Partial Cache', function() {
             var dataSourceCache = Cache();
 
             // [lolomo,1,0,item]->[videos,10]
-            dataSourceCache.videos[10].errorPath = jsonGraph.error({message:'errormsg'});
+            dataSourceCache.videos[10].errorPath = jsonGraph.error({ message:'errormsg' });
 
             var onNextSpy = sinon.spy();
             var onErrorSpy = sinon.spy();
-            var errorSelectorSpy = generateErrorSelectorSpy(testPath);
+            var errorSelectorSpy = generateErrorSelectorSpy();
 
             var model = new Model({
                 cache: modelCache,
@@ -722,38 +761,32 @@ describe('DataSource and Partial Cache', function() {
                 boxValues().
                 get(testPath)).
                 doAction(onNextSpy, onErrorSpy, noOp).
-                subscribe(
-                    noOp,
-                    function(e) {
-                        expect(errorSelectorSpy.callCount).to.equal(1);
-                        expect(errorSelectorSpy.getCall(0).args[0]).to.deep.equals(testPath);
-
-                        expect(onErrorSpy.callCount).to.equal(1);
-
-                        expect(e.length).to.equal(1);
-                        assertExpectedErrorPayload(e[0], testPath);
-
-                        done();
-                    },
-                    function() {
-                        expect(onNextSpy.callCount).to.equal(0);
-                        expect(onErrorSpy.callCount).to.equal(1);
-                        done();
-                    });
+                doAction(null, function(e) {
+                    expect(e.length).to.equal(1);
+                    expect(onNextSpy.callCount).to.equal(0);
+                    expect(onErrorSpy.callCount).to.equal(1);
+                    expect(errorSelectorSpy.callCount).to.equal(1);
+                    assertExpectedErrorPayload(e[0], ['videos', '10', 'errorPath']);
+                })
+                .subscribe(
+                    done.bind(null, 'onNext should not have been called'),
+                    function() { done() },
+                    done.bind(null, 'onCompleted should not have been called')
+                );
         });
 
-        xit('should get invoked with the correct error paths for a keyset', function(done) {
+        it('should get invoked with the correct error paths for a keyset', function(done) {
             var testPath = ['lolomo',[0,1],0,'item','errorPath'];
 
             var modelCache = M();
             var dataSourceCache = Cache();
 
-            dataSourceCache.videos[0].errorPath = jsonGraph.error({message:'errormsg'});
-            dataSourceCache.videos[10].errorPath = jsonGraph.error({message:'errormsg'});
+            dataSourceCache.videos[0].errorPath = jsonGraph.error({ message:'errormsg' });
+            dataSourceCache.videos[10].errorPath = jsonGraph.error({ message:'errormsg' });
 
             var onNextSpy = sinon.spy();
             var onErrorSpy = sinon.spy();
-            var errorSelectorSpy = generateErrorSelectorSpy(testPath);
+            var errorSelectorSpy = generateErrorSelectorSpy();
 
             var model = new Model({
                 cache: modelCache,
@@ -765,29 +798,22 @@ describe('DataSource and Partial Cache', function() {
                 boxValues().
                 get(testPath)).
                 doAction(onNextSpy, onErrorSpy, noOp).
-                subscribe(
-                    noOp,
-                    function(e) {
-                        expect(onErrorSpy.callCount).to.equal(1);
-
-                        expect(errorSelectorSpy.callCount).to.equal(2);
-                        expect(errorSelectorSpy.getCall(0).args[0]).to.deep.equals(['lolomo',0,0,'item','errorPath']);
-                        expect(errorSelectorSpy.getCall(1).args[0]).to.deep.equals(['lolomo',1,0,'item','errorPath']);
-
-                        expect(e.length).to.equal(2);
-                        assertExpectedErrorPayload(e[0], ['lolomo',0,0,'item','errorPath']);
-                        assertExpectedErrorPayload(e[1], ['lolomo',1,0,'item','errorPath']);
-
-                        done();
-                    },
-                    function() {
-                        expect(onNextSpy.callCount).to.equal(0);
-                        expect(onErrorSpy.callCount).to.equal(1);
-                        done();
-                    });
+                doAction(null, function(e) {
+                    expect(e.length).to.equal(1);
+                    expect(onNextSpy.callCount).to.equal(0);
+                    expect(onErrorSpy.callCount).to.equal(1);
+                    expect(errorSelectorSpy.callCount).to.equal(2);
+                    assertExpectedErrorPayload(e[0], ['videos', '0', 'errorPath']);
+                    assertExpectedErrorPayload(e[1], ['videos', '10', 'errorPath']);
+                })
+                .subscribe(
+                    done.bind(null, 'onNext should not have been called'),
+                    function() { done() },
+                    done.bind(null, 'onCompleted should not have been called')
+                );
         });
     });
-    describe("Cached data with timestamp", function() {
+    describe('Cached data with timestamp', function() {
         var t0 = Date.parse('2000/01/01');
         var t1 = t0 + 1;
 
@@ -804,7 +830,7 @@ describe('DataSource and Partial Cache', function() {
             };
         }
 
-        it("should not be replaced by data with an older timestamp", function(done) {
+        it('should not be replaced by data with an older timestamp', function(done) {
             var cache = {
                 videos: {
                     1: {
@@ -824,7 +850,7 @@ describe('DataSource and Partial Cache', function() {
                 });
         });
 
-        it("when expired should be replaced by data with an older timestamp", function(done) {
+        it('when expired should be replaced by data with an older timestamp', function(done) {
             var cache = {
                 videos: {
                     1: {

@@ -20,8 +20,47 @@ describe('Materialized Paths.', function() {
                     }).
                     delay(100);
             }
+        }, {
+            route: 'genreList.new',
+            call: function(callPath, args) {
+                return args.map(function(ref, index) {
+                    return { path: ['genreList', index], value: ref }
+                });
+            }
         }]);
     }
+    describe('#call', function() {
+        it('should materialize unhandled refs, suffixes, and thisPaths from call', function(done) {
+            var router = partialRouter();
+            var onNext = sinon.spy();
+            router.call(
+                    ['genreList', 'new'],
+                    [$ref(['lists', 'abc'])],
+                    [['summary']], [['length']]
+                ).
+                do(onNext, noOp, function() {
+                    expect(onNext.calledOnce).to.be.ok;
+                    expect(onNext.getCall(0).args[0]).to.deep.equals({
+                        paths: [
+                            ['genreList', 'length'],
+                            ['genreList', 0, 'summary']
+                        ],
+                        jsonGraph: {
+                            genreList: {
+                                0: $ref(['lists', 'abc']),
+                                length: { $type: $atom }
+                            },
+                            lists: {
+                                abc: {
+                                    summary: { $type: $atom }
+                                }
+                            }
+                        }
+                    });
+                }).
+                subscribe(noOp, done, done);
+        });
+    });
     describe('#get', function() {
         it('should validate routes that do not return all the paths asked for.', function(done) {
             var router = partialRouter();
@@ -31,6 +70,7 @@ describe('Materialized Paths.', function() {
                 do(onNext, noOp, function() {
                     expect(onNext.calledOnce).to.be.ok;
                     expect(onNext.getCall(0).args[0]).to.deep.equals({
+                        paths: [['one', {from: 0, to: 1}, 'summary']],
                         jsonGraph: {
                             one: {
                                 0: $ref(['two', 'be', 956]),
@@ -64,6 +104,7 @@ describe('Materialized Paths.', function() {
                 do(onNext, noOp, function() {
                     expect(onNext.calledOnce).to.be.ok;
                     expect(onNext.getCall(0).args[0]).to.deep.equals({
+                        paths: [['one', {from: 0, to: 1}, 'summary']],
                         jsonGraph: {
                             one: {
                                 0: {

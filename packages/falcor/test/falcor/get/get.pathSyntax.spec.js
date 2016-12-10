@@ -1,4 +1,4 @@
-var falcor = require("./../../../lib/");
+var falcor = require('./../../../falcor.js');
 var Model = falcor.Model;
 var Rx = require('rx');
 var noOp = function() {};
@@ -11,7 +11,6 @@ var expect = require('chai').expect;
 
 describe('Path Syntax', function() {
     var model = new Model({cache: CacheGenerator(0, 2)});
-    model._root.unsafeMode = true;
     it('should accept strings for get.', function(done) {
         var onNext = sinon.spy();
         toObservable(model.get('lolomo[0][0].item.title', 'lolomo[0][1].item.title')).

@@ -1,11 +1,11 @@
 describe('Core', function() {
-    require('./error.spec');
+    require('./get.spec');
+    require('./set.spec');
     require('./call.spec');
-    require('./integers.spec');
+    require('./error.spec');
     require('./keys.spec');
     require('./ranges.spec');
-    require('./set.spec');
-    require('./get.spec');
-    require('./multi-indexer.spec');
+    require('./integers.spec');
     require('./max-paths.spec');
+    require('./multi-indexer.spec');
 });

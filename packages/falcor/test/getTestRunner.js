@@ -1,12 +1,12 @@
-var falcor = require("./../lib/");
-var _ = require("lodash");
-var Rx = require("rx");
-var testRunner = require("./testRunner");
+var falcor = require('./../falcor.js');
+var _ = require('lodash');
+var Rx = require('rx');
+var testRunner = require('./testRunner');
 var noOp = function() {};
-var chai = require("chai");
+var chai = require('chai');
 var expect = chai.expect;
 var Model = falcor.Model;
-var Cache = require("./data/Cache");
+var Cache = require('./data/Cache');
 function getTestRunner(data, options) {
     options = _.extend({
         preCall: noOp
@@ -21,7 +21,7 @@ function getTestRunner(data, options) {
 
     prefixesAndSuffixes[0].
         filter(function (prefix) {
-            return ~prefix.indexOf("get");
+            return ~prefix.indexOf('get');
         }).
         forEach(function (prefix) {
             prefixesAndSuffixes[1].map(function (suffix) {
@@ -29,9 +29,9 @@ function getTestRunner(data, options) {
                 var seedsOrFunction = [{}], count;
                 if (suffix === 'AsJSON') {
                     count = data[prefix].count === undefined || !data[prefix].count ? 1 : data[prefix].count;
-                    seedsOrFunction = Array(count).join(",").split(",").map(function() { return {}; });
+                    seedsOrFunction = Array(count).join(',').split(',').map(function() { return {}; });
                 }
-                var op = "_" + prefix + suffix;
+                var op = '_' + prefix + suffix;
 
 
                 // If this prefix operation intentionally excludes then early return.

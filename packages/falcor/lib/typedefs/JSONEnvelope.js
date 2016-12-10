@@ -6,8 +6,8 @@
  var model = new falcor.Model();
  model.set({
     json: {
-      name: "Steve",
-      surname: "McGuire"
+      name: 'Steve',
+      surname: 'McGuire'
     }
  }).then(function(jsonEnvelope) {
     console.log(jsonEnvelope);

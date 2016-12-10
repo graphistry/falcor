@@ -1,7 +1,7 @@
-var falcor = require("./../../lib/");
+var falcor = require('./../../falcor.js');
 var Model = falcor.Model;
-var Rx = require("rx");
-var chai = require("chai");
+var Rx = require('rx');
+var chai = require('chai');
 var expect = chai.expect;
 var noOp = function() {};
 var sinon = require('sinon');
@@ -9,18 +9,18 @@ var sinon = require('sinon');
 describe('Expired', function() {
     it('should ensure that get avoids expired items', function(done) {
         var model = new Model({cache: {
-            "expireSoon": {
-                "$size": 51,
-                "summary": {
-                    "$size": 51,
-                    "$expires": Date.now() + 50,
-                    "$type": "atom",
-                    "value": 'sad panda'
+            'expireSoon': {
+                '$size': 51,
+                'summary': {
+                    '$size': 51,
+                    '$expires': Date.now() + 50,
+                    '$type': 'atom',
+                    'value': 'sad panda'
                 }
             }
         }});
 
-        expect(model._root[ƒ_head].value).to.equal('sad panda');
+        expect(model._root[f_head].value).to.equal('sad panda');
 
         var onNext = sinon.spy();
         Rx.Observable.
@@ -30,8 +30,8 @@ describe('Expired', function() {
             }).
             doAction(onNext, noOp, function() {
                 expect(onNext.callCount).to.equal(0);
-                expect(model._root[ƒ_head]).to.be.not.ok;
-                expect(model._root[ƒ_tail]).to.be.not.ok;
+                expect(model._root[f_head]).to.be.not.ok;
+                expect(model._root[f_tail]).to.be.not.ok;
             }).
             subscribe(noOp, done, done);
     });

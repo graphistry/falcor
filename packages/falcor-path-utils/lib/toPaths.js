@@ -1,13 +1,14 @@
 var isArray = Array.isArray;
-var typeOfObject = "object";
-var typeOfString = "string";
-var typeOfNumber = "number";
+var typeOfObject = 'object';
+var typeOfString = 'string';
+var typeOfNumber = 'number';
 var MAX_SAFE_INTEGER = 9007199254740991; // Number.MAX_SAFE_INTEGER in es6
 var MAX_SAFE_INTEGER_DIGITS = 16; // String(Number.MAX_SAFE_INTEGER).length
 var MIN_SAFE_INTEGER_DIGITS = 17; // String(Number.MIN_SAFE_INTEGER).length (including sign)
 var abs = Math.abs;
 var safeNumberRegEx = /^(0|(\-?[1-9][0-9]*))$/;
-var nullTerminator = require('./support/nullTerminator');
+var getHashCode = require('./getHashCode');
+var materializedAtom = require('./support/materializedAtom');
 
 /* jshint forin: false */
 module.exports = function toPaths(lengths) {
@@ -34,8 +35,8 @@ function isObject(value) {
 function collapsePathMap(pathmap, depth, length) {
 
     var key;
-    var code = getHashCode(String(depth));
     var subs = Object.create(null);
+    var code = '' + getHashCode('' + depth);
 
     var codes = [];
     var codesIndex = -1;
@@ -70,7 +71,7 @@ function collapsePathMap(pathmap, depth, length) {
                     sets: subPath.sets
                 };
             }
-            code = getHashCode(code + key + subCode);
+            code = '' + getHashCode(code + key + subCode);
 
             isSafeNumber(key) &&
                 subPath.keys.push(parseInt(key, 10)) ||
@@ -115,7 +116,7 @@ function collapsePathMap(pathmap, depth, length) {
             pathsets[pathsetsCount++] = subKeys;
         }
         while (++subKeysIndex < subKeysCount) {
-            code = getHashCode(code + subKeys[subKeysIndex]);
+            code = '' + getHashCode(code + subKeys[subKeysIndex]);
         }
     }
 
@@ -144,7 +145,7 @@ function collapsePathSetIndexes(pathset) {
  * Collapse range indexers, e.g. when there is a continuous
  * range in an array, turn it into an object instead:
  *
- * [1,2,3,4,5,6] => {"from":1, "to":6}
+ * [1,2,3,4,5,6] => {'from':1, 'to':6}
  *
  * @private
  */
@@ -176,12 +177,9 @@ function collapseIndex(keyset) {
         var from = keyset[0];
         var to = keyset[keyCount];
 
-        // If we re-introduce deduped integer indexers, change this comparson to "===".
+        // If we re-introduce deduped integer indexers, change this comparson to '==='.
         if (to - from <= keyCount) {
-            return {
-                from: from,
-                to: to
-            };
+            return { from: from, to: to };
         }
     }
 
@@ -195,7 +193,7 @@ function sortListAscending(a, b) {
 /* jshint forin: false */
 function getSortedKeys(map, keys, sort) {
     var len = 0;
-    if (map === nullTerminator) {
+    if (map === materializedAtom) {
         keys[len++] = null;
     } else {
         for (var key in map) {
@@ -208,15 +206,15 @@ function getSortedKeys(map, keys, sort) {
     return len;
 }
 
-function getHashCode(key) {
-    var code = 5381;
-    var index = -1;
-    var count = key.length;
-    while (++index < count) {
-        code = (code << 5) + code + key.charCodeAt(index);
-    }
-    return String(code);
-}
+// function getHashCode(key) {
+//     var code = 5381;
+//     var index = -1;
+//     var count = key.length;
+//     while (++index < count) {
+//         code = (code << 5) + code + key.charCodeAt(index);
+//     }
+//     return String(code);
+// }
 
 /**
  * Return true if argument is a number or can be cast to a number which

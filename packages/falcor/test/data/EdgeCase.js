@@ -1,8 +1,8 @@
 function edgeCase() {
     return {
         user: {
-            name: "Jim",
-            location: {$type: "error", value: "Something broke!"}
+            name: 'Jim',
+            location: {$type: 'error', value: 'Something broke!'}
         }
     };
 }

@@ -1,14 +1,12 @@
 'use strict';
 
-var _assign = require('babel-runtime/core-js/object/assign');
-
-var _assign2 = _interopRequireDefault(_assign);
-
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _extends = _assign2.default || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+var _extends2 = require('babel-runtime/helpers/extends');
+
+var _extends3 = _interopRequireDefault(_extends2);
 
 exports.default = memoizeQueryies;
 
@@ -24,18 +22,17 @@ function memoizeQueryies() {
     var limit = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 100;
 
     var count = 0;
-    var map = {};
-    var lru = {};
+    var map = {},
+        lru = {};
     return function memoizedQuerySyntax(query) {
         var entry = map[query];
-        if (entry === undefined) {
-            if (++count > limit) {
-                delete map[lru.tail.query];
-                splice(lru, lru.tail);
-            }
-            entry = map[query] = _extends({ query: query }, (0, _pegjsUtil.parse)(_falcorQuerySyntax2.default.parser, query));
-        } else if (entry.error) {
-            entry = map[query] = _extends({ query: query }, (0, _pegjsUtil.parse)(_falcorQuerySyntax2.default.parser, query));
+        if (entry === undefined && ++count > limit) {
+            delete map[lru.tail.query];
+            splice(lru, lru.tail);
+        }
+        if (!entry || entry.error) {
+            entry = map[query] = (0, _extends3.default)({
+                query: query }, (0, _pegjsUtil.parse)(_falcorQuerySyntax2.default.parser, query));
         }
         promote(lru, entry);
         return entry;

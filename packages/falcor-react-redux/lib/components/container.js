@@ -1,52 +1,49 @@
 'use strict';
 
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.container = undefined;
+
+var _objectWithoutProperties2 = require('babel-runtime/helpers/objectWithoutProperties');
+
+var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
+
+var _createClass2 = require('babel-runtime/helpers/createClass');
+
+var _createClass3 = _interopRequireDefault(_createClass2);
+
 var _from = require('babel-runtime/core-js/array/from');
 
 var _from2 = _interopRequireDefault(_from);
-
-var _getPrototypeOf = require('babel-runtime/core-js/object/get-prototype-of');
-
-var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
 
 var _keys = require('babel-runtime/core-js/object/keys');
 
 var _keys2 = _interopRequireDefault(_keys);
 
-var _setPrototypeOf = require('babel-runtime/core-js/object/set-prototype-of');
+var _getPrototypeOf = require('babel-runtime/core-js/object/get-prototype-of');
 
-var _setPrototypeOf2 = _interopRequireDefault(_setPrototypeOf);
+var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
 
-var _create = require('babel-runtime/core-js/object/create');
+var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
 
-var _create2 = _interopRequireDefault(_create);
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 
-var _assign = require('babel-runtime/core-js/object/assign');
+var _possibleConstructorReturn2 = require('babel-runtime/helpers/possibleConstructorReturn');
 
-var _assign2 = _interopRequireDefault(_assign);
+var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 
-var _iterator = require('babel-runtime/core-js/symbol/iterator');
+var _inherits2 = require('babel-runtime/helpers/inherits');
 
-var _iterator2 = _interopRequireDefault(_iterator);
+var _inherits3 = _interopRequireDefault(_inherits2);
 
-var _symbol = require('babel-runtime/core-js/symbol');
+var _typeof2 = require('babel-runtime/helpers/typeof');
 
-var _symbol2 = _interopRequireDefault(_symbol);
+var _typeof3 = _interopRequireDefault(_typeof2);
 
-var _defineProperty = require('babel-runtime/core-js/object/define-property');
+var _extends2 = require('babel-runtime/helpers/extends');
 
-var _defineProperty2 = _interopRequireDefault(_defineProperty);
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; (0, _defineProperty2.default)(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _typeof = typeof _symbol2.default === "function" && typeof _iterator2.default === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof _symbol2.default === "function" && obj.constructor === _symbol2.default && obj !== _symbol2.default.prototype ? "symbol" : typeof obj; };
-
-var _extends = _assign2.default || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-exports.default = container;
+var _extends3 = _interopRequireDefault(_extends2);
 
 var _invariant = require('invariant');
 
@@ -64,10 +61,6 @@ var _shallowEqual = require('recompose/shallowEqual');
 
 var _shallowEqual2 = _interopRequireDefault(_shallowEqual);
 
-var _mapToFalcorJSON = require('../utils/mapToFalcorJSON');
-
-var _mapToFalcorJSON2 = _interopRequireDefault(_mapToFalcorJSON);
-
 var _wrapDisplayName = require('recompose/wrapDisplayName');
 
 var _wrapDisplayName2 = _interopRequireDefault(_wrapDisplayName);
@@ -76,22 +69,25 @@ var _fetchDataUntilSettled = require('../utils/fetchDataUntilSettled');
 
 var _fetchDataUntilSettled2 = _interopRequireDefault(_fetchDataUntilSettled);
 
-var _Subject = require('rxjs/Subject');
-
 require('rxjs/add/operator/map');
+
+require('rxjs/add/observable/of');
+
+require('rxjs/add/observable/empty');
 
 require('rxjs/add/operator/switchMap');
 
+var _Subject = require('rxjs/Subject');
+
+var _Observable = require('rxjs/Observable');
+
+var _falcor = require('@graphistry/falcor');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = (0, _create2.default)(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) _setPrototypeOf2.default ? (0, _setPrototypeOf2.default)(subClass, superClass) : subClass.__proto__ = superClass; }
-
+var typeofNumber = 'number';
+var typeofObject = 'object';
+var typeofFunction = 'function';
 var defaultMapFragmentToProps = function defaultMapFragmentToProps(data) {
     return data;
 };
@@ -99,12 +95,16 @@ var defaultMapDispatchToProps = function defaultMapDispatchToProps(dispatch, pro
     return {};
 };
 var defaultMergeProps = function defaultMergeProps(stateProps, dispatchProps, parentProps) {
-    return _extends({}, parentProps, stateProps, dispatchProps);
+    return (0, _extends3.default)({}, parentProps, stateProps, dispatchProps);
 };
+
+exports.container = container;
+exports.default = container;
+
 
 function container(fragmentDesc) {
 
-    (0, _invariant2.default)(fragmentDesc && (typeof fragmentDesc === 'function' || (typeof fragmentDesc === 'undefined' ? 'undefined' : _typeof(fragmentDesc)) === 'object' && typeof fragmentDesc.fragment === 'function'), 'Attempted to create a Falcor container component without a fragment.\nFalcor containers must be created with either a fragment function or an Object with a fragment function.');
+    (0, _invariant2.default)(fragmentDesc && (typeofFunction === (typeof fragmentDesc === 'undefined' ? 'undefined' : (0, _typeof3.default)(fragmentDesc)) || typeofObject === (typeof fragmentDesc === 'undefined' ? 'undefined' : (0, _typeof3.default)(fragmentDesc)) && typeofFunction === (0, _typeof3.default)(fragmentDesc.fragment)), 'Attempted to create a Falcor container component without a fragment.\nFalcor containers must be created with a fragment function, or an Object with a "fragment" function.');
 
     var renderErrors = false,
         renderLoading = false,
@@ -113,43 +113,29 @@ function container(fragmentDesc) {
         mapDispatch = void 0,
         mapFragmentAndProps = void 0;
 
-    if ((typeof fragmentDesc === 'undefined' ? 'undefined' : _typeof(fragmentDesc)) === 'object') {
+    if (typeofObject !== (typeof fragmentDesc === 'undefined' ? 'undefined' : (0, _typeof3.default)(fragmentDesc))) {
+        fragment = fragmentDesc;
+        mapFragment = arguments.length <= 1 ? undefined : arguments[1];
+        mapDispatch = arguments.length <= 2 ? undefined : arguments[2];
+        mapFragmentAndProps = arguments.length <= 3 ? undefined : arguments[3];
+    } else {
         fragment = fragmentDesc.fragment;
         mapFragment = fragmentDesc.mapFragment;
         renderErrors = fragmentDesc.renderErrors;
         renderLoading = fragmentDesc.renderLoading;
         mapFragmentAndProps = fragmentDesc.mapFragmentAndProps;
         mapDispatch = fragmentDesc.mapDispatch || fragmentDesc.dispatchers;
-    } else {
-        fragment = fragmentDesc;
-        mapFragment = arguments.length <= 1 ? undefined : arguments[1];
-        mapDispatch = arguments.length <= 2 ? undefined : arguments[2];
-        mapFragmentAndProps = arguments.length <= 3 ? undefined : arguments[3];
     }
 
     mapFragment = mapFragment || defaultMapFragmentToProps;
     mapDispatch = mapDispatch || defaultMapDispatchToProps;
     mapFragmentAndProps = mapFragmentAndProps || defaultMergeProps;
 
-    if (typeof mapDispatch !== 'function') {
-        if (mapDispatch && (typeof mapDispatch === 'undefined' ? 'undefined' : _typeof(mapDispatch)) !== 'object') {
+    if (typeofFunction !== (typeof mapDispatch === 'undefined' ? 'undefined' : (0, _typeof3.default)(mapDispatch))) {
+        if (mapDispatch && typeofObject !== (typeof mapDispatch === 'undefined' ? 'undefined' : (0, _typeof3.default)(mapDispatch))) {
             mapDispatch = defaultMapDispatchToProps;
         } else {
-            mapDispatch = function (actionCreators) {
-                return function (container) {
-                    return (0, _keys2.default)(actionCreators).reduce(function (dispatchers, key) {
-                        var actionCreator = actionCreators[key];
-                        dispatchers[key] = function () {
-                            var _container$state = container.state,
-                                falcor = _container$state.falcor,
-                                dispatch = _container$state.dispatch;
-
-                            return dispatch(_extends({ falcor: falcor }, actionCreator.apply(undefined, arguments)));
-                        };
-                        return dispatchers;
-                    }, {});
-                };
-            }(mapDispatch);
+            mapDispatch = bindActionCreators(mapDispatch);
         }
     }
 
@@ -157,12 +143,11 @@ function container(fragmentDesc) {
         var _class, _temp;
 
         return _temp = _class = function (_FalcorContainer) {
-            _inherits(Container, _FalcorContainer);
+            (0, _inherits3.default)(Container, _FalcorContainer);
 
             function Container() {
-                _classCallCheck(this, Container);
-
-                return _possibleConstructorReturn(this, (Container.__proto__ || (0, _getPrototypeOf2.default)(Container)).apply(this, arguments));
+                (0, _classCallCheck3.default)(this, Container);
+                return (0, _possibleConstructorReturn3.default)(this, (Container.__proto__ || (0, _getPrototypeOf2.default)(Container)).apply(this, arguments));
             }
 
             return Container;
@@ -175,7 +160,7 @@ var fragments = function fragments() {
 
     var items = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
 
-    if (!items || (typeof items === 'undefined' ? 'undefined' : _typeof(items)) !== 'object') {
+    if (!items || typeofObject !== (typeof items === 'undefined' ? 'undefined' : (0, _typeof3.default)(items))) {
         return '{ length }';
     } else if (!items.hasOwnProperty('length')) {
         items = (0, _keys2.default)(items).map(function (key) {
@@ -189,30 +174,38 @@ var fragments = function fragments() {
     }, '') + '}';
 };
 
-function derefEachPropUpdate(update) {
-    var data = update.data,
-        falcor = update.falcor;
+function bindActionCreators(actionCreators) {
+    return function mapDispatch(container) {
+        return (0, _keys2.default)(actionCreators).reduce(function (dispatchers, key) {
+            var actionCreator = actionCreators[key];
+            dispatchers[key] = function () {
+                var _container$state = container.state,
+                    falcor = _container$state.falcor,
+                    dispatch = _container$state.dispatch;
 
-    update.data = data = (0, _mapToFalcorJSON2.default)(data);
-    if (!falcor._seed || !falcor._seed.json || falcor._seed.json !== data) {
-        update.falcor = falcor.deref(data);
-    }
-    return update;
+                if (falcor) {
+                    return dispatch((0, _extends3.default)({ falcor: falcor }, actionCreator.apply(undefined, arguments)));
+                }
+            };
+            return dispatchers;
+        }, {});
+    };
 }
 
-function fetchEachPropUpdate(_ref) {
-    var container = _ref.container,
-        data = _ref.data,
-        props = _ref.props,
+function tryDeref(_ref) {
+    var data = _ref.data,
         falcor = _ref.falcor;
-    var fragment = container.fragment,
-        renderLoading = container.renderLoading;
 
-    return (0, _fetchDataUntilSettled2.default)({
-        data: data, props: props, falcor: falcor, fragment: fragment
-    }).let(function (source) {
-        return renderLoading === true ? source : source.takeLast(1);
-    });
+    return !data || !falcor ? falcor : falcor.deref(data);
+}
+
+function fetchEachPropUpdate(update) {
+    if (!(update.falcor = tryDeref(update))) {
+        return _Observable.Observable.of(update);
+    } else if (update.renderLoading === true) {
+        return (0, _fetchDataUntilSettled2.default)(update);
+    }
+    return (0, _fetchDataUntilSettled2.default)(update).takeLast(1);
 }
 
 function mergeEachPropUpdate(_ref2, _ref3) {
@@ -225,9 +218,9 @@ function mergeEachPropUpdate(_ref2, _ref3) {
         loading = _ref3.loading;
 
     return {
-        data: data, error: error, loading: loading,
-        falcor: falcor, dispatch: dispatch, version: version,
-        hash: data && data.$__hash
+        props: props, falcor: falcor, dispatch: dispatch,
+        hash: data && data.$__hash,
+        data: data, error: error, loading: loading, version: version
     };
 }
 
@@ -237,16 +230,13 @@ var contextTypes = {
 };
 
 var FalcorContainer = function (_React$Component) {
-    _inherits(FalcorContainer, _React$Component);
+    (0, _inherits3.default)(FalcorContainer, _React$Component);
 
     function FalcorContainer(props, context) {
-        _classCallCheck(this, FalcorContainer);
+        (0, _classCallCheck3.default)(this, FalcorContainer);
 
-        var _this3 = _possibleConstructorReturn(this, (FalcorContainer.__proto__ || (0, _getPrototypeOf2.default)(FalcorContainer)).call(this, props, context));
+        var _this3 = (0, _possibleConstructorReturn3.default)(this, (FalcorContainer.__proto__ || (0, _getPrototypeOf2.default)(FalcorContainer)).call(this, props, context));
 
-        var data = props.data;
-        var falcor = context.falcor,
-            dispatch = context.dispatch;
         var _this3$constructor = _this3.constructor,
             fragment = _this3$constructor.fragment,
             Component = _this3$constructor.Component,
@@ -260,25 +250,17 @@ var FalcorContainer = function (_React$Component) {
         _this3.fragment = fragment;
         _this3.Component = Component;
         _this3.mapFragment = mapFragment;
+        _this3.propsStream = new _Subject.Subject();
         _this3.renderErrors = renderErrors;
         _this3.renderLoading = renderLoading;
         _this3.dispatchers = mapDispatch(_this3);
+        _this3.state = { hash: '', version: 0 };
         _this3.mapFragmentAndProps = mapFragmentAndProps;
-
-        falcor = falcor.deref(data = (0, _mapToFalcorJSON2.default)(data));
-
-        _this3.state = {
-            hash: data.$__hash,
-            data: data, falcor: falcor, dispatch: dispatch,
-            version: falcor.getVersion()
-        };
-
-        _this3.propsStream = new _Subject.Subject();
-        _this3.propsAction = _this3.propsStream.map(derefEachPropUpdate).switchMap(fetchEachPropUpdate, mergeEachPropUpdate);
+        _this3.propsAction = _this3.propsStream.switchMap(fetchEachPropUpdate, mergeEachPropUpdate);
         return _this3;
     }
 
-    _createClass(FalcorContainer, [{
+    (0, _createClass3.default)(FalcorContainer, [{
         key: 'getChildContext',
         value: function getChildContext() {
             var _state = this.state,
@@ -309,12 +291,12 @@ var FalcorContainer = function (_React$Component) {
             var currData = currProps.data,
                 _currProps$style = currProps.style,
                 currStyle = _currProps$style === undefined ? {} : _currProps$style,
-                restCurrProps = _objectWithoutProperties(currProps, ['data', 'style']);
-
+                restCurrProps = (0, _objectWithoutProperties3.default)(currProps, ['data', 'style']);
             var nextData = nextProps.data,
                 _nextProps$style = nextProps.style,
                 nextStyle = _nextProps$style === undefined ? currStyle : _nextProps$style,
-                restNextProps = _objectWithoutProperties(nextProps, ['data', 'style']);
+                restNextProps = (0, _objectWithoutProperties3.default)(nextProps, ['data', 'style']);
+
 
             if (!(0, _shallowEqual2.default)(currData, nextData)) {
                 return true;
@@ -331,11 +313,13 @@ var FalcorContainer = function (_React$Component) {
         value: function componentWillReceiveProps(nextProps, nextContext) {
             // Receive new props from the owner
             this.propsStream.next({
-                container: this,
-                props: nextProps,
+                loading: false,
                 data: nextProps.data,
+                fragment: this.fragment,
                 falcor: nextContext.falcor,
-                dispatch: nextContext.dispatch
+                dispatch: nextContext.dispatch,
+                renderLoading: this.renderLoading,
+                props: (0, _extends3.default)({}, nextProps, { data: undefined })
             });
         }
     }, {
@@ -348,27 +332,34 @@ var FalcorContainer = function (_React$Component) {
                 _this4.setState(nextState);
             });
             this.propsStream.next({
-                container: this,
-                props: this.props,
+                loading: false,
                 data: this.props.data,
+                fragment: this.fragment,
                 falcor: this.context.falcor,
-                dispatch: this.context.dispatch
+                dispatch: this.context.dispatch,
+                renderLoading: this.renderLoading,
+                props: (0, _extends3.default)({}, this.props, { data: undefined })
             });
         }
         // componentWillUpdate() {
+        //     if (!global['__trace_container_updates__']) {
+        //         return;
+        //     }
         //     const { state = {} } = this;
         //     const { falcor } = state;
         //     if (falcor) {
-        //         const pathString = falcor.getPath().reduce((xs, key, idx) => {
-        //             if (idx === 0) {
-        //                 return key;
-        //             } else if (typeof key === 'number') {
-        //                 return `${xs}[${key}]`;
-        //             }
-        //             return `${xs}['${key}']`;
-        //         }, '');
-        //         console.log(`cwu:`, pathString);
+        //         console.log(`cwu:`, this.getFalcorPathString());
         //     }
+        // }
+        // getFalcorPathString() {
+        //     return this.state && this.state.falcor && this.state.falcor.getPath().reduce((xs, key, idx) => {
+        //         if (idx === 0) {
+        //             return key;
+        //         } else if (typeofNumber === typeof key) {
+        //             return `${xs}[${key}]`;
+        //         }
+        //         return `${xs}['${key}']`;
+        //     }, '') || '';
         // }
 
     }, {
@@ -400,20 +391,14 @@ var FalcorContainer = function (_React$Component) {
                 return null;
             }
 
-            var _props2 = this.props,
-                outerData = _props2.data,
-                props = _objectWithoutProperties(_props2, ['data']);
-
             var _state3 = this.state,
                 data = _state3.data,
-                error = _state3.error,
-                loading = _state3.loading,
+                props = _state3.props,
                 falcor = _state3.falcor,
-                dispatch = _state3.dispatch;
+                error = _state3.error,
+                loading = _state3.loading;
 
-
-            var mappedFragment = mapFragment(data, props);
-
+            var mappedFragment = data ? mapFragment(data, props) : new _falcor.FalcorJSON();
             var allMergedProps = mapFragmentAndProps(mappedFragment, dispatchers, props);
 
             if (error && renderErrors === true) {
@@ -427,7 +412,6 @@ var FalcorContainer = function (_React$Component) {
             return _react2.default.createElement(Component, allMergedProps);
         }
     }]);
-
     return FalcorContainer;
 }(_react2.default.Component);
 

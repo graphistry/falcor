@@ -1,4 +1,4 @@
-var EXPIRES_NEVER = require("./../values/expires-never");
+var EXPIRES_NEVER = require('./../values/expires-never');
 
 // [H] -> Next -> ... -> [T]
 // [T] -> Prev -> ... -> [H]
@@ -8,11 +8,11 @@ module.exports = function lruPromote(root, object) {
         return;
     }
 
-    var head = root[ƒ_head];
+    var head = root[f_head];
 
     // Nothing is in the cache.
     if (!head) {
-        root[ƒ_head] = root[ƒ_tail] = object;
+        root[f_head] = root[f_tail] = object;
         return;
     }
 
@@ -22,23 +22,23 @@ module.exports = function lruPromote(root, object) {
 
     // The item always exist in the cache since to get anything in the
     // cache it first must go through set.
-    var prev = object[ƒ_prev];
-    var next = object[ƒ_next];
+    var prev = object[f_prev];
+    var next = object[f_next];
     if (next) {
-        next[ƒ_prev] = prev;
+        next[f_prev] = prev;
     }
     if (prev) {
-        prev[ƒ_next] = next;
+        prev[f_next] = next;
     }
-    object[ƒ_prev] = undefined;
+    object[f_prev] = undefined;
 
     // Insert into head position
-    root[ƒ_head] = object;
-    object[ƒ_next] = head;
-    head[ƒ_prev] = object;
+    root[f_head] = object;
+    object[f_next] = head;
+    head[f_prev] = object;
 
     // If the item we promoted was the tail, then set prev to tail.
-    if (object === root[ƒ_tail]) {
-        root[ƒ_tail] = prev;
+    if (object === root[f_tail]) {
+        root[f_tail] = prev;
     }
 };

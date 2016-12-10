@@ -40,15 +40,18 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var PostMessageDataSink = exports.PostMessageDataSink = function (_FalcorPubSubDataSink) {
     _inherits(PostMessageDataSink, _FalcorPubSubDataSink);
 
-    function PostMessageDataSink(dataSource) {
+    function PostMessageDataSink(getDataSource) {
+        var source = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : window;
+        var event = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'falcor-operation';
+        var cancel = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'cancel-falcor-operation';
+
         _classCallCheck(this, PostMessageDataSink);
 
-        var _this = _possibleConstructorReturn(this, (PostMessageDataSink.__proto__ || (0, _getPrototypeOf2.default)(PostMessageDataSink)).call(this, null, function () {
-            return dataSource;
-        }));
+        var _this = _possibleConstructorReturn(this, (PostMessageDataSink.__proto__ || (0, _getPrototypeOf2.default)(PostMessageDataSink)).call(this, null, getDataSource, event, cancel));
 
+        _this.source = source;
         _this.onPostMessage = _this.onPostMessage.bind(_this);
-        window.addEventListener('message', _this.onPostMessage);
+        source.addEventListener('message', _this.onPostMessage);
         return _this;
     }
 
@@ -62,15 +65,41 @@ var PostMessageDataSink = exports.PostMessageDataSink = function (_FalcorPubSubD
             var type = data.type,
                 rest = _objectWithoutProperties(data, ['type']);
 
-            if (type !== 'falcor-operation') {
+            if (type !== this.event) {
                 return;
             }
-            this.response(rest, new _PostMessageEmitter.PostMessageEmitter(window, event.source || parent, true));
+            var emitter = new _PostMessageEmitter.PostMessageEmitter(this.source, event.source || parent, this.event, this.cancel);
+            this.response(rest, {
+                on: function on() {
+                    return emitter.on.apply(emitter, arguments);
+                },
+                removeListener: function removeListener() {
+                    return emitter.removeListener.apply(emitter, arguments);
+                },
+                emit: function emit(eventName, data) {
+                    var _ref = data || {},
+                        kind = _ref.kind;
+
+                    var retVal = emitter.emit(eventName, data);
+                    if (kind === 'E' || kind === 'C') {
+                        emitter.dispose();
+                    }
+                    return retVal;
+                }
+            });
+        }
+    }, {
+        key: 'dispose',
+        value: function dispose() {
+            this.unsubscribe();
         }
     }, {
         key: 'unsubscribe',
         value: function unsubscribe() {
-            window.removeEventListener('message', this.onPostMessage);
+            var source = this.source;
+
+            this.source = null;
+            source && source.removeEventListener('message', this.onPostMessage);
         }
     }]);
 

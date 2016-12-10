@@ -1,4 +1,4 @@
-var falcor = require("./../../../lib/");
+var falcor = require('./../../../falcor.js');
 var Model = falcor.Model;
 var noOp = function() {};
 var expect = require('chai').expect;
@@ -11,13 +11,13 @@ var jsonGraph = require('@graphistry/falcor-json-graph');
 
 describe('Cache Only', function() {
     describe('toJSON', function() {
-        it('should set a value from falcor.', function(done) {
+        it('should set a value into the cache.', function(done) {
             var model = new Model({
                 cache: cacheGenerator(0, 1)
             });
             var onNext = sinon.spy();
             toObservable(model.
-                set({path: ['videos', 0, 'title'], value: 'V0'})).
+                set({ path: ['videos', 0, 'title'], value: 'V0' })).
                 doAction(onNext, noOp, function() {
                     expect(onNext.calledOnce).to.be.ok;
                     expect(strip(onNext.getCall(0).args[0])).to.deep.equals({
@@ -167,6 +167,7 @@ describe('Cache Only', function() {
                         expect(errorSelectorSpy.callCount).to.equal(1);
                         expect(errorSelectorSpy.getCall(0).args[0]).to.deep.equals(testPath);
 
+                        expect(onNextSpy.callCount).to.equal(0);
                         expect(onErrorSpy.callCount).to.equal(1);
 
                         expect(e.length).to.equal(1);
@@ -174,11 +175,7 @@ describe('Cache Only', function() {
 
                         done();
                     },
-                    function() {
-                        expect(onNextSpy.callCount).to.equal(0);
-                        expect(onErrorSpy.callCount).to.equal(1);
-                        done();
-                    });
+                    function() { done('onError should have been called, not onCompleted.'); });
         });
 
         it('should get invoked with the correct error paths for a keyset', function(done) {

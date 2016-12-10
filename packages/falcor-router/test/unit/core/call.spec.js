@@ -29,8 +29,7 @@ describe('Call', function() {
             do(onNext, noOp, function() {
                 expect(onNext.calledOnce, 'onNext called once').to.be.ok;
                 expect(onNext.getCall(0).args[0]).to.deep.equals({
-                    jsonGraph: {},
-                    paths: []
+                    jsonGraph: {}
                 });
             }).
             subscribe(noOp, done, done);
@@ -50,8 +49,7 @@ describe('Call', function() {
             do(onNext, noOp, function() {
                 expect(onNext.calledOnce, 'onNext called once').to.be.ok;
                 expect(onNext.getCall(0).args[0]).to.deep.equals({
-                    jsonGraph: {},
-                    paths: []
+                    jsonGraph: {}
                 });
             }).
             subscribe(noOp, done, done);
@@ -145,6 +143,50 @@ describe('Call', function() {
             });
     });
 
+    it('should return references when no suffixes are specified.', function(done) {
+        var router = new R([{
+            route: 'genrelist[{integers:indices}].titles.push',
+            call: function(callPath, args) {
+                return callPath.indices.reduce(function(acc, genreIndex) {
+                    return acc.concat(
+                        args.map(function(title, titleIndex) {
+                            return {
+                                value: $ref(['videos', titleIndex]),
+                                path: ['genrelist', genreIndex, 'titles', titleIndex]
+                            };
+                        }),
+                        {
+                            value: args.length,
+                            path: ['genrelist', genreIndex, 'titles', 'length']
+                        }
+                    );
+                }, []);
+            }
+        }]);
+
+        var onNext = sinon.spy();
+        router.
+            call(['genrelist', 0, 'titles', 'push'], ['title 1', 'title 2']).
+            do(onNext, noOp, function() {
+                expect(onNext.calledOnce).to.be.ok;
+                expect(onNext.getCall(0).args[0]).to.deep.equals({
+                    paths: [['genrelist', 0, 'titles', [0, 1, 'length']]],
+                    jsonGraph: {
+                        genrelist: {
+                            0: {
+                                titles: {
+                                    length: 2,
+                                    0: $ref(['videos', 0]),
+                                    1: $ref(['videos', 1])
+                                }
+                            }
+                        }
+                    },
+                });
+            }).
+            subscribe(noOp, done, done);
+    });
+
     it('should return invalidations.', function(done) {
         var router = new R([{
             route: 'genrelist[{integers:indices}].titles.remove',
@@ -172,17 +214,7 @@ describe('Call', function() {
             do(onNext, noOp, function() {
                 expect(onNext.calledOnce).to.be.ok;
                 expect(onNext.getCall(0).args[0]).to.deep.equals({
-                    "invalidated": [
-                        [
-                            "genrelist",
-                            0,
-                            "titles",
-                            {
-                                "from": 2,
-                                "to": 2
-                            }
-                        ]
-                    ],
+                    "invalidated": [["genrelist", 0, "titles", '2']],
                     "jsonGraph": {
                         "genrelist": {
                             "0": {
@@ -192,18 +224,10 @@ describe('Call', function() {
                             }
                         }
                     },
-                    "paths": [
-                        [
-                            "genrelist",
-                            0,
-                            "titles",
-                            "length"
-                        ]
-                    ]
+                    "paths": [["genrelist", 0, "titles", "length"]]
                 });
             }).
             subscribe(noOp, done, done);
-
     });
 
     it('should onError when a Promise.reject of Error is returned from call.', function(done) {
@@ -305,11 +329,11 @@ describe('Call', function() {
         getRouter(true, true).
             call(['videos', 1234, 'rating'], [5]).
             do(function() {
-                throw new Error('Should not be called.  onNext');
+                throw new Error('onNext should not be called.');
             }, function(x) {
                 expect(x.message).to.equal('Oops?');
             }, function() {
-                throw new Error('Should not be called.  onCompleted');
+                throw new Error('onCompleted should not be called.');
             }).
             subscribe(noOp, function(e) {
                 if (e.message === 'Oops?') {
@@ -332,7 +356,6 @@ describe('Call', function() {
                 errorOnCompleted(done)
             );
     });
-
 
     it('should return paths in jsonGraphEnvelope if array of pathValues is returned from promise.', function(done) {
         var onNext = sinon.spy();
@@ -382,8 +405,6 @@ describe('Call', function() {
             }).
             subscribe(noOp, done, done);
     });
-
-
 
     it('should perform a simple call.', function(done) {
         var onNext = sinon.spy();

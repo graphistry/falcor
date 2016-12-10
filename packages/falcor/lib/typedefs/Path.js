@@ -3,5 +3,5 @@
  * @typedef {Array.<Key>} Path
  * @example
  // Points to the name of product 1234
- ["productsById", "1234", "name"]
+ ['productsById', '1234', 'name']
  */

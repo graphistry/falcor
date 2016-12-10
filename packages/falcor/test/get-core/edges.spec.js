@@ -7,7 +7,7 @@ var ref = jsonGraph.ref;
 var $ref = require('./../../lib/types/ref');
 var $atom = require('./../../lib/types/atom');
 var _ = require('lodash');
-var Model = require('./../../lib').Model;
+var Model = require('./../../falcor.js').Model;
 
 describe('Edges', function() {
     // PathMap ----------------------------------------
@@ -106,26 +106,26 @@ describe('Edges', function() {
             input: [['videos', 1234, 'title']],
             output: {
                 json: {
-                    [ƒ_meta]: {
-                        [ƒm_abs_path]:    undefined,
-                        [ƒm_deref_from]:  undefined,
-                        [ƒm_deref_to]:    undefined,
-                        [ƒm_version]:     0
+                    [f_meta_data]: {
+                        [f_meta_abs_path]:    undefined,
+                        [f_meta_deref_from]:  undefined,
+                        [f_meta_deref_to]:    undefined,
+                        [f_meta_version]:     0
 
                     },
                     videos: {
-                        [ƒ_meta]: {
-                            [ƒm_abs_path]:    ['videos'],
-                            [ƒm_deref_from]:  undefined,
-                            [ƒm_deref_to]:    undefined,
-                            [ƒm_version]:     0
+                        [f_meta_data]: {
+                            [f_meta_abs_path]:    ['videos'],
+                            [f_meta_deref_from]:  undefined,
+                            [f_meta_deref_to]:    undefined,
+                            [f_meta_version]:     0
                         },
                         1234: {
-                            [ƒ_meta]: {
-                                [ƒm_abs_path]:    ['videos', 1234],
-                                [ƒm_deref_from]:  undefined,
-                                [ƒm_deref_to]:    undefined,
-                                [ƒm_version]:     0
+                            [f_meta_data]: {
+                                [f_meta_abs_path]:    ['videos', 1234],
+                                [f_meta_deref_from]:  undefined,
+                                [f_meta_deref_to]:    undefined,
+                                [f_meta_version]:     0
                             },
                             title: 'Running Man'
                         }

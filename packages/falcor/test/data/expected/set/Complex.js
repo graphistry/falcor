@@ -4,8 +4,8 @@ module.exports = function() {
             setPathValues: {
                 count: 2,
                 query: [{
-                    "path": ["v", {to:1}, "s"],
-                    "value": "Arnold"
+                    'path': ['v', {to:1}, 's'],
+                    'value': 'Arnold'
                 }]
             },
             setPathMaps: {
@@ -14,10 +14,10 @@ module.exports = function() {
                     json: {
                         v: {
                             0: {
-                                s: "Arnold"
+                                s: 'Arnold'
                             },
                             1: {
-                                s: "Arnold"
+                                s: 'Arnold'
                             }
                         }
                     }
@@ -29,43 +29,43 @@ module.exports = function() {
                     jsonGraph: {
                         v: {
                             0: {
-                                s: "Arnold"
+                                s: 'Arnold'
                             },
                             1: {
-                                s: "Arnold"
+                                s: 'Arnold'
                             }
                         }
                     },
                     paths: [
-                        ["v", {to:1}, "s"]
+                        ['v', {to:1}, 's']
                     ]
                 }]
             },
 
             optimizedPaths: [
-                ["v", 0, "s"],
-                ["v", 1, "s"]
+                ['v', 0, 's'],
+                ['v', 1, 's']
             ],
             requestedPaths: [
-                ["v", 0, "s"],
-                ["v", 1, "s"]
+                ['v', 0, 's'],
+                ['v', 1, 's']
             ],
 
             AsValues: {
                 values: [{
-                    "path": ["v", 0, "s"],
-                    "value": "Arnold"
+                    'path': ['v', 0, 's'],
+                    'value': 'Arnold'
                 }, {
-                    "path": ["v", 1, "s"],
-                    "value": "Arnold"
+                    'path': ['v', 1, 's'],
+                    'value': 'Arnold'
                 }]
             },
 
             AsJSON: {
                 values: [{
                     json: {
-                        0: "Arnold",
-                        1: "Arnold"
+                        0: 'Arnold',
+                        1: 'Arnold'
                     }
                 }]
             },
@@ -73,18 +73,18 @@ module.exports = function() {
             AsJSONG: {
                 values: [{
                     jsonGraph: {
-                        "v": {
-                            "0": {
-                                "s": "Arnold"
+                        'v': {
+                            '0': {
+                                's': 'Arnold'
                             },
-                            "1": {
-                                "s": "Arnold"
+                            '1': {
+                                's': 'Arnold'
                             }
                         }
                     },
-                    "paths": [
-                        ["v", 0, "s"],
-                        ["v", 1, "s"]
+                    'paths': [
+                        ['v', 0, 's'],
+                        ['v', 1, 's']
                     ]
                 }]
             },
@@ -92,12 +92,12 @@ module.exports = function() {
             AsPathMap: {
                 values: [{
                     json: {
-                        "v": {
-                            "0": {
-                                "s": "Arnold"
+                        'v': {
+                            '0': {
+                                's': 'Arnold'
                             },
-                            "1": {
-                                "s": "Arnold"
+                            '1': {
+                                's': 'Arnold'
                             }
                         }
                     }
@@ -107,28 +107,28 @@ module.exports = function() {
         fromOnly: {
             setPathValues: {
                 query: [{
-                    "path": ["v", {from:0}, "s"],
-                    "value": "Arnold"
+                    'path': ['v', {from:0}, 's'],
+                    'value': 'Arnold'
                 }]
             },
             optimizedPaths: [
-                ["v", 0, "s"]
+                ['v', 0, 's']
             ],
             requestedPaths: [
-                ["v", 0, "s"]
+                ['v', 0, 's']
             ],
 
             AsValues: {
                 values: [{
-                    "path": ["v", 0, "s"],
-                    "value": "Arnold"
+                    'path': ['v', 0, 's'],
+                    'value': 'Arnold'
                 }]
             },
 
             AsJSON: {
                 values: [{
                     json: {
-                        0: "Arnold"
+                        0: 'Arnold'
                     }
                 }]
             },
@@ -136,14 +136,14 @@ module.exports = function() {
             AsJSONG: {
                 values: [{
                     jsonGraph: {
-                        "v": {
-                            "0": {
-                                "s": "Arnold"
+                        'v': {
+                            '0': {
+                                's': 'Arnold'
                             }
                         }
                     },
-                    "paths": [
-                        ["v", 0, "s"]
+                    'paths': [
+                        ['v', 0, 's']
                     ]
                 }]
             },
@@ -151,9 +151,9 @@ module.exports = function() {
             AsPathMap: {
                 values: [{
                     json: {
-                        "v": {
-                            "0": {
-                                "s": "Arnold"
+                        'v': {
+                            '0': {
+                                's': 'Arnold'
                             }
                         }
                     }
@@ -164,41 +164,41 @@ module.exports = function() {
             setPathValues: {
                 count: 3,
                 query: [{
-                    "path": ["v", {from:-1, to:1}, "s"],
-                    "value": "Arnold"
+                    'path': ['v', {from:-1, to:1}, 's'],
+                    'value': 'Arnold'
                 }]
             },
 
             optimizedPaths: [
-                ["v", -1, "s"],
-                ["v", 0, "s"],
-                ["v", 1, "s"]
+                ['v', -1, 's'],
+                ['v', 0, 's'],
+                ['v', 1, 's']
             ],
             requestedPaths: [
-                ["v", -1, "s"],
-                ["v", 0, "s"],
-                ["v", 1, "s"]
+                ['v', -1, 's'],
+                ['v', 0, 's'],
+                ['v', 1, 's']
             ],
 
             AsValues: {
                 values: [{
-                    "path": ["v", -1, "s"],
-                    "value": "Arnold"
+                    'path': ['v', -1, 's'],
+                    'value': 'Arnold'
                 }, {
-                    "path": ["v", 0, "s"],
-                    "value": "Arnold"
+                    'path': ['v', 0, 's'],
+                    'value': 'Arnold'
                 }, {
-                    "path": ["v", 1, "s"],
-                    "value": "Arnold"
+                    'path': ['v', 1, 's'],
+                    'value': 'Arnold'
                 }]
             },
 
             AsJSON: {
                 values: [{
                     json: {
-                        "-1": "Arnold",
-                        0: "Arnold",
-                        1: "Arnold"
+                        '-1': 'Arnold',
+                        0: 'Arnold',
+                        1: 'Arnold'
                     }
                 }]
             },
@@ -206,22 +206,22 @@ module.exports = function() {
             AsJSONG: {
                 values: [{
                     jsonGraph: {
-                        "v": {
-                            "-1": {
-                                "s": "Arnold"
+                        'v': {
+                            '-1': {
+                                's': 'Arnold'
                             },
-                            "0": {
-                                "s": "Arnold"
+                            '0': {
+                                's': 'Arnold'
                             },
-                            "1": {
-                                "s": "Arnold"
+                            '1': {
+                                's': 'Arnold'
                             }
                         }
                     },
-                    "paths": [
-                        ["v", -1, "s"],
-                        ["v", 0, "s"],
-                        ["v", 1, "s"]
+                    'paths': [
+                        ['v', -1, 's'],
+                        ['v', 0, 's'],
+                        ['v', 1, 's']
                     ]
                 }]
             },
@@ -229,15 +229,15 @@ module.exports = function() {
             AsPathMap: {
                 values: [{
                     json: {
-                        "v": {
-                            "-1": {
-                                "s": "Arnold"
+                        'v': {
+                            '-1': {
+                                's': 'Arnold'
                             },
-                            "0": {
-                                "s": "Arnold"
+                            '0': {
+                                's': 'Arnold'
                             },
-                            "1": {
-                                "s": "Arnold"
+                            '1': {
+                                's': 'Arnold'
                             }
                         }
                     }
@@ -247,41 +247,41 @@ module.exports = function() {
         fromAndLength: {
             setPathValues: {
                 query: [{
-                    "path": ["v", {from:-1, length:3}, "s"],
-                    "value": "Arnold"
+                    'path': ['v', {from:-1, length:3}, 's'],
+                    'value': 'Arnold'
                 }]
             },
 
             optimizedPaths: [
-                ["v", -1, "s"],
-                ["v", 0, "s"],
-                ["v", 1, "s"]
+                ['v', -1, 's'],
+                ['v', 0, 's'],
+                ['v', 1, 's']
             ],
             requestedPaths: [
-                ["v", -1, "s"],
-                ["v", 0, "s"],
-                ["v", 1, "s"]
+                ['v', -1, 's'],
+                ['v', 0, 's'],
+                ['v', 1, 's']
             ],
 
             AsValues: {
                 values: [{
-                    "path": ["v", -1, "s"],
-                    "value": "Arnold"
+                    'path': ['v', -1, 's'],
+                    'value': 'Arnold'
                 }, {
-                    "path": ["v", 0, "s"],
-                    "value": "Arnold"
+                    'path': ['v', 0, 's'],
+                    'value': 'Arnold'
                 }, {
-                    "path": ["v", 1, "s"],
-                    "value": "Arnold"
+                    'path': ['v', 1, 's'],
+                    'value': 'Arnold'
                 }]
             },
 
             AsJSON: {
                 values: [{
                     json: {
-                        "-1": "Arnold",
-                        0: "Arnold",
-                        1: "Arnold"
+                        '-1': 'Arnold',
+                        0: 'Arnold',
+                        1: 'Arnold'
                     }
                 }]
             },
@@ -289,22 +289,22 @@ module.exports = function() {
             AsJSONG: {
                 values: [{
                     jsonGraph: {
-                        "v": {
-                            "-1": {
-                                "s": "Arnold"
+                        'v': {
+                            '-1': {
+                                's': 'Arnold'
                             },
-                            "0": {
-                                "s": "Arnold"
+                            '0': {
+                                's': 'Arnold'
                             },
-                            "1": {
-                                "s": "Arnold"
+                            '1': {
+                                's': 'Arnold'
                             }
                         }
                     },
-                    "paths": [
-                        ["v", -1, "s"],
-                        ["v", 0, "s"],
-                        ["v", 1, "s"]
+                    'paths': [
+                        ['v', -1, 's'],
+                        ['v', 0, 's'],
+                        ['v', 1, 's']
                     ]
                 }]
             },
@@ -312,15 +312,15 @@ module.exports = function() {
             AsPathMap: {
                 values: [{
                     json: {
-                        "v": {
-                            "-1": {
-                                "s": "Arnold"
+                        'v': {
+                            '-1': {
+                                's': 'Arnold'
                             },
-                            "0": {
-                                "s": "Arnold"
+                            '0': {
+                                's': 'Arnold'
                             },
-                            "1": {
-                                "s": "Arnold"
+                            '1': {
+                                's': 'Arnold'
                             }
                         }
                     }
@@ -331,8 +331,8 @@ module.exports = function() {
             setPathValues: {
                 count: 2,
                 query: [{
-                    "path": ["v", {to:1}],
-                    "value": "Arnold"
+                    'path': ['v', {to:1}],
+                    'value': 'Arnold'
                 }]
             },
             setPathMaps: {
@@ -340,8 +340,8 @@ module.exports = function() {
                 query: [{
                     json: {
                         v: {
-                            0: "Arnold",
-                            1: "Arnold"
+                            0: 'Arnold',
+                            1: 'Arnold'
                         }
                     }
                 }]
@@ -351,40 +351,40 @@ module.exports = function() {
                 query: [{
                     jsonGraph: {
                         v: {
-                            0: "Arnold",
-                            1: "Arnold"
+                            0: 'Arnold',
+                            1: 'Arnold'
                         }
                     },
                     paths: [
-                        ["v", {to:1}]
+                        ['v', {to:1}]
                     ]
                 }]
             },
 
             optimizedPaths: [
-                ["v", 0],
-                ["v", 1]
+                ['v', 0],
+                ['v', 1]
             ],
             requestedPaths: [
-                ["v", 0],
-                ["v", 1]
+                ['v', 0],
+                ['v', 1]
             ],
 
             AsValues: {
                 values: [{
-                    "path": ["v", 0],
-                    "value": "Arnold"
+                    'path': ['v', 0],
+                    'value': 'Arnold'
                 }, {
-                    "path": ["v", 1],
-                    "value": "Arnold"
+                    'path': ['v', 1],
+                    'value': 'Arnold'
                 }]
             },
 
             AsJSON: {
                 values: [{
                     json: {
-                        0: "Arnold",
-                        1: "Arnold"
+                        0: 'Arnold',
+                        1: 'Arnold'
                     }
                 }]
             },
@@ -392,14 +392,14 @@ module.exports = function() {
             AsJSONG: {
                 values: [{
                     jsonGraph: {
-                        "v": {
-                            "0": "Arnold",
-                            "1": "Arnold"
+                        'v': {
+                            '0': 'Arnold',
+                            '1': 'Arnold'
                         }
                     },
-                    "paths": [
-                        ["v", 0],
-                        ["v", 1]
+                    'paths': [
+                        ['v', 0],
+                        ['v', 1]
                     ]
                 }]
             },
@@ -407,9 +407,9 @@ module.exports = function() {
             AsPathMap: {
                 values: [{
                     json: {
-                        "v": {
-                            "0": "Arnold",
-                            "1": "Arnold"
+                        'v': {
+                            '0': 'Arnold',
+                            '1': 'Arnold'
                         }
                     }
                 }]
@@ -418,28 +418,28 @@ module.exports = function() {
         fromOnlyLeaf: {
             setPathValues: {
                 query: [{
-                    "path": ["v", {from:0}],
-                    "value": "Arnold"
+                    'path': ['v', {from:0}],
+                    'value': 'Arnold'
                 }]
             },
             optimizedPaths: [
-                ["v", 0]
+                ['v', 0]
             ],
             requestedPaths: [
-                ["v", 0]
+                ['v', 0]
             ],
 
             AsValues: {
                 values: [{
-                    "path": ["v", 0],
-                    "value": "Arnold"
+                    'path': ['v', 0],
+                    'value': 'Arnold'
                 }]
             },
 
             AsJSON: {
                 values: [{
                     json: {
-                        0: "Arnold"
+                        0: 'Arnold'
                     }
                 }]
             },
@@ -447,12 +447,12 @@ module.exports = function() {
             AsJSONG: {
                 values: [{
                     jsonGraph: {
-                        "v": {
-                            "0": "Arnold"
+                        'v': {
+                            '0': 'Arnold'
                         }
                     },
-                    "paths": [
-                        ["v", 0]
+                    'paths': [
+                        ['v', 0]
                     ]
                 }]
             },
@@ -460,8 +460,8 @@ module.exports = function() {
             AsPathMap: {
                 values: [{
                     json: {
-                        "v": {
-                            "0": "Arnold"
+                        'v': {
+                            '0': 'Arnold'
                         }
                     }
                 }]
@@ -471,41 +471,41 @@ module.exports = function() {
             setPathValues: {
                 count: 3,
                 query: [{
-                    "path": ["v", {from:-1, to:1}],
-                    "value": "Arnold"
+                    'path': ['v', {from:-1, to:1}],
+                    'value': 'Arnold'
                 }]
             },
 
             optimizedPaths: [
-                ["v", -1],
-                ["v", 0],
-                ["v", 1]
+                ['v', -1],
+                ['v', 0],
+                ['v', 1]
             ],
             requestedPaths: [
-                ["v", -1],
-                ["v", 0],
-                ["v", 1]
+                ['v', -1],
+                ['v', 0],
+                ['v', 1]
             ],
 
             AsValues: {
                 values: [{
-                    "path": ["v", -1],
-                    "value": "Arnold"
+                    'path': ['v', -1],
+                    'value': 'Arnold'
                 }, {
-                    "path": ["v", 0],
-                    "value": "Arnold"
+                    'path': ['v', 0],
+                    'value': 'Arnold'
                 }, {
-                    "path": ["v", 1],
-                    "value": "Arnold"
+                    'path': ['v', 1],
+                    'value': 'Arnold'
                 }]
             },
 
             AsJSON: {
                 values: [{
                     json: {
-                        "-1": "Arnold",
-                        0: "Arnold",
-                        1: "Arnold"
+                        '-1': 'Arnold',
+                        0: 'Arnold',
+                        1: 'Arnold'
                     }
                 }]
             },
@@ -513,16 +513,16 @@ module.exports = function() {
             AsJSONG: {
                 values: [{
                     jsonGraph: {
-                        "v": {
-                            "-1": "Arnold",
-                            "0": "Arnold",
-                            "1": "Arnold"
+                        'v': {
+                            '-1': 'Arnold',
+                            '0': 'Arnold',
+                            '1': 'Arnold'
                         }
                     },
-                    "paths": [
-                        ["v", -1],
-                        ["v", 0],
-                        ["v", 1]
+                    'paths': [
+                        ['v', -1],
+                        ['v', 0],
+                        ['v', 1]
                     ]
                 }]
             },
@@ -530,10 +530,10 @@ module.exports = function() {
             AsPathMap: {
                 values: [{
                     json: {
-                        "v": {
-                            "-1": "Arnold",
-                            "0": "Arnold",
-                            "1": "Arnold"
+                        'v': {
+                            '-1': 'Arnold',
+                            '0': 'Arnold',
+                            '1': 'Arnold'
                         }
                     }
                 }]
@@ -542,41 +542,41 @@ module.exports = function() {
         fromAndLengthLeaf: {
             setPathValues: {
                 query: [{
-                    "path": ["v", {from:-1, length:3}],
-                    "value": "Arnold"
+                    'path': ['v', {from:-1, length:3}],
+                    'value': 'Arnold'
                 }]
             },
 
             optimizedPaths: [
-                ["v", -1],
-                ["v", 0],
-                ["v", 1]
+                ['v', -1],
+                ['v', 0],
+                ['v', 1]
             ],
             requestedPaths: [
-                ["v", -1],
-                ["v", 0],
-                ["v", 1]
+                ['v', -1],
+                ['v', 0],
+                ['v', 1]
             ],
 
             AsValues: {
                 values: [{
-                    "path": ["v", -1],
-                    "value": "Arnold"
+                    'path': ['v', -1],
+                    'value': 'Arnold'
                 }, {
-                    "path": ["v", 0],
-                    "value": "Arnold"
+                    'path': ['v', 0],
+                    'value': 'Arnold'
                 }, {
-                    "path": ["v", 1],
-                    "value": "Arnold"
+                    'path': ['v', 1],
+                    'value': 'Arnold'
                 }]
             },
 
             AsJSON: {
                 values: [{
                     json: {
-                        "-1": "Arnold",
-                        0: "Arnold",
-                        1: "Arnold"
+                        '-1': 'Arnold',
+                        0: 'Arnold',
+                        1: 'Arnold'
                     }
                 }]
             },
@@ -584,16 +584,16 @@ module.exports = function() {
             AsJSONG: {
                 values: [{
                     jsonGraph: {
-                        "v": {
-                            "-1": "Arnold",
-                            "0": "Arnold",
-                            "1": "Arnold"
+                        'v': {
+                            '-1': 'Arnold',
+                            '0': 'Arnold',
+                            '1': 'Arnold'
                         }
                     },
-                    "paths": [
-                        ["v", -1],
-                        ["v", 0],
-                        ["v", 1]
+                    'paths': [
+                        ['v', -1],
+                        ['v', 0],
+                        ['v', 1]
                     ]
                 }]
             },
@@ -601,10 +601,10 @@ module.exports = function() {
             AsPathMap: {
                 values: [{
                     json: {
-                        "v": {
-                            "-1": "Arnold",
-                            "0": "Arnold",
-                            "1": "Arnold"
+                        'v': {
+                            '-1': 'Arnold',
+                            '0': 'Arnold',
+                            '1': 'Arnold'
                         }
                     }
                 }]

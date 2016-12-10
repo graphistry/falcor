@@ -1,4 +1,7 @@
-var empty = {dispose: function() {}};
+var empty = {
+    dispose: function() {},
+    unsubscribe: function() {}
+};
 
 function ImmediateScheduler() {}
 

@@ -2,7 +2,8 @@ var getCoreRunner = require('./../getCoreRunner');
 var cacheGenerator = require('./../CacheGenerator');
 var outputGenerator = require('./../outputGenerator');
 var jsonGraph = require('@graphistry/falcor-json-graph');
-var Model = require('./../../lib').Model;
+var Model = require('./../../falcor.js').Model;
+var FalcorJSON = require('./../../falcor.js').FalcorJSON;
 var atom = jsonGraph.atom;
 var ref = jsonGraph.ref;
 var _ = require('lodash');
@@ -27,41 +28,114 @@ describe('Values', function() {
             cache: cacheGenerator(0, 1)
         });
     });
-    it('should get a value of type atom when in materialized mode.', function() {
+    it('should get branches to undefined values in materialized mode.', function() {
         getCoreRunner({
-            input: [['videos', {to:1}, 'title']],
+            input: [['videos', {to:2}, 'title']],
             materialize: true,
             stripMetadata: false,
             output: {
                 json: {
-                    [ƒ_meta]: {
-                        [ƒm_abs_path]:    undefined,
-                        [ƒm_deref_from]:  undefined,
-                        [ƒm_deref_to]:    undefined,
-                        [ƒm_version]:     0
+                    [f_meta_data]: {
+                        [f_meta_abs_path]:    undefined,
+                        [f_meta_deref_from]:  undefined,
+                        [f_meta_deref_to]:    undefined,
+                        [f_meta_version]:     0
                     },
                     videos: {
-                        [ƒ_meta]: {
-                            [ƒm_abs_path]:    ['videos'],
-                            [ƒm_deref_from]:  undefined,
-                            [ƒm_deref_to]:    undefined,
-                            [ƒm_version]:     0
+                        [f_meta_data]: {
+                            [f_meta_abs_path]:    ['videos'],
+                            [f_meta_deref_from]:  undefined,
+                            [f_meta_deref_to]:    undefined,
+                            [f_meta_version]:     0
                         },
                         0: {
-                            [ƒ_meta]: {
-                                [ƒm_abs_path]:    ['videos', 0],
-                                [ƒm_deref_from]:  undefined,
-                                [ƒm_deref_to]:    undefined,
-                                [ƒm_version]:     0
+                            [f_meta_data]: {
+                                [f_meta_abs_path]:    ['videos', 0],
+                                [f_meta_deref_from]:  undefined,
+                                [f_meta_deref_to]:    undefined,
+                                [f_meta_version]:     0
+                            },
+                            title: undefined
+                        },
+                        1: {
+                            [f_meta_data]: {
+                                [f_meta_abs_path]:    ['videos', 1],
+                                [f_meta_deref_from]:  undefined,
+                                [f_meta_deref_to]:    undefined,
+                                [f_meta_version]:     0
+                            },
+                            title: undefined
+                        },
+                        2: {
+                            [f_meta_data]: {
+                                [f_meta_abs_path]:    ['videos', 2],
+                                [f_meta_version]:     0
+                            },
+                            title: undefined
+                        }
+                    }
+                }
+            },
+            cache: {
+                jsonGraph: {
+                    videos: {
+                        0: {
+                            title: {$type: 'atom'}
+                        },
+                        1: {
+                            title: {$type: 'atom'}
+                        }
+                    }
+                },
+                paths: [
+                    ['videos', {to: 1}, 'title']
+                ]
+            }
+        });
+    });
+    it('should get a value of type atom when in boxed and materialized mode.', function() {
+        getCoreRunner({
+            input: [['videos', {to:2}, 'title']],
+            boxValues: true,
+            materialize: true,
+            stripMetadata: false,
+            output: {
+                json: {
+                    [f_meta_data]: {
+                        [f_meta_abs_path]:    undefined,
+                        [f_meta_deref_from]:  undefined,
+                        [f_meta_deref_to]:    undefined,
+                        [f_meta_version]:     0
+                    },
+                    videos: {
+                        [f_meta_data]: {
+                            [f_meta_abs_path]:    ['videos'],
+                            [f_meta_deref_from]:  undefined,
+                            [f_meta_deref_to]:    undefined,
+                            [f_meta_version]:     0
+                        },
+                        0: {
+                            [f_meta_data]: {
+                                [f_meta_abs_path]:    ['videos', 0],
+                                [f_meta_deref_from]:  undefined,
+                                [f_meta_deref_to]:    undefined,
+                                [f_meta_version]:     0
                             },
                             title: {$type: 'atom'}
                         },
                         1: {
-                            [ƒ_meta]: {
-                                [ƒm_abs_path]:    ['videos', 1],
-                                [ƒm_deref_from]:  undefined,
-                                [ƒm_deref_to]:    undefined,
-                                [ƒm_version]:     0
+                            [f_meta_data]: {
+                                [f_meta_abs_path]:    ['videos', 1],
+                                [f_meta_deref_from]:  undefined,
+                                [f_meta_deref_to]:    undefined,
+                                [f_meta_version]:     0
+                            },
+                            title: {$type: 'atom'}
+                        },
+                        2: {
+                            [f_meta_data]: {
+                                [f_meta_abs_path]:    ['videos', 2],
+                                [f_meta_version]:     0
                             },
                             title: {$type: 'atom'}
                         }
@@ -115,26 +189,26 @@ describe('Values', function() {
             ],
             output: {
                 json: {
-                    [ƒ_meta]: {
-                        [ƒm_abs_path]:    undefined,
-                        [ƒm_deref_from]:  undefined,
-                        [ƒm_deref_to]:    undefined,
-                        [ƒm_version]:     0
+                    [f_meta_data]: {
+                        [f_meta_abs_path]:    undefined,
+                        [f_meta_deref_from]:  undefined,
+                        [f_meta_deref_to]:    undefined,
+                        [f_meta_version]:     0
                     },
                     lolomo: {
-                        [ƒ_meta]: {
-                            [ƒm_abs_path]:    ['lolomo'],
-                            [ƒm_deref_from]:  undefined,
-                            [ƒm_deref_to]:    undefined,
-                            [ƒm_version]:     0
+                        [f_meta_data]: {
+                            [f_meta_abs_path]:    ['lolomo'],
+                            [f_meta_deref_from]:  undefined,
+                            [f_meta_deref_to]:    undefined,
+                            [f_meta_version]:     0
                         },
                         length: 1,
                         0: {
-                            [ƒ_meta]: {
-                                [ƒm_abs_path]:    ['lolomo', '0'],
-                                [ƒm_deref_from]:  undefined,
-                                [ƒm_deref_to]:    undefined,
-                                [ƒm_version]:     0
+                            [f_meta_data]: {
+                                [f_meta_abs_path]:    ['lolomo', '0'],
+                                [f_meta_deref_from]:  undefined,
+                                [f_meta_deref_to]:    undefined,
+                                [f_meta_version]:     0
                             },
                             length: 1337
                         }
@@ -196,43 +270,43 @@ describe('Values', function() {
             cache: cacheGenerator(0, 2),
             stripMetadata: false,
 
-            // branchSelector = (metadata) => Object
-            branchSelector: function(meta) {
-                return { $__userGenerated: true };
+            // branchSelector = (json) => Object
+            branchSelector: function(json) {
+                return Object.assign({}, json, { $__userGenerated: true });
             },
             output: {
                 json: {
-                    [ƒ_meta]: {
-                        [ƒm_abs_path]:    undefined,
-                        [ƒm_deref_from]:  undefined,
-                        [ƒm_deref_to]:    undefined,
-                        [ƒm_version]:     0
+                    [f_meta_data]: {
+                        [f_meta_abs_path]:    undefined,
+                        [f_meta_deref_from]:  undefined,
+                        [f_meta_deref_to]:    undefined,
+                        [f_meta_version]:     0
                     },
                     $__userGenerated: true,
                     videos: {
-                        [ƒ_meta]: {
-                            [ƒm_abs_path]:    ['videos'],
-                            [ƒm_deref_from]:  undefined,
-                            [ƒm_deref_to]:    undefined,
-                            [ƒm_version]:     0
+                        [f_meta_data]: {
+                            [f_meta_abs_path]:    ['videos'],
+                            [f_meta_deref_from]:  undefined,
+                            [f_meta_deref_to]:    undefined,
+                            [f_meta_version]:     0
                         },
                         $__userGenerated: true,
                         0: {
-                            [ƒ_meta]: {
-                                [ƒm_abs_path]:    ['videos', 0],
-                                [ƒm_deref_from]:  undefined,
-                                [ƒm_deref_to]:    undefined,
-                                [ƒm_version]:     0
+                            [f_meta_data]: {
+                                [f_meta_abs_path]:    ['videos', 0],
+                                [f_meta_deref_from]:  undefined,
+                                [f_meta_deref_to]:    undefined,
+                                [f_meta_version]:     0
                             },
                             $__userGenerated: true,
                             title: 'Video 0'
                         },
                         1: {
-                            [ƒ_meta]: {
-                                [ƒm_abs_path]:    ['videos', 1],
-                                [ƒm_deref_from]:  undefined,
-                                [ƒm_deref_to]:    undefined,
-                                [ƒm_version]:     0
+                            [f_meta_data]: {
+                                [f_meta_abs_path]:    ['videos', 1],
+                                [f_meta_deref_from]:  undefined,
+                                [f_meta_deref_to]:    undefined,
+                                [f_meta_version]:     0
                             },
                             $__userGenerated: true,
                             title: 'Video 1'
@@ -249,52 +323,57 @@ describe('Values', function() {
             cache: cacheGenerator(0, 2)
         });
 
-        var seed = {};
+        var seed = { __proto__: FalcorJSON.prototype };
 
         model._getPathValuesAsPathMap(
             model,
             [['videos', [0, {from: 1, length: 1}], 'title']],
-            [seed]
+            seed
         );
 
         expect(seed).to.deep.equals({
+            __proto__: FalcorJSON.prototype,
             json: {
-                [ƒ_meta]: {
+                __proto__: FalcorJSON.prototype,
+                [f_meta_data]: {
                     '$code':          '2076667107',
-                    [ƒm_keys]:        { videos: true },
-                    [ƒm_abs_path]:    undefined,
-                    [ƒm_deref_from]:  undefined,
-                    [ƒm_deref_to]:    undefined,
-                    [ƒm_version]:     0
+                    [f_meta_keys]:        { videos: true },
+                    [f_meta_abs_path]:    undefined,
+                    [f_meta_deref_from]:  undefined,
+                    [f_meta_deref_to]:    undefined,
+                    [f_meta_version]:     0
                 },
                 videos: {
-                    [ƒ_meta]: {
+                    __proto__: FalcorJSON.prototype,
+                    [f_meta_data]: {
                         '$code':          '1720011066',
-                        [ƒm_keys]:        { 0: true, 1: true },
-                        [ƒm_abs_path]:    ['videos'],
-                        [ƒm_deref_from]:  undefined,
-                        [ƒm_deref_to]:    undefined,
-                        [ƒm_version]:     0
+                        [f_meta_keys]:        { 0: true, 1: true },
+                        [f_meta_abs_path]:    ['videos'],
+                        [f_meta_deref_from]:  undefined,
+                        [f_meta_deref_to]:    undefined,
+                        [f_meta_version]:     0
                     },
                     0: {
-                        [ƒ_meta]: {
+                        __proto__: FalcorJSON.prototype,
+                        [f_meta_data]: {
                             '$code':          '165499941',
-                            [ƒm_keys]:        { title: true },
-                            [ƒm_abs_path]:    ['videos', '0'],
-                            [ƒm_deref_from]:  undefined,
-                            [ƒm_deref_to]:    undefined,
-                            [ƒm_version]:     0
+                            [f_meta_keys]:        { title: true },
+                            [f_meta_abs_path]:    ['videos', '0'],
+                            [f_meta_deref_from]:  undefined,
+                            [f_meta_deref_to]:    undefined,
+                            [f_meta_version]:     0
                         },
                         title: 'Video 0'
                     },
                     1: {
-                        [ƒ_meta]: {
+                        __proto__: FalcorJSON.prototype,
+                        [f_meta_data]: {
                             '$code':          '165499941',
-                            [ƒm_keys]:        { title: true },
-                            [ƒm_abs_path]:    ['videos', '1'],
-                            [ƒm_deref_from]:  undefined,
-                            [ƒm_deref_to]:    undefined,
-                            [ƒm_version]:     0
+                            [f_meta_keys]:        { title: true },
+                            [f_meta_abs_path]:    ['videos', '1'],
+                            [f_meta_deref_from]:  undefined,
+                            [f_meta_deref_to]:    undefined,
+                            [f_meta_version]:     0
                         },
                         title: 'Video 1'
                     }
@@ -315,50 +394,54 @@ describe('Values', function() {
             cache: cacheGenerator(0, 2)
         });
 
-        var seed = {};
+        var seed = { __proto__: FalcorJSON.prototype };
 
         model._getPathValuesAsPathMap(
             model,
             [['videos', [0, {from: 1, length: 1}], 'title']],
-            [seed]
+            seed
         );
 
         model._getPathValuesAsPathMap(
             model,
             [['videos', 0, 'title']],
-            [seed]
+            seed
         );
 
         expect(seed.json.videos[0]).to.be.ok;
         expect(seed.json.videos[1]).to.equal(undefined);
 
         expect(seed).to.deep.equals({
+            __proto__: FalcorJSON.prototype,
             json: {
-                [ƒ_meta]: {
+                __proto__: FalcorJSON.prototype,
+                [f_meta_data]: {
                     '$code':          '580640226',
-                    [ƒm_keys]:        { videos: true },
-                    [ƒm_abs_path]:    undefined,
-                    [ƒm_deref_from]:  undefined,
-                    [ƒm_deref_to]:    undefined,
-                    [ƒm_version]:     0
+                    [f_meta_keys]:        { videos: true },
+                    [f_meta_abs_path]:    undefined,
+                    [f_meta_deref_from]:  undefined,
+                    [f_meta_deref_to]:    undefined,
+                    [f_meta_version]:     0
                 },
                 videos: {
-                    [ƒ_meta]: {
+                    __proto__: FalcorJSON.prototype,
+                    [f_meta_data]: {
                         '$code':          '1405226223',
-                        [ƒm_keys]:        { 0: true },
-                        [ƒm_abs_path]:    ['videos'],
-                        [ƒm_deref_from]:  undefined,
-                        [ƒm_deref_to]:    undefined,
-                        [ƒm_version]:     0
+                        [f_meta_keys]:        { 0: true },
+                        [f_meta_abs_path]:    ['videos'],
+                        [f_meta_deref_from]:  undefined,
+                        [f_meta_deref_to]:    undefined,
+                        [f_meta_version]:     0
                     },
                     0: {
-                        [ƒ_meta]: {
+                        __proto__: FalcorJSON.prototype,
+                        [f_meta_data]: {
                             '$code':          '165499941',
-                            [ƒm_keys]:        { title: true },
-                            [ƒm_abs_path]:    ['videos', '0'],
-                            [ƒm_deref_from]:  undefined,
-                            [ƒm_deref_to]:    undefined,
-                            [ƒm_version]:     0
+                            [f_meta_keys]:        { title: true },
+                            [f_meta_abs_path]:    ['videos', '0'],
+                            [f_meta_deref_from]:  undefined,
+                            [f_meta_deref_to]:    undefined,
+                            [f_meta_version]:     0
                         },
                         title: 'Video 0'
                     }

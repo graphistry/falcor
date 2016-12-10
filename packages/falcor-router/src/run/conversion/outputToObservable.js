@@ -1,5 +1,5 @@
-var Observable = require('../../rx').Observable;
 var isArray = Array.isArray;
+var Observable = require('../../rx').Observable;
 
 /**
  * For the router there are several return types from user
@@ -26,7 +26,7 @@ module.exports = function outputToObservable(valueOrObservable) {
     }
 
     // promise
-    else if (value.then) {
+    else if (typeof value.then === 'function') {
         value = Observable.fromPromise(value);
     }
 

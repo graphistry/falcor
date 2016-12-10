@@ -1,18 +1,24 @@
-import f_meta from './falcorMetadataKey';
 import { FalcorJSON } from '@graphistry/falcor';
 
 export default function mapToFalcorJSON(data, falcor) {
-    let dataProto;
     if (!data || typeof data !== 'object') {
-        dataProto = new FalcorJSON();
-        data = Object.create(dataProto);
+        data = { __proto__: FalcorJSON.prototype };
+        if (falcor && falcor._recycleJSON) {
+            if (falcor._seed) {
+                falcor._seed.json = data;
+            } else {
+                falcor._seed = { json: data, __proto__: FalcorJSON.prototype };
+            }
+        }
     } else if (!(data instanceof FalcorJSON)) {
-        dataProto = new FalcorJSON(data[f_meta]);
-        delete data[f_meta];
-        data.__proto__ = dataProto;
-    }
-    if (falcor && falcor._recycleJSON) {
-        falcor._seed = { json: data };
+        data.__proto__ = FalcorJSON.prototype;
+        if (falcor && falcor._recycleJSON) {
+            if (falcor._seed) {
+                falcor._seed.json = data;
+            } else {
+                falcor._seed = { json: data, __proto__: FalcorJSON.prototype };
+            }
+        }
     }
     return data;
 }

@@ -1,11 +1,9 @@
 {
   "name": "@graphistry/falcor-json-graph",
-  "version": "2.0.4",
+  "version": "2.5.3",
   "description": "A set of factory functions for creating JSON Graph values.",
   "main": "src/index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "scripts": {},
   "repository": {
     "type": "git",
     "url": "https://github.com/graphistry/falcor.git"
@@ -23,6 +21,6 @@
   ],
   "homepage": "https://github.com/graphistry/falcor/blob/master/packages/falcor-json-graph/README.md",
   "dependencies": {
-    "@graphistry/falcor-path-syntax": "^2.0.4"
+    "@graphistry/falcor-path-syntax": "^2.5.3"
   }
 }

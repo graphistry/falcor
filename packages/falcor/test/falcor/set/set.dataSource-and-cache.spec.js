@@ -1,4 +1,4 @@
-var falcor = require("./../../../lib/");
+var falcor = require('./../../../falcor.js');
 var Model = falcor.Model;
 var Expected = require('../../data/expected');
 var Values = Expected.Values;
@@ -80,6 +80,40 @@ describe('DataSource and Cache', function() {
                     }}, strip(x));
                 }, noOp, function() {
                     testRunner.compare(true, next, 'Expect to be onNext at least 1 time.');
+                }).
+                subscribe(noOp, done, done);
+        });
+        it('should not send a request to the datasource when the same value is set.', function(done) {
+            var datasourceSetCalled = false;
+            var model = new Model({
+                source: new LocalDataSource(Cache(), {
+                    onSet: function(x, y, z) {
+                        datasourceSetCalled = true;
+                        return z;
+                    }
+                }),
+                cache: {
+                    videos: {
+                        766: { title: 'Die Hard' },
+                        1234: { title: 'House of Cards' }
+                    }
+                }
+            });
+            var next = false;
+            toObservable(model.
+                set({ path: ['videos', 766, 'title'], value: 'Die Hard' },
+                    { path: ['videos', 1234, 'title'], value: 'House of Cards' })).
+                doAction(function(x) {
+                    next = true;
+                    testRunner.compare({ json: {
+                        videos: {
+                            766: { title: 'Die Hard' },
+                            1234: { title: 'House of Cards' }
+                        }
+                    }}, strip(x));
+                }, noOp, function() {
+                    testRunner.compare(true, next, 'Expect to be onNext at least 1 time.');
+                    testRunner.compare(false, datasourceSetCalled, 'Expect data source set not to be called.');
                 }).
                 subscribe(noOp, done, done);
         });
@@ -195,9 +229,43 @@ describe('DataSource and Cache', function() {
             }).
             subscribe(noOp, done, done);
     });
-    it('should throw an error set and project it.', function(done) {
+
+    it('should ensure that the jsong sent to server is optimized with a null last key.', function(done) {
         var model = new Model({
-            source: new ErrorDataSource(503, "Timeout"),
+            cache: Cache(),
+            source: new LocalDataSource(Cache(), {
+                onSet: function(source, tmp, jsongEnv) {
+                    sourceCalled = true;
+                    testRunner.compare({
+                        jsonGraph: {
+                            videos: {
+                                1234: {
+                                    summary: 5
+                                }
+                            }
+                        },
+                        paths: [['videos', 1234, 'summary']]
+                    }, jsongEnv);
+                    return jsongEnv;
+                }
+            })
+        });
+        var called = false;
+        var sourceCalled = false;
+        toObservable(model.
+            set({path: ['genreList', 0, 0, 'summary', null], value: 5})).
+            doAction(function(x) {
+                called = true;
+            }, noOp, function() {
+                testRunner.compare(true, called, 'Expected onNext to be called');
+                testRunner.compare(true, sourceCalled, 'Expected source.set to be called.');
+            }).
+            subscribe(noOp, done, done);
+    });
+
+    it('should project an error from the datasource.', function(done) {
+        var model = new Model({
+            source: new ErrorDataSource(503, 'Timeout'),
             errorSelector: function mapError(path, value) {
                 value.$foo = 'bar';
                 return value;

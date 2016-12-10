@@ -5,6 +5,6 @@
  * @augments DataSource
  * @param jsonGraphUrl the URL of the JSONGraph model.
  * @example
-var model = new falcor.Model({source: new falcor.HttpDataSource("http://netflix.com/user.json")});
+var model = new falcor.Model({source: new falcor.HttpDataSource('http://netflix.com/user.json')});
 var movieNames = model.get('genreLists[0...10][0...10].name').toPathValues();
  */

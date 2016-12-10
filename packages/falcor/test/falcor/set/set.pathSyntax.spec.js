@@ -1,4 +1,4 @@
-var falcor = require("./../../../lib/");
+var falcor = require('./../../../falcor.js');
 var Model = falcor.Model;
 var strip = require('./../../cleanData').stripDerefAndVersionKeys;
 var noOp = function() {};

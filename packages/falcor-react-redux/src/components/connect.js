@@ -10,18 +10,19 @@ import shouldUpdate from 'recompose/shouldUpdate';
 import mapPropsStream from 'recompose/mapPropsStream';
 import setDisplayName from 'recompose/setDisplayName';
 import wrapDisplayName from 'recompose/wrapDisplayName';
-import mapToFalcorJSON from '../utils/mapToFalcorJSON';
 import bindActionCreators from '../utils/bindActionCreators';
 import setObservableConfig from 'recompose/setObservableConfig';
 import rxjsObservableConfig from 'recompose/rxjsObservableConfig';
 
-import { Model } from '@graphistry/falcor';
+import invariant from 'invariant';
 import React, { PropTypes, Children } from 'react';
 import { connect as connectRedux } from 'react-redux';
 
 import { Observable } from 'rxjs/Observable';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { Model, FalcorJSON } from '@graphistry/falcor';
 import { animationFrame } from 'rxjs/scheduler/animationFrame';
+// import { asap as asapScheduler } from 'rxjs/scheduler/asap';
 
 import 'rxjs/add/operator/auditTime';
 import 'rxjs/add/operator/switchMap';
@@ -45,35 +46,23 @@ Model.prototype.changes = function() {
 
 setObservableConfig(rxjsObservableConfig);
 
+const typeofObject = 'object';
+const reduxOptions = { pure: false };
 const contextTypes = {
     falcor: PropTypes.object,
     dispatch: PropTypes.func
 };
 
-const connect = (BaseComponent) => compose(
-    connectRedux((data, { falcor }) => ({
-        data: mapToFalcorJSON(data, falcor)
-    })),
-    setDisplayName(wrapDisplayName(
-        BaseComponent, 'Falcor'
-    )),
-    mapPropsStream((props) => props
-        .switchMap(
-            ({ falcor }) => falcor.changes(),
-            ({ ...props }, falcor) => ({
-                ...props, falcor, version: falcor.getVersion()
-            })
-        )
-        .distinctUntilKeyChanged('version')
-        .auditTime(0, animationFrame)
-    ),
+const connect = (BaseComponent, scheduler = animationFrame) => compose(
+    connectRedux(mapReduxStoreToProps, 0, mergeReduxProps, reduxOptions),
+    setDisplayName(wrapDisplayName(BaseComponent, 'Falcor')),
+    mapPropsStream(mapPropsToDistinctChanges(scheduler)),
     withContext(contextTypes, ({ falcor, dispatch }) => ({
         falcor, dispatch
     })),
     lifecycle({
         componentDidUpdate() {
             this.props.dispatch({
-                // data: { ...this.props.data },
                 data: this.props.data,
                 type: 'falcor-react-redux/update'
             });
@@ -81,4 +70,45 @@ const connect = (BaseComponent) => compose(
     })
 )(BaseComponent);
 
+export { connect };
 export default connect;
+
+function mapReduxStoreToProps(store, { falcor }) {
+    invariant(falcor, `The top level "connect" container requires a root falcor model.`);
+    if (!store || typeofObject !== typeof store) {
+        store = !falcor._recycleJSON ? new FalcorJSON() :
+            falcor._seed && falcor._seed.json || undefined;
+    } else if (!(store instanceof FalcorJSON)) {
+        if (!falcor._recycleJSON) {
+            store = new FalcorJSON(store);
+        } else if (!falcor._seed || !falcor._seed.json) {
+            falcor._seed = { json: store = {
+                __proto__: new FalcorJSON(store) },
+                __proto__: FalcorJSON.prototype
+            };
+        }
+    }
+    return { data: store };
+}
+
+function mergeReduxProps({ data }, { dispatch }, { falcor }) {
+    return { data, falcor, dispatch };
+}
+
+function mapPropsToDistinctChanges(scheduler) {
+    return function innerMapPropsToDistinctChanges(prop$) {
+        return prop$.switchMap(
+            mapPropsToChanges, mapChangeToProps
+        )
+        .distinctUntilKeyChanged('version')
+        .auditTime(0, scheduler);
+    }
+}
+
+function mapPropsToChanges({ falcor }) {
+    return falcor.changes();
+}
+
+function mapChangeToProps(props, falcor) {
+    return { ...props, falcor, version: falcor.getVersion() };
+}

@@ -1,16 +1,17 @@
 var sinon = require('sinon');
 var expect = require('chai').expect;
-var GetRequest = require('./../../../lib/request/GetRequest');
+var Request = require('./../../../lib/request/Request');
 var TimeoutScheduler = require('./../../../lib/schedulers/TimeoutScheduler');
 var ImmediateScheduler = require('./../../../lib/schedulers/ImmediateScheduler');
 var Rx = require('rx');
-var Model = require('./../../../lib').Model;
+var Model = require('./../../../falcor.js').Model;
 var LocalDataSource = require('./../../data/LocalDataSource');
 var zipSpy = require('./../../zipSpy');
 
 var cacheGenerator = require('./../../CacheGenerator');
 var strip = require('./../../cleanData').stripDerefAndVersionKeys;
 var noOp = function() {};
+function throwError(e) { throw e; }
 var Cache = function() { return cacheGenerator(0, 2); };
 
 describe('#batch', function() {
@@ -25,33 +26,38 @@ describe('#batch', function() {
             onGet: getSpy
         });
         var model = new Model({source: source});
-        var request = new GetRequest(scheduler, {
-            removeRequest: function() { },
-            model: model
-        });
+        var request = new Request('get', {
+            remove: function() { },
+            modelRoot: model._root
+        }, model._source, scheduler);
 
-        var disposable = request.batch([videos0], [videos0], function(err, data) {
-            var onNext = sinon.spy();
-            toObservable(model.
-                withoutDataSource().
-                get(videos0)).
-                doAction(onNext, noOp, function() {
-                    expect(inlineBoolean).to.be.ok;
-                    expect(getSpy.calledOnce).to.be.ok;
-                    expect(getSpy.getCall(0).args[1]).to.deep.equals([videos0]);
-                    expect(onNext.calledOnce).to.be.ok;
-                    expect(strip(onNext.getCall(0).args[0])).to.deep.equals({
-                        json: {
-                            videos: {
-                                0: {
-                                    title: 'Video 0'
+        var disposable = request.batch([videos0], [videos0]).subscribe({
+            onCompleted: noOp,
+            onError: throwError,
+            onNext: function() {
+                var onNext = sinon.spy();
+                toObservable(model.
+                    withoutDataSource().
+                    get(videos0)).
+                    doAction(onNext, noOp, function() {
+                        expect(inlineBoolean).to.be.ok;
+                        expect(getSpy.calledOnce).to.be.ok;
+                        expect(getSpy.getCall(0).args[1]).to.deep.equals([videos0]);
+                        expect(onNext.calledOnce).to.be.ok;
+                        expect(strip(onNext.getCall(0).args[0])).to.deep.equals({
+                            json: {
+                                videos: {
+                                    0: {
+                                        title: 'Video 0'
+                                    }
                                 }
                             }
-                        }
-                    });
-                }).
-                subscribe(noOp, done, done);
+                        });
+                    }).
+                    subscribe(noOp, done, done);
+            }
         });
+        request.connect();
         inlineBoolean = false;
     });
 
@@ -63,11 +69,11 @@ describe('#batch', function() {
             onGet: getSpy
         });
         var model = new Model({source: source});
-        var request = new GetRequest(scheduler, {
-            removeRequest: function() { },
-            model: model
-        });
-        var callback = sinon.spy(function(err, data) {
+        var request = new Request('get', {
+            remove: function() { },
+            modelRoot: model._root
+        }, model._source, scheduler);
+        var callback = sinon.spy(function() {
             var onNext = sinon.spy();
             toObservable(model.
                 withoutDataSource().
@@ -90,7 +96,12 @@ describe('#batch', function() {
                 subscribe(noOp, done, done);
         });
 
-        var disposable = request.batch([videos0], [videos0], callback);
+        var disposable = request.batch([videos0], [videos0]).subscribe({
+            onNext: callback,
+            onError: throwError,
+            onCompleted: noOp
+        });
+        request.connect();
         inlineBoolean = false;
     });
 
@@ -101,12 +112,12 @@ describe('#batch', function() {
             onGet: getSpy
         });
         var model = new Model({source: source});
-        var request = new GetRequest(scheduler, {
-            removeRequest: function() { },
-            model: model
-        });
+        var request = new Request('get', {
+            remove: function() { },
+            modelRoot: model._root
+        }, model._source, scheduler);
 
-        var zip = zipSpy(2, function() {
+        var zip = zipSpy(1, function() {
             var onNext = sinon.spy();
             toObservable(model.
                 withoutDataSource().
@@ -127,8 +138,14 @@ describe('#batch', function() {
                 }).
                 subscribe(noOp, done, done);
         });
-        var disposable1 = request.batch([videos0], [videos0], zip);
-        var disposable2 = request.batch([videos1], [videos1], zip);
+        var zipObserver = {
+            onNext: zip,
+            onError: throwError,
+            onCompleted: noOp
+        };
+        var disposable1 = request.batch([videos0], [videos0]).subscribe(zipObserver);
+        var disposable2 = request.batch([videos1], [videos1]).subscribe(zipObserver);
+        request.connect();
     });
 
     it('should batch some requests together and dispose the first one.', function(done) {
@@ -138,12 +155,12 @@ describe('#batch', function() {
             onGet: getSpy
         });
         var model = new Model({source: source});
-        var request = new GetRequest(scheduler, {
-            removeRequest: function() { },
-            model: model
-        });
+        var request = new Request('get', {
+            remove: function() { },
+            modelRoot: model._root
+        }, model._source, scheduler);
 
-        var zip = zipSpy(2, function() {
+        var zip = zipSpy(1, function() {
             var onNext = sinon.spy();
             toObservable(model.
                 withoutDataSource().
@@ -162,10 +179,15 @@ describe('#batch', function() {
                 }).
                 subscribe(noOp, done, done);
         }, 300);
-        var disposable1 = request.batch([videos0], [videos0], zip);
-        var disposable2 = request.batch([videos1], [videos1], zip);
-
-        disposable1();
+        var zipObserver = {
+            onNext: zip,
+            onError: throwError,
+            onCompleted: noOp
+        };
+        var disposable1 = request.batch([videos0], [videos0]).subscribe(zipObserver);
+        var disposable2 = request.batch([videos1], [videos1]).subscribe(zipObserver);
+        request.connect();
+        disposable1.dispose();
     });
 
     it('should batch some requests together and dispose the second one.', function(done) {
@@ -175,12 +197,12 @@ describe('#batch', function() {
             onGet: getSpy
         });
         var model = new Model({source: source});
-        var request = new GetRequest(scheduler, {
-            removeRequest: function() { },
-            model: model
-        });
+        var request = new Request('get', {
+            remove: function() { },
+            modelRoot: model._root
+        }, model._source, scheduler);
 
-        var zip = zipSpy(2, function() {
+        var zip = zipSpy(1, function() {
             var onNext = sinon.spy();
             toObservable(model.
                 withoutDataSource().
@@ -199,9 +221,15 @@ describe('#batch', function() {
                 }).
                 subscribe(noOp, done, done);
         }, 300);
-        var disposable1 = request.batch([videos0], [videos0], zip);
-        var disposable2 = request.batch([videos1], [videos1], zip);
+        var zipObserver = {
+            onNext: zip,
+            onError: throwError,
+            onCompleted: noOp
+        };
+        var disposable1 = request.batch([videos0], [videos0]).subscribe(zipObserver);
+        var disposable2 = request.batch([videos1], [videos1]).subscribe(zipObserver);
+        request.connect();
 
-        disposable2();
+        disposable2.dispose();
     });
 });

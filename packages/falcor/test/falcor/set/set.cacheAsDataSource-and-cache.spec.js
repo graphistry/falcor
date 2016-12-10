@@ -1,4 +1,4 @@
-var falcor = require("./../../../lib/");
+var falcor = require('./../../../falcor.js');
 var Model = falcor.Model;
 var Expected = require('../../data/expected');
 var Values = Expected.Values;
@@ -97,14 +97,14 @@ describe('Cache as DataSource and Cache', function() {
                     onSet: function(source, tmp, jsongEnv) {
                         sourceCalled = true;
                         testRunner.compare({
+                            paths: [['videos', 1234, 'summary']],
                             jsonGraph: {
                                 videos: {
                                     1234: {
                                         summary: 5
                                     }
                                 }
-                            },
-                            paths: [['videos', 1234, 'summary']]
+                            }
                         }, jsongEnv);
                         return jsongEnv;
                     }
@@ -125,7 +125,7 @@ describe('Cache as DataSource and Cache', function() {
     it('should throw an error set and project it.', function(done) {
         var model = new Model({
             source: new Model({
-                source: new ErrorDataSource(503, "Timeout"),
+                source: new ErrorDataSource(503, 'Timeout'),
                 errorSelector: function mapError(path, value) {
                     value.$foo = 'bar';
                     return value;

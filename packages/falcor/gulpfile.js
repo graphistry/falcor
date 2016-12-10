@@ -1,3 +1,5 @@
+require('babel-register');
+
 var gulp = require("gulp");
 var eslint = require("gulp-eslint");
 var gulpShell = require("gulp-shell");

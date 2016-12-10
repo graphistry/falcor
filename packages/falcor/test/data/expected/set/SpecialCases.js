@@ -3,13 +3,13 @@ module.exports = function() {
         shortCircuit: {
             specialCase: true,
             cache: {
-                to: ["short-circuit", "value"],
-                "short-circuit": "value"
+                to: ['short-circuit', 'value'],
+                'short-circuit': 'value'
             },
             setPathValues: {
                 query: [{
-                    "path": ["to", "summary"],
-                    "value": "most bestest"
+                    'path': ['to', 'summary'],
+                    'value': 'most bestest'
                 }]
             }
         }

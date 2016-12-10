@@ -1,13 +1,14 @@
 {
   "name": "@graphistry/falcor-path-syntax",
-  "version": "2.0.4",
+  "version": "2.5.3",
   "description": "Parser for Falcor Path Syntax",
   "main": "src/index.js",
   "directories": {
     "test": "test"
   },
   "scripts": {
-    "test": "mocha test/index.js"
+    "test": "mocha --reporter dot --colors --full-trace --timeout 2000 test/index.js",
+    "prepublish": "npm test"
   },
   "repository": {
     "type": "git",

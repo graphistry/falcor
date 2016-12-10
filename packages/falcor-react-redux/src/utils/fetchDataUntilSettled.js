@@ -12,7 +12,7 @@ import 'rxjs/add/observable/empty';
 const memoizedQuerySyntax = memoizeQueryies(100);
 
 export default function fetchDataUntilSettled({
-    data, props, falcor, fragment
+    data, props, falcor, fragment, renderLoading
 }) {
 
     const memo = {
@@ -30,54 +30,44 @@ function _fetchDataUntilSettled(memo) {
     if (memo.loading === false) {
         return Observable.empty();
     }
-    let { query, falcor, version, fragment } = memo;
-    if ((query !== (memo.query = fragment(memo.data, memo.props))) ||
-        (version !== (memo.version = falcor.getVersion()))) {
-        let { ast, error } = memoizedQuerySyntax(memo.query);
+    const { query, version, falcor, fragment } = memo;
+    if ((query !== (memo.query = fragment(memo.data || {}, memo.props))) /*||
+        (version !== (memo.version = falcor.getVersion()))*/) {
+        const { ast, error } = memoizedQuerySyntax(memo.query);
         if (error) {
-            return handleParseError(memo, error);
+            if (typeof console !== 'undefined' && typeof console.error === 'function') {
+                console.error(errorMessage(error));
+                console.error(`Error parsing query: ${memo.query}`);
+            }
+            memo.error = error;
+        } else {
+            return Observable
+                .from(!memo.renderLoading ?
+                       falcor.get(ast) :
+                       falcor.get(ast).progressively())
+                .map(memo.mapNext)
+                .catch(memo.catchError);
         }
-        return Observable
-            .from(falcor.get(ast))
-            .map(memo.mapNext)
-            .catch(memo.catchError);
     }
-    return Observable.of({
-        loading: false,
-        data: memo.data,
-        version: memo.version
-    });
+    memo.loading = false;
+    memo.version = falcor.getVersion();
+    return Observable.of(memo);
 }
 
 function handleNext(memo, falcor) {
     return function mapNext({ json: data }) {
-        return Object.assign(memo, {
-            data, loading: true,
-            version: falcor.getVersion()
-        });
+        memo.data = data;
+        memo.loading = true;
+        memo.version = falcor.getVersion();
+        return memo;
     }
 }
 
 function handleError(memo, falcor) {
     return function catchError(error) {
-        return Observable.of({
-            error,
-            data: memo.data,
-            loading: false,
-            version: falcor.getVersion()
-        });
+        memo.error = error;
+        memo.loading = false;
+        memo.version = falcor.getVersion();
+        return Observable.of(memo);
     };
-}
-
-function handleParseError(memo, error) {
-    if (typeof console !== 'undefined' && typeof console.error === 'function') {
-        console.error(errorMessage(error));
-        console.error(`Error parsing query: ${memo.query}`);
-    }
-    return Observable.of({
-        error,
-        loading: false,
-        data: memo.data,
-        version: memo.version,
-    });
 }

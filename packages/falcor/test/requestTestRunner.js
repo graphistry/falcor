@@ -1,8 +1,8 @@
-var chai = require("chai");
+var chai = require('chai');
 var expect = chai.expect;
-var _ = require("lodash");
-var Rx = require("rx");
-var testRunner = require("./testRunner");
+var _ = require('lodash');
+var Rx = require('rx');
+var testRunner = require('./testRunner');
 
 function toObservable(request, queue, onNext) {
     return Rx.Observable.create(function(observer) {
@@ -24,8 +24,8 @@ module.exports = function(expected, queue, onNext) {
 function contains(has, toHave, position) {
     var obj = Object.keys(has);
     obj.forEach(function(k) {
-        expect(toHave, "Object." + position + " to have key " + k).to.include.keys(k);
-        if (typeof toHave[k] === "object" && !Array.isArray(toHave)) {
+        expect(toHave, 'Object.' + position + ' to have key ' + k).to.include.keys(k);
+        if (typeof toHave[k] === 'object' && !Array.isArray(toHave)) {
             contains(has[k], toHave[k], position + k);
         }
     });

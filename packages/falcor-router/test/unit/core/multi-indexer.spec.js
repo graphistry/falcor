@@ -27,6 +27,7 @@ describe('Multi-Indexer', function() {
             do(noOp, noOp, function() {
                 expect(onNext.called).to.be.ok;
                 expect(onNext.getCall(0).args[0]).to.deep.equals({
+                    paths: [['test', ['one', 'two']]],
                     jsonGraph: {
                         test: {
                             one: 'one',
@@ -61,6 +62,7 @@ describe('Multi-Indexer', function() {
             do(noOp, noOp, function() {
                 expect(onNext.called).to.be.ok;
                 expect(onNext.getCall(0).args[0]).to.deep.equals({
+                    paths: [['test', ['one', 'two'], 'summary']],
                     jsonGraph: {
                         test: {
                             one: {summary: 'one'},
@@ -95,6 +97,7 @@ describe('Multi-Indexer', function() {
             do(noOp, noOp, function() {
                 expect(onNext.called).to.be.ok;
                 expect(onNext.getCall(0).args[0]).to.deep.equals({
+                    paths: [['test', ['one', 'two'], 0, '0']],
                     jsonGraph: {
                         test: {
                             one: {0: {0: 'one'}},
@@ -124,11 +127,12 @@ describe('Multi-Indexer', function() {
         }]);
 
         router.
-            get([["test", ['one']]]).
+            get([['test', ['one']]]).
             do(onNext).
             do(noOp, noOp, function() {
                 expect(onNext.called).to.be.ok;
                 expect(onNext.getCall(0).args[0]).to.deep.equals({
+                    paths: [['test', 'one']],
                     jsonGraph: {
                         test: {
                             one: 'one'
@@ -165,13 +169,17 @@ describe('Multi-Indexer', function() {
 
         router.
             get([
-                ["test", 'one', 'three'],
-                ["test", 'two', 'four']
+                ['test', 'one', 'three'],
+                ['test', 'two', 'four']
             ]).
             do(onNext).
             do(noOp, noOp, function() {
                 expect(onNext.called).to.be.ok;
                 expect(onNext.getCall(0).args[0]).to.deep.equals({
+                    paths: [
+                        ['test', 'one', 'three'],
+                        ['test', 'two', 'four']
+                    ],
                     jsonGraph: {
                         test: {
                             one: {three: 'onethree'},

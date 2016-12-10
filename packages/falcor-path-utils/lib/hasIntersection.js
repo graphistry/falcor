@@ -1,5 +1,5 @@
 var isArray = Array.isArray;
-var nullTerminator = require('./support/nullTerminator');
+var materializedAtom = require('./support/materializedAtom');
 
 module.exports = hasIntersection
 
@@ -24,7 +24,7 @@ function hasIntersection(tree, path, depth, length) {
     keyset = path[depth];
 
     if (keyset === null) {
-        return tree === nullTerminator;
+        return tree === materializedAtom;
     }
 
     iteratingKeyset: do {
@@ -61,7 +61,7 @@ function hasIntersection(tree, path, depth, length) {
         else {
             rangeEnd = keyset.to;
             nextKey = keyset.from || 0;
-            if ("number" !== typeof rangeEnd) {
+            if ('number' !== typeof rangeEnd) {
                 rangeEnd = nextKey + (keyset.length || 0) - 1;
             }
             if ((rangeEnd - nextKey) < 0) {

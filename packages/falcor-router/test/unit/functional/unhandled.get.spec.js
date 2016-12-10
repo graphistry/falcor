@@ -22,6 +22,7 @@ describe('#get', function() {
             do(onNext, noOp, function() {
                 expect(onNext.calledOnce, 'onNext should be called.').to.be.ok;
                 expect(onNext.getCall(0).args[0]).to.deep.equals({
+                    paths: [['videos', 'summary']],
                     jsonGraph: {
                         videos: {
                             summary: {$type: $atom}
@@ -56,6 +57,7 @@ describe('#get', function() {
             do(onNext, noOp, function() {
                 expect(onNext.calledOnce).to.be.ok;
                 expect(onNext.getCall(0).args[0]).to.deep.equals({
+                    paths: [['videos', 'summary']],
                     jsonGraph: {
                         videos: {
                             summary: 'missing'
@@ -99,6 +101,7 @@ describe('#get', function() {
             do(onNext, noOp, function() {
                 expect(onNext.calledOnce).to.be.ok;
                 expect(onNext.getCall(0).args[0]).to.deep.equals({
+                    paths: [['videos', ['length', 'summary']]],
                     jsonGraph: {
                         videos: {
                             summary: 'missing',

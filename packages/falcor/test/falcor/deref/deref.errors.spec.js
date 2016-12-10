@@ -1,4 +1,4 @@
-var falcor = require('./../../../lib');
+var falcor = require('./../../../falcor.js');
 var InvalidModelError = require('./../../../lib/errors/InvalidModelError');
 var InvalidDerefInputError = require('./../../../lib/errors/InvalidDerefInputError');
 var Model = falcor.Model;
@@ -32,8 +32,8 @@ describe('Error cases', function() {
 
                 toObservable(lolomoModel.
                     get([0, 0, 'item', 'title'])).
-                    doAction(onNext, function(err) {
-                        expect(err.message).to.equals(InvalidModelError.message);
+                    doAction(onNext, function(e) {
+                        expect(InvalidModelError.is(e), 'expected InvalidModelError').to.equal(true);
                     }).
                     subscribe(
                         done.bind(null, new Error('onNext shouldnt be called')),
@@ -47,13 +47,17 @@ describe('Error cases', function() {
             });
     });
 
-    it('should throw on invalid input.', function(done) {
-        try {
-            new Model().deref('testing');
-        } catch (e) {
-            expect(e.name).to.equals(InvalidDerefInputError.name);
-            return done();
-        }
-        done(new Error('should of thrown an error.'));
+    it('should return null on invalid input.', function() {
+        expect(new Model().deref('testing'), 'invalid deref should return null').to.equal(null);
     });
+
+    // it('should throw on invalid input.', function(done) {
+    //     try {
+    //         new Model().deref('testing');
+    //     } catch (e) {
+    //         expect(InvalidDerefInputError.is(e), 'expected InvalidDerefInputError').to.equal(true);
+    //         return done();
+    //     }
+    //     done(new Error('should of thrown an error.'));
+    // });
 });

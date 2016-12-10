@@ -44,6 +44,7 @@ value
 false = "false" { return false; }
 null  = "null"  { return null;  }
 true  = "true"  { return true;  }
+undefined = "undefined" { return undefined; }
 
 /* ----- 4. Objects ----- */
 
@@ -182,8 +183,17 @@ exp           = e (minus / plus)? DIGIT+
 frac          = decimal_point DIGIT+
 int           = zero / (digit1_9 DIGIT*)
 sigint        = minus? int { return parseInt(text(), 10); }
-range         = from:sigint "..." to:sigint { return { from: Math.min(from, to), length: Math.max(from, to) - Math.min(from, to) } }
-                / from:sigint ".." to:sigint { return { from: Math.min(from, to), length: Math.max(from, to) - Math.min(from, to) + 1 } }
+_sigint       = sigint / undefined { return 0; }
+range         = from:_sigint "..." to:_sigint {
+                  return from < to &&
+                    { from: from, length: to - from } ||
+                    { from: to, length: from - to };
+                }
+              / from:_sigint ".." to:_sigint {
+                  return from < to &&
+                    { from: from, length: to - from + 1 } ||
+                    { from: to, length: from - to + 1 };
+                }
 minus         = "-"
 plus          = "+"
 zero          = "0"

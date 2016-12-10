@@ -1,62 +1,37 @@
-var Rx = require("rx");
-var rxjs = require("rxjs");
+var Rx = require('rx');
+var rxjs = require('rxjs');
 
-var falcor = require("../lib");
-var Model = falcor.Model;
-var $ref = require('@graphistry/falcor-json-graph').ref;
-var $atom = require('@graphistry/falcor-json-graph').atom;
-var $error = require('@graphistry/falcor-json-graph').error;
+var falcor = require('../falcor.js');
+var Model = require('../falcor.js').Model;
 var fromPath = require('@graphistry/falcor-path-syntax').fromPath;
 var fromPaths = require('@graphistry/falcor-path-syntax').fromPathsOrPathValues;
 
-function ResponseObservable(response) {
-    this.response = response;
-}
-
-ResponseObservable.prototype = Object.create(Rx.Observable.prototype);
-
-ResponseObservable.prototype._subscribe = function(observer) {
-    return this.response.subscribe(observer);
-};
-
-ResponseObservable.prototype._toJSONG = function() {
-    return new ResponseObservable(this.response._toJSONG.apply(this.response, arguments));
-};
-
-ResponseObservable.prototype.progressively = function() {
-    return new ResponseObservable(this.response.progressively.apply(this.response, arguments));
-};
-
-ResponseObservable.prototype.then = function() {
-    return this.response.then.apply(this.response, arguments);
-};
-
-ResponseObservable.prototype[Symbol.observable] = function() {
-    return this.response[Symbol.observable].apply(this.response, arguments);
-};
+Model.ref = require('@graphistry/falcor-json-graph').ref;
+Model.atom = require('@graphistry/falcor-json-graph').atom;
+Model.error = require('@graphistry/falcor-json-graph').error;
 
 var modelGet = Model.prototype.get;
 var modelSet = Model.prototype.set;
 var modelCall = Model.prototype.call;
-var modelInvalidate = Model.prototype.invalidate;
-var modelGetVersion = Model.prototype.getVersion;
 var modelPreload = Model.prototype.preload;
 var modelGetValue = Model.prototype.getValue;
 var modelSetValue = Model.prototype.setValue;
+var modelInvalidate = Model.prototype.invalidate;
+var modelGetVersion = Model.prototype.getVersion;
 
 Model.prototype.get = function() {
-    return new ResponseObservable(modelGet.apply(this, fromPaths(Array.prototype.slice.call(arguments))));
+    return modelGet.apply(this, fromPaths(Array.prototype.slice.call(arguments)));
 };
 
 Model.prototype.set = function() {
-    return new ResponseObservable(modelSet.apply(this, fromPaths(Array.prototype.slice.call(arguments))));
+    return modelSet.apply(this, fromPaths(Array.prototype.slice.call(arguments)));
 };
 
 Model.prototype.call = function(fnPath, fnArgs, refPaths, thisPaths) {
     fnPath = fromPath(fnPath);
     refPaths = refPaths && fromPaths([].concat(refPaths)) || [];
     thisPaths = thisPaths && fromPaths([].concat(thisPaths)) || [];
-    return new ResponseObservable(modelCall.call(this, fnPath, fnArgs, refPaths, thisPaths));
+    return modelCall.call(this, fnPath, fnArgs, refPaths, thisPaths);
 };
 
 Model.prototype.invalidate = function() {
@@ -68,52 +43,52 @@ Model.prototype.getVersion = function() {
 };
 
 Model.prototype.preload = function() {
-    return new ResponseObservable(modelPreload.apply(this, fromPaths(Array.prototype.slice.call(arguments))));
+    return modelPreload.apply(this, fromPaths(Array.prototype.slice.call(arguments)));
 };
 
 Model.prototype.getValue = function() {
-    return new ResponseObservable(modelGetValue.apply(this, fromPaths(Array.prototype.slice.call(arguments))));
+    return modelGetValue.apply(this, fromPaths(Array.prototype.slice.call(arguments)));
 };
 
 Model.prototype.setValue = function(path, value) {
     if (typeof path === 'string') {
         path = fromPath(path);
     }
-    return new ResponseObservable(modelSetValue.call(this, path, value));
+    return modelSetValue.call(this, path, value);
 };
 
 var testRunner = require('./testRunner');
-var chai = require("chai");
+var chai = require('chai');
 var expect = chai.expect;
 var $ref = require('./../lib/types/ref');
 var $error = require('./../lib/types/error');
 var $atom = require('./../lib/types/atom');
 global.toObservable = require('./toObs');
 
-describe("Model", function() {
+describe('Model', function() {
 
-    it("should construct a new Model", function() {
+    it('should construct a new Model', function() {
         new Model();
     });
 
-    it("should construct a new Model when calling the falcor module function", function() {
-        expect(falcor() instanceof falcor.Model).to.equal(true);
+    it('should construct a new Model when calling the falcor module function', function() {
+        expect(falcor() instanceof Model).to.equal(true);
     });
 
     xit('should have access to static helper methods.', function() {
         var ref = ['a', 'b', 'c'];
         var err = {ohhh: 'no!'};
 
-        var out = $ref(ref);
+        var out = Model.ref(ref);
         testRunner.compare({$type: $ref, value: ref}, out);
 
-        out = $ref('a.b.c');
+        out = Model.ref('a.b.c');
         testRunner.compare({$type: $ref, value: ref}, out);
 
-        out = $error(err);
+        out = Model.error(err);
         testRunner.compare({$type: $error, value: err}, out);
 
-        out = $atom(1337);
+        out = Model.atom(1337);
         testRunner.compare({$type: $atom, value: 1337}, out);
     });
 
@@ -127,7 +102,7 @@ describe("Model", function() {
         var model = new Model({
             cache: {
                 list: {
-                    0: { name: "test" }
+                    0: { name: 'test' }
                 }
             },
             source: {
@@ -139,13 +114,13 @@ describe("Model", function() {
                                 var response = {
                                     jsonGraph: {
                                         list: {
-                                            1: { name: "another test" }
+                                            1: { name: 'another test' }
                                         }
                                     },
-                                    paths: ["list", 1, "name"]
+                                    paths: ['list', 1, 'name']
                                 };
 
-                                if (typeof observerOrOnNext === "function") {
+                                if (typeof observerOrOnNext === 'function') {
                                     observerOrOnNext(response);
                                     onCompleted();
                                 }
@@ -167,7 +142,7 @@ describe("Model", function() {
             }
         });
 
-        var subscription = model.get("list[0,1].name").
+        var subscription = model.get('list[0,1].name').
             subscribe(
                 function(value) {
                     onNextCalled++;
@@ -181,25 +156,35 @@ describe("Model", function() {
 
         subscription.dispose();
 
-        if (dataSourceGetCalled === 1 && !onNextCalled && unusubscribeCalled === 1 && !onErrorCalled && !onCompletedCalled) {
-            done()
-        }
-        else {
-            done(new Error("DataSource unsubscribe not called."));
-        }
+        expect(dataSourceGetCalled, 'dataSource.get should have been called').to.equal(1);
+        expect(!onNextCalled, 'onNext should not be called').to.be.ok;
+        expect(unusubscribeCalled, 'unusubscribe should have been called').to.equal(1);
+        expect(!onErrorCalled, 'onError should not be called').to.be.ok;
+        expect(!onCompletedCalled, 'onCompleted should not be called').to.be.ok;
+
+        done();
     });
 
-    it('Supports RxJS 5.', function(done) {
+    it('Supports RxJS 5 Observables and Schedulers.', function(done) {
+
+        var Observable = rxjs.Observable;
+        var Scheduler = rxjs.Scheduler.async;
         var onNextCalled = 0,
-            onErrorCalled = 0,
+            scheduleCalled = 0,
             onCompletedCalled = 0,
             unusubscribeCalled = 0,
             dataSourceGetCalled = 0;
 
         var model = new Model({
+            scheduler: {
+                schedule: function() {
+                    scheduleCalled++;
+                    return Scheduler.schedule.apply(Scheduler, arguments);
+                }
+            },
             cache: {
                 list: {
-                    0: { name: "test" }
+                    0: { name: 'test' }
                 }
             },
             source: {
@@ -211,13 +196,13 @@ describe("Model", function() {
                                 var response = {
                                     jsonGraph: {
                                         list: {
-                                            1: { name: "another test" }
+                                            1: { name: 'another test' }
                                         }
                                     },
-                                    paths: ["list", 1, "name"]
+                                    paths: [['list', 1, 'name']]
                                 };
 
-                                if (typeof observerOrOnNext === "function") {
+                                if (typeof observerOrOnNext === 'function') {
                                     observerOrOnNext(response);
                                     onCompleted();
                                 }
@@ -228,7 +213,7 @@ describe("Model", function() {
                             });
 
                             return {
-                                dispose: function() {
+                                unsubscribe: function() {
                                     unusubscribeCalled++;
                                     clearTimeout(handle);
                                 }
@@ -239,39 +224,26 @@ describe("Model", function() {
             }
         });
 
-        var subscription = rxjs.Observable
-            .from(modelGet.call(model, fromPath("list[0,1].name")))
-            .subscribe(
-                function(value) {
-                    onNextCalled++;
-                },
-                function(error) {
-                    onErrorCalled++;
-                    done(error);
-                },
-                function() {
-                    onCompletedCalled++;
-                    if (onNextCalled === 0) {
-                        done('onNext wasn\'t called');
-                    } else {
-                        done();
-                    }
-                });
-
-        if (dataSourceGetCalled !== 1 || unusubscribeCalled) {
-            done(new Error("DataSource unsubscribe was called."));
-        }
+        Observable
+            .from(modelGet.call(model, fromPath('list[0,1].name')))
+            .do(function(value) { onNextCalled++; }, null, function() {
+                expect(onNextCalled, 'onNext should have been called').to.equal(1);
+                expect(scheduleCalled, 'scheduleCalled should have been called').to.equal(1);
+                expect(unusubscribeCalled, 'unusubscribe should have been called').to.equal(1);
+                expect(dataSourceGetCalled, 'dataSource.get should have been called').to.equal(1);
+            })
+            .subscribe(null, done, done);
     });
 
     describe('JSON-Graph Specification', function() {
         require('./get-core');
 
-        describe("#set", function() {
-            require("./set")();
+        describe('#set', function() {
+            require('./set')();
         });
 
-        describe("#invalidate", function() {
-            require("./invalidate")();
+        describe('#invalidate', function() {
+            require('./invalidate')();
         });
     });
 

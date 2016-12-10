@@ -6,7 +6,7 @@ module.exports = function() {
         errorBranchSummary: {
             getPathValues: {
                 query: [
-                    ["videos", "errorBranch", "summary"]
+                    ['videos', 'errorBranch', 'summary']
                 ]
             },
             getPathMaps: {
@@ -22,33 +22,33 @@ module.exports = function() {
             },
             AsValues: {
                 values: [{
-                    path: ["videos", "errorBranch"],
-                    "value": "I am yelling timber."
+                    path: ['videos', 'errorBranch'],
+                    'value': 'I am yelling timber.'
                 }]
             },
             AsJSON: {
                 values: [{
-                    json: "I am yelling timber."
+                    json: 'I am yelling timber.'
                 }]
             },
             AsPathMap: {
                 values: [{
                     json: {
-                        "videos": {
-                            "errorBranch": "I am yelling timber."
+                        'videos': {
+                            'errorBranch': 'I am yelling timber.'
                         }
                     }
                 }]
             },
             AsJSONG: {
                 values: [{
-                    paths: [["videos", "errorBranch"]],
+                    paths: [['videos', 'errorBranch']],
                     jsonGraph: {
-                        "videos": {
-                            "errorBranch": {
-                                "$size": "51",
-                                "$type": $error,
-                                "value": "I am yelling timber."
+                        'videos': {
+                            'errorBranch': {
+                                '$size': '51',
+                                '$type': $error,
+                                'value': 'I am yelling timber.'
                             }
                         }
                     }
@@ -58,7 +58,7 @@ module.exports = function() {
         genreListErrorNull: {
             getPathValues: {
                 query: [
-                    ["genreList", 2, null]
+                    ['genreList', 2, null]
                 ]
             },
             getPathMaps: {
@@ -74,40 +74,40 @@ module.exports = function() {
             },
             AsValues: {
                 values: [{
-                    path: ["genreList", "2", null],
-                    "value": "Red is the new Black"
+                    path: ['genreList', '2', null],
+                    'value': 'Red is the new Black'
                 }]
             },
             AsJSON: {
                 values: [{
-                    json: "Red is the new Black"
+                    json: 'Red is the new Black'
                 }]
             },
             AsPathMap: {
                 values: [{
                     json: {
-                        "genreList": {
-                            "2": "Red is the new Black"
+                        'genreList': {
+                            '2': 'Red is the new Black'
                         }
                     }
                 }]
             },
             AsJSONG: {
                 values: [{
-                    paths: [["genreList", "2", null]],
+                    paths: [['genreList', '2', null]],
                     jsonGraph: {
-                        "genreList": {
-                            "2": {
-                                "$size": 52,
-                                "$type": $path,
-                                "value": ["lists", "error-list"]
+                        'genreList': {
+                            '2': {
+                                '$size': 52,
+                                '$type': $path,
+                                'value': ['lists', 'error-list']
                             }
                         },
-                        "lists": {
-                            "error-list": {
-                                "$size": "51",
-                                "$type": $error,
-                                "value": "Red is the new Black"
+                        'lists': {
+                            'error-list': {
+                                '$size': '51',
+                                '$type': $error,
+                                'value': 'Red is the new Black'
                             }
                         }
                     }

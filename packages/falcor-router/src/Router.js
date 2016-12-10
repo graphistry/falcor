@@ -6,29 +6,38 @@ var MAX_REF_FOLLOW = 50;
 var MAX_PATHS = 9000;
 
 var Router = function(routes, options) {
+
     var opts = options || {};
 
-    this._routes = routes;
-    this._rst = parseTree(routes);
-    this._matcher = matcher(this._rst);
-    this._debug = opts.debug;
-    this.maxRefFollow = opts.maxRefFollow || MAX_REF_FOLLOW;
-    this.maxPaths = opts.maxPaths || MAX_PATHS;
+    this._debug = opts.hasOwnProperty('debug') ? !!opts.debug : this._debug;
+    this.maxPaths = opts.hasOwnProperty('maxPaths') ? opts.maxPaths : MAX_PATHS;
+    this._streaming = opts.hasOwnProperty('streaming') ? !!opts.streaming : this._streaming;
+    this.maxRefFollow = opts.hasOwnProperty('maxRefFollow') ? opts.maxRefFollow : MAX_REF_FOLLOW;
+    this._bufferTime = opts.hasOwnProperty('bufferTime') ? Math.abs(opts.bufferTime || 0) : this._bufferTime;
+
+    if (!this._rst || this._routes !== routes) {
+        this._routes = routes;
+        this._rst = parseTree(routes);
+        this._matcher = matcher(this._rst);
+    }
 };
 
-Router.createClass = function(routes) {
-    function C(options) {
-        var opts = options || {};
-        this._debug = opts.debug;
-    }
+Router.createClass = function(routes, options) {
 
-    C.prototype = new Router(routes);
+    C.prototype = new Router(routes, options);
     C.prototype.constructor = C;
 
     return C;
+
+    function C(options) {
+        Router.call(this, this._routes, options);
+    }
 };
 
 Router.prototype = {
+    _debug: false,
+    _bufferTime: 0,
+    _streaming: false,
     /**
      * Performs the get algorithm on the router.
      * @param {PathSet[]} paths -
@@ -70,6 +79,7 @@ Router.prototype = {
      */
     routeUnhandledPathsTo: function routeUnhandledPathsTo(dataSource) {
         this._unhandled = dataSource;
+        return this;
     }
 };
 

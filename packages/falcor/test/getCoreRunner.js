@@ -1,9 +1,10 @@
-var get = require('./../lib/get');
-var Model = require('./../lib');
+var get = require('./../lib/cache/get');
+var Model = require('./../falcor.js').Model;
+var FalcorJSON = require('./../falcor.js').FalcorJSON;
 var expect = require('chai').expect;
 var clean = require('./cleanData').clean;
 var convertKey = require('./cleanData').convertKey;
-var getCachePosition = require('./../lib/get/getCachePosition');
+var getCachePosition = require('./../lib/cache/getCachePosition');
 
 module.exports = function(testConfig) {
     var isJSONG = testConfig.isJSONG;
@@ -20,14 +21,16 @@ module.exports = function(testConfig) {
     var type = testConfig.input && testConfig.input[0] ||
         testConfig.inputs[0][0];
     var isJSONInput = !Array.isArray(type);
-    var fnKey = 'getWithPathsAs' + (isJSONG ? 'JSONGraph' : 'PathMap');
-    var fn = get[fnKey];
+    var fn = get[isJSONG ? 'jsonGraph' : 'json'];
     var cache = testConfig.cache;
     if (typeof cache === 'function') {
         cache = cache();
     }
-    var source = testConfig.source;
     var model;
+    var source = testConfig.source;
+    if (typeof source === 'undefined') {
+        source = true;
+    }
     if (testConfig.model) {
         model = testConfig.model;
     }
@@ -69,26 +72,27 @@ module.exports = function(testConfig) {
         model = model._materialize();
     }
 
-    var seed = [{}];
     var out;
 
     if (testConfig.input) {
-        out = fn(model, testConfig.input, seed);
+        out = fn(model, testConfig.input, { __proto__: FalcorJSON.prototype }, true, true);
     }
 
     else {
         testConfig.inputs.forEach(function(input) {
-            out = fn(model, input, seed);
+            out = fn(model, input, { __proto__: FalcorJSON.prototype }, true, true);
         });
     }
 
-    var valueNode = out.values && out.values[0];
-    var stripMetadataKeys = testConfig.stripMetadata === false ? [] : [ƒ_meta];
+    var valueNode = out.data;
+    var stripMetadataKeys = testConfig.stripMetadata === false ? [] : [f_meta_data];
 
     if (testConfig.stripMetadata === false) {
         valueNode = convertKey(valueNode, {
-            [ƒ_meta]: function(x) { return x; }
+            [f_meta_data]: function(x) { return x; }
         });
+    } else if (testConfig.recycleJSON === true) {
+        valueNode = valueNode.toJSON();
     }
 
     // $size is stripped out of basic core tests.
@@ -98,15 +102,15 @@ module.exports = function(testConfig) {
     expectedOutput = clean(expectedOutput, {strip: ['$size'].concat(stripMetadataKeys)});
 
     if (expectedOutput) {
-        expect(valueNode).to.deep.equals(expectedOutput);
+        expect(valueNode, 'value').to.deep.equals(expectedOutput);
     }
-    if (requestedMissingPaths) {
-        expect(out.requestedMissingPaths).to.deep.equals(requestedMissingPaths);
+    if (testConfig.hasOwnProperty('requestedMissingPaths')) {
+        expect(out.requested, 'requestedMissingPaths').to.deep.equals(requestedMissingPaths);
     }
-    if (optimizedMissingPaths) {
-        expect(out.optimizedMissingPaths).to.deep.equals(optimizedMissingPaths);
+    if (testConfig.hasOwnProperty('optimizedMissingPaths')) {
+        expect(out.missing, 'optimizedMissingPaths').to.deep.equals(optimizedMissingPaths);
     }
     if (errors) {
-        expect(out.errors).to.deep.equals(errors);
+        expect(out.errors, 'errors').to.deep.equals(errors);
     }
 };

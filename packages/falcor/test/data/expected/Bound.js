@@ -13,25 +13,25 @@ module.exports = function() {
                 values: [{
                     'path': ['summary'],
                     'value': {
-                        "title": "Conan, The Destroyer",
-                        "url": "/movies/3355"
+                        'title': 'Conan, The Destroyer',
+                        'url': '/movies/3355'
                     }
                 }, {
                     'path': ['art'],
                     'value': {
-                        "box-shot": "www.cdn.com/3355"
+                        'box-shot': 'www.cdn.com/3355'
                     }
                 }]
             },
             AsJSON: {
                 values: [{
                     json: {
-                        "title": "Conan, The Destroyer",
-                        "url": "/movies/3355"
+                        'title': 'Conan, The Destroyer',
+                        'url': '/movies/3355'
                     }
                 }, {
                     json: {
-                        "box-shot": "www.cdn.com/3355"
+                        'box-shot': 'www.cdn.com/3355'
                     }
                 }]
             },
@@ -39,11 +39,11 @@ module.exports = function() {
                 values: [{
                     json: {
                         summary: {
-                            "title": "Conan, The Destroyer",
-                            "url": "/movies/3355"
+                            'title': 'Conan, The Destroyer',
+                            'url': '/movies/3355'
                         },
                         art: {
-                            "box-shot": "www.cdn.com/3355"
+                            'box-shot': 'www.cdn.com/3355'
                         }
                     }
                 }]

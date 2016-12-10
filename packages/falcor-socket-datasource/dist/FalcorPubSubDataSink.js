@@ -4,15 +4,9 @@ var _from = require('babel-runtime/core-js/array/from');
 
 var _from2 = _interopRequireDefault(_from);
 
-var _assign = require('babel-runtime/core-js/object/assign');
-
-var _assign2 = _interopRequireDefault(_assign);
-
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-
-var _extends = _assign2.default || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -20,7 +14,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var FalcorPubSubDataSink = exports.FalcorPubSubDataSink = function FalcorPubSubDataSink(socket, getDataSource) {
+var FalcorPubSubDataSink = exports.FalcorPubSubDataSink = function FalcorPubSubDataSink(emitter, getDataSource) {
     var event = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'falcor-operation';
     var cancel = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'cancel-falcor-operation';
 
@@ -28,30 +22,30 @@ var FalcorPubSubDataSink = exports.FalcorPubSubDataSink = function FalcorPubSubD
 
     this.event = event;
     this.cancel = cancel;
-    this.socket = socket;
+    this.emitter = emitter;
     this.getDataSource = getDataSource;
     this.response = response.bind(this);
 };
 
 function response(_ref) {
     var id = _ref.id,
-        args = _ref.args,
-        functionPath = _ref.functionPath,
+        callPath = _ref.callPath,
+        callArgs = _ref.callArgs,
         jsonGraphEnvelope = _ref.jsonGraphEnvelope,
         method = _ref.method,
         pathSets = _ref.pathSets,
-        refSuffixes = _ref.refSuffixes,
+        suffixes = _ref.suffixes,
         thisPaths = _ref.thisPaths;
-    var socket = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this.socket;
+    var emitter = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this.emitter;
 
 
     var parameters = void 0;
 
-    if (method === "call") {
-        parameters = [functionPath, args, refSuffixes, thisPaths];
-    } else if (method === "get") {
+    if (method === 'call') {
+        parameters = [callPath, callArgs, suffixes, thisPaths];
+    } else if (method === 'get') {
         parameters = [pathSets];
-    } else if (method === "set") {
+    } else if (method === 'set') {
         parameters = [jsonGraphEnvelope];
     } else {
         throw new Error(method + ' is not a valid method');
@@ -64,42 +58,64 @@ function response(_ref) {
     var responseToken = event + '-' + id;
     var cancellationToken = cancel + '-' + id;
 
-    var results = null;
-    var operationIsDone = false;
     var _handleCancellationForId = null;
+    var disposed = false,
+        finalized = false,
+        value = undefined;
 
-    var DataSource = getDataSource(socket);
-    var operation = DataSource[method].apply(DataSource, _toConsumableArray(parameters)).subscribe(function (data) {
-        results = data;
+    var DataSource = getDataSource(emitter);
+    var streaming = DataSource._streaming || false;
+    var operation = DataSource[method].apply(DataSource, _toConsumableArray(parameters)).subscribe(function (x) {
+        value = x;
+        if (!disposed && !finalized && streaming) {
+            emitter.emit(responseToken, { kind: 'N', value: value });
+        }
     }, function (error) {
-        operationIsDone = true;
-        if (_handleCancellationForId !== null) {
-            socket.off(cancellationToken, _handleCancellationForId);
+        if (disposed || finalized) {
+            return;
         }
-        _handleCancellationForId = null;
-        socket.emit(responseToken, _extends({ error: error }, results));
+        disposed = finalized = true;
+        if (_handleCancellationForId) {
+            emitter.removeListener(cancellationToken, _handleCancellationForId);
+            _handleCancellationForId = null;
+        }
+        if (streaming || value === undefined) {
+            emitter.emit(responseToken, { kind: 'E', error: error });
+        } else {
+            emitter.emit(responseToken, { kind: 'E', error: error, value: value });
+        }
     }, function () {
-        operationIsDone = true;
-        if (_handleCancellationForId !== null) {
-            socket.off(cancellationToken, _handleCancellationForId);
+        if (disposed || finalized) {
+            return;
         }
-        _handleCancellationForId = null;
-        socket.emit(responseToken, _extends({}, results));
+        disposed = finalized = true;
+        if (_handleCancellationForId) {
+            emitter.removeListener(cancellationToken, _handleCancellationForId);
+            _handleCancellationForId = null;
+        }
+        if (streaming || value === undefined) {
+            emitter.emit(responseToken, { kind: 'C' });
+        } else {
+            emitter.emit(responseToken, { kind: 'C', value: value });
+        }
     });
 
-    if (!operationIsDone) {
+    if (!finalized) {
         _handleCancellationForId = function handleCancellationForId() {
-            if (operationIsDone === true) {
+            if (disposed || finalized) {
                 return;
             }
-            operationIsDone = true;
-            socket.off(cancellationToken, _handleCancellationForId);
-            if (typeof operation.dispose === "function") {
+            disposed = finalized = true;
+            emitter.removeListener(cancellationToken, _handleCancellationForId);
+            _handleCancellationForId = null;
+            if (typeof operation.dispose === 'function') {
                 operation.dispose();
-            } else if (typeof operation.unsubscribe === "function") {
+            } else if (typeof operation.unsubscribe === 'function') {
                 operation.unsubscribe();
+            } else if (typeof operation === 'function') {
+                operation();
             }
         };
-        socket.on(cancellationToken, _handleCancellationForId);
+        emitter.on(cancellationToken, _handleCancellationForId);
     }
 }

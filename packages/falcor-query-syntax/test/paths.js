@@ -94,6 +94,38 @@ describe('Paths', function() {
             ['titles', 'length']
         ]);
     });
+    it('should tolerate undefined in ranges 1', function() {
+
+        expect(toPaths`{
+            titles: {
+                length,
+                [0...undefined]: {
+                    name,
+                    rating,
+                    box-shot
+                }
+            }
+        }`).to.deep.equal([
+            ['titles', { from:0, length:0 }, ['name', 'rating', 'box-shot']],
+            ['titles', 'length']
+        ]);
+    });
+    it('should tolerate undefined in ranges 2', function() {
+
+        expect(toPaths`{
+            titles: {
+                length,
+                [0..undefined]: {
+                    name,
+                    rating,
+                    box-shot
+                }
+            }
+        }`).to.deep.equal([
+            ['titles', { from:0, length:1 }, ['name', 'rating', 'box-shot']],
+            ['titles', 'length']
+        ]);
+    });
     it('should merge ... queries', function() {
 
         expect(toPaths`{

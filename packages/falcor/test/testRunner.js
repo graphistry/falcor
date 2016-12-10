@@ -1,11 +1,11 @@
-var falcor = require("./../lib/");
+var falcor = require('./../falcor.js');
 var Model = falcor.Model;
-var inspect = require("util").inspect;
-var chai = require("chai");
+var inspect = require('util').inspect;
+var chai = require('chai');
 var expect = chai.expect;
-var Cache = require("./data/Cache");
-var LocalDataSource = require("./data/LocalDataSource");
-var _ = require("lodash");
+var Cache = require('./data/Cache');
+var LocalDataSource = require('./data/LocalDataSource');
+var _ = require('lodash');
 var noOp = function() {};
 var Rx = require('rx');
 var cleanData = require('./cleanData');
@@ -19,9 +19,9 @@ module.exports = {
     transformData: function(data) {
         var keys = Object.keys(data);
         var prefixesAndSuffixes = keys.reduce(function(acc, curr) {
-            if (~curr.indexOf("As")) {
+            if (~curr.indexOf('As')) {
                 acc[1].push(curr);
-            } else if (~curr.indexOf("get") || ~curr.indexOf("set")) {
+            } else if (~curr.indexOf('get') || ~curr.indexOf('set')) {
                 acc[0].push(curr);
             } else {
                 // optimizedPaths, missing paths, etc.
@@ -89,45 +89,45 @@ module.exports = {
 };
 
 function validateData(expected, actual) {
-    expect(actual, "actual").to.be.ok;
-    expect(expected, "expected").to.be.ok;
+    expect(actual, 'actual').to.be.ok;
+    expect(expected, 'expected').to.be.ok;
     var keys = Object.keys(expected);
 
     keys.forEach(function(key) {
-        if(key == "values" && !actual[key]) {
+        if(key == 'values' && !actual[key]) {
             return;
         }
-        expect(actual[key], "actual." + key).to.be.ok;
+        expect(actual[key], 'actual.' + key).to.be.ok;
     });
 }
 
 function validateOperation(name, expected, actual, messageSuffix) {
     expected = _.cloneDeep(expected);
 
-    // Removes all 5 !== "5" errors when it comes to pathValues.
+    // Removes all 5 !== '5' errors when it comes to pathValues.
     traverseAndConvert(actual);
     traverseAndConvert(expected);
-    strip(expected, ƒ_key);
-    strip(actual, ƒ_key, "pathSetIndex");
+    strip(expected, f_key);
+    strip(actual, f_key, 'pathSetIndex');
 
     if (expected.values) {
-        expect(actual.values, name + ".values " + messageSuffix).
+        expect(actual.values, name + '.values ' + messageSuffix).
             to.deep.equals(expected.values);
     }
     if (expected.errors) {
-        expect(actual.errors, name + ".errors " + messageSuffix).
+        expect(actual.errors, name + '.errors ' + messageSuffix).
             to.deep.equals(expected.errors);
     }
     if (expected.optimizedPaths) {
-        expect(actual.optimizedPaths, name + ".optimizedPaths " + messageSuffix).
+        expect(actual.optimizedPaths, name + '.optimizedPaths ' + messageSuffix).
             to.deep.equals(expected.optimizedPaths);
     }
     if (expected.requestedMissingPaths) {
-        expect(actual.requestedMissingPaths, name + ".requestedMissingPaths " + messageSuffix).
+        expect(actual.requestedMissingPaths, name + '.requestedMissingPaths ' + messageSuffix).
             to.deep.equals(expected.requestedMissingPaths);
     }
     if (expected.optimizedMissingPaths) {
-        expect(actual.optimizedMissingPaths, name + ".optimizedMissingPaths " + messageSuffix).
+        expect(actual.optimizedMissingPaths, name + '.optimizedMissingPaths ' + messageSuffix).
             to.deep.equals(expected.optimizedMissingPaths);
     }
 }

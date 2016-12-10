@@ -1,52 +1,68 @@
-var hasOwn = require("./support/hasOwn");
-var isFunction = require("./support/isFunction");
+var functionTypeof = 'function';
+var Requests = require('./request/Queue');
 
-function ModelRoot(o, topLevelModel) {
+function ModelRoot(o, model) {
 
     var options = o || {};
 
-    this.version = 0;
-    this.syncRefCount = 0;
-    this.expired = options.expired || [];
-    this.unsafeMode = options.unsafeMode || false;
     this.cache = {};
-    this.topLevelModel = topLevelModel;
+    this.version = -1;
+    this.syncRefCount = 0;
+    this.maxRetryCount = 10;
+    this.topLevelModel = model;
+    this.requests = new Requests(this);
+    this.expired = options.expired || [];
 
-    if (isFunction(options.comparator)) {
+    this.collectRatio = 0.75;
+    this.maxSize = Math.pow(2, 53) - 1;
+
+    if (typeof options.collectRatio === 'number') {
+        this.collectRatio = options.collectRatio;
+    }
+
+    if (typeof options.maxSize === 'number') {
+        this.maxSize = options.maxSize;
+    }
+
+    if (typeof options.comparator === functionTypeof) {
         this.comparator = options.comparator;
     }
 
-    if (isFunction(options.branchSelector)) {
+    if (typeof options.branchSelector === functionTypeof) {
         this.branchSelector = options.branchSelector;
     }
 
-    if (isFunction(options.errorSelector)) {
+    if (typeof options.errorSelector === functionTypeof) {
         this.errorSelector = options.errorSelector;
     }
 
-    if (isFunction(options.branchSelector)) {
+    if (typeof options.branchSelector === functionTypeof) {
         this.branchSelector = options.branchSelector;
     }
 
-    if (isFunction(options.onChange)) {
+    if (typeof options.onChange === functionTypeof) {
         this.onChange = options.onChange;
     }
 
-    if (isFunction(options.onChangesCompleted)) {
+    if (typeof options.onChangesCompleted === functionTypeof) {
         this.onChangesCompleted = options.onChangesCompleted;
     }
 }
 
-ModelRoot.prototype.errorSelector = function errorSelector(x, y) {
-    return y;
-};
-
-ModelRoot.prototype.comparator = function comparator(cacheNode, messageNode) {
-    if (hasOwn(cacheNode, "value") && hasOwn(messageNode, "value")) {
-        // They are the same only if the following fields are the same.
-        return cacheNode.value === messageNode.value &&
-            cacheNode.$type === messageNode.$type &&
-            cacheNode.$expires === messageNode.$expires;
+ModelRoot.comparator = function comparator(cacheNode, messageNode) {
+    var cType = cacheNode && cacheNode.$type;
+    var mType = messageNode && messageNode.$type;
+    if (cType) {
+        if (!mType) {
+            return cacheNode.value === messageNode;
+        } else {
+            // They are the same only if the following fields are the same.
+            return !(cType !== mType ||
+                     cacheNode.value !== messageNode.value ||
+                     cacheNode.$expires !== messageNode.$expires);
+        }
+    } else if (mType) {
+        return false;
     }
     return cacheNode === messageNode;
 };

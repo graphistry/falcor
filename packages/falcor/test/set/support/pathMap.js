@@ -1,5 +1,5 @@
-var pathSyntax = require("@graphistry/falcor-path-syntax");
-var iterateKeySet = require("@graphistry/falcor-path-utils").iterateKeySet;
+var pathSyntax = require('@graphistry/falcor-path-syntax');
+var iterateKeySet = require('@graphistry/falcor-path-utils').iterateKeySet;
 
 module.exports = function pathMap(path, value, depth) {
     depth = depth || 0;

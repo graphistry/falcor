@@ -1,8 +1,8 @@
 var $ref = require('@graphistry/falcor-json-graph').ref;
-var falcor = require('../../lib');
+var falcor = require('../../falcor.js');
 var Model = falcor.Model;
 var Rx = require('rx');
-var R = require('falcor-router');
+var R = require('@graphistry/falcor-router');
 var noOp = function() {};
 var chai = require('chai');
 var expect = chai.expect;
@@ -39,7 +39,7 @@ describe('call', function() {
         var args = [$ref('titlesById[1]')];
         var onNext = sinon.spy();
         toObservable(model.
-            call("genreList[0].titles.push", args, ['name'])).
+            call('genreList[0].titles.push', args, ['name'])).
             doAction(onNext, noOp, function() {
                 expect(onNext.calledOnce).to.be.ok;
                 expect(strip(onNext.getCall(0).args[0])).to.deep.equals({
@@ -79,7 +79,7 @@ describe('call', function() {
         var args = [$ref('titlesById[1]')];
         var onNext = sinon.spy();
         toObservable(model.
-            call("genreList[0].titles.push", args, ['name'])).
+            call('genreList[0].titles.push', args, ['name'])).
             doAction(onNext, noOp, function() {
                 expect(onNext.callCount).to.equal(0);
             }).
@@ -111,7 +111,7 @@ describe('call', function() {
         var onNext = sinon.spy();
 
         toObservable(model.
-            call("genreList[0].titles.push", args)).
+            call('genreList[0].titles.push', args)).
             doAction(onNext, noOp, noOp).
             subscribe(noOp, done, function() {
                 expect(onNext.callCount).to.equal(0);

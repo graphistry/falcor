@@ -1,6 +1,6 @@
 var expect = require('chai').expect;
 var hasIntersection = require('../lib/hasIntersection');
-var nullTerminator = require('../lib/support/nullTerminator');
+var materializedAtom = require('../lib/support/materializedAtom');
 
 describe('hasIntersection', function() {
     it('should return true when a simple path completely intersects the tree.', function() {
@@ -29,7 +29,7 @@ describe('hasIntersection', function() {
     });
     it('should return true when a simple path with a null last key completely intersects the tree.', function() {
         var path = ['one', 'two', null];
-        var tree = {one: {two: nullTerminator}};
+        var tree = {one: {two: materializedAtom}};
 
         expect(hasIntersection(tree, path, 0, path.length)).to.equal(true);
     });

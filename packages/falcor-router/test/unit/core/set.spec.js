@@ -5,7 +5,7 @@ var chai = require('chai');
 var expect = chai.expect;
 var falcor = require('@graphistry/falcor');
 var $ref = falcor.Model.ref;
-var sinon = require("sinon");
+var sinon = require('sinon');
 
 describe('Set', function() {
 
@@ -17,7 +17,7 @@ describe('Set', function() {
                 called = true;
                 var exception = false;
                 try {
-                    expect("userRating" in json.titlesById[1]).to.equals(true);
+                    expect('userRating' in json.titlesById[1]).to.equals(true);
                     expect(json.titlesById[1].userRating).to.equals(undefined);
                 } catch (e) {
                     exception = true;
@@ -32,24 +32,18 @@ describe('Set', function() {
 
         router.
             set({
-                "jsonGraph": {
-                    "titlesById": {
-                        "1": {
-                            "userRating": undefined
+                'jsonGraph': {
+                    'titlesById': {
+                        '1': {
+                            'userRating': undefined
                         }
                     }
                 },
-                "paths": [
-                    [
-                        "titlesById",
-                        1,
-                        "userRating"
-                    ]
-                ]
+                'paths': [['titlesById',1,'userRating']]
             }).
             subscribe(noOp, done, function() {
                 if (called === false) {
-                    done('Set handler wansn\'t called');
+                    done('Set handler wasn\'t called');
                 }
             });
     });
@@ -63,9 +57,9 @@ describe('Set', function() {
                 var exception = false
                 try {
                     expect(json).to.deep.equals({
-                        "titlesById": {
-                            "1": {
-                                "userRating": null
+                        'titlesById': {
+                            '1': {
+                                'userRating': null
                             }
                         }
                     })
@@ -82,24 +76,24 @@ describe('Set', function() {
 
         router.
             set({
-                "jsonGraph": {
-                    "titlesById": {
-                        "1": {
-                            "userRating": null
+                'jsonGraph': {
+                    'titlesById': {
+                        '1': {
+                            'userRating': null
                         }
                     }
                 },
-                "paths": [
+                'paths': [
                     [
-                        "titlesById",
+                        'titlesById',
                         1,
-                        "userRating"
+                        'userRating'
                     ]
                 ]
             }).
             subscribe(noOp, done, function() {
                 if (called === false) {
-                    done('Set handler wansn\'t called');
+                    done('Set handler wasn\'t called');
                 }
             });
     });
@@ -108,17 +102,17 @@ describe('Set', function() {
     it('should call get() with the same type of arguments when no route for set() found.', function(done) {
         var router = new R([
             {
-                route: "titlesById[{integers}].rating",
+                route: 'titlesById[{integers}].rating',
                 get: function(path) {
                     var exception = false
                     try {
                         expect(path).to.deep.equals(
                             [
-                               "titlesById",
+                               'titlesById',
                                [
                                   0
                                ],
-                               "rating"
+                               'rating'
                             ]
                         )
                     } catch (e) {
@@ -135,19 +129,17 @@ describe('Set', function() {
 
         router.
             set({
-                "jsonGraph": {
-                    "titlesById": {
-                        "0": {
-                            "rating": 5
+                'jsonGraph': {
+                    'titlesById': {
+                        '0': {
+                            'rating': 5
                         }
                     }
                 },
-                "paths": [["titlesById", 0, "rating"]]
+                'paths': [['titlesById', 0, 'rating']]
             }).
             subscribe(noOp, noOp, noOp);
     });
-
-
 
     it('should not transform set values before passing them to route. (0)', function(done) {
         var called = false
@@ -158,9 +150,9 @@ describe('Set', function() {
                 var exception = false
                 try {
                     expect(json).to.deep.equals({
-                        "titlesById": {
-                            "1": {
-                                "userRating": 0
+                        'titlesById': {
+                            '1': {
+                                'userRating': 0
                             }
                         }
                     })
@@ -177,29 +169,29 @@ describe('Set', function() {
 
         router.
             set({
-                "jsonGraph": {
-                    "titlesById": {
-                        "1": {
-                            "userRating": 0
+                'jsonGraph': {
+                    'titlesById': {
+                        '1': {
+                            'userRating': 0
                         }
                     }
                 },
-                "paths": [
+                'paths': [
                     [
-                        "titlesById",
+                        'titlesById',
                         1,
-                        "userRating"
+                        'userRating'
                     ]
                 ]
             }).
             subscribe(noOp, done, function() {
                 if (called === false) {
-                    done('Set handler wansn\'t called');
+                    done('Set handler wasn\'t called');
                 }
             });
     });
 
-    it('should not transform set values before passing them to route.  ("")', function(done) {
+    it('should not transform set values before passing them to route.  (\'\')', function(done) {
         var called = false
         var router = new R([{
             route: 'titlesById[{integers:titleIds}].userRating',
@@ -208,9 +200,9 @@ describe('Set', function() {
                 var exception = false
                 try {
                     expect(json).to.deep.equals({
-                        "titlesById": {
-                            "1": {
-                                "userRating": ""
+                        'titlesById': {
+                            '1': {
+                                'userRating': ''
                             }
                         }
                     })
@@ -227,24 +219,24 @@ describe('Set', function() {
 
         router.
             set({
-                "jsonGraph": {
-                    "titlesById": {
-                        "1": {
-                            "userRating": ""
+                'jsonGraph': {
+                    'titlesById': {
+                        '1': {
+                            'userRating': ''
                         }
                     }
                 },
-                "paths": [
+                'paths': [
                     [
-                        "titlesById",
+                        'titlesById',
                         1,
-                        "userRating"
+                        'userRating'
                     ]
                 ]
             }).
             subscribe(noOp, done, function() {
                 if (called === false) {
-                    done('Set handler wansn\'t called');
+                    done('Set handler wasn\'t called');
                 }
             });
     });
@@ -278,6 +270,7 @@ describe('Set', function() {
             do(onNext, noOp, function() {
                 expect(onNext.calledOnce).to.be.ok;
                 expect(onNext.getCall(0).args[0]).to.deep.equals({
+                    paths: [['path', 'to', ['a', 'b', 'c']]],
                     jsonGraph: {
                         path: {
                             to: {
@@ -291,7 +284,6 @@ describe('Set', function() {
             }).
             subscribe(noOp, done, done);
     });
-
 
     it('should perform a simple set.', function(done) {
         var did = false;
@@ -331,12 +323,81 @@ describe('Set', function() {
                         }
                     }
                 },
+                paths: [['videos', [1234, 333], 'rating']]
+            }).
+            do(function(result) {
+                expect(result).to.deep.equals({
+                    paths: [['videos', [333, 1234], 'rating']],
+                    jsonGraph: {
+                        videos: {
+                            1234: {
+                                rating: 5
+                            },
+                            333: {
+                                rating: 5
+                            }
+                        }
+                    }
+                });
+                called++;
+            }).
+            subscribe(noOp, done, function() {
+                if (!did) {
+                    expect(called).to.equals(1);
+                    done();
+                }
+            });
+    });
+
+    it('should perform a simple set and report invalidations.', function(done) {
+        var did = false;
+        var called = 0;
+        var router = new R([{
+            route: 'videos[{integers:id}].rating',
+            set: function(json) {
+                try {
+                    expect(json).to.deep.equals({
+                        videos: {
+                            1234: { rating: 5 },
+                            333: { rating: 5 }
+                        }
+                    });
+                } catch (e) {
+                    done(e);
+                    did = true;
+                }
+                return [{
+                    path: ['videos', 1234, 'rating'],
+                    value: 5
+                }, {
+                    path: ['videos', 333, 'rating'],
+                    value: 5
+                }, {
+                    invalidated: true,
+                    path: ['videos', 'top-rated']
+                }];
+            }
+        }]);
+        router.
+            set({
+                jsonGraph: {
+                    videos: {
+                        1234: {
+                            rating: 5
+                        },
+                        333: {
+                            rating: 5
+                        }
+                    }
+                },
                 paths: [
                     ['videos', [1234, 333], 'rating']
                 ]
             }).
             do(function(result) {
                 expect(result).to.deep.equals({
+                    invalidated: [['videos', 'top-rated']],
+                    paths: [['videos', [333, 1234], 'rating']],
                     jsonGraph: {
                         videos: {
                             1234: {
@@ -359,14 +420,15 @@ describe('Set', function() {
     });
 
     it('should ensure that set gets called with only the data it needs.', function(done) {
+
         var routerSet = sinon.spy(function (jsonGraph) {
             return {jsonGraph: jsonGraph};
         });
         var router = new R([{
-            route: "titlesById[{integers:titleIds}].userRating",
+            route: 'titlesById[{integers:titleIds}].userRating',
             set: routerSet
         }, {
-            route: "genreLists[{integers:titleIds}]",
+            route: 'genreLists[{integers:titleIds}]',
             get: function(p) {
                 var id = p.titleIds[0];
                 return {
@@ -376,23 +438,22 @@ describe('Set', function() {
             }
         }]);
 
-
         var onNext = sinon.spy();
         router.
             set({
-                "jsonGraph": {
-                    "genreLists": {
-                        "9": {
-                            "userRating": 9
+                'jsonGraph': {
+                    'genreLists': {
+                        '9': {
+                            'userRating': 9
                         },
-                        "10": {
-                            "userRating": 10
+                        '10': {
+                            'userRating': 10
                         }
                     }
                 },
-                "paths": [
-                    ["genreLists", 9, "userRating"],
-                    ["genreLists", 10, "userRating"]
+                'paths': [
+                    ['genreLists', 9, 'userRating'],
+                    ['genreLists', 10, 'userRating']
                 ]
             }).
             do(onNext).
@@ -400,31 +461,32 @@ describe('Set', function() {
                 expect(onNext.calledOnce, 'onNext calledOnce').to.be.ok;
                 expect(routerSet.calledTwice, 'routerSet calledTwice').to.be.ok;
                 expect(routerSet.getCall(0).args[0]).to.deep.equals({
-                    "titlesById": {
-                        "9": {
-                            "userRating": 9
+                    'titlesById': {
+                        '9': {
+                            'userRating': 9
                         }
                     }
                 });
                 expect(routerSet.getCall(1).args[0]).to.deep.equals({
-                    "titlesById": {
-                        "10": {
-                            "userRating": 10
+                    'titlesById': {
+                        '10': {
+                            'userRating': 10
                         }
                     }
                 });
                 expect(onNext.getCall(0).args[0]).to.deep.equals({
-                    "jsonGraph": {
-                        "genreLists": {
+                    'paths': [['genreLists', {from: 9, to: 10}, 'userRating']],
+                    'jsonGraph': {
+                        'genreLists': {
                             9: $ref('titlesById[9]'),
                             10: $ref('titlesById[10]')
                         },
-                        "titlesById": {
-                            "10": {
-                                "userRating": 10
+                        'titlesById': {
+                            '10': {
+                                'userRating': 10
                             },
-                            "9": {
-                                "userRating": 9
+                            '9': {
+                                'userRating': 9
                             }
                         }
                     }
@@ -477,6 +539,7 @@ describe('Set', function() {
             }).
             do(function(res) {
                 expect(res).to.deep.equals({
+                    paths: [['genreLists', 0, 'rating']],
                     jsonGraph: {
                         genreLists: {
                             0: $ref('videos[0]')
@@ -527,6 +590,7 @@ describe('Set', function() {
             do(noOp, noOp, function(x) {
                 expect(onNext.calledOnce).to.be.ok;
                 expect(onNext.getCall(0).args[0]).to.deep.equals({
+                    paths: [['a', 'b', 'c']],
                     jsonGraph: {
                         a: {
                             b: {

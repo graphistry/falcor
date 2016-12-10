@@ -1,7 +1,7 @@
 var expect = require('chai').expect;
 var sinon = require('sinon');
 
-var falcor = require('./../../lib');
+var falcor = require('./../../falcor.js');
 var Model = falcor.Model;
 var toObservable = require('./../toObs');
 

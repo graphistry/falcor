@@ -3,7 +3,7 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var FalcorServer = require('falcor-express');
 var falcorRouterDemoFactory = require('falcor-router-demo');
-var falcor = require('./../../lib');
+var falcor = require('./../../falcor.js');
 var Model = falcor.Model;
 var HttpDataSource = require('falcor-http-datasource');
 var expect = require('chai').expect;
@@ -20,12 +20,12 @@ xdescribe('Express Integration', function() {
         // Simple middleware to handle get/post
         app.use('/model.json', FalcorServer.dataSourceRoute(function(req, res) {
             // Passing in the user ID, this should be retrieved via some auth system
-            return falcorRouterDemoFactory("1");
+            return falcorRouterDemoFactory('1');
         }));
 
         server = app.listen(1337, function(err) {
             if (err) {
-                done(err);
+                done(err.toString());
                 return;
             }
             done();
@@ -57,7 +57,9 @@ xdescribe('Express Integration', function() {
                     }
                 });
             }).
-            subscribe(noOp, done, done);
+            subscribe(noOp, function(e) {
+                done(require('util').inspect(e));
+            }, done);
     });
 
     afterEach(function() {

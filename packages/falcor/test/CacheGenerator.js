@@ -4,7 +4,7 @@ var atom = jsonGraph.atom;
 var VIDEO_COUNT_PER_LIST = 10;
 var AthroughZ = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 var modelCreated = {};
-modelCreated[ƒ_wrapped_value] = true;
+modelCreated[f_wrapped_value] = true;
 
 module.exports = function cacheGenerator(videoStartIdx, videoCount,
                                          fields, setModelCreated) {

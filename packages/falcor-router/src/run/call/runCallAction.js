@@ -1,199 +1,156 @@
-var isJSONG = require('./../../support/isJSONG');
-var outputToObservable = require('./../conversion/outputToObservable');
-var noteToJsongOrPV = require('./../conversion/noteToJsongOrPV');
-var CallRequiresPathsError = require('./../../errors/CallRequiresPathsError');
-var mCGRI = require('./../mergeCacheAndGatherRefsAndInvalidations');
+var Subject = require('../../rx').Subject;
 var Observable = require('../../rx').Observable;
+var pluckPath = require('./../../support/pluckPath');
+var notOnCompleted = require('../conversion/notOnCompleted');
+var mCGRI = require('../mergeCacheAndGatherRefsAndInvalidations');
+var outputToObservable = require('../conversion/outputToObservable');
+var noteToMatchAndResult = require('../conversion/noteToMatchAndResult');
+var flattenAndNormalizeActionResults = require('../conversion/flattenAndNormalizeActionResults');
+
+var isArray = Array.isArray;
+var isJSONG = require('./../../support/isJSONG');
+var isMessage = require('./../../support/isMessage');
+var isPathValue = require('./../../support/isPathValue');
 
 module.exports =  outerRunCallAction;
 
-function outerRunCallAction(routerInstance, callPath, args,
-                            suffixes, paths, jsongCache) {
+function outerRunCallAction(routerInstance, callPath, callArgs,
+                            suffixes, extraPaths, jsonGraph) {
     return function innerRunCallAction(matchAndPath) {
         return runCallAction(matchAndPath, routerInstance, callPath,
-                             args, suffixes, paths, jsongCache);
+                             callArgs, suffixes, extraPaths, jsonGraph);
     };
 }
 
-function runCallAction(matchAndPath, routerInstance, callPath, args,
-                       suffixes, paths, jsongCache) {
+function runCallAction(matchAndPath, routerInstance, callPath, callArgs,
+                       suffixes, extraPaths, jsonGraph) {
 
+    var out;
     var match = matchAndPath.match;
     var matchedPath = matchAndPath.path;
-    var out;
 
-    // We are at out destination.  Its time to get out
-    // the pathValues from the
-    if (match.isCall) {
+    var args = !match.isCall ?
+        [matchAndPath.path] :
+        [matchedPath, callArgs, suffixes, extraPaths];
 
-        // This is where things get interesting
-        out = Observable.
-            defer(function() {
-            var next;
-                try {
-                    next = match.
-                        action.call(
-                            routerInstance, matchedPath, args, suffixes, paths);
-                } catch (e) {
-                    e.throwToNext = true;
-                    throw e;
-                }
-                return outputToObservable(next).
-                    toArray();
-            }).
+    var optimized = !match.isCall ?
+        matchedPath: matchedPath.slice(0, matchedPath.length - 1);
 
-            // Required to get the references from the outputting jsong
-            // and pathValues.
-            map(function(res) {
+    var obs = Observable.defer(function() {
+            return outputToObservable(match.action.apply(routerInstance, args));
+        })
+        .materialize()
+        .filter(notOnCompleted)
+        .map(noteToMatchAndResult(matchAndPath, optimized, match.isCall))
+        .mergeMap(flattenAndNormalizeActionResults);
 
-                // checks call for isJSONG and if there is jsong without paths
-                // throw errors.
-                var refs = [];
-                var values = [];
+    return !match.isCall ? obs : validateAndEnhanceCallOutput(
+        obs, matchedPath, callPath, callArgs, suffixes, extraPaths, jsonGraph
+    );
+}
 
-                // Will flatten any arrays of jsong/pathValues.
-                var callOutput = res.
+function validateAndEnhanceCallOutput(callOperation, matchedPath, callPath,
+                                      callArgs, suffixes, extraPaths, jsonGraph) {
 
-                    // Filters out any falsy values
-                    filter(function(x) {
-                        return x;
-                    }).
-                    reduce(function(flattenedRes, next) {
-                        return flattenedRes.concat(next);
-                    }, []);
+    var hasSuffixes = suffixes && suffixes.length;
+    var hasExtraPaths = extraPaths && extraPaths.length;
+    var callPathSave1 = callPath.slice(0, callPath.length - 1);
 
-                // An empty output from call
-                if (callOutput.length === 0) {
-                    return [];
-                }
+    // matchedPath is the optimized path to call.
+    // e.g:
+    // callPath: [genreLists, 0, add] ->
+    // matchedPath: [lists, 'abc', add]
+    var optimizedPathLength = matchedPath.length - 1;
 
-                var refLen = -1;
-                callOutput.forEach(function(r) {
+    return callOperation.map(function(result) {
 
-                    // its json graph.
-                    if (isJSONG(r)) {
+        var value = result.value;
 
-                        // This is a hard error and must fully stop the server
-                        if (!r.paths) {
-                            var err =
-                                new CallRequiresPathsError();
-                            err.throwToNext = true;
-                            throw err;
-                        }
-                    }
+        if (!isArray(value)) {
+            value = [value];
+        }
 
-                });
+        if (value.length === 0) {
+            return result;
+        }
 
-                var invsRefsAndValues = mCGRI(jsongCache, callOutput);
-                invsRefsAndValues.references.forEach(function(ref) {
-                    refs[++refLen] = ref;
-                });
+        var callResultsLen = 0;
+        // Use recurseMatchAndExecute to run the paths and suffixes for call.
+        // Send a message to recurseMatchAndExecute to switch from call to get.
+        var callResults = [{ isMessage: true, method: 'get' }];
 
-                values = invsRefsAndValues.values.map(function(pv) {
-                    return pv.path;
-                });
+        var invsRefsAndValues = mCGRI(jsonGraph, value);
+        var values = invsRefsAndValues.values;
+        var messages = invsRefsAndValues.messages;
+        var references = invsRefsAndValues.references;
+        var invalidations = invsRefsAndValues.invalidations;
 
-                var callLength = callOutput.length;
-                var callPathSave1 = callPath.slice(0, callPath.length - 1);
-                var hasSuffixes = suffixes && suffixes.length;
-                var hasPaths = paths && paths.length;
+        if (invalidations.length) {
+            callResults[++callResultsLen] = {
+                isMessage: true, invalidations: invalidations
+            };
+        }
 
-                // We are going to use recurseMatchAndExecute to run
-                // the paths and suffixes for call.  For that to happen
-                // we must send a message to the outside to switch from
-                // call to get.
-                callOutput[++callLength] = {isMessage: true, method: 'get'};
-
-                // If there are paths to add then push them into the next
-                // paths through 'additionalPaths' message.
-                if (hasPaths && (callLength + 1)) {
-                    paths.forEach(function(path) {
-                        callOutput[++callLength] = {
-                            isMessage: true,
-                            additionalPath: callPathSave1.concat(path)
-                        };
-                    });
-                }
-
-                // Suffix is the same as paths except for how to calculate
-                // a path per reference found from the callPath.
-                if (hasSuffixes) {
-
-                    // matchedPath is the optimized path to call.
-                    // e.g:
-                    // callPath: [genreLists, 0, add] ->
-                    // matchedPath: [lists, 'abc', add]
-                    var optimizedPathLength = matchedPath.length - 1;
-
-                    // For every reference build the complete path
-                    // from the callPath - 1 and concat remaining
-                    // path from the PathReference (path is where the
-                    // reference was found, not the value of the reference).
-                    // e.g: from the above example the output is:
-                    // output = {path: [lists, abc, 0], value: [titles, 123]}
-                    //
-                    // This means the refs object = [output];
-                    // callPathSave1: [genreLists, 0],
-                    // optimizedPathLength: 3 - 1 = 2
-                    // ref.path.slice(2): [lists, abc, 0].slice(2) = [0]
-                    // deoptimizedPath: [genreLists, 0, 0]
-                    //
-                    // Add the deoptimizedPath to the callOutput messages.
-                    // This will make the outer expand run those as a 'get'
-                    refs.forEach(function(ref) {
-                        var deoptimizedPath = callPathSave1.concat(
-                                ref.path.slice(optimizedPathLength));
-                        suffixes.forEach(function(suffix) {
-                            var additionalPath =
-                                deoptimizedPath.concat(suffix);
-                            callOutput[++callLength] = {
-                                isMessage: true,
-                                additionalPath: additionalPath
-                            };
-                        });
-                    });
-                }
-
-                // If there are no suffixes but there are references, report
-                // the paths to the references.  There may be values as well,
-                // add those to the output.
-                if (refs.length && !hasSuffixes || values.length) {
-                    var additionalPaths = [];
-                    if (refs.length && !hasSuffixes) {
-                        additionalPaths = refs.
-                            map(function(x) { return x.path; });
-                    }
-                    additionalPaths.
-                        concat(values).
-                        forEach(function(path) {
-                            callOutput[++callLength] = {
-                                isMessage: true,
-                                additionalPath: path
-                            };
-                        });
-                }
-
-                return callOutput;
-            }).
-
-            // When call has an error it needs to be propagated to the next
-            // level instead of onCompleted'ing
-            do(null, function(e) {
-                e.throwToNext = true;
-                throw e;
-            });
-    } else {
-        out = match.action.call(routerInstance, matchAndPath.path);
-        out = outputToObservable(out);
-    }
-
-    return out.
-        materialize().
-        filter(function(note) {
-            return note.kind !== 'C';
-        }).
-        map(noteToJsongOrPV(matchAndPath.path)).
-        map(function(jsonGraphOrPV) {
-            return [matchAndPath.match, jsonGraphOrPV];
+        // If there are path values, report their paths in the output.
+        values.forEach(function(pathValue) {
+            callResults[++callResultsLen] = {
+                isMessage: true, value: pathValue
+            };
         });
+
+        messages.forEach(function(message) {
+            callResults[++callResultsLen] = message;
+        });
+
+        // If there are paths to add then push them into the next
+        // paths through 'additionalPath' message.
+        if (hasExtraPaths) {
+            extraPaths.forEach(function(path) {
+                callResults[++callResultsLen] = {
+                    isMessage: true, path: callPathSave1.concat(path)
+                };
+            });
+        }
+
+        // Build the complete path for each reference
+        // from callPath.length - 1 and the reference's
+        // path (where the reference was found, not the
+        // value of the reference).
+        //
+        // e.g: from the above example the output is:
+        // output = {path: [lists, abc, 0], value: [titles, 123]}
+        //
+        // This means the refs object = [output];
+        // callPathSave1: [genreLists, 0],
+        // optimizedPathLength: 3 - 1 = 2
+        // ref.path.slice(2): [lists, abc, 0].slice(2) = [0]
+        // deoptimizedPath: [genreLists, 0, 0]
+        //
+        // Add the deoptimizedPath to the callResults messages.
+        // This will make the outer expand run those as a 'get'
+        if (hasSuffixes) {
+            references.forEach(function(refPathValue) {
+                var deoptimizedPath = callPathSave1.concat(
+                    refPathValue.path.slice(optimizedPathLength)
+                );
+                suffixes.forEach(function(suffix) {
+                    callResults[++callResultsLen] = {
+                        isMessage: true, path: deoptimizedPath.concat(suffix)
+                    };
+                });
+            });
+        }
+        // If there are no suffixes, additionally report the reference paths.
+        else {
+            references.forEach(function(refPathValue) {
+                callResults[++callResultsLen] = {
+                    isMessage: true, value: refPathValue
+                };
+            });
+        }
+
+        result.value = callResults;
+
+        return result;
+    });
 }

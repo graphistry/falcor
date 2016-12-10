@@ -27,6 +27,8 @@ describe('JSONG - Merge', function() {
 
         var out = mergeTest(jsong);
         expect(out).to.deep.equals({
+            invalidations: undefined,
+            paths: [['there', 'is']],
             values: [{
                 path: ['there', 'is'],
                 value: 'a value'
@@ -48,6 +50,8 @@ describe('JSONG - Merge', function() {
 
         var out = mergeTest(jsong);
         expect(out).to.deep.equals({
+            invalidations: undefined,
+            paths: [['there', 'is']],
             values: [{
                 path: ['there', 'is'],
                 value: 0
@@ -69,6 +73,8 @@ describe('JSONG - Merge', function() {
 
         var out = mergeTest(jsong);
         expect(out).to.deep.equals({
+            invalidations: undefined,
+            paths: [['there', 'is']],
             values: [{
                 path: ['there', 'is'],
                 value: ''
@@ -90,6 +96,8 @@ describe('JSONG - Merge', function() {
 
         var out = mergeTest(jsong);
         expect(out).to.deep.equals({
+            invalidations: undefined,
+            paths: [['there', 'is']],
             values: [{
                 path: ['there', 'is'],
                 value: false
@@ -111,6 +119,8 @@ describe('JSONG - Merge', function() {
 
         var out = mergeTest(jsong);
         expect(out).to.deep.equals({
+            invalidations: undefined,
+            paths: [['there', 'is']],
             values: [{
                 path: ['there', 'is'],
                 value: null
@@ -135,7 +145,6 @@ describe('JSONG - Merge', function() {
     });
 
     it('should write a path with a reference to a branch.', function() {
-
         var jsong = {
             jsonGraph: {
                 there: {
@@ -147,8 +156,25 @@ describe('JSONG - Merge', function() {
             },
             paths: [['there', 'is', 'value']]
         };
-
         mergeTest(jsong);
+    });
+
+    it('should not write empty branch nodes when refs short-circuit.', function() {
+        var jsong = {
+            jsonGraph: {
+                there: {
+                    is: $ref('a')
+                }
+            },
+            paths: [['there', 'is', 'value']]
+        };
+        var out = mergeTest(jsong);
+        expect(out).to.deep.equals({
+            paths: [],
+            values: [],
+            references: [],
+            invalidations: undefined
+        });
     });
 
     it('should write a path with a reference to a reference.', function() {
@@ -179,6 +205,8 @@ describe('JSONG - Merge', function() {
         var out = jsongMerge(cache, jsong);
         expect(out).to.deep.equals({
             values: [],
+            invalidations: undefined,
+            paths: [['there', 'is']],
             references: [{
                 path: ['there', 'is'],
                 value: ['a']
@@ -205,6 +233,11 @@ describe('JSONG - Merge', function() {
         var cache = {};
         var out = jsongMerge(cache, jsong);
         expect(out).to.deep.equals({
+            invalidations: undefined,
+            paths: [
+                ['there', 'is', 'value'],
+                ['there', 'was']
+            ],
             values: [{
                 path: ['there', 'is', 'value'],
                 value: 5
