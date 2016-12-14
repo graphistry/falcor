@@ -1,6 +1,6 @@
 {
   "name": "@graphistry/falcor-query-syntax",
-  "version": "2.6.2",
+  "version": "2.6.3",
   "description": "ES6 Template String and Builder function for Creating Falcor Paths (Experimental)",
   "main": "index.js",
   "scripts": {
@@ -55,7 +55,7 @@
   },
   "devDependencies": {
     "@graphistry/falcor-json-graph": "^2.5.3",
-    "@graphistry/falcor-router": "^2.6.2",
+    "@graphistry/falcor-router": "^2.6.3",
     "babel-plugin-istanbul": "~3.0.0",
     "babel-register": "~6.18.0",
     "benchmark": "~2.1.1",
