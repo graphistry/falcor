@@ -23,7 +23,7 @@ module.exports = (new benchmark.Suite('Paths'))
                     }
                 }
             }
-        }`);
+        }`[0]);
     })
     .add('toPaths template', function() {
         toPaths`{

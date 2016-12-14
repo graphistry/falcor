@@ -14,7 +14,17 @@ var _pegjsUtil = require('pegjs-util');
 
 var _falcorQuerySyntax = require('@graphistry/falcor-query-syntax');
 
-var _falcorQuerySyntax2 = _interopRequireDefault(_falcorQuerySyntax);
+var _toFlatBuffer = require('@graphistry/falcor-path-utils/lib/toFlatBuffer');
+
+var _toFlatBuffer2 = _interopRequireDefault(_toFlatBuffer);
+
+var _flatBufferToPaths = require('@graphistry/falcor-path-utils/lib/flatBufferToPaths');
+
+var _flatBufferToPaths2 = _interopRequireDefault(_flatBufferToPaths);
+
+var _computeFlatBufferHash = require('@graphistry/falcor-path-utils/lib/computeFlatBufferHash');
+
+var _computeFlatBufferHash2 = _interopRequireDefault(_computeFlatBufferHash);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -31,8 +41,13 @@ function memoizeQueryies() {
             splice(lru, lru.tail);
         }
         if (!entry || entry.error) {
-            entry = map[query] = (0, _extends3.default)({
-                query: query }, (0, _pegjsUtil.parse)(_falcorQuerySyntax2.default.parser, query));
+            var result = (0, _pegjsUtil.parse)(_falcorQuerySyntax.paths.Parser, query);
+            if (!result.error) {
+                // Turn the computed AST into paths, then turn it back into an
+                // AST so we collapse adjacent nodes.
+                result.ast = (0, _computeFlatBufferHash2.default)((0, _toFlatBuffer2.default)((0, _flatBufferToPaths2.default)(result.ast)));
+            }
+            entry = map[query] = (0, _extends3.default)({ query: query }, result);
         }
         promote(lru, entry);
         return entry;

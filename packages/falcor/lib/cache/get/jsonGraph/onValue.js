@@ -26,13 +26,11 @@ function onJSONGraphValue(node, type, depth, seed, results,
         value = clone(node);
     }
 
-    if (seed) {
-        results.hasValue = true;
-        inlineValue(value, optimizedPath, optimizedLength, seed);
-        (seed.paths || (seed.paths = [])).push(
-            requestedPath.slice(0, depth + !!fromReference) // depth + 1 if fromReference === true
-        );
-    }
+    results.hasValue = true;
+    inlineValue(value, optimizedPath, optimizedLength, seed);
+    (seed.paths || (seed.paths = [])).push(
+        requestedPath.slice(0, depth + !!fromReference) // depth + 1 if fromReference === true
+    );
 
     return value;
 }

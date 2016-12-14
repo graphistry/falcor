@@ -22,7 +22,7 @@ function computeFlatBufferHash(seed) {
             code = '' + getHashCode('' + code + 'null');
             continue;
         } else if (typeof key === 'object') {
-            key = '{from:' + key.from + ',length:' + key.length + '}';
+            key = '[' + key.from + '..' + (key.from + key.length - 1) + ']';
         }
 
         var next = computeFlatBufferHash(seed[keysIndex]);

@@ -11,7 +11,7 @@ module.exports = {
     hasIntersection: require('./hasIntersection'),
     optimizePathSets: require('./optimizePathSets'),
     flatBufferToPaths: require('./flatBufferToPaths'),
-    removeIntersection: require('./removeIntersection'),
+    flatBufferToRoutes: require('./flatBufferToRoutes'),
     computeFlatBufferHash: require('./computeFlatBufferHash'),
     pathsComplementFromTree: require('./pathsComplementFromTree'),
     pathsComplementFromLengthTree: require('./pathsComplementFromLengthTree'),

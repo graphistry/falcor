@@ -7,7 +7,6 @@ import fetchDataUntilSettled from '../utils/fetchDataUntilSettled';
 
 import 'rxjs/add/operator/map';
 import 'rxjs/add/observable/of';
-import 'rxjs/add/observable/empty';
 import 'rxjs/add/operator/switchMap';
 import { Subject } from 'rxjs/Subject';
 import { Observable } from 'rxjs/Observable';
@@ -79,14 +78,15 @@ Falcor containers must be created with a fragment function, or an Object with a 
 }
 
 const fragments = function(items = []) {
-    if (!items || typeofObject !== typeof items) {
+    if (!items ||
+        typeofObject !== typeof items ||
+        !items.hasOwnProperty('length')) {
         return `{ length }`;
-    } else if (!items.hasOwnProperty('length')) {
-        items = Object.keys(items).map((key) => items[key]);
     }
     return `{ length ${Array
-        .from(items, (xs, i) => xs)
-        .reduce((xs, x, i) => `${xs}, ${i}: ${this.fragment(x)}`, '')
+        .from(items, (x, i) => x)
+        .reduce((xs, x, i) =>`${xs}, ${
+            i}: ${this.fragment(x)}`, '')
     }}`;
 }
 
@@ -230,26 +230,26 @@ class FalcorContainer extends React.Component {
             props: { ...this.props, data: undefined },
         });
     }
-    // componentWillUpdate() {
-    //     if (!global['__trace_container_updates__']) {
-    //         return;
-    //     }
-    //     const { state = {} } = this;
-    //     const { falcor } = state;
-    //     if (falcor) {
-    //         console.log(`cwu:`, this.getFalcorPathString());
-    //     }
-    // }
-    // getFalcorPathString() {
-    //     return this.state && this.state.falcor && this.state.falcor.getPath().reduce((xs, key, idx) => {
-    //         if (idx === 0) {
-    //             return key;
-    //         } else if (typeofNumber === typeof key) {
-    //             return `${xs}[${key}]`;
-    //         }
-    //         return `${xs}['${key}']`;
-    //     }, '') || '';
-    // }
+    componentWillUpdate() {
+        if (!global['__trace_container_updates__']) {
+            return;
+        }
+        const { state = {} } = this;
+        const { falcor } = state;
+        if (falcor) {
+            console.log(`cwu:`, this.getFalcorPathString());
+        }
+    }
+    getFalcorPathString() {
+        return this.state && this.state.falcor && this.state.falcor.getPath().reduce((xs, key, idx) => {
+            if (idx === 0) {
+                return key;
+            } else if (typeofNumber === typeof key) {
+                return `${xs}[${key}]`;
+            }
+            return `${xs}['${key}']`;
+        }, '') || '';
+    }
     componentWillUnmount() {
         // Clean-up subscription before un-mounting
         this.propsSubscription.unsubscribe();

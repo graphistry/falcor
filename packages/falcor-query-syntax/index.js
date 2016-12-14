@@ -1,4 +1,5 @@
-module.exports = require('./lib/paths-parser').parse;
-module.exports.parser = require('./lib/paths-parser');
-module.exports.toPaths = require('./lib/toPaths');
-module.exports.template = require('./lib/template');
+module.exports = {
+    paths: require('./lib/toPaths'),
+    routes: require('./lib/toRoutes'),
+    template: require('./lib/template')
+};

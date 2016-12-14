@@ -10,7 +10,7 @@ function createErrorClass(name, init) {
             Error.captureStackTrace(this, this.constructor);
         }
     }
-    E.prototype = new Error();
+    E.prototype = Object.create(Error.prototype);
     E.prototype.name = name;
     E.prototype.constructor = E;
     E.is = function(x) { return x.name === name; };

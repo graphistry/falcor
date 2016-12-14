@@ -8,8 +8,10 @@ function toFlatBuffer(paths, seed) {
     return paths.reduce(function(seed, path) {
         if (isArray(path)) {
             return pathToFlatBuffer(seed, path, 0, path.length);
+        } else if (isArray(path.$keys)) {
+            return toFlatBuffer(flatBufferToPaths(path), seed);
         }
-        return toFlatBuffer(flatBufferToPaths(path), seed);
+        return seed;
     }, seed || {});
 }
 
@@ -82,7 +84,7 @@ function pathToFlatBuffer(seed, path, depth, length) {
                 break iteratingKeyset;
             }
             keyset = { from: nextKey, length: rangeEnd - nextKey + 1 };
-            nextKey = '{from:' + nextKey + ',length:' + (rangeEnd - nextKey + 1) + '}';
+            nextKey = '[' + nextKey + '..' + rangeEnd + ']';
             if ('undefined' === typeof (keysIndex = keysMap[nextKey])) {
                 keysIndex = keys.length;
             }

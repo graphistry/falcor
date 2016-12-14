@@ -1,4 +1,4 @@
-var Observable = require('Rx').Observable;
+var Observable = require('rx').Observable;
 var R = require('@graphistry/falcor-router');
 var Cache = require('./../Cache');
 

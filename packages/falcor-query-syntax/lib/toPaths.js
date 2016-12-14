@@ -1,9 +1,13 @@
 var template = require('./template');
-var parser = require('./paths-parser');
-var flatBufferToPaths = require('@graphistry/falcor-path-utils').flatBufferToPaths;
+var Parser = require('./paths-parser');
+var flatBufferToPaths = require('@graphistry/falcor-path-utils/lib/flatBufferToPaths');
 
 module.exports = toPaths;
 
 function toPaths() {
-    return flatBufferToPaths(parser.parse(template.apply(null, arguments)));
+    return flatBufferToPaths(
+        Parser.parse.apply(
+            Parser, template.apply(null, arguments)));
 }
+
+toPaths.Parser = Parser;

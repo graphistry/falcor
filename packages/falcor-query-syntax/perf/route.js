@@ -3,39 +3,38 @@ var template = require('../lib/template');
 var routeParser = require('../lib/route-parser');
 var toRoutes = require('../lib/toRoutes');
 
+function pushHandler() {};
+var getHandler = { get: function() {} };
+
 module.exports = (new benchmark.Suite('Route'))
     .add('routeParser', function() {
         routeParser.parse(template`{
             genreLists: {
-                length,
+                push: ${ pushHandler },
+                length: ${ getHandler },
                 [{ integers: lists }]: {
-                    name,
-                    rating,
+                    [name, rating]: ${ getHandler },
                     titles: {
-                        length,
-                        [{keys}]: {
-                            name,
-                            rating,
-                            box-shot
+                        length: ${ getHandler },
+                        [{ keys }]: {
+                            [name, rating, box-shot]: ${ getHandler }
                         }
                     }
                 }
             }
-        }`);
+        }`[0]);
     })
     .add('toRoutes template', function() {
         toRoutes`{
             genreLists: {
-                length,
+                push: ${ pushHandler },
+                length: ${ getHandler },
                 [{ integers: lists }]: {
-                    name,
-                    rating,
+                    [name, rating]: ${ getHandler },
                     titles: {
-                        length,
-                        [{keys}]: {
-                            name,
-                            rating,
-                            box-shot
+                        length: ${ getHandler },
+                        [{ keys }]: {
+                            [name, rating, box-shot]: ${ getHandler }
                         }
                     }
                 }

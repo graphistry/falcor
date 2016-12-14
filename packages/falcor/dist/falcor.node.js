@@ -294,7 +294,7 @@ function createErrorClass(name, init) {
             Error.captureStackTrace(this, this.constructor);
         }
     }
-    E.prototype = new Error();
+    E.prototype = Object.create(Error.prototype);
     E.prototype.name = name;
     E.prototype.constructor = E;
     E.is = function (x) {
@@ -1816,9 +1816,9 @@ function getJSON(model, paths, seed, progressive, expireImmediate) {
         boxValues = model._boxed,
         expired = modelRoot.expired,
         recycleJSON = model._recycleJSON,
-        materialized = model._materialized,
         hasDataSource = Boolean(model._source),
         branchSelector = modelRoot.branchSelector,
+        materialized = seed && model._materialized,
         treatErrorsAsValues = model._treatErrorsAsValues,
         allowFromWhenceYouCame = model._allowFromWhenceYouCame;
 
@@ -1829,9 +1829,8 @@ function getJSON(model, paths, seed, progressive, expireImmediate) {
 
     if (pathsCount > 0) {
         if (recycleJSON) {
-            pathsCount = 1;
             isFlatBuffer = true;
-            if (!paths[0].$keys) {
+            if (pathsCount > 1 || isArray(paths[0])) {
                 paths = [computeFlatBufferHash(toFlatBuffer(paths, {}))];
             }
             arr = walkFlatBufferAndBuildOutput(cache, node, json, paths[0], 0, seed, results, requestedPath, optimizedPath, optimizedLength,
@@ -3729,7 +3728,7 @@ function walkPathAndBuildOutput(root, node, json, path, depth, seed, results, re
                         break iteratingKeyset;
                     }
                     keyIsRange = true;
-                    nextPathKey = '{from:' + nextKey + ',length:' + (rangeEnd - nextKey + 1) + '}';
+                    nextPathKey = '[' + nextKey + '..' + rangeEnd + ']';
                 }
 
         // Now that we have the next key, step down one level in the cache.
@@ -3840,11 +3839,7 @@ function walkPathAndBuildOutput(root, node, json, path, depth, seed, results, re
         while (keyIsRange && ++nextKey <= rangeEnd);
 
         if (!hasMissingPath) {
-            if (undefined === nextPath) {
-                f_code = '' + getHashCode('' + f_code + nextPathKey);
-            } else {
-                f_code = '' + getHashCode('' + f_code + nextPathKey + nextPath['$code']);
-            }
+            f_code = '' + getHashCode('' + f_code + nextPathKey + (nextPath && nextPath['$code'] || ''));
         }
     }
 
@@ -4267,12 +4262,10 @@ function onJSONGraphValue(node, type, depth, seed, results, requestedPath, optim
         value = clone(node);
     }
 
-    if (seed) {
-        results.hasValue = true;
-        inlineValue(value, optimizedPath, optimizedLength, seed);
-        (seed.paths || (seed.paths = [])).push(requestedPath.slice(0, depth + !!fromReference) // depth + 1 if fromReference === true
-        );
-    }
+    results.hasValue = true;
+    inlineValue(value, optimizedPath, optimizedLength, seed);
+    (seed.paths || (seed.paths = [])).push(requestedPath.slice(0, depth + !!fromReference) // depth + 1 if fromReference === true
+    );
 
     return value;
 }

@@ -1,21 +1,10 @@
-{
-    function getHashCode(str) {
-        var hash = 5381, i = str.length;
-        while (i) {
-            hash = (hash * 33) ^ str.charCodeAt(--i);
-        }
-        // JavaScript does bitwise operations (like XOR, above) on 32-bit signed
-        // integers. Since we want the results to be always positive, convert the
-        // signed int to an unsigned by doing an unsigned bitshift.
-        return hash >>> 0;
-    }
-}
-
 /*
  * Falcor PathSet Grammar
  * ============
  */
-
+{
+var isArray = Array.isArray;
+}
 /* ----- 2. JSON Grammar ----- */
 
 JSON_text
@@ -33,14 +22,16 @@ ws "whitespace" = [ \t\n\r]*
 
 /* ----- 3. Values ----- */
 
-value
-  = false
-  / null
-  / true
-  / range
-  / object
-  / number
-  / string
+value =
+  false /
+  null /
+  true /
+  range /
+  object /
+  number /
+  string /
+  IdentifierName
+
 
 false = "false" { return false; }
 null  = "null"  { return null;  }
@@ -55,50 +46,36 @@ object
       head:member
       tail:(value_separator m:member { return m; })*
 {
-  var keys = [];
-  var keysMap = {};
-  var code = '', key;
+  var keys = [], key;
+  var subNode, subKeys;
   var m = head, name, node;
-  var subNode, subKeys, subKeysMap;
   var i = -1, j = -1, k = -1, keyIndex = -1;
-  var result = { '$keys': keys, '$keysMap': keysMap };
+  var result = { '$keys': keys };
   do {
     name = m.name;
     node = m.value;
     if (name === '...') {
-      if (!node) {
+      if (!node || !(subKeys = node.$keys)) {
         continue;
       }
-      subKeys = node.$keys;
-      subKeysMap = node.$keysMap;
-      for (key in subKeysMap) {
-        j = subKeysMap[key];
+      j = -1;
+      k = subKeys.length;
+      while (++j < k) {
         keys[++keyIndex] = subKeys[j];
-        keysMap[key] = keyIndex;
         subNode = node[j];
-        if (subNode === undefined) {
-          code = '' + getHashCode('' + code + key);
-        } else {
+        if (subNode !== undefined) {
           result[keyIndex] = subNode;
-          code = '' + getHashCode('' + code + key + subNode['$code']);
         }
       }
     }
-    else if (Array.isArray(name)) {
+    else if (isArray(name)) {
       j = -1;
       k = name.length;
       while (++j < k) {
         if (key = name[j]) {
           keys[++keyIndex] = key;
-          if (key && typeof key === 'object') {
-            key = `{from:${key.from},length:${key.length}}`;
-          }
-          keysMap[key] = keyIndex;
-          if (node === undefined) {
-            code = '' + getHashCode('' + code + key);
-          } else {
+          if (node !== undefined) {
             result[keyIndex] = node;
-            code = '' + getHashCode('' + code + key + node['$code']);
           }
         }
       }
@@ -106,19 +83,11 @@ object
     else {
       key = name;
       keys[++keyIndex] = key;
-      if (key && typeof key === 'object') {
-        key = `{from:${key.from},length:${key.length}}`;
-      }
-      keysMap[key] = keyIndex;
-      if (node === undefined) {
-        code = '' + getHashCode('' + code + key);
-      } else {
+      if (node !== undefined) {
         result[keyIndex] = node;
-        code = '' + getHashCode('' + code + key + node['$code']);
       }
     }
   } while (m = tail[++i]);
-  result['$code'] = code;
   return result;
 }
     )?
@@ -128,25 +97,25 @@ object
 member
   = name:ellipses value:object {
     return { name: '...', value: value };
-  }
-  / name:name name_separator value:object {
+  } /
+  name:name name_separator value:object {
     return { name: name, value: value };
-  }
-  / name: name {
+  } /
+  name:name {
     return { name: name, value: undefined }
-  }
-  / name:array name_separator value:object {
+  } /
+  name:array name_separator value:object {
     return { name: name, value: value };
-  }
-  / name:array {
+  } /
+  name:array {
     return { name: name, value: undefined };
   }
 
 name
-  = string
-  / number
-  / null
-  / IdentifierName
+  = string /
+    number /
+    null /
+    IdentifierName
 
 /* ----- 5. Arrays ----- */
 
@@ -172,13 +141,19 @@ exp           = e (minus / plus)? DIGIT+
 frac          = decimal_point DIGIT+
 int           = zero / (digit1_9 DIGIT*)
 sigint        = minus? int { return parseInt(text(), 10); }
-_sigint       = sigint / undefined { return 0; }
-range         = from:_sigint "..." to:_sigint {
+_sigint       = sigint / undefined
+range         = from:sigint "..." to:_sigint {
+                  if (to === undefined) {
+                    return { from: 0, length: 0 };
+                  }
                   return from < to &&
                     { from: from, length: to - from } ||
                     { from: to, length: from - to };
-                }
-              / from:_sigint ".." to:_sigint {
+                } /
+                from:sigint ".." to:_sigint {
+                  if (to === undefined) {
+                    return { from: 0, length: 0 };
+                  }
                   return from < to &&
                     { from: from, length: to - from + 1 } ||
                     { from: to, length: from - to + 1 };
@@ -193,19 +168,19 @@ string "string"
   = quotation_mark chars:char* quotation_mark { return chars.join(""); }
 
 char
-  = unescaped
-  / escape
+  = unescaped /
+    escape
     sequence:(
-        '"'
-      / "'"
-      / "\\"
-      / "/"
-      / "b" { return "\b"; }
-      / "f" { return "\f"; }
-      / "n" { return "\n"; }
-      / "r" { return "\r"; }
-      / "t" { return "\t"; }
-      / "u" digits:$(HEXDIG HEXDIG HEXDIG HEXDIG) {
+        '"' /
+        "'" /
+        "\\" /
+        "/" /
+        "b" { return "\b"; } /
+        "f" { return "\f"; } /
+        "n" { return "\n"; } /
+        "r" { return "\r"; } /
+        "t" { return "\t"; } /
+        "u" digits:$(HEXDIG HEXDIG HEXDIG HEXDIG) {
           return String.fromCharCode(parseInt(digits, 16));
         }
     )
@@ -227,31 +202,31 @@ IdentifierName "identifier"
     }
 
 IdentifierStart
-  = UnicodeLetter
-  / "$"
-  / "_"
-  / "\\" sequence:UnicodeEscapeSequence { return sequence; }
+  = UnicodeLetter /
+    "$" /
+    "_" /
+    "\\" sequence:UnicodeEscapeSequence { return sequence; }
 
 IdentifierPart
-  = IdentifierStart
-  / UnicodeCombiningMark
-  / UnicodeDigit
-  / UnicodeConnectorPunctuation
-  / "\u200C"
-  / "\u200D"
-  / "\u002D"
+ = IdentifierStart /
+   UnicodeCombiningMark /
+   UnicodeDigit /
+   UnicodeConnectorPunctuation /
+   "\u200C" /
+   "\u200D" /
+   "\u002D"
 
 UnicodeLetter
-  = Lu
-  / Ll
-  / Lt
-  / Lm
-  / Lo
-  / Nl
+  = Lu /
+    Ll /
+    Lt /
+    Lm /
+    Lo /
+    Nl
 
 UnicodeCombiningMark
-  = Mn
-  / Mc
+  = Mn /
+    Mc
 
 UnicodeDigit
   = Nd

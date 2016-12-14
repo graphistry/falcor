@@ -13,7 +13,7 @@ function run() {
     var suite = suites.shift();
     console.log('starting ' + suite.name);
     suite.on('complete', function() {
-        console.log('completed ' + suite.name + ': ' + this.map(function(x) {
+        console.log('completed ' + suite.name + ':\n' + this.map(function(x) {
             return x.name + ': ' + x.hz + ' ops/s';
         }).join('\n'));
         setTimeout(run, 10);

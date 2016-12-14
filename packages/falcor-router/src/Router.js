@@ -1,9 +1,9 @@
+var MAX_PATHS = 9000;
+var MAX_REF_FOLLOW = 50;
 var Keys = require('./Keys');
 var parseTree = require('./parse-tree');
 var matcher = require('./operations/matcher');
 var JSONGraphError = require('./errors/JSONGraphError');
-var MAX_REF_FOLLOW = 50;
-var MAX_PATHS = 9000;
 
 var Router = function(routes, options) {
 

@@ -131,7 +131,7 @@ function walkPathAndBuildOutput(root, node, json, path,
                 break iteratingKeyset;
             }
             keyIsRange = true;
-            nextPathKey = '{from:' + nextKey + ',length:' + (rangeEnd - nextKey + 1) + '}';
+            nextPathKey = '[' + nextKey + '..' + rangeEnd + ']';
         }
 
         // Now that we have the next key, step down one level in the cache.
@@ -255,11 +255,8 @@ function walkPathAndBuildOutput(root, node, json, path,
         while (keyIsRange && ++nextKey <= rangeEnd);
 
         if (!hasMissingPath) {
-            if (undefined === nextPath) {
-                f_code = '' + getHashCode('' + f_code + nextPathKey);
-            } else {
-                f_code = '' + getHashCode('' + f_code + nextPathKey + nextPath['$code']);
-            }
+            f_code = '' + getHashCode('' + f_code + nextPathKey +
+                                     (  nextPath && nextPath['$code'] || ''));
         }
     }
 

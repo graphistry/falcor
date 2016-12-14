@@ -4,24 +4,52 @@
   "description": "",
   "main": "lib/index.js",
   "scripts": {
-    "test": "./node_modules/.bin/gulp test",
-    "prepublish": "npm test"
+    "prepublish": "npm test",
+    "test": "_mocha --colors --reporter dot --full-trace --timeout 5000 --require babel-register",
+    "test-coverage": "cross-env NODE_ENV=test nyc npm test",
+    "d": "npm run test-debug",
+    "td": "npm run test-detail",
+    "test-debug": "node --inspect --debug-brk ./node_modules/.bin/_mocha --full-trace --reporter nyan --timeout 0 ./test/index.js",
+    "test-detail": "_mocha --full-trace --reporter nyan --timeout 5000 ./test/index.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/graphistry/falcor.git"
   },
   "author": "Netflix",
+  "files": [
+    "lib",
+    "test",
+    ".babelrc",
+    "README.md"
+  ],
   "license": "ALV2",
   "bugs": {
     "url": "https://github.com/graphistry/falcor/issues"
   },
   "homepage": "https://github.com/graphistry/falcor/blob/master/packages/falcor-path-utils/README.md",
   "devDependencies": {
-    "chai": "^3.2.0",
     "@graphistry/falcor-json-graph": "^2.5.3",
-    "sinon": "^1.15.4",
-    "gulp-mocha": "~2.2.0",
-    "gulp": "^3.9.0"
+    "babel-plugin-istanbul": "~3.0.0",
+    "babel-register": "~6.18.0",
+    "chai": "~3.5.0",
+    "cross-env": "3.1.3",
+    "mocha": "3.2.0",
+    "nyc": "~10.0.0"
+  },
+  "nyc": {
+    "include": [
+      "lib/*.js",
+      "lib/**/*.js"
+    ],
+    "require": [
+      "babel-register"
+    ],
+    "reporter": [
+      "html",
+      "text"
+    ],
+    "sourceMap": false,
+    "instrument": false
   }
 }

@@ -9,8 +9,8 @@ var ref = jsonGraph.ref;
 var _ = require('lodash');
 var expect = require('chai').expect;
 var InvalidKeySetError = require('./../../lib/errors/InvalidKeySetError');
-var toFlatBuffer = require('@graphistry/falcor-path-utils').toFlatBuffer;
-var computeFlatBufferHash = require('@graphistry/falcor-path-utils').computeFlatBufferHash;
+var toFlatBuffer = require('@graphistry/falcor-path-utils/lib/toFlatBuffer');
+var computeFlatBufferHash = require('@graphistry/falcor-path-utils/lib/computeFlatBufferHash');
 
 describe('Values', function() {
     // PathMap ----------------------------------------
@@ -316,6 +316,64 @@ describe('Values', function() {
             }
         });
     });
+    it('should not create JSON output but should still hardlink when called with a null seed', function() {
+
+        var model = new Model({
+            materialized: true,
+            cache: cacheGenerator(0, 2)
+        });
+
+        var lhs = model._root.cache.lolomo;
+        var rhs = model._root.cache.lolomos[1234];
+
+        expect(lhs[f_context]).to.equal(undefined);
+        expect(lhs[f_ref_index]).to.equal(undefined);
+        expect(rhs[f_refs_length]).to.equal(undefined);
+
+        var results = model._getPathValuesAsPathMap(
+            model, [['lolomo', 0, 0, 'title']], null
+        );
+
+        expect(results.data).to.equal(null);
+        expect(results.hasValue).to.equal(undefined);
+
+        expect(lhs[f_context]).to.equal(rhs);
+        expect(lhs[f_ref_index]).to.equal(0);
+        expect(rhs[f_refs_length]).to.equal(1);
+        expect(rhs[f_ref + lhs[f_ref_index]]).to.equal(lhs);
+    });
+    it('should not create JSON output but should still hardlink when called with a null seed if recycleJSON is true', function() {
+
+        var model = new Model({
+            recycleJSON: true,
+            cache: cacheGenerator(0, 2)
+        });
+
+        var lhs = model._root.cache.lolomo;
+        var rhs = model._root.cache.lolomos[1234];
+
+        expect(lhs[f_context]).to.equal(undefined);
+        expect(lhs[f_ref_index]).to.equal(undefined);
+        expect(rhs[f_refs_length]).to.equal(undefined);
+
+        var results = model._getPathValuesAsPathMap(
+            model,
+            [
+                toFlatBuffer([
+                ['lolomo', 0, 0, 'title']]),
+                ['lolomo', 0, 0, 'title']
+            ],
+            null
+        );
+
+        expect(results.data).to.equal(null);
+        expect(results.hasValue).to.equal(undefined);
+
+        expect(lhs[f_context]).to.equal(rhs);
+        expect(lhs[f_ref_index]).to.equal(0);
+        expect(rhs[f_refs_length]).to.equal(1);
+        expect(rhs[f_ref + lhs[f_ref_index]]).to.equal(lhs);
+    });
     it('should build json output with flatBuffers if recycleJSON is true', function() {
 
         var model = new Model({
@@ -327,7 +385,11 @@ describe('Values', function() {
 
         model._getPathValuesAsPathMap(
             model,
-            [['videos', [0, {from: 1, length: 1}], 'title']],
+            [
+                toFlatBuffer([
+                ['videos', [0, { from: 1, length: 1 }], 'title']]),
+                ['videos', [0, { from: 1, length: 1 }], 'title']
+            ],
             seed
         );
 
@@ -336,7 +398,7 @@ describe('Values', function() {
             json: {
                 __proto__: FalcorJSON.prototype,
                 [f_meta_data]: {
-                    '$code':          '2076667107',
+                    '$code':              '15293993',
                     [f_meta_keys]:        { videos: true },
                     [f_meta_abs_path]:    undefined,
                     [f_meta_deref_from]:  undefined,
@@ -346,7 +408,7 @@ describe('Values', function() {
                 videos: {
                     __proto__: FalcorJSON.prototype,
                     [f_meta_data]: {
-                        '$code':          '1720011066',
+                        '$code':              '1236527484',
                         [f_meta_keys]:        { 0: true, 1: true },
                         [f_meta_abs_path]:    ['videos'],
                         [f_meta_deref_from]:  undefined,
@@ -356,7 +418,7 @@ describe('Values', function() {
                     0: {
                         __proto__: FalcorJSON.prototype,
                         [f_meta_data]: {
-                            '$code':          '165499941',
+                            '$code':              '165499941',
                             [f_meta_keys]:        { title: true },
                             [f_meta_abs_path]:    ['videos', '0'],
                             [f_meta_deref_from]:  undefined,
@@ -368,7 +430,7 @@ describe('Values', function() {
                     1: {
                         __proto__: FalcorJSON.prototype,
                         [f_meta_data]: {
-                            '$code':          '165499941',
+                            '$code':              '165499941',
                             [f_meta_keys]:        { title: true },
                             [f_meta_abs_path]:    ['videos', '1'],
                             [f_meta_deref_from]:  undefined,
@@ -381,8 +443,8 @@ describe('Values', function() {
             }
         });
 
-        expect(seed.json.$__hash).to.equal('2076667107');
-        expect(seed.json.videos.$__hash).to.equal('1720011066');
+        expect(seed.json.$__hash).to.equal('15293993');
+        expect(seed.json.videos.$__hash).to.equal('1236527484');
         expect(seed.json.videos[0].$__hash).to.equal('165499941');
         expect(seed.json.videos[1].$__hash).to.equal('165499941');
     });
@@ -416,7 +478,7 @@ describe('Values', function() {
             json: {
                 __proto__: FalcorJSON.prototype,
                 [f_meta_data]: {
-                    '$code':          '580640226',
+                    '$code':              '580640226',
                     [f_meta_keys]:        { videos: true },
                     [f_meta_abs_path]:    undefined,
                     [f_meta_deref_from]:  undefined,
@@ -426,7 +488,7 @@ describe('Values', function() {
                 videos: {
                     __proto__: FalcorJSON.prototype,
                     [f_meta_data]: {
-                        '$code':          '1405226223',
+                        '$code':              '1405226223',
                         [f_meta_keys]:        { 0: true },
                         [f_meta_abs_path]:    ['videos'],
                         [f_meta_deref_from]:  undefined,
@@ -436,7 +498,7 @@ describe('Values', function() {
                     0: {
                         __proto__: FalcorJSON.prototype,
                         [f_meta_data]: {
-                            '$code':          '165499941',
+                            '$code':              '165499941',
                             [f_meta_keys]:        { title: true },
                             [f_meta_abs_path]:    ['videos', '0'],
                             [f_meta_deref_from]:  undefined,

@@ -1,5 +1,8 @@
-import { parse as parseUtil } from 'pegjs-util';
-import FalcorQuerySyntax from '@graphistry/falcor-query-syntax';
+import { parse as pegJSParseUtil } from 'pegjs-util';
+import { paths as toPaths } from '@graphistry/falcor-query-syntax';
+import toFlatBuffer from '@graphistry/falcor-path-utils/lib/toFlatBuffer';
+import flatBufferToPaths from '@graphistry/falcor-path-utils/lib/flatBufferToPaths';
+import computeFlatBufferHash from '@graphistry/falcor-path-utils/lib/computeFlatBufferHash';
 
 export default function memoizeQueryies(limit = 100) {
     let count = 0;
@@ -11,11 +14,14 @@ export default function memoizeQueryies(limit = 100) {
             splice(lru, lru.tail);
         }
         if (!entry || entry.error) {
-            entry = map[query] = {
-                query, ...parseUtil(
-                    FalcorQuerySyntax.parser, query
-                )
-            };
+            const result = pegJSParseUtil(toPaths.Parser, query);
+            if (!result.error) {
+                // Turn the computed AST into paths, then turn it back into an
+                // AST so we collapse adjacent nodes.
+                result.ast = computeFlatBufferHash(
+                    toFlatBuffer(flatBufferToPaths(result.ast)));
+            }
+            entry = map[query] = { query, ...result };
         }
         promote(lru, entry);
         return entry;

@@ -9,7 +9,7 @@ export default function tests({ Observable }, context, runBefore, runAfter) {
     beforeEach(runBefore);
     afterEach(runAfter);
 
-    it('should get data from the server', function(done) {
+    it('should get data from the server', (done) => {
         const { model } = context;
         Observable
             .defer(() => model.get(['foo', 'bar']))

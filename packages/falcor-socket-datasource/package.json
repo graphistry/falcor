@@ -2,7 +2,7 @@
   "version": "2.6.0",
   "name": "@graphistry/falcor-socket-datasource",
   "scripts": {
-    "prepublish": "npm test && npm run build",
+    "prepublish": "npm run build",
     "d": "npm run test-debug",
     "td": "npm run test-detail",
     "build": "babel src --out-dir dist",
@@ -19,6 +19,11 @@
   "bugs": {
     "url": "https://github.com/graphistry/falcor/issues"
   },
+  "files": [
+    "src",
+    "dist",
+    "test"
+  ],
   "dependencies": {
     "babel-plugin-transform-runtime": "~6.15.0",
     "simpleflakes": "~1.2.3"
@@ -29,9 +34,9 @@
     "@graphistry/falcor-router": "^2.6.0",
     "babel-cli": "^6.8.0",
     "babel-plugin-istanbul": "~3.0.0",
-    "babel-preset-es2015": "6.13.2",
-    "babel-preset-react": "~6.11.1",
-    "babel-preset-stage-0": "~6.5.0",
+    "babel-preset-es2015": "~6.18.0",
+    "babel-preset-react": "~6.16.0",
+    "babel-preset-stage-0": "~6.16.0",
     "chai": "^3.5.0",
     "coveralls": "^2.11.9",
     "cross-env": "~3.1.3",
@@ -44,8 +49,8 @@
     "rimraf": "^2.5.2",
     "rx": "~4.1.0",
     "rxjs": ">=5.0.0-rc.4",
-    "socket.io": "1.4.8",
-    "socket.io-client": "1.4.8"
+    "socket.io": "~1.7.2",
+    "socket.io-client": "~1.7.2"
   },
   "homepage": "https://github.com/graphistry/falcor/blob/master/packages/falcor-socket-datasource/readme.md",
   "keywords": [

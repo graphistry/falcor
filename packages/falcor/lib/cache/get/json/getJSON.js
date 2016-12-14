@@ -46,9 +46,9 @@ function getJSON(model, paths, seed, progressive, expireImmediate) {
         boxValues = model._boxed,
         expired = modelRoot.expired,
         recycleJSON = model._recycleJSON,
-        materialized = model._materialized,
         hasDataSource = Boolean(model._source),
         branchSelector = modelRoot.branchSelector,
+        materialized = seed && model._materialized,
         treatErrorsAsValues = model._treatErrorsAsValues,
         allowFromWhenceYouCame = model._allowFromWhenceYouCame;
 
@@ -56,9 +56,8 @@ function getJSON(model, paths, seed, progressive, expireImmediate) {
 
     if (pathsCount > 0) {
         if (recycleJSON) {
-            pathsCount = 1;
             isFlatBuffer = true;
-            if (!paths[0].$keys) {
+            if (pathsCount > 1 || isArray(paths[0])) {
                 paths = [computeFlatBufferHash(toFlatBuffer(paths, {}))];
             }
             arr = walkFlatBufferAndBuildOutput(cache, node, json, paths[0], 0, seed, results,

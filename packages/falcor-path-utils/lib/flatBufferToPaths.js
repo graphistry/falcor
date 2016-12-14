@@ -1,24 +1,24 @@
 module.exports = flatBufferToPaths;
 
-function flatBufferToPaths(flatBuf, paths, path) {
+function flatBufferToPaths(seed, paths, path) {
 
     path = path || [];
     paths = paths || [];
 
     var leaf = [];
-    var keys = flatBuf['$keys'];
+    var keys = seed['$keys'];
     var keysLen = keys.length;
     var keysIndex = -1, key, len;
 
     while (++keysIndex < keysLen) {
 
-        var rest = flatBuf[keysIndex];
+        var next = seed[keysIndex];
         var keyset = keys[keysIndex];
 
-        if (!rest) {
+        if (!next || typeof next !== 'object') {
             leaf.push(keyset);
         } else {
-            flatBufferToPaths(rest, paths, path.concat([keyset]));
+            flatBufferToPaths(next, paths, path.concat([keyset]));
         }
     }
 

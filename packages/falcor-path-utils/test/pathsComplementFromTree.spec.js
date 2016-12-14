@@ -1,5 +1,5 @@
-var pathsComplementFromTree = require('./../lib').pathsComplementFromTree;
-var pathsComplementFromLengthTree = require('./../lib').pathsComplementFromLengthTree;
+var pathsComplementFromTree = require('./../lib/pathsComplementFromTree');
+var pathsComplementFromLengthTree = require('./../lib/pathsComplementFromLengthTree');
 var expect = require('chai').expect;
 
 describe('pathsComplementFromTree and LengthTree', function() {

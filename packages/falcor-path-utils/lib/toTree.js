@@ -2,7 +2,6 @@ var isArray = Array.isArray;
 var materializedAtom = require('./support/materializedAtom');
 
 module.exports = toTree;
-module.exports.pathToTree = pathToTree;
 
 /**
  * @param {Array} paths -
@@ -15,13 +14,15 @@ function toTree(paths, seed) {
     }, seed || {});
 };
 
-function pathToTree(seed, path, depth, length, value, branch) {
+function pathToTree(seed, path, depth, length, value) {
 
     if (depth === length) {
         return true;
     }
 
-    var seedKeySet, keyset, keysetIndex = -1, keysetLength = 0;
+    seed = seed || {};
+
+    var keyset, keysetIndex = -1, keysetLength = 0;
     var node, next, nextKey, nextDepth = depth + 1,
         keyIsRange, rangeEnd, keysOrRanges;
 
@@ -30,9 +31,6 @@ function pathToTree(seed, path, depth, length, value, branch) {
     if (keyset === null) {
         return materializedAtom;
     }
-
-    seedKeySet = keyset;
-    seed = seed ? seed : branch ? branch(path, depth, seed) : {};
 
     iteratingKeyset: do {
         // If the keyset is a primitive value, we've found our `nextKey`.
@@ -81,7 +79,7 @@ function pathToTree(seed, path, depth, length, value, branch) {
             if (nextDepth === length) {
                 seed[nextKey] = value;
             } else {
-                node = seed[path[depth] = nextKey];
+                node = seed[nextKey];
                 next = pathToTree(node, path, nextDepth, length, value);
                 if (!next) {
                     seed[nextKey] = value;
@@ -104,8 +102,6 @@ function pathToTree(seed, path, depth, length, value, branch) {
         // outer loop from the top.
         keyset = keysOrRanges[keysetIndex];
     } while (true);
-
-    path[depth] = seedKeySet;
 
     return seed;
 }

@@ -4,8 +4,9 @@
   "description": "ES6 Template String and Builder function for Creating Falcor Paths (Experimental)",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --reporter dot --colors --full-trace --timeout 2000 test/index.js",
+    "test": "_mocha --reporter dot --colors --full-trace --timeout 2000 test/index.js",
     "debug": "node --inspect --debug-brk ./node_modules/.bin/_mocha ./test/index.js",
+    "test-coverage": "cross-env NODE_ENV=test nyc npm test",
     "perf": "node perf",
     "build-paths": "pegjs -o lib/paths-parser.peg.js --format umd peg/paths-parser.peg",
     "build-route": "pegjs -o lib/route-parser.peg.js --format umd peg/route-parser.peg",
@@ -13,8 +14,19 @@
     "build-route-min": "npm run build-route && java -jar ./node_modules/google-closure-compiler/compiler.jar --js_output_file=lib/route-parser.js lib/route-parser.peg.js && rimraf lib/route-parser.peg.js",
     "build": "npm-run-all --silent -p build-paths-min build-route-min",
     "start": "npm run build && npm test",
-    "prepublish": "npm run build && npm test"
+    "prepublish": "npm run build && npm test",
+    "d": "npm run test-debug",
+    "td": "npm run test-detail",
+    "test-debug": "cross-env NODE_ENV=test node --inspect --debug-brk ./node_modules/.bin/_mocha --bail --full-trace --reporter nyan --timeout 0 ./test/index.js",
+    "test-detail": "cross-env NODE_ENV=test _mocha --full-trace --reporter nyan --timeout 5000 ./test/index.js"
   },
+  "files": [
+    "lib",
+    "test",
+    "index.js",
+    ".babelrc",
+    "README.md"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/graphistry/falcor.git"
@@ -37,16 +49,41 @@
   },
   "homepage": "https://github.com/graphistry/falcor/blob/master/packages/falcor-query-syntax/README.md",
   "dependencies": {
-    "babel-plugin-transform-runtime": "~6.12.0",
+    "@graphistry/falcor-path-utils": "^2.5.3",
+    "babel-plugin-transform-runtime": "~6.15.0",
     "pegjs": "0.10.0"
   },
   "devDependencies": {
-    "@graphistry/falcor-path-utils": "^2.5.3",
+    "@graphistry/falcor-json-graph": "^2.5.3",
+    "@graphistry/falcor-router": "^2.6.0",
+    "babel-plugin-istanbul": "~3.0.0",
+    "babel-register": "~6.18.0",
     "benchmark": "~2.1.1",
     "chai": "~3.5.0",
+    "cross-env": "~3.1.3",
     "google-closure-compiler": "~20160911.0.0",
     "mocha": "~3.0.2",
     "npm-run-all": "~3.0.0",
+    "nyc": "~10.0.0",
     "rimraf": "~2.5.4"
+  },
+  "nyc": {
+    "exclude": [
+      "lib/paths-parser.js",
+      "lib/route-parser.js"
+    ],
+    "include": [
+      "lib/*.js",
+      "lib/**/*.js"
+    ],
+    "require": [
+      "babel-register"
+    ],
+    "reporter": [
+      "html",
+      "text"
+    ],
+    "sourceMap": false,
+    "instrument": false
   }
 }

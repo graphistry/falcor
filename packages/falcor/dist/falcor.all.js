@@ -303,7 +303,7 @@ function createErrorClass(name, init) {
             Error.captureStackTrace(this, this.constructor);
         }
     }
-    E.prototype = new Error();
+    E.prototype = Object.create(Error.prototype);
     E.prototype.name = name;
     E.prototype.constructor = E;
     E.is = function (x) {
@@ -1172,13 +1172,13 @@ function isInternalKey(key) {
 
 module.exports = flatBufferToPaths;
 
-function flatBufferToPaths(flatBuf, paths, path) {
+function flatBufferToPaths(seed, paths, path) {
 
     path = path || [];
     paths = paths || [];
 
     var leaf = [];
-    var keys = flatBuf['$keys'];
+    var keys = seed['$keys'];
     var keysLen = keys.length;
     var keysIndex = -1,
         key,
@@ -1186,13 +1186,13 @@ function flatBufferToPaths(flatBuf, paths, path) {
 
     while (++keysIndex < keysLen) {
 
-        var rest = flatBuf[keysIndex];
+        var next = seed[keysIndex];
         var keyset = keys[keysIndex];
 
-        if (!rest) {
+        if (!next || typeof next !== 'object') {
             leaf.push(keyset);
         } else {
-            flatBufferToPaths(rest, paths, path.concat([keyset]));
+            flatBufferToPaths(next, paths, path.concat([keyset]));
         }
     }
 
@@ -2289,9 +2289,9 @@ function getJSON(model, paths, seed, progressive, expireImmediate) {
         boxValues = model._boxed,
         expired = modelRoot.expired,
         recycleJSON = model._recycleJSON,
-        materialized = model._materialized,
         hasDataSource = Boolean(model._source),
         branchSelector = modelRoot.branchSelector,
+        materialized = seed && model._materialized,
         treatErrorsAsValues = model._treatErrorsAsValues,
         allowFromWhenceYouCame = model._allowFromWhenceYouCame;
 
@@ -2302,9 +2302,8 @@ function getJSON(model, paths, seed, progressive, expireImmediate) {
 
     if (pathsCount > 0) {
         if (recycleJSON) {
-            pathsCount = 1;
             isFlatBuffer = true;
-            if (!paths[0].$keys) {
+            if (pathsCount > 1 || isArray(paths[0])) {
                 paths = [computeFlatBufferHash(toFlatBuffer(paths, {}))];
             }
             arr = walkFlatBufferAndBuildOutput(cache, node, json, paths[0], 0, seed, results, requestedPath, optimizedPath, optimizedLength,
@@ -3341,7 +3340,7 @@ function computeFlatBufferHash(seed) {
             code = '' + getHashCode('' + code + 'null');
             continue;
         } else if (typeof key === 'object') {
-            key = '{from:' + key.from + ',length:' + key.length + '}';
+            key = '[' + key.from + '..' + (key.from + key.length - 1) + ']';
         }
 
         var next = computeFlatBufferHash(seed[keysIndex]);
@@ -3485,8 +3484,10 @@ function toFlatBuffer(paths, seed) {
     return paths.reduce(function (seed, path) {
         if (isArray(path)) {
             return pathToFlatBuffer(seed, path, 0, path.length);
+        } else if (isArray(path.$keys)) {
+            return toFlatBuffer(flatBufferToPaths(path), seed);
         }
-        return toFlatBuffer(flatBufferToPaths(path), seed);
+        return seed;
     }, seed || {});
 }
 
@@ -3565,7 +3566,7 @@ function pathToFlatBuffer(seed, path, depth, length) {
                         break iteratingKeyset;
                     }
                     keyset = { from: nextKey, length: rangeEnd - nextKey + 1 };
-                    nextKey = '{from:' + nextKey + ',length:' + (rangeEnd - nextKey + 1) + '}';
+                    nextKey = '[' + nextKey + '..' + rangeEnd + ']';
                     if ('undefined' === typeof (keysIndex = keysMap[nextKey])) {
                         keysIndex = keys.length;
                     }
@@ -3599,7 +3600,6 @@ var isArray = Array.isArray;
 var materializedAtom = __webpack_require__(6);
 
 module.exports = toTree;
-module.exports.pathToTree = pathToTree;
 
 /**
  * @param {Array} paths -
@@ -3612,14 +3612,15 @@ function toTree(paths, seed) {
     }, seed || {});
 };
 
-function pathToTree(seed, path, depth, length, value, branch) {
+function pathToTree(seed, path, depth, length, value) {
 
     if (depth === length) {
         return true;
     }
 
-    var seedKeySet,
-        keyset,
+    seed = seed || {};
+
+    var keyset,
         keysetIndex = -1,
         keysetLength = 0;
     var node,
@@ -3635,9 +3636,6 @@ function pathToTree(seed, path, depth, length, value, branch) {
     if (keyset === null) {
         return materializedAtom;
     }
-
-    seedKeySet = keyset;
-    seed = seed ? seed : branch ? branch(path, depth, seed) : {};
 
     iteratingKeyset: do {
         // If the keyset is a primitive value, we've found our `nextKey`.
@@ -3686,7 +3684,7 @@ function pathToTree(seed, path, depth, length, value, branch) {
             if (nextDepth === length) {
                 seed[nextKey] = value;
             } else {
-                node = seed[path[depth] = nextKey];
+                node = seed[nextKey];
                 next = pathToTree(node, path, nextDepth, length, value);
                 if (!next) {
                     seed[nextKey] = value;
@@ -3709,8 +3707,6 @@ function pathToTree(seed, path, depth, length, value, branch) {
         // outer loop from the top.
         keyset = keysOrRanges[keysetIndex];
     } while (true);
-
-    path[depth] = seedKeySet;
 
     return seed;
 }
@@ -4598,7 +4594,7 @@ function walkPathAndBuildOutput(root, node, json, path, depth, seed, results, re
                         break iteratingKeyset;
                     }
                     keyIsRange = true;
-                    nextPathKey = '{from:' + nextKey + ',length:' + (rangeEnd - nextKey + 1) + '}';
+                    nextPathKey = '[' + nextKey + '..' + rangeEnd + ']';
                 }
 
         // Now that we have the next key, step down one level in the cache.
@@ -4709,11 +4705,7 @@ function walkPathAndBuildOutput(root, node, json, path, depth, seed, results, re
         while (keyIsRange && ++nextKey <= rangeEnd);
 
         if (!hasMissingPath) {
-            if (undefined === nextPath) {
-                f_code = '' + getHashCode('' + f_code + nextPathKey);
-            } else {
-                f_code = '' + getHashCode('' + f_code + nextPathKey + nextPath['$code']);
-            }
+            f_code = '' + getHashCode('' + f_code + nextPathKey + (nextPath && nextPath['$code'] || ''));
         }
     }
 
@@ -5136,12 +5128,10 @@ function onJSONGraphValue(node, type, depth, seed, results, requestedPath, optim
         value = clone(node);
     }
 
-    if (seed) {
-        results.hasValue = true;
-        inlineValue(value, optimizedPath, optimizedLength, seed);
-        (seed.paths || (seed.paths = [])).push(requestedPath.slice(0, depth + !!fromReference) // depth + 1 if fromReference === true
-        );
-    }
+    results.hasValue = true;
+    inlineValue(value, optimizedPath, optimizedLength, seed);
+    (seed.paths || (seed.paths = [])).push(requestedPath.slice(0, depth + !!fromReference) // depth + 1 if fromReference === true
+    );
 
     return value;
 }
