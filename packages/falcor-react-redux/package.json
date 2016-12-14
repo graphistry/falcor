@@ -40,7 +40,7 @@
     "@graphistry/falcor": "^2.6.2",
     "@graphistry/falcor-json-graph": "^2.5.3",
     "@graphistry/falcor-path-syntax": "^2.5.3",
-    "@graphistry/falcor-path-utils": "^2.6.2",
+    "@graphistry/falcor-path-utils": "^2.6.0",
     "@graphistry/falcor-query-syntax": "^2.6.2",
     "babel-plugin-transform-runtime": "~6.15.0",
     "babel-preset-react": "~6.16.0",

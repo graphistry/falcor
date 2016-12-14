@@ -49,7 +49,7 @@
   },
   "homepage": "https://github.com/graphistry/falcor/blob/master/packages/falcor-query-syntax/README.md",
   "dependencies": {
-    "@graphistry/falcor-path-utils": "^2.6.2",
+    "@graphistry/falcor-path-utils": "^2.6.0",
     "babel-plugin-transform-runtime": "~6.15.0",
     "pegjs": "0.10.0"
   },
