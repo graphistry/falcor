@@ -1,6 +1,6 @@
 {
   "name": "@graphistry/falcor-router-saddle",
-  "version": "2.6.4",
+  "version": "2.6.5",
   "description": "",
   "main": "lib/index.js",
   "jsnext:main": "src/index.js",
