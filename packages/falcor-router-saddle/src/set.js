@@ -77,8 +77,7 @@ function expandAndMapValues(incomingJSON, options = {}) {
 
         let json = incomingJSON, key, type,
             index = -1, count = lists.length,
-            pathLen = 0, listId = -1, valsId = -1,
-            node = context[lists[count - 1]] || context;
+            pathLen = 0, listId = -1, valsId = -1;
 
         while (++index < count) {
             key = lists[index];
@@ -127,11 +126,12 @@ function mapEachValue(context, options) {
         path = slice.call(path);
 
         const count = path.length;
-        let index = lists.length * 2;
+        let key, index = lists.length * 2;
+        let node = context[lists[lists.length - 1]] || context;
 
         while (++index < count) {
 
-            const key = path[index];
+            key = path[index];
 
             if (index < count - 1) {
                 node = node[key] || (node[key] = {});

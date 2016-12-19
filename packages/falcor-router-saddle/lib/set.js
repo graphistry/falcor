@@ -95,13 +95,13 @@ function getListIds(context, lists, depth, json) {
 
         var list = lists[depth] + 'Ids';
         var byId = lists[depth] + 'sById';
-        var _node = json[byId];
+        var node = json[byId];
 
         var keyIdx = -1;
         var keys = context[list] || (context[list] = []);
 
-        for (var key in _node) {
-            getListIds(context, lists, depth + 1, _node[keys[++keyIdx] = key]);
+        for (var key in node) {
+            getListIds(context, lists, depth + 1, node[keys[++keyIdx] = key]);
         }
     }
 
@@ -128,8 +128,7 @@ function expandAndMapValues(incomingJSON) {
             count = lists.length,
             pathLen = 0,
             listId = -1,
-            valsId = -1,
-            node = context[lists[count - 1]] || context;
+            valsId = -1;
 
         while (++index < count) {
             key = lists[index];
@@ -189,11 +188,13 @@ function mapEachValue(context, options) {
         path = slice.call(path);
 
         var count = path.length;
-        var index = lists.length * 2;
+        var key = void 0,
+            index = lists.length * 2;
+        var node = context[lists[lists.length - 1]] || context;
 
         while (++index < count) {
 
-            var key = path[index];
+            key = path[index];
 
             if (index < count - 1) {
                 node = node[key] || (node[key] = {});
