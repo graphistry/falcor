@@ -33,7 +33,7 @@ describe('Router integration', function() {
                         123: { name: 'True Lies' }
                     }
                 }
-            })
+            });
         })
         .subscribe(null, done, done);
     });
@@ -77,7 +77,7 @@ describe('Router integration', function() {
                         }
                     }
                 }
-            })
+            });
         })
         .subscribe(null, done, done);
     });
@@ -117,7 +117,7 @@ describe('Router integration', function() {
                         456: { name: 'Kindergarten Cop' }
                     }
                 }
-            })
+            });
         })
         .subscribe(null, done, done);
     });
@@ -147,11 +147,13 @@ function getRoutes() {
                     );
                 }
             }},
-            push: ${function pushGenreList(path, args) {
-                return [
-                    $value(`genreLists[${g.genreLists.length}]`, args[0]),
-                    $value(`genreLists.length`, g.genreLists.push(args[0]))
-                ];
+            push: ${{
+                call: function pushGenreList(path, args) {
+                    return [
+                        $value(`genreLists[${g.genreLists.length}]`, args[0]),
+                        $value(`genreLists.length`, g.genreLists.push(args[0]))
+                    ];
+                }
             }},
             [{ integers: listIndexes }]: ${{
                 get({ listIndexes }) {

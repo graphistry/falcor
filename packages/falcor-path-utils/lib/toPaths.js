@@ -206,16 +206,6 @@ function getSortedKeys(map, keys, sort) {
     return len;
 }
 
-// function getHashCode(key) {
-//     var code = 5381;
-//     var index = -1;
-//     var count = key.length;
-//     while (++index < count) {
-//         code = (code << 5) + code + key.charCodeAt(index);
-//     }
-//     return String(code);
-// }
-
 /**
  * Return true if argument is a number or can be cast to a number which
  * roundtrips to the same string.

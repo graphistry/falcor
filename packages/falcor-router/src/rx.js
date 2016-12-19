@@ -24,5 +24,6 @@ require('rxjs/add/operator/mergeMap');
 require('rxjs/add/operator/reduce');
 require('rxjs/add/operator/takeLast');
 require('rxjs/add/operator/toArray');
+require('rxjs/add/operator/toPromise');
 
 module.exports = { Subject: Subject, Observable: Observable };

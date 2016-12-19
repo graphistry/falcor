@@ -8,7 +8,6 @@ var _integers = String.fromCharCode(30) + 'integers';
 
 describe('Route', function() {
 
-    function pushHandler() {};
     var getHandler = { get: function() {} };
     var setHandler = { set: function() {} };
 
@@ -30,11 +29,20 @@ describe('Route', function() {
         expect(routes[1].set).to.equal(setHandler.set);
     });
 
-    it('should coerce functions into call routes', function() {
+    it('should accept functions as route handler factories', function() {
+
+        function pushHandler() {};
+
+        function pushHandlerFactory(route) {
+            expect(route).to.deep.equal(
+                ['genreLists', 'push']
+            );
+            return { call: pushHandler };
+        }
 
         var routes = toRoutes`{
             genreLists: {
-                push: ${ pushHandler }
+                push: ${ pushHandlerFactory }
             }
         }`;
 

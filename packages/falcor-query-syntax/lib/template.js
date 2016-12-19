@@ -39,7 +39,7 @@ function stringify(opts, arg) {
             return arg;
         }
         _key = '$__' + (opts.$__index__$++) + '__$';
-        opts[_key] = { call: arg };
+        opts[_key] = arg;
         return _key;
     }
 
