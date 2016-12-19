@@ -192,7 +192,7 @@ function mapEachValue(context, options) {
             index = lists.length * 2;
         var node = context[lists[lists.length - 1]] || context;
 
-        while (++index < count) {
+        do {
 
             key = path[index];
 
@@ -206,7 +206,7 @@ function mapEachValue(context, options) {
             }
 
             value = mapValue(node, key, value, path, context);
-        }
+        } while (++index < count);
 
         if (!value || (typeof value === 'undefined' ? 'undefined' : _typeof(value)) !== typeofObject) {
             value = [{ path: path, value: value }];
