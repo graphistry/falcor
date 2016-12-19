@@ -124,8 +124,6 @@ function mapEachValue(context, options) {
 
     return function innerMapJSONValues({ path, value }) {
 
-        debugger
-
         path = slice.call(path);
 
         const count = path.length;
@@ -133,7 +131,7 @@ function mapEachValue(context, options) {
 
         while (++index < count) {
 
-            key = path[index];
+            const key = path[index];
 
             if (index < count - 1) {
                 node = node[key] || (node[key] = {});

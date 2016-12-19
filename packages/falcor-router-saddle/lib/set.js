@@ -100,8 +100,8 @@ function getListIds(context, lists, depth, json) {
         var keyIdx = -1;
         var keys = context[list] || (context[list] = []);
 
-        for (var _key in _node) {
-            getListIds(context, lists, depth + 1, _node[keys[++keyIdx] = _key]);
+        for (var key in _node) {
+            getListIds(context, lists, depth + 1, _node[keys[++keyIdx] = key]);
         }
     }
 
@@ -186,8 +186,6 @@ function mapEachValue(context, options) {
             value = _ref.value;
 
 
-        debugger;
-
         path = slice.call(path);
 
         var count = path.length;
@@ -195,7 +193,7 @@ function mapEachValue(context, options) {
 
         while (++index < count) {
 
-            key = path[index];
+            var key = path[index];
 
             if (index < count - 1) {
                 node = node[key] || (node[key] = {});
