@@ -71,7 +71,8 @@ function Model(opts) {
         this._treatErrorsAsValues = true;
     } else if (this._recycleJSON) {
         this._treatErrorsAsValues = true;
-        this._seed = { __proto__: FalcorJSON.prototype };
+        this._seed = {};
+        this._seed.__proto__ = FalcorJSON.prototype;
     }
 
     this._boxed = options.boxed === true || options._boxed || false;
@@ -92,10 +93,13 @@ Model.prototype.constructor = Model;
  * @param {...PathSet} path - the path(s) to retrieve
  * @return {ModelResponse.<JSONEnvelope>} - the requested data as JSON
  */
-Model.prototype.get = function get() {
-    return new Call(
-        'get', this, Array.prototype.slice.call(arguments, 0)
-    )._toJSON(this._seed || { __proto__: FalcorJSON.prototype }, []);
+Model.prototype.get = function get(...args) {
+    var seed = this._seed;
+    if (!seed) {
+        seed = {};
+        seed.__proto__ = FalcorJSON.prototype;
+    }
+    return new Call('get', this, args)._toJSON(seed, []);
 }
 
 /**
@@ -103,10 +107,10 @@ Model.prototype.get = function get() {
  * @function
  * @return {ModelResponse.<JSONEnvelope>} - an {@link Observable} stream containing the values in the JSONGraph model after the set was attempted
  */
-Model.prototype.set = function set() {
-    return new Call(
-        'set', this, Array.prototype.slice.call(arguments, 0)
-    )._toJSON({ __proto__: FalcorJSON.prototype }, []);
+Model.prototype.set = function set(...args) {
+    var seed = {};
+    seed.__proto__ = FalcorJSON.prototype;
+    return new Call('set', this, args)._toJSON(seed, []);
 }
 
 /**
@@ -115,10 +119,8 @@ Model.prototype.set = function set() {
  * @param {...PathSet} path - the path(s) to retrieve
  * @return {ModelResponse.<JSONEnvelope>} - a ModelResponse that completes when the data has been loaded into the cache.
  */
-Model.prototype.preload = function preload() {
-    return new Call(
-        'get', this, Array.prototype.slice.call(arguments, 0)
-    )._toJSON(null, []);
+Model.prototype.preload = function preload(...args) {
+    return new Call('get', this, args)._toJSON(null, []);
 }
 
 /**
@@ -131,10 +133,10 @@ Model.prototype.preload = function preload() {
  * @return {ModelResponse.<JSONEnvelope> - a JSONEnvelope contains the values returned from the function
  */
 
-Model.prototype.call = function call() {
-    return new Call(
-        'call', this, Array.prototype.slice.call(arguments, 0)
-    )._toJSON({ __proto__: FalcorJSON.prototype }, []);
+Model.prototype.call = function call(...args) {
+    var seed = {};
+    seed.__proto__ = FalcorJSON.prototype;
+    return new Call('call', this, args)._toJSON(seed, []);
 }
 
 /**
@@ -142,10 +144,8 @@ Model.prototype.call = function call() {
  * @function
  * @param {...PathSet} path - the  paths to remove from the {@link Model}'s cache.
  */
-Model.prototype.invalidate = function invalidate() {
-    return new Call(
-        'invalidate', this, Array.prototype.slice.call(arguments, 0)
-    )._toJSON(null, null).then();
+Model.prototype.invalidate = function invalidate(...args) {
+    return new Call('invalidate', this, args)._toJSON(null, null).then();
 }
 
 /**
@@ -225,7 +225,7 @@ Model.prototype._hasValidParentReference = require('./deref/hasValidParentRefere
  */
 Model.prototype.getValue = function getValue(path) {
     return new Call('get', this, [path])
-        ._toJSON({ __proto__: FalcorJSON.prototype }, [])
+        ._toJSON({}, [])
         .lift(function(subscriber) {
             return this.subscribe({
                 onNext: function(data) {
@@ -263,7 +263,7 @@ Model.prototype.setValue = function setValue(path, value) {
     path = arguments.length === 1 ? path.path : path;
     value = arguments.length === 1 ? path : {path:path,value:value};
     return new Call('set', this, [value])
-        ._toJSON({ __proto__: FalcorJSON.prototype }, [])
+        ._toJSON({}, [])
         .lift(function(subscriber) {
             return this.subscribe({
                 onNext: function(data) {
@@ -305,7 +305,8 @@ Model.prototype.setCache = function modelSetCache(cacheOrJSONGraphEnvelope) {
         if (typeof cache !== 'undefined') {
             lruCollect(modelRoot, modelRoot.expired, getSize(cache), 0);
             if (this._recycleJSON) {
-                this._seed = { __proto__: FalcorJSON.prototype };
+                this._seed = {};
+                this._seed.__proto__ = FalcorJSON.prototype;
             }
         }
 
@@ -344,13 +345,16 @@ Model.prototype.getCache = function _getCache() {
         return getCache(this._root.cache);
     }
 
+    var seed = {};
+    seed.__proto__ = FalcorJSON.prototype;
+
     var env = getJSONGraph({
         _path: [],
         _root: this._root,
         _boxed: this._boxed,
         _materialized: this._materialized,
         _treatErrorsAsValues: this._treatErrorsAsValues
-    }, paths, { __proto__: FalcorJSON.prototype }).data;
+    }, paths, seed).data;
 
     env.paths = collapse(paths);
 

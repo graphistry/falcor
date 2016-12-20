@@ -51,7 +51,8 @@ Call.prototype._subscribe = function(subscriber) {
 
 Call.prototype._toJSON = function(data, errors) {
     if (data === undefined) {
-        data = { __proto__: FalcorJSON.prototype };
+        data = {};
+        data.__proto__ = FalcorJSON.prototype;
     }
     return this.lift(new CallOperator(
         data, errors || this.operator.errors, 'json',
@@ -61,7 +62,8 @@ Call.prototype._toJSON = function(data, errors) {
 
 Call.prototype._toJSONG = function(data, errors) {
     if (data === undefined) {
-        data = { __proto__: FalcorJSON.prototype };
+        data = {};
+        data.__proto__ = FalcorJSON.prototype;
     }
     return this.lift(new CallOperator(
         data, errors || this.operator.errors, 'jsonGraph',
@@ -154,7 +156,8 @@ CallSubscriber.prototype.onNext = function(seed) {
     // valueNode is immutable. If not in progressive mode, we can write into the
     // same JSON tree until the request is completed.
     if (seedIsImmutable) {
-        data = { __proto__: FalcorJSON.prototype };
+        data = {};
+        data.__proto__ = FalcorJSON.prototype;
     }
 
     if (args && args.length) {

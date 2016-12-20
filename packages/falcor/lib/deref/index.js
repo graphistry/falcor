@@ -6,7 +6,7 @@ var InvalidDerefInputError = require('../errors/InvalidDerefInputError');
 
 module.exports = function deref(json) {
 
-    var f_meta;
+    var seed, f_meta;
 
     if (!json || typeofObject !== typeof json || ! (
         f_meta = json[f_meta_data]) || typeofObject !== typeof f_meta) {
@@ -19,20 +19,24 @@ module.exports = function deref(json) {
     var referenceContainer, currentRefPath, i, len;
 
     if (!absolutePath) {
+        if (recycleJSON) {
+            seed = { json: json };
+            seed.__proto__ = FalcorJSON.prototype;
+        }
         return this._clone({
             _node: undefined,
-            _seed: recycleJSON && {
-                json: json, __proto__: FalcorJSON.prototype
-            } || undefined
+            _seed: seed
         });
     } else if (absolutePath.length === 0) {
+        if (recycleJSON) {
+            seed = { json: json };
+            seed.__proto__ = FalcorJSON.prototype;
+        }
         return this._clone({
             _node: cacheRoot,
             _path: absolutePath,
             _referenceContainer: true,
-            _seed: recycleJSON && {
-                json: json, __proto__: FalcorJSON.prototype
-            } || undefined
+            _seed: seed
         });
     }
 
@@ -87,12 +91,15 @@ module.exports = function deref(json) {
         referenceContainer = true;
     }
 
+    if (recycleJSON) {
+        seed = { json: json };
+        seed.__proto__ = FalcorJSON.prototype;
+    }
+
     return this._clone({
         _node: cacheNode,
         _path: absolutePath,
         _referenceContainer: referenceContainer,
-        _seed: recycleJSON && {
-            json: json, __proto__: FalcorJSON.prototype
-        } || undefined
+        _seed: seed
     });
 };

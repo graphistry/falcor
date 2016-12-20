@@ -6,11 +6,6 @@ function FalcorJSON(f_meta) {
     }
 }
 
-FalcorJSON.prototype.toJSON = toJSON;
-FalcorJSON.prototype.toProps = toProps;
-FalcorJSON.prototype.toString = toString;
-FalcorJSON.prototype.constructor = FalcorJSON;
-
 Object.defineProperties(FalcorJSON.prototype, [
         'concat', 'copyWithin', 'entries', 'every', 'fill', 'filter',
         'find', 'findIndex', 'forEach', 'includes', 'indexOf', 'join',
@@ -24,11 +19,21 @@ Object.defineProperties(FalcorJSON.prototype, [
         };
         return descriptors;
     }, {
+        toJSON: { enumerable: false, value: toJSON },
+        toProps: { enumerable: false, value: toProps },
+        toString: { enumerable: false, value: toString },
         $__hash: {
             enumerable: false,
             get: function() {
                 var f_meta = this[f_meta_data];
                 return f_meta && f_meta['$code'] || '';
+            }
+        },
+        $__path: {
+            enumerable: false,
+            get: function() {
+                var f_meta = this[f_meta_data];
+                return f_meta && f_meta[f_meta_abs_path] || [];
             }
         },
         $__version: {
@@ -106,7 +111,7 @@ function serialize(inst, serializer, includeMetadata, createWithProto) {
         return inst;
     }
 
-    var count, total, f_meta, keys, key, xs;
+    var count, total, f_meta, keys, key, xs, ys;
 
     if (isArray(inst)) {
         xs = inst;
@@ -115,9 +120,11 @@ function serialize(inst, serializer, includeMetadata, createWithProto) {
         count = -1;
         keys = Object.keys(inst);
         total = keys.length;
-        xs = !createWithProto && {} || {
-            __proto__: FalcorJSON.prototype
-        };
+        xs = {};
+
+        if (createWithProto) {
+            xs.__proto__ = FalcorJSON.prototype;
+        }
 
         if (includeMetadata && (f_meta = inst[f_meta_data])) {
 
@@ -135,7 +142,9 @@ function serialize(inst, serializer, includeMetadata, createWithProto) {
             xs[f_meta_data] = f_meta;
 
             if (createWithProto) {
-                xs = { __proto__: xs };
+                ys = {};
+                ys.__proto__ = xs;
+                xs = ys;
             }
         }
 

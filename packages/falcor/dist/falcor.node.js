@@ -126,11 +126,6 @@ module.exports = function expireNode(node, expired, lru) {
     }
 }
 
-FalcorJSON.prototype.toJSON = toJSON;
-FalcorJSON.prototype.toProps = toProps;
-FalcorJSON.prototype.toString = toString;
-FalcorJSON.prototype.constructor = FalcorJSON;
-
 Object.defineProperties(FalcorJSON.prototype, ['concat', 'copyWithin', 'entries', 'every', 'fill', 'filter', 'find', 'findIndex', 'forEach', 'includes', 'indexOf', 'join', 'keys', 'lastIndexOf', 'map', 'pop', 'push', 'reduce', 'reduceRight', 'reverse', 'shift', 'slice', 'some', 'sort', 'splice', 'unshift', 'values'].reduce(function (descriptors, name) {
     descriptors[name] = {
         writable: true, enumerable: false,
@@ -138,11 +133,21 @@ Object.defineProperties(FalcorJSON.prototype, ['concat', 'copyWithin', 'entries'
     };
     return descriptors;
 }, {
+    toJSON: { enumerable: false, value: toJSON },
+    toProps: { enumerable: false, value: toProps },
+    toString: { enumerable: false, value: toString },
     $__hash: {
         enumerable: false,
         get: function () {
             var f_meta = this["ƒ_meta"];
             return f_meta && f_meta['$code'] || '';
+        }
+    },
+    $__path: {
+        enumerable: false,
+        get: function () {
+            var f_meta = this["ƒ_meta"];
+            return f_meta && f_meta["abs_path"] || [];
         }
     },
     $__version: {
@@ -218,7 +223,7 @@ function serialize(inst, serializer, includeMetadata, createWithProto) {
         return inst;
     }
 
-    var count, total, f_meta, keys, key, xs;
+    var count, total, f_meta, keys, key, xs, ys;
 
     if (isArray(inst)) {
         xs = inst;
@@ -227,9 +232,11 @@ function serialize(inst, serializer, includeMetadata, createWithProto) {
         count = -1;
         keys = Object.keys(inst);
         total = keys.length;
-        xs = !createWithProto && {} || {
-            __proto__: FalcorJSON.prototype
-        };
+        xs = {};
+
+        if (createWithProto) {
+            xs.__proto__ = FalcorJSON.prototype;
+        }
 
         if (includeMetadata && (f_meta = inst["ƒ_meta"])) {
 
@@ -247,7 +254,9 @@ function serialize(inst, serializer, includeMetadata, createWithProto) {
             xs["ƒ_meta"] = f_meta;
 
             if (createWithProto) {
-                xs = { __proto__: xs };
+                ys = {};
+                ys.__proto__ = xs;
+                xs = ys;
             }
         }
 
@@ -2086,18 +2095,18 @@ function onMaterialize(json, path, depth, length, branchSelector, boxValues) {
     keyset = path[depth];
 
     if (!json || typeofObject !== typeof json) {
-        json = { __proto__: FalcorJSON.prototype, ["ƒ_meta"]: f_meta = {
-                ["version"]: 0,
-                ["abs_path"]: path.slice(0, depth)
-            } };
+        json = {};
+        json.__proto__ = FalcorJSON.prototype;
+        json["ƒ_meta"] = f_meta = {};
+        f_meta["version"] = 0;
+        f_meta["abs_path"] = path.slice(0, depth);
         if (branchSelector) {
             json = branchSelector(json);
         }
     } else if (!(f_meta = json["ƒ_meta"])) {
-        json["ƒ_meta"] = f_meta = {
-            ["version"]: 0,
-            ["abs_path"]: path.slice(0, depth)
-        };
+        json["ƒ_meta"] = f_meta = {};
+        f_meta["version"] = 0;
+        f_meta["abs_path"] = path.slice(0, depth);
     } else {
         f_meta["version"] = 0;
         f_meta["abs_path"] = path.slice(0, depth);
@@ -2967,7 +2976,8 @@ function Model(opts) {
         this._treatErrorsAsValues = true;
     } else if (this._recycleJSON) {
         this._treatErrorsAsValues = true;
-        this._seed = { __proto__: FalcorJSON.prototype };
+        this._seed = {};
+        this._seed.__proto__ = FalcorJSON.prototype;
     }
 
     this._boxed = options.boxed === true || options._boxed || false;
@@ -2989,7 +2999,17 @@ Model.prototype.constructor = Model;
  * @return {ModelResponse.<JSONEnvelope>} - the requested data as JSON
  */
 Model.prototype.get = function get() {
-    return new Call('get', this, Array.prototype.slice.call(arguments, 0))._toJSON(this._seed || { __proto__: FalcorJSON.prototype }, []);
+    var seed = this._seed;
+    if (!seed) {
+        seed = {};
+        seed.__proto__ = FalcorJSON.prototype;
+    }
+
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+    }
+
+    return new Call('get', this, args)._toJSON(seed, []);
 };
 
 /**
@@ -2998,7 +3018,14 @@ Model.prototype.get = function get() {
  * @return {ModelResponse.<JSONEnvelope>} - an {@link Observable} stream containing the values in the JSONGraph model after the set was attempted
  */
 Model.prototype.set = function set() {
-    return new Call('set', this, Array.prototype.slice.call(arguments, 0))._toJSON({ __proto__: FalcorJSON.prototype }, []);
+    var seed = {};
+    seed.__proto__ = FalcorJSON.prototype;
+
+    for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+        args[_key2] = arguments[_key2];
+    }
+
+    return new Call('set', this, args)._toJSON(seed, []);
 };
 
 /**
@@ -3008,7 +3035,11 @@ Model.prototype.set = function set() {
  * @return {ModelResponse.<JSONEnvelope>} - a ModelResponse that completes when the data has been loaded into the cache.
  */
 Model.prototype.preload = function preload() {
-    return new Call('get', this, Array.prototype.slice.call(arguments, 0))._toJSON(null, []);
+    for (var _len3 = arguments.length, args = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
+        args[_key3] = arguments[_key3];
+    }
+
+    return new Call('get', this, args)._toJSON(null, []);
 };
 
 /**
@@ -3022,7 +3053,14 @@ Model.prototype.preload = function preload() {
  */
 
 Model.prototype.call = function call() {
-    return new Call('call', this, Array.prototype.slice.call(arguments, 0))._toJSON({ __proto__: FalcorJSON.prototype }, []);
+    var seed = {};
+    seed.__proto__ = FalcorJSON.prototype;
+
+    for (var _len4 = arguments.length, args = Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
+        args[_key4] = arguments[_key4];
+    }
+
+    return new Call('call', this, args)._toJSON(seed, []);
 };
 
 /**
@@ -3031,7 +3069,11 @@ Model.prototype.call = function call() {
  * @param {...PathSet} path - the  paths to remove from the {@link Model}'s cache.
  */
 Model.prototype.invalidate = function invalidate() {
-    return new Call('invalidate', this, Array.prototype.slice.call(arguments, 0))._toJSON(null, null).then();
+    for (var _len5 = arguments.length, args = Array(_len5), _key5 = 0; _key5 < _len5; _key5++) {
+        args[_key5] = arguments[_key5];
+    }
+
+    return new Call('invalidate', this, args)._toJSON(null, null).then();
 };
 
 /**
@@ -3110,7 +3152,7 @@ Model.prototype._hasValidParentReference = __webpack_require__(79);
  // The code above prints 'Jim' to the console.
  */
 Model.prototype.getValue = function getValue(path) {
-    return new Call('get', this, [path])._toJSON({ __proto__: FalcorJSON.prototype }, []).lift(function (subscriber) {
+    return new Call('get', this, [path])._toJSON({}, []).lift(function (subscriber) {
         return this.subscribe({
             onNext: function (data) {
                 var depth = -1;
@@ -3146,7 +3188,7 @@ Model.prototype.getValue = function getValue(path) {
 Model.prototype.setValue = function setValue(path, value) {
     path = arguments.length === 1 ? path.path : path;
     value = arguments.length === 1 ? path : { path: path, value: value };
-    return new Call('set', this, [value])._toJSON({ __proto__: FalcorJSON.prototype }, []).lift(function (subscriber) {
+    return new Call('set', this, [value])._toJSON({}, []).lift(function (subscriber) {
         return this.subscribe({
             onNext: function (data) {
                 var depth = -1;
@@ -3187,7 +3229,8 @@ Model.prototype.setCache = function modelSetCache(cacheOrJSONGraphEnvelope) {
         if (typeof cache !== 'undefined') {
             lruCollect(modelRoot, modelRoot.expired, getSize(cache), 0);
             if (this._recycleJSON) {
-                this._seed = { __proto__: FalcorJSON.prototype };
+                this._seed = {};
+                this._seed.__proto__ = FalcorJSON.prototype;
             }
         }
 
@@ -3226,13 +3269,16 @@ Model.prototype.getCache = function _getCache() {
         return getCache(this._root.cache);
     }
 
+    var seed = {};
+    seed.__proto__ = FalcorJSON.prototype;
+
     var env = getJSONGraph({
         _path: [],
         _root: this._root,
         _boxed: this._boxed,
         _materialized: this._materialized,
         _treatErrorsAsValues: this._treatErrorsAsValues
-    }, paths, { __proto__: FalcorJSON.prototype }).data;
+    }, paths, seed).data;
 
     env.paths = collapse(paths);
 
@@ -3693,6 +3739,8 @@ function walkPathAndBuildOutput(root, node, json, path, depth, seed, results, re
         keyset,
         keyIsRange,
         keys = path['$keys'],
+        nodeAbsPath,
+        jsonAbsPath,
         nextDepth = depth + 1,
         rangeEnd,
         nextJSON,
@@ -3711,23 +3759,49 @@ function walkPathAndBuildOutput(root, node, json, path, depth, seed, results, re
     if (!json || typeofObject !== typeof json) {
         json = undefined;
     } else if (f_meta = json["ƒ_meta"]) {
+
+        nodeAbsPath = node["ƒ_abs_path"];
+
         if (!branchSelector && !(json instanceof FalcorJSON)) {
-            json.__proto__ = { __proto__: FalcorJSON.prototype };
+            json.__proto__ = {};
             json.__proto__["ƒ_meta"] = f_meta;
-        } else if (!(f_meta["version"] !== node["ƒ_version"] || f_meta["abs_path"] !== node["ƒ_abs_path"] || f_meta['$code'] !== path['$code'])) {
-            results.hasValue = true;
-            arr[0] = json;
-            arr[1] = false;
-            return arr;
+            json.__proto__.__proto__ = FalcorJSON.prototype;
         }
+
+        if (jsonAbsPath = f_meta["abs_path"]) {
+            if (nodeAbsPath !== jsonAbsPath) {
+                f_meta['$code'] = '__incomplete__';
+                f_meta["abs_path"] = nodeAbsPath;
+                f_meta["version"] = node["ƒ_version"];
+                f_meta["deref_to"] = refContainerRefPath;
+                f_meta["deref_from"] = refContainerAbsPath;
+                if (f_old_keys = f_meta["keys"]) {
+                    f_meta["keys"] = Object.create(null);
+                    for (nextKey in f_old_keys) {
+                        if (f_old_keys[nextKey]) {
+                            delete json[nextKey];
+                        }
+                    }
+                }
+                arr[0] = json;
+                arr[1] = true;
+                return arr;
+            } else if (!(f_meta["version"] !== node["ƒ_version"] || f_meta['$code'] !== path['$code'])) {
+                results.hasValue = true;
+                arr[0] = json;
+                arr[1] = false;
+                return arr;
+            }
+        }
+
         f_old_keys = f_meta["keys"];
+        f_meta["abs_path"] = nodeAbsPath;
         f_meta["version"] = node["ƒ_version"];
-        f_meta["abs_path"] = node["ƒ_abs_path"];
         f_meta["deref_to"] = refContainerRefPath;
         f_meta["deref_from"] = refContainerAbsPath;
     }
 
-    f_new_keys = {};
+    f_new_keys = Object.create(null);
 
     var keysIndex = -1;
     var keysLength = keys.length;
@@ -3864,11 +3938,20 @@ function walkPathAndBuildOutput(root, node, json, path, depth, seed, results, re
                 f_meta["abs_path"] = node["ƒ_abs_path"];
                 f_meta["deref_to"] = refContainerRefPath;
                 f_meta["deref_from"] = refContainerAbsPath;
-                json = { __proto__: FalcorJSON.prototype, ["ƒ_meta"]: f_meta };
+                json = {};
+                json["ƒ_meta"] = f_meta;
+                json.__proto__ = FalcorJSON.prototype;
                 // Empower developers to instrument branch node creation by
                 // providing a custom function. If they do, delegate branch
                 // node creation to them.
-                json = !branchSelector && { __proto__: json } || branchSelector(json);
+                if (branchSelector) {
+                    json = branchSelector(json);
+                } else {
+                    var tmp = json;
+                    json = {};
+                    json.__proto__ = tmp;
+                    tmp = undefined;
+                }
             }
 
             f_new_keys[nextKey] = true;
@@ -4150,7 +4233,9 @@ function walkPathAndBuildOutput(root, node, json, path, depth, seed, results, re
                 f_meta["abs_path"] = node["ƒ_abs_path"];
                 f_meta["deref_to"] = refContainerRefPath;
                 f_meta["deref_from"] = refContainerAbsPath;
-                json = { __proto__: FalcorJSON.prototype, ["ƒ_meta"]: f_meta };
+                json = {};
+                json["ƒ_meta"] = f_meta;
+                json.__proto__ = FalcorJSON.prototype;
                 // Empower developers to instrument branch node creation by
                 // providing a custom function. If they do, delegate branch
                 if (branchSelector) {
@@ -4559,18 +4644,18 @@ function onMaterializeFlatBuffer(json, path, depth, length, branchSelector, boxV
         nextOptimizedLength = optimizedLength + 1;
 
     if (!json || typeofObject !== typeof json) {
-        json = { __proto__: FalcorJSON.prototype, ["ƒ_meta"]: f_meta = {
-                ["version"]: 0,
-                ["abs_path"]: optimizedPath.slice(0, optimizedLength)
-            } };
+        json = {};
+        json.__proto__ = FalcorJSON.prototype;
+        json["ƒ_meta"] = f_meta = {};
+        f_meta["version"] = 0;
+        f_meta["abs_path"] = optimizedPath.slice(0, optimizedLength);
         if (branchSelector) {
             json = branchSelector(json);
         }
     } else if (!(f_meta = json["ƒ_meta"])) {
-        json["ƒ_meta"] = f_meta = {
-            ["version"]: 0,
-            ["abs_path"]: optimizedPath.slice(0, optimizedLength)
-        };
+        json["ƒ_meta"] = f_meta = {};
+        f_meta["version"] = 0;
+        f_meta["abs_path"] = optimizedPath.slice(0, optimizedLength);
     } else {
         f_old_keys = f_meta["keys"];
         f_meta["abs_path"] = optimizedPath.slice(0, optimizedLength);
@@ -5231,7 +5316,7 @@ var InvalidDerefInputError = __webpack_require__(82);
 
 module.exports = function deref(json) {
 
-    var f_meta;
+    var seed, f_meta;
 
     if (!json || typeofObject !== typeof json || !(f_meta = json["ƒ_meta"]) || typeofObject !== typeof f_meta) {
         return null;
@@ -5243,20 +5328,24 @@ module.exports = function deref(json) {
     var referenceContainer, currentRefPath, i, len;
 
     if (!absolutePath) {
+        if (recycleJSON) {
+            seed = { json: json };
+            seed.__proto__ = FalcorJSON.prototype;
+        }
         return this._clone({
             _node: undefined,
-            _seed: recycleJSON && {
-                json: json, __proto__: FalcorJSON.prototype
-            } || undefined
+            _seed: seed
         });
     } else if (absolutePath.length === 0) {
+        if (recycleJSON) {
+            seed = { json: json };
+            seed.__proto__ = FalcorJSON.prototype;
+        }
         return this._clone({
             _node: cacheRoot,
             _path: absolutePath,
             _referenceContainer: true,
-            _seed: recycleJSON && {
-                json: json, __proto__: FalcorJSON.prototype
-            } || undefined
+            _seed: seed
         });
     }
 
@@ -5311,13 +5400,16 @@ module.exports = function deref(json) {
             referenceContainer = true;
         }
 
+    if (recycleJSON) {
+        seed = { json: json };
+        seed.__proto__ = FalcorJSON.prototype;
+    }
+
     return this._clone({
         _node: cacheNode,
         _path: absolutePath,
         _referenceContainer: referenceContainer,
-        _seed: recycleJSON && {
-            json: json, __proto__: FalcorJSON.prototype
-        } || undefined
+        _seed: seed
     });
 };
 
@@ -5461,14 +5553,16 @@ Call.prototype._subscribe = function (subscriber) {
 
 Call.prototype._toJSON = function (data, errors) {
     if (data === undefined) {
-        data = { __proto__: FalcorJSON.prototype };
+        data = {};
+        data.__proto__ = FalcorJSON.prototype;
     }
     return this.lift(new CallOperator(data, errors || this.operator.errors, 'json', this.operator.progressive, this.operator.maxRetryCount), this.source);
 };
 
 Call.prototype._toJSONG = function (data, errors) {
     if (data === undefined) {
-        data = { __proto__: FalcorJSON.prototype };
+        data = {};
+        data.__proto__ = FalcorJSON.prototype;
     }
     return this.lift(new CallOperator(data, errors || this.operator.errors, 'jsonGraph', this.operator.progressive, this.operator.maxRetryCount), this.source);
 };
@@ -5543,7 +5637,8 @@ CallSubscriber.prototype.next = CallSubscriber.prototype.onNext = function (seed
     // valueNode is immutable. If not in progressive mode, we can write into the
     // same JSON tree until the request is completed.
     if (seedIsImmutable) {
-        data = { __proto__: FalcorJSON.prototype };
+        data = {};
+        data.__proto__ = FalcorJSON.prototype;
     }
 
     if (args && args.length) {

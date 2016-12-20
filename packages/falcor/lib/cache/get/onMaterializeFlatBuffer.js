@@ -42,22 +42,22 @@ function onMaterializeFlatBuffer(json, path, depth, length,
         nextOptimizedLength = optimizedLength + 1;
 
     if (!json || typeofObject !== typeof json) {
-        json = { __proto__: FalcorJSON.prototype, [f_meta_data]: f_meta = {
-                [f_meta_version]: 0,
-                [f_meta_abs_path]: optimizedPath.slice(
-                    0, optimizedLength
-                )
-        }};
+        json = {};
+        json.__proto__ = FalcorJSON.prototype;
+        json[f_meta_data] = f_meta = {};
+        f_meta[f_meta_version] = 0;
+        f_meta[f_meta_abs_path] = optimizedPath.slice(
+            0, optimizedLength
+        );
         if (branchSelector) {
             json = branchSelector(json);
         }
     } else if (!(f_meta = json[f_meta_data])) {
-        json[f_meta_data] = f_meta = {
-            [f_meta_version]: 0,
-            [f_meta_abs_path]: optimizedPath.slice(
-                0, optimizedLength
-            )
-        };
+        json[f_meta_data] = f_meta = {};
+        f_meta[f_meta_version] = 0;
+        f_meta[f_meta_abs_path] = optimizedPath.slice(
+            0, optimizedLength
+        );
     } else {
         f_old_keys = f_meta[f_meta_keys];
         f_meta[f_meta_abs_path] = optimizedPath.slice(

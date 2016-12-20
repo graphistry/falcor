@@ -238,7 +238,9 @@ function walkPathAndBuildOutput(root, node, json, path,
                 f_meta[f_meta_abs_path] = node[f_abs_path];
                 f_meta[f_meta_deref_to] = refContainerRefPath;
                 f_meta[f_meta_deref_from] = refContainerAbsPath;
-                json = { __proto__: FalcorJSON.prototype, [f_meta_data]: f_meta };
+                json = {};
+                json[f_meta_data] = f_meta;
+                json.__proto__ = FalcorJSON.prototype;
                 // Empower developers to instrument branch node creation by
                 // providing a custom function. If they do, delegate branch
                 if (branchSelector) {
