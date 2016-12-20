@@ -94,9 +94,9 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-var now = __webpack_require__(60);
+var now = __webpack_require__(61);
 var $now = __webpack_require__(33);
-var $never = __webpack_require__(61);
+var $never = __webpack_require__(62);
 
 module.exports = function isExpired(node, expireImmediate) {
     var exp = node.$expires;
@@ -112,7 +112,7 @@ module.exports = function isExpired(node, expireImmediate) {
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
-var splice = __webpack_require__(54);
+var splice = __webpack_require__(55);
 
 module.exports = function expireNode(node, expired, lru) {
     if (!node["ƒ_invalidated"]) {
@@ -419,7 +419,7 @@ function getCachePosition(cache, path) {
 /***/ function(module, exports, __webpack_require__) {
 
 var removeNode = __webpack_require__(30);
-var updateBackReferenceVersions = __webpack_require__(49);
+var updateBackReferenceVersions = __webpack_require__(50);
 
 module.exports = function updateNodeAncestors(nodeArg, offset, lru, version) {
     var child = nodeArg;
@@ -457,7 +457,7 @@ module.exports = createErrorClass('InvalidKeySetError', function (path, keysOrRa
 /* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
-var EXPIRES_NEVER = __webpack_require__(61);
+var EXPIRES_NEVER = __webpack_require__(62);
 
 // [H] -> Next -> ... -> [T]
 // [T] -> Prev -> ... -> [H]
@@ -927,7 +927,7 @@ var createHardlink = __webpack_require__(8);
 var getCachePosition = __webpack_require__(10);
 var isInternalKey = __webpack_require__(21);
 var NullInPathError = __webpack_require__(3);
-var mergeValueOrInsertBranch = __webpack_require__(46);
+var mergeValueOrInsertBranch = __webpack_require__(47);
 
 /**
  * Sets a list of {@link PathMapEnvelope}s into a {@link JSONGraph}.
@@ -1653,7 +1653,7 @@ function invalidateNode(root, parent, node, key, branch, reference, version, exp
 /* 30 */
 /***/ function(module, exports, __webpack_require__) {
 
-var lruSplice = __webpack_require__(54);
+var lruSplice = __webpack_require__(55);
 var unlinkBackReferences = __webpack_require__(86);
 var unlinkForwardReference = __webpack_require__(87);
 
@@ -1684,7 +1684,7 @@ var createHardlink = __webpack_require__(8);
 var getCachePosition = __webpack_require__(10);
 var NullInPathError = __webpack_require__(3);
 var iterateKeySet = __webpack_require__(24);
-var mergeValueOrInsertBranch = __webpack_require__(46);
+var mergeValueOrInsertBranch = __webpack_require__(47);
 
 /**
  * Sets a list of {@link PathValue}s into a {@link JSONGraph}.
@@ -1975,7 +1975,7 @@ function toCollapseMap(paths, collapseMap) {
 /* 37 */
 /***/ function(module, exports, __webpack_require__) {
 
-var toTree = __webpack_require__(66);
+var toTree = __webpack_require__(67);
 
 module.exports = toCollapseTrees;
 
@@ -2231,12 +2231,12 @@ module.exports._isSafeNumber = isSafeNumber;
 /***/ function(module, exports, __webpack_require__) {
 
 var isArray = Array.isArray;
-var walkPathAndBuildOutput = __webpack_require__(74);
-var walkFlatBufferAndBuildOutput = __webpack_require__(73);
+var walkPathAndBuildOutput = __webpack_require__(75);
+var walkFlatBufferAndBuildOutput = __webpack_require__(74);
 var getBoundCacheNode = __webpack_require__(17);
 var InvalidModelError = __webpack_require__(92);
-var toFlatBuffer = __webpack_require__(65);
-var computeFlatBufferHash = __webpack_require__(63);
+var toFlatBuffer = __webpack_require__(66);
+var computeFlatBufferHash = __webpack_require__(64);
 
 module.exports = getJSON;
 
@@ -2342,7 +2342,7 @@ var arr = new Array(3);
 var promote = __webpack_require__(13);
 var isExpired = __webpack_require__(0);
 var createHardlink = __webpack_require__(8);
-var CircularReferenceError = __webpack_require__(51);
+var CircularReferenceError = __webpack_require__(52);
 
 module.exports = getReferenceTarget;
 
@@ -2435,7 +2435,7 @@ function getReferenceTarget(root, ref, modelRoot, expireImmediate) {
 /***/ function(module, exports, __webpack_require__) {
 
 var clone = __webpack_require__(7);
-var onError = __webpack_require__(72);
+var onError = __webpack_require__(73);
 
 module.exports = onJSONValue;
 
@@ -2455,7 +2455,7 @@ function onJSONValue(node, type, depth, seed, results, requestedPath, optimizedP
 /* 42 */
 /***/ function(module, exports, __webpack_require__) {
 
-var walkPathAndBuildOutput = __webpack_require__(77);
+var walkPathAndBuildOutput = __webpack_require__(78);
 var BoundJSONGraphModelError = __webpack_require__(90);
 
 module.exports = getJSONGraph;
@@ -2661,6 +2661,51 @@ function onMaterialize(json, path, depth, length, branchSelector, boxValues) {
 /* 44 */
 /***/ function(module, exports, __webpack_require__) {
 
+var isArray = Array.isArray;
+var isPathValue = __webpack_require__(104);
+var isJSONEnvelope = __webpack_require__(59);
+var isJSONGraphEnvelope = __webpack_require__(60);
+
+module.exports = groupCacheArguments;
+
+function groupCacheArguments(args) {
+
+    var groups = [];
+    var argIndex = -1;
+    var argCount = args.length;
+    var group, groupType, arg, argType;
+
+    while (++argIndex < argCount) {
+        arg = args[argIndex];
+        if (isArray(arg)) {
+            arg = { path: arg };
+            argType = 'PathValues';
+        } else if (isPathValue(arg)) {
+            argType = 'PathValues';
+        } else if (isJSONGraphEnvelope(arg)) {
+            argType = 'JSONGraphs';
+        } else if (isJSONEnvelope(arg)) {
+            argType = 'PathMaps';
+        }
+
+        if (groupType !== argType) {
+            groupType = argType;
+            groups.push(group = {
+                arguments: [],
+                inputType: argType
+            });
+        }
+
+        group.arguments.push(arg);
+    }
+
+    return groups;
+}
+
+/***/ },
+/* 45 */
+/***/ function(module, exports, __webpack_require__) {
+
 module.exports = function insertNode(node, parent, key, version, optimizedPath) {
     node["ƒ_key"] = key;
     node["ƒ_parent"] = parent;
@@ -2678,7 +2723,7 @@ module.exports = function insertNode(node, parent, key, version, optimizedPath) 
 };
 
 /***/ },
-/* 45 */
+/* 46 */
 /***/ function(module, exports, __webpack_require__) {
 
 var isExpired = __webpack_require__(0);
@@ -2837,20 +2882,20 @@ function invalidateNode(root, parent, node, key, value, branch, reference, versi
 }
 
 /***/ },
-/* 46 */
+/* 47 */
 /***/ function(module, exports, __webpack_require__) {
 
 var $now = __webpack_require__(33);
 var getType = __webpack_require__(103);
 var getSize = __webpack_require__(9);
-var getTimestamp = __webpack_require__(57);
+var getTimestamp = __webpack_require__(58);
 
-var wrapNode = __webpack_require__(50);
+var wrapNode = __webpack_require__(51);
 var isExpired = __webpack_require__(0);
 var expireNode = __webpack_require__(1);
-var insertNode = __webpack_require__(44);
-var replaceNode = __webpack_require__(48);
-var reconstructPath = __webpack_require__(47);
+var insertNode = __webpack_require__(45);
+var replaceNode = __webpack_require__(49);
+var reconstructPath = __webpack_require__(48);
 var updateNodeAncestors = __webpack_require__(11);
 var removeNodeAndDescendants = __webpack_require__(18);
 
@@ -2911,7 +2956,7 @@ module.exports = function mergeValueOrInsertBranch(parent, node, key, value, bra
 };
 
 /***/ },
-/* 47 */
+/* 48 */
 /***/ function(module, exports) {
 
 /**
@@ -2936,12 +2981,12 @@ module.exports = function reconstructPath(currentPath, key) {
 };
 
 /***/ },
-/* 48 */
+/* 49 */
 /***/ function(module, exports, __webpack_require__) {
 
 var transferBackReferences = __webpack_require__(85);
 var removeNodeAndDescendants = __webpack_require__(18);
-var updateBackReferenceVersions = __webpack_require__(49);
+var updateBackReferenceVersions = __webpack_require__(50);
 
 module.exports = function replaceNode(node, replacement, parent, key, lru, version) {
     if (node === replacement) {
@@ -2957,7 +3002,7 @@ module.exports = function replaceNode(node, replacement, parent, key, lru, versi
 };
 
 /***/ },
-/* 49 */
+/* 50 */
 /***/ function(module, exports, __webpack_require__) {
 
 module.exports = function updateBackReferenceVersions(nodeArg, version) {
@@ -2979,11 +3024,11 @@ module.exports = function updateBackReferenceVersions(nodeArg, version) {
 };
 
 /***/ },
-/* 50 */
+/* 51 */
 /***/ function(module, exports, __webpack_require__) {
 
 var isArray = Array.isArray;
-var now = __webpack_require__(60);
+var now = __webpack_require__(61);
 var clone = __webpack_require__(101);
 var getSize = __webpack_require__(9);
 var getExpires = __webpack_require__(102);
@@ -3044,7 +3089,7 @@ module.exports = function wrapNode(nodeArg, typeArg, value) {
 };
 
 /***/ },
-/* 51 */
+/* 52 */
 /***/ function(module, exports, __webpack_require__) {
 
 var createErrorClass = __webpack_require__(4);
@@ -3054,7 +3099,7 @@ module.exports = createErrorClass('CircularReferenceError', function (referenceP
 });
 
 /***/ },
-/* 52 */
+/* 53 */
 /***/ function(module, exports, __webpack_require__) {
 
 var createErrorClass = __webpack_require__(4);
@@ -3072,7 +3117,7 @@ module.exports = createErrorClass('InvalidSourceError', function (error) {
 });
 
 /***/ },
-/* 53 */
+/* 54 */
 /***/ function(module, exports, __webpack_require__) {
 
 var removeNode = __webpack_require__(30);
@@ -3128,7 +3173,7 @@ module.exports = function collect(lru, expired, totalArg, max, ratioArg, version
 };
 
 /***/ },
-/* 54 */
+/* 55 */
 /***/ function(module, exports, __webpack_require__) {
 
 module.exports = function lruSplice(root, object) {
@@ -3153,7 +3198,7 @@ module.exports = function lruSplice(root, object) {
 };
 
 /***/ },
-/* 55 */
+/* 56 */
 /***/ function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {var Subscriber = __webpack_require__(14);
@@ -3221,7 +3266,7 @@ Source.prototype.then = function then(onNext, onError) {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(34)))
 
 /***/ },
-/* 56 */
+/* 57 */
 /***/ function(module, exports) {
 
 var empty = {
@@ -3239,7 +3284,7 @@ ImmediateScheduler.prototype.schedule = function schedule(action) {
 module.exports = ImmediateScheduler;
 
 /***/ },
-/* 57 */
+/* 58 */
 /***/ function(module, exports, __webpack_require__) {
 
 var isObject = __webpack_require__(5);
@@ -3248,7 +3293,7 @@ module.exports = function getTimestamp(node) {
 };
 
 /***/ },
-/* 58 */
+/* 59 */
 /***/ function(module, exports, __webpack_require__) {
 
 var isObject = __webpack_require__(5);
@@ -3258,7 +3303,7 @@ module.exports = function isJSONEnvelope(envelope) {
 };
 
 /***/ },
-/* 59 */
+/* 60 */
 /***/ function(module, exports, __webpack_require__) {
 
 var isArray = Array.isArray;
@@ -3269,22 +3314,22 @@ module.exports = function isJSONGraphEnvelope(envelope) {
 };
 
 /***/ },
-/* 60 */
+/* 61 */
 /***/ function(module, exports) {
 
 module.exports = Date.now;
 
 /***/ },
-/* 61 */
+/* 62 */
 /***/ function(module, exports) {
 
 module.exports = 1;
 
 /***/ },
-/* 62 */
+/* 63 */
 /***/ function(module, exports, __webpack_require__) {
 
-var Model = __webpack_require__(67);
+var Model = __webpack_require__(68);
 var FalcorJSON = __webpack_require__(2);
 
 function falcor(opts) {
@@ -3303,7 +3348,7 @@ falcor['toProps'] = FalcorJSON.prototype.toProps;
 module.exports = falcor;
 
 /***/ },
-/* 63 */
+/* 64 */
 /***/ function(module, exports, __webpack_require__) {
 
 var isArray = Array.isArray;
@@ -3347,7 +3392,7 @@ function computeFlatBufferHash(seed) {
 }
 
 /***/ },
-/* 64 */
+/* 65 */
 /***/ function(module, exports, __webpack_require__) {
 
 var isArray = Array.isArray;
@@ -3461,7 +3506,7 @@ function hasIntersection(tree, path, depth, length) {
 }
 
 /***/ },
-/* 65 */
+/* 66 */
 /***/ function(module, exports, __webpack_require__) {
 
 var isArray = Array.isArray;
@@ -3583,7 +3628,7 @@ function pathToFlatBuffer(seed, path, depth, length) {
 }
 
 /***/ },
-/* 66 */
+/* 67 */
 /***/ function(module, exports, __webpack_require__) {
 
 var isArray = Array.isArray;
@@ -3702,29 +3747,29 @@ function pathToTree(seed, path, depth, length, value) {
 }
 
 /***/ },
-/* 67 */
+/* 68 */
 /***/ function(module, exports, __webpack_require__) {
 
 var Call = __webpack_require__(95);
-var ModelRoot = __webpack_require__(69);
+var ModelRoot = __webpack_require__(70);
 var FalcorJSON = __webpack_require__(2);
-var ModelDataSourceAdapter = __webpack_require__(68);
+var ModelDataSourceAdapter = __webpack_require__(69);
 var TimeoutScheduler = __webpack_require__(99);
-var ImmediateScheduler = __webpack_require__(56);
+var ImmediateScheduler = __webpack_require__(57);
 var collapse = __webpack_require__(35);
 
-var lruCollect = __webpack_require__(53);
+var lruCollect = __webpack_require__(54);
 var getSize = __webpack_require__(9);
 var isObject = __webpack_require__(5);
-var isJSONEnvelope = __webpack_require__(58);
+var isJSONEnvelope = __webpack_require__(59);
 var getCachePosition = __webpack_require__(10);
-var isJSONGraphEnvelope = __webpack_require__(59);
+var isJSONGraphEnvelope = __webpack_require__(60);
 
 var setCache = __webpack_require__(20);
 var setJSONGraphs = __webpack_require__(19);
 
 var getJSON = __webpack_require__(25);
-var getCache = __webpack_require__(79);
+var getCache = __webpack_require__(80);
 var getJSONGraph = __webpack_require__(26);
 
 module.exports = Model;
@@ -4259,7 +4304,7 @@ Model.prototype._optimizePath = function _optimizePath(path) {
     return abs_path.slice(0);
 };
 
-Model.prototype._getVersion = __webpack_require__(80);
+Model.prototype._getVersion = __webpack_require__(81);
 Model.prototype._getPathValuesAsPathMap = getJSON;
 Model.prototype._getPathValuesAsJSONG = getJSONGraph;
 
@@ -4269,10 +4314,10 @@ Model.prototype._setJSONGs = __webpack_require__(19);
 Model.prototype._setCache = __webpack_require__(20);
 
 Model.prototype._invalidatePathValues = __webpack_require__(29);
-Model.prototype._invalidatePathMaps = __webpack_require__(45);
+Model.prototype._invalidatePathMaps = __webpack_require__(46);
 
 /***/ },
-/* 68 */
+/* 69 */
 /***/ function(module, exports) {
 
 function ModelDataSourceAdapter(model) {
@@ -4296,7 +4341,7 @@ ModelDataSourceAdapter.prototype.call = function call(path, args, suffixes, path
 module.exports = ModelDataSourceAdapter;
 
 /***/ },
-/* 69 */
+/* 70 */
 /***/ function(module, exports, __webpack_require__) {
 
 var functionTypeof = 'function';
@@ -4369,7 +4414,7 @@ ModelRoot.comparator = function comparator(cacheNode, messageNode) {
 module.exports = ModelRoot;
 
 /***/ },
-/* 70 */
+/* 71 */
 /***/ function(module, exports, __webpack_require__) {
 
 var getJSON = __webpack_require__(25);
@@ -4423,7 +4468,7 @@ function jsonGraph(model, _args, data, progressive) {
 }
 
 /***/ },
-/* 71 */
+/* 72 */
 /***/ function(module, exports, __webpack_require__) {
 
 module.exports = {
@@ -4432,7 +4477,7 @@ module.exports = {
 };
 
 /***/ },
-/* 72 */
+/* 73 */
 /***/ function(module, exports, __webpack_require__) {
 
 var clone = __webpack_require__(7);
@@ -4457,7 +4502,7 @@ function onError(node, depth, results, requestedPath, fromReference, boxValues) 
 }
 
 /***/ },
-/* 73 */
+/* 74 */
 /***/ function(module, exports, __webpack_require__) {
 
 var arr = new Array(2);
@@ -4469,7 +4514,7 @@ var isExpired = __webpack_require__(0);
 var onValueType = __webpack_require__(16);
 var originalOnMissing = __webpack_require__(28);
 var getReferenceTarget = __webpack_require__(40);
-var onMaterialize = __webpack_require__(78);
+var onMaterialize = __webpack_require__(79);
 var NullInPathError = __webpack_require__(3);
 var InvalidKeySetError = __webpack_require__(12);
 var getHashCode = __webpack_require__(23);
@@ -4740,7 +4785,7 @@ function onMissing(path, depth, results, requestedPath, requestedLength, fromRef
 }
 
 /***/ },
-/* 74 */
+/* 75 */
 /***/ function(module, exports, __webpack_require__) {
 
 var isArray = Array.isArray;
@@ -4993,7 +5038,7 @@ function walkPathAndBuildOutput(root, node, json, path, depth, seed, results, re
 /* eslint-enable */
 
 /***/ },
-/* 75 */
+/* 76 */
 /***/ function(module, exports, __webpack_require__) {
 
 var arr = new Array(2);
@@ -5002,7 +5047,7 @@ var inlineValue = __webpack_require__(27);
 var promote = __webpack_require__(13);
 var isExpired = __webpack_require__(0);
 var createHardlink = __webpack_require__(8);
-var CircularReferenceError = __webpack_require__(51);
+var CircularReferenceError = __webpack_require__(52);
 
 module.exports = getReferenceTarget;
 
@@ -5092,7 +5137,7 @@ function getReferenceTarget(root, ref, modelRoot, seed, expireImmediate) {
 /* eslint-enable */
 
 /***/ },
-/* 76 */
+/* 77 */
 /***/ function(module, exports, __webpack_require__) {
 
 var typeofObject = 'object';
@@ -5127,18 +5172,18 @@ function onJSONGraphValue(node, type, depth, seed, results, requestedPath, optim
 }
 
 /***/ },
-/* 77 */
+/* 78 */
 /***/ function(module, exports, __webpack_require__) {
 
 var isArray = Array.isArray;
 var clone = __webpack_require__(7);
-var onValue = __webpack_require__(76);
+var onValue = __webpack_require__(77);
 var inlineValue = __webpack_require__(27);
 var isExpired = __webpack_require__(0);
 var onValueType = __webpack_require__(16);
 var onMaterialize = __webpack_require__(43);
 var originalOnMissing = __webpack_require__(28);
-var getReferenceTarget = __webpack_require__(75);
+var getReferenceTarget = __webpack_require__(76);
 var NullInPathError = __webpack_require__(3);
 var InvalidKeySetError = __webpack_require__(12);
 var materializedAtom = __webpack_require__(6);
@@ -5329,7 +5374,7 @@ function onMissing(path, depth, results, requestedPath, requestedLength, fromRef
 }
 
 /***/ },
-/* 78 */
+/* 79 */
 /***/ function(module, exports, __webpack_require__) {
 
 var typeofNumber = 'number';
@@ -5465,7 +5510,7 @@ function onMaterializeFlatBuffer(json, path, depth, length, branchSelector, boxV
 }
 
 /***/ },
-/* 79 */
+/* 80 */
 /***/ function(module, exports, __webpack_require__) {
 
 var isInternalKey = __webpack_require__(21);
@@ -5543,7 +5588,7 @@ function _copyCache(node, out, fromKey) {
 }
 
 /***/ },
-/* 80 */
+/* 81 */
 /***/ function(module, exports, __webpack_require__) {
 
 var getBoundCacheNode = __webpack_require__(17);
@@ -5555,79 +5600,61 @@ module.exports = function _getVersion(model, path) {
 };
 
 /***/ },
-/* 81 */
-/***/ function(module, exports, __webpack_require__) {
-
-var isArray = Array.isArray;
-var isPathValue = __webpack_require__(104);
-var isJSONEnvelope = __webpack_require__(58);
-var isJSONGraphEnvelope = __webpack_require__(59);
-
-module.exports = groupCacheArguments;
-
-function groupCacheArguments(args) {
-
-    var groups = [];
-    var argIndex = -1;
-    var argCount = args.length;
-    var group, groupType, arg, argType;
-
-    while (++argIndex < argCount) {
-        arg = args[argIndex];
-        if (isArray(arg)) {
-            arg = { path: arg };
-            argType = 'PathValues';
-        } else if (isPathValue(arg)) {
-            argType = 'PathValues';
-        } else if (isJSONGraphEnvelope(arg)) {
-            argType = 'JSONGraphs';
-        } else if (isJSONEnvelope(arg)) {
-            argType = 'PathMaps';
-        }
-
-        if (groupType !== argType) {
-            groupType = argType;
-            groups.push(group = {
-                arguments: [],
-                inputType: argType
-            });
-        }
-
-        group.arguments.push(arg);
-    }
-
-    return groups;
-}
-
-/***/ },
 /* 82 */
 /***/ function(module, exports, __webpack_require__) {
 
-var invalidatePathSets = __webpack_require__(29);
-var invalidatePathMaps = __webpack_require__(45);
+var groupCacheArguments = __webpack_require__(44);
 
 module.exports = {
     json: invalidate,
-    jsonGraph: invalidate
+    jsonGraph: invalidate,
+    invalidatePathMaps: __webpack_require__(46),
+    invalidatePathValues: __webpack_require__(29)
 };
 
 function invalidate(model, args, seed, progressive, expireImmediate) {
-    invalidatePathSets(model, args, expireImmediate);
+    invalidateArgumentGroups(model, groupCacheArguments(args), expireImmediate);
     return {};
+}
+
+function invalidateArgumentGroups(model, xs, expireImmediate) {
+
+    var groupIndex = -1;
+    var groupCount = xs.length;
+
+    // Takes each of the groups and normalizes their input into
+    // requested paths and optimized paths.
+    while (++groupIndex < groupCount) {
+
+        var group = xs[groupIndex];
+        var inputType = group.inputType;
+        var groupedArgs = group.arguments;
+
+        if (groupedArgs.length > 0) {
+            if (inputType === 'PathValues') {
+                groupedArgs = groupedArgs.map(pluckPaths);
+            }
+            module.exports['invalidate' + inputType](model, groupedArgs, expireImmediate);
+        }
+    }
+}
+
+function pluckPaths(x) {
+    return x.path || x.paths;
 }
 
 /***/ },
 /* 83 */
 /***/ function(module, exports, __webpack_require__) {
 
-var wrapNode = __webpack_require__(50);
+var wrapNode = __webpack_require__(51);
 var isExpired = __webpack_require__(0);
-var insertNode = __webpack_require__(44);
+var insertNode = __webpack_require__(45);
 var expireNode = __webpack_require__(1);
-var replaceNode = __webpack_require__(48);
+var replaceNode = __webpack_require__(49);
 var getSize = __webpack_require__(9);
-var reconstructPath = __webpack_require__(47);
-var getTimestamp = __webpack_require__(57);
+var reconstructPath = __webpack_require__(48);
+var getTimestamp = __webpack_require__(58);
 var updateNodeAncestors = __webpack_require__(11);
 
 module.exports = function mergeJSONGraphNode(parent, node, message, key, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector, expireImmediate) {
@@ -5813,7 +5840,7 @@ module.exports = function mergeJSONGraphNode(parent, node, message, key, request
 var getJSON = __webpack_require__(25);
 var getJSONGraph = __webpack_require__(26);
 var arrayFlatMap = __webpack_require__(100);
-var groupCacheArguments = __webpack_require__(81);
+var groupCacheArguments = __webpack_require__(44);
 
 module.exports = {
     json: json,
@@ -5948,7 +5975,7 @@ function setGroupsIntoCache(model, xs /*, expireImmediate */) {
         requested: requestedPaths,
         optimized: optimizedPaths
     };
-};
+}
 
 function pluckPaths(x) {
     return x.path || x.paths;
@@ -6237,12 +6264,12 @@ module.exports = String.fromCharCode(30) + 'ƒ_';
 /* 95 */
 /***/ function(module, exports, __webpack_require__) {
 
-var Source = __webpack_require__(55);
+var Source = __webpack_require__(56);
 var Subscriber = __webpack_require__(14);
-var lruCollect = __webpack_require__(53);
+var lruCollect = __webpack_require__(54);
 var FalcorJSON = __webpack_require__(2);
 var collapse = __webpack_require__(35);
-var InvalidSourceError = __webpack_require__(52);
+var InvalidSourceError = __webpack_require__(53);
 var MaxRetryExceededError = __webpack_require__(93);
 
 module.exports = Call;
@@ -6336,9 +6363,9 @@ function CallSubscriber(destination, data, errors, operation, progressive, maxRe
 
 CallSubscriber.prototype = Object.create(Subscriber.prototype);
 CallSubscriber.prototype.operations = {
-    get: __webpack_require__(71),
+    get: __webpack_require__(72),
     set: __webpack_require__(84),
-    call: __webpack_require__(70),
+    call: __webpack_require__(71),
     invalidate: __webpack_require__(82)
 };
 
@@ -6558,11 +6585,11 @@ function mergeInto(dest, node) {
 /* 96 */
 /***/ function(module, exports, __webpack_require__) {
 
-var Source = __webpack_require__(55);
+var Source = __webpack_require__(56);
 var Request = __webpack_require__(97);
 var Subscriber = __webpack_require__(14);
 var Subscription = __webpack_require__(15);
-var ImmediateScheduler = __webpack_require__(56);
+var ImmediateScheduler = __webpack_require__(57);
 
 module.exports = Queue;
 
@@ -6671,7 +6698,7 @@ var isArray = Array.isArray;
 var Subject = __webpack_require__(98);
 var Subscriber = __webpack_require__(14);
 var Subscription = __webpack_require__(15);
-var InvalidSourceError = __webpack_require__(52);
+var InvalidSourceError = __webpack_require__(53);
 
 var setJSONGraphs = __webpack_require__(19);
 var setPathValues = __webpack_require__(31);
@@ -6680,7 +6707,7 @@ var invalidatePaths = __webpack_require__(29);
 var toPaths = __webpack_require__(38);
 var toCollapseMap = __webpack_require__(36);
 var toCollapseTrees = __webpack_require__(37);
-var hasIntersection = __webpack_require__(64);
+var hasIntersection = __webpack_require__(65);
 
 module.exports = Request;
 
@@ -7207,7 +7234,7 @@ module.exports = function(module) {
 /* 109 */
 /***/ function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(62);
+module.exports = __webpack_require__(63);
 
 
 /***/ }

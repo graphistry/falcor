@@ -126,7 +126,7 @@ function setGroupsIntoCache(model, xs /*, expireImmediate */) {
         requested: requestedPaths,
         optimized: optimizedPaths
     };
-};
+}
 
 function pluckPaths(x) {
     return x.path || x.paths;
