@@ -4617,6 +4617,7 @@ function walkPathAndBuildOutput(root, node, json, path, depth, seed, results, re
     } else if (f_meta = json["ƒ_meta"]) {
 
         nodeAbsPath = node["ƒ_abs_path"];
+        jsonAbsPath = f_meta["abs_path"];
 
         if (!branchSelector && !(json instanceof FalcorJSON)) {
             json.__proto__ = {};
@@ -4624,30 +4625,28 @@ function walkPathAndBuildOutput(root, node, json, path, depth, seed, results, re
             json.__proto__.__proto__ = FalcorJSON.prototype;
         }
 
-        if (jsonAbsPath = f_meta["abs_path"]) {
-            if (nodeAbsPath !== jsonAbsPath) {
-                f_meta['$code'] = '__incomplete__';
-                f_meta["abs_path"] = nodeAbsPath;
-                f_meta["version"] = node["ƒ_version"];
-                f_meta["deref_to"] = refContainerRefPath;
-                f_meta["deref_from"] = refContainerAbsPath;
-                if (f_old_keys = f_meta["keys"]) {
-                    f_meta["keys"] = Object.create(null);
-                    for (nextKey in f_old_keys) {
-                        if (f_old_keys[nextKey]) {
-                            delete json[nextKey];
-                        }
+        if (nodeAbsPath !== jsonAbsPath) {
+            f_meta['$code'] = '__incomplete__';
+            f_meta["abs_path"] = nodeAbsPath;
+            f_meta["version"] = node["ƒ_version"];
+            f_meta["deref_to"] = refContainerRefPath;
+            f_meta["deref_from"] = refContainerAbsPath;
+            if (f_old_keys = f_meta["keys"]) {
+                f_meta["keys"] = Object.create(null);
+                for (nextKey in f_old_keys) {
+                    if (f_old_keys[nextKey]) {
+                        delete json[nextKey];
                     }
                 }
-                arr[0] = json;
-                arr[1] = true;
-                return arr;
-            } else if (!(f_meta["version"] !== node["ƒ_version"] || f_meta['$code'] !== path['$code'])) {
-                results.hasValue = true;
-                arr[0] = json;
-                arr[1] = false;
-                return arr;
             }
+            arr[0] = json;
+            arr[1] = true;
+            return arr;
+        } else if (!(f_meta["version"] !== node["ƒ_version"] || f_meta['$code'] !== path['$code'])) {
+            results.hasValue = true;
+            arr[0] = json;
+            arr[1] = false;
+            return arr;
         }
 
         f_old_keys = f_meta["keys"];
