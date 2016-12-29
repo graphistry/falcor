@@ -2,7 +2,7 @@ import { Observable } from 'rxjs/Observable';
 import { Model as FalcorModel } from '@graphistry/falcor';
 import { fromPath, fromPathsOrPathValues } from '@graphistry/falcor-path-syntax';
 
-export class Model extends FalcorModel {
+class Model extends FalcorModel {
     /* implement inspect method for node's inspect utility */
     inspect() {
         return `{ v:${this.getVersion()} p:[${this._path.join(', ')}] }`;
@@ -83,3 +83,6 @@ class ObservableModelResponse extends Observable {
         return new ObservableModelResponse(this.source.progressively());
     }
 }
+
+export { Model };
+export default Model;

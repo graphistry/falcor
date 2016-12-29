@@ -9,6 +9,10 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "files": [
+    "src",
+    "lib"
+  ],
   "dependencies": {
     "rxjs": "~5.0.2",
     "@graphistry/falcor": "^2.6.11",
