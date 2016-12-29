@@ -24,10 +24,10 @@
     "src",
     "lib"
   ],
-  "author": "",
+  "author": "Graphistry",
   "license": "ISC",
   "dependencies": {
-    "rxjs": "~5.0.1"
+    "rxjs": "~5.0.2"
   },
   "devDependencies": {
     "@graphistry/falcor-json-graph": "^2.5.3",

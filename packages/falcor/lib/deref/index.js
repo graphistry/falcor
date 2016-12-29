@@ -1,4 +1,3 @@
-var typeofObject = 'object';
 var CONTAINER_DOES_NOT_EXIST = 'e';
 var FalcorJSON = require('../cache/get/json/FalcorJSON');
 var getCachePosition = require('../cache/getCachePosition');
@@ -8,8 +7,8 @@ module.exports = function deref(json) {
 
     var seed, f_meta;
 
-    if (!json || typeofObject !== typeof json || ! (
-        f_meta = json[f_meta_data]) || typeofObject !== typeof f_meta) {
+    if (!json || 'object' !== typeof json || !(
+        f_meta = json[f_meta_data]) || 'object' !== typeof f_meta) {
         return null;
     }
 
@@ -97,9 +96,9 @@ module.exports = function deref(json) {
     }
 
     return this._clone({
+        _seed: seed,
         _node: cacheNode,
         _path: absolutePath,
-        _referenceContainer: referenceContainer,
-        _seed: seed
+        _referenceContainer: referenceContainer
     });
 };

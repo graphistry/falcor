@@ -48,7 +48,7 @@
     "posix-cat": "^1.1.1",
     "rimraf": "^2.5.2",
     "rx": "~4.1.0",
-    "rxjs": "~5.0.1",
+    "rxjs": "^5.0.2",
     "socket.io": "~1.7.2",
     "socket.io-client": "~1.7.2"
   },

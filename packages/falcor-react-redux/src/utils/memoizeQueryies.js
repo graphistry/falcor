@@ -5,8 +5,7 @@ import flatBufferToPaths from '@graphistry/falcor-path-utils/lib/flatBufferToPat
 import computeFlatBufferHash from '@graphistry/falcor-path-utils/lib/computeFlatBufferHash';
 
 export default function memoizeQueryies(limit = 100) {
-    let count = 0;
-    const map = {}, lru = {};
+    let count = 0, map = {}, lru = {};
     return function memoizedQuerySyntax(query) {
         let entry = map[query];
         if (entry === undefined && ++count > limit) {

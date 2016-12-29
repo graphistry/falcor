@@ -5307,7 +5307,6 @@ function hasValidParentReference() {
 /* 80 */
 /***/ function(module, exports, __webpack_require__) {
 
-var typeofObject = 'object';
 var CONTAINER_DOES_NOT_EXIST = 'e';
 var FalcorJSON = __webpack_require__(2);
 var getCachePosition = __webpack_require__(9);
@@ -5317,7 +5316,7 @@ module.exports = function deref(json) {
 
     var seed, f_meta;
 
-    if (!json || typeofObject !== typeof json || !(f_meta = json["ƒ_meta"]) || typeofObject !== typeof f_meta) {
+    if (!json || 'object' !== typeof json || !(f_meta = json["ƒ_meta"]) || 'object' !== typeof f_meta) {
         return null;
     }
 
@@ -5405,10 +5404,10 @@ module.exports = function deref(json) {
     }
 
     return this._clone({
+        _seed: seed,
         _node: cacheNode,
         _path: absolutePath,
-        _referenceContainer: referenceContainer,
-        _seed: seed
+        _referenceContainer: referenceContainer
     });
 };
 

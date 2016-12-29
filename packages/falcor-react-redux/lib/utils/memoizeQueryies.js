@@ -31,8 +31,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function memoizeQueryies() {
     var limit = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 100;
 
-    var count = 0;
-    var map = {},
+    var count = 0,
+        map = {},
         lru = {};
     return function memoizedQuerySyntax(query) {
         var entry = map[query];
