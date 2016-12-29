@@ -4,7 +4,7 @@
   "description": "",
   "main": "lib/Model.js",
   "scripts": {
-    "build": "babel src --out-dir dist",
+    "build": "babel src --out-dir lib",
     "prepublish": "npm run build"
   },
   "keywords": [],
