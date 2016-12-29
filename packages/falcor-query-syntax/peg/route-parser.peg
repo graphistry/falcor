@@ -116,10 +116,14 @@ object
   return result;
 }
     )?
+    value_separator?
     end_object
     { return members !== null ? members: []; }
 
 member =
+  name:ellipses value:IdentifierName {
+    return { value: value };
+  } /
   name:ellipses value:object {
     return { name: '...', value: value };
   } /
@@ -163,6 +167,7 @@ array
       tail:(value_separator v:value { return v; })*
       { return [head].concat(tail); }
     )?
+    value_separator?
     end_array
     { return values !== null ? values : []; }
 

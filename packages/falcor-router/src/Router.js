@@ -4,6 +4,7 @@ var Keys = require('./Keys');
 var parseTree = require('./parse-tree');
 var matcher = require('./operations/matcher');
 var JSONGraphError = require('./errors/JSONGraphError');
+var flatBufferToRoutes = require('@graphistry/falcor-path-utils/lib/flatBufferToRoutes');
 
 var Router = function(routes, options) {
 
@@ -16,6 +17,9 @@ var Router = function(routes, options) {
     this._bufferTime = opts.hasOwnProperty('bufferTime') ? Math.abs(opts.bufferTime || 0) : this._bufferTime;
 
     if (!this._rst || this._routes !== routes) {
+        if (!Array.isArray(routes)) {
+            routes = flatBufferToRoutes(routes);
+        }
         this._routes = routes;
         this._rst = parseTree(routes);
         this._matcher = matcher(this._rst);

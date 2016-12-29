@@ -4,10 +4,13 @@ var flatBufferToRoutes = require('@graphistry/falcor-path-utils/lib/flatBufferTo
 
 module.exports = toRoutes;
 
-function toRoutes() {
-    return flatBufferToRoutes(
-        Parser.parse.apply(
-            Parser, template.apply(null, arguments)));
+function QL() {
+    return Parser.parse.apply(Parser, template.apply(null, arguments));
 }
 
+function toRoutes() {
+    return flatBufferToRoutes(QL.apply(null, arguments));
+}
+
+toRoutes.QL = QL;
 toRoutes.Parser = Parser;

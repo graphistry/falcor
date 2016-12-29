@@ -28,7 +28,6 @@ describe('Route', function() {
         expect(routes[0].get).to.equal(getHandler.get);
         expect(routes[1].set).to.equal(setHandler.set);
     });
-
     it('should accept functions as route handler factories', function() {
 
         function pushHandler() {};
@@ -53,6 +52,32 @@ describe('Route', function() {
         expect(typeof routes[0]).to.equal('object');
         expect(routes[0].call).to.equal(pushHandler);
         expect(routes[0].call.name).to.equal('pushHandler');
+    });
+    it('should tolerate dangling commas', function() {
+
+        expect(pluckRoute(toRoutes`{
+            genreLists: {
+                [{ keys },]: {
+                    [name, rating,]: ${ getHandler },
+                },
+            },
+        }`)).to.deep.equal([
+            ['genreLists',{
+                type: _keys, named: false },
+            ['name', 'rating']]
+        ]);
+
+        expect(pluckRoute(toRoutes`{
+            genreLists: {
+                [{ keys: indexKeys },]: {
+                    [name, rating,]: ${ getHandler },
+                },
+            },
+        }`)).to.deep.equal([
+            ['genreLists',{
+                type: _keys, name: 'indexKeys', named: true },
+            ['name', 'rating']]
+        ]);
     });
 
     it('should parse keys route token', function() {
@@ -147,7 +172,7 @@ describe('Route', function() {
             ['name', 'rating']]
         ]);
     });
-    it('should merge ... queries', function() {
+    it('should merge ... routes', function() {
 
         expect(pluckRoute(toRoutes`{
             genreLists: {
@@ -171,7 +196,7 @@ describe('Route', function() {
             ['rating', 'box-shot']]
         ]);
     });
-    it('should merge nested ... queries', function() {
+    it('should merge nested ... routes', function() {
 
         expect(pluckRoute(toRoutes`{
             genreLists: {
@@ -199,7 +224,58 @@ describe('Route', function() {
             ['rating', 'box-shot']]
         ]);
     });
-    it('should ignore empty ... queries', function() {
+    it('should merge ... route handler factories', function() {
+
+        function pushHandler() {};
+
+        function pushHandlerFactory(route) {
+            expect(route).to.deep.equal(
+                ['genreLists', 'push']
+            );
+            return { call: pushHandler };
+        }
+
+        function titlesFactory(route) {
+            return toRoutes.QL`{
+                titlesById: {
+                    [{ keys: titleIds }]: ${
+                        getHandler
+                    }
+                }
+            }`;
+        }
+
+        function genreListFactory(route) {
+            return toRoutes.QL`{
+                genreLists: {
+                    length: ${ getHandler },
+                    my-list: ${ setHandler },
+                    push: ${ pushHandlerFactory },
+                }
+            }`;
+        }
+
+        var routes = toRoutes`{
+            ... ${ genreListFactory },
+            ... ${ titlesFactory },
+        }`;
+
+        expect(pluckRoute(routes)).to.deep.equal([
+            ['genreLists', 'length'],
+            ['genreLists', 'my-list'],
+            ['genreLists', 'push'],
+            ['titlesById',{
+                type: _keys, name: 'titleIds', named: true }]
+        ]);
+
+        expect(routes[0].get).to.equal(getHandler.get);
+        expect(routes[1].set).to.equal(setHandler.set);
+        expect(typeof routes[2]).to.equal('object');
+        expect(routes[2].call).to.equal(pushHandler);
+        expect(routes[2].call.name).to.equal('pushHandler');
+        expect(routes[3].get).to.equal(getHandler.get);
+    });
+    it('should ignore empty ... routes', function() {
 
         expect(pluckRoute(toRoutes`{
             genreLists: {

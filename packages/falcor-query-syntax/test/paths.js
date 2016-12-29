@@ -24,8 +24,19 @@ describe('Paths', function() {
             ['foreground', 'color'],
         ]);
     });
+    it('should tolerate dangling commas', function() {
+        expect(toPaths`{
+            ['background', 'foreground',]: {
+                color,
+            },
+        }`).to.deep.equal([
+            ['background', 'color'],
+            ['foreground', 'color'],
+        ]);
+    });
     it('should allow template literal array indexers', function() {
         var keys = ['background', 'foreground'];
+
         expect(toPaths`{
             [${keys}]: {
                 color
@@ -88,6 +99,7 @@ describe('Paths', function() {
     });
     it('should accept range objects and convert to => length', function() {
         var range = { from: 0, to: 9 };
+
         expect(toPaths`{
             titles: {
                 length,
@@ -103,7 +115,6 @@ describe('Paths', function() {
         ]);
     });
     it('should invert backwards ranges', function() {
-
         expect(toPaths`{
             titles: {
                 length,
@@ -119,7 +130,6 @@ describe('Paths', function() {
         ]);
     });
     it('should coerce undefined to 0-length ranges 1', function() {
-
         expect(toPaths`{
             titles: {
                 length,
@@ -135,7 +145,6 @@ describe('Paths', function() {
         ]);
     });
     it('should coerce undefined to 0-length ranges 2', function() {
-
         expect(toPaths`{
             titles: {
                 length,
@@ -151,9 +160,7 @@ describe('Paths', function() {
         ]);
     });
     it('should merge ... queries', function() {
-
         var range = { length: 10 };
-
         expect(toPaths`{
             titles: {
                 length,
@@ -168,9 +175,7 @@ describe('Paths', function() {
         ]);
     });
     it('should merge nested ... queries', function() {
-
         var range = { to: 9 };
-
         expect(toPaths`{
             titles: {
                 ... {length},
@@ -187,7 +192,6 @@ describe('Paths', function() {
         ]);
     });
     it('should ignore empty ... queries', function() {
-
         expect(toPaths`{
             titles: {
                 ... { },
@@ -203,9 +207,7 @@ describe('Paths', function() {
         ]);
     });
     it('should do all the things at once', function() {
-
         var range = { from: 9, length: 2 };
-
         expect(toPaths`{
             genreLists: {
                 length,
@@ -229,7 +231,6 @@ describe('Paths', function() {
             ['genreLists', { from: 1, length: 9 }, ['name', 'rating']],
             ['genreLists', 'length']
         ]);
-
         var stringifiedResults = template`{
             genreLists: {
                 length,
@@ -248,7 +249,6 @@ describe('Paths', function() {
                 }
             }
         }`;
-
         expect(pathsParser.parse(stringifiedResults[0])).to.deep.equal({
             '0': {
                 '1': {
@@ -269,9 +269,7 @@ describe('Paths', function() {
         });
     });
     it('should collapse duplicate keys when exploded and recollapsed', function() {
-
         var range = { from: 10, to: 9 };
-
         var flatBuf = toFlatBuffer(toPaths`{
             genreLists: {
                 length,
@@ -299,7 +297,6 @@ describe('Paths', function() {
                 }
             }
         }`);
-
         expect(flatBuf).to.deep.equal({
             '0': {
                 '0': {
@@ -324,7 +321,6 @@ describe('Paths', function() {
             '$keys': ['genreLists'],
             '$keysMap': { genreLists: 0 }
         });
-
         expect(flatBufferToPaths(flatBuf)).to.deep.equal([
             [
                 'genreLists',

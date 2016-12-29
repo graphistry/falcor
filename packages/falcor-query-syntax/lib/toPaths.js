@@ -4,10 +4,13 @@ var flatBufferToPaths = require('@graphistry/falcor-path-utils/lib/flatBufferToP
 
 module.exports = toPaths;
 
-function toPaths() {
-    return flatBufferToPaths(
-        Parser.parse.apply(
-            Parser, template.apply(null, arguments)));
+function QL() {
+    return Parser.parse.apply(Parser, template.apply(null, arguments));
 }
 
+function toPaths() {
+    return flatBufferToPaths(QL.apply(null, arguments));
+}
+
+toPaths.QL = QL;
 toPaths.Parser = Parser;

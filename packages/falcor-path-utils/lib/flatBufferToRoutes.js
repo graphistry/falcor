@@ -1,5 +1,4 @@
-var typeofObject = 'object';
-var typeofFunction = 'function';
+var isArray = Array.isArray;
 
 module.exports = flatBufferToRoutes;
 
@@ -8,24 +7,31 @@ function flatBufferToRoutes(seed, routes, route) {
     route = route || [];
     routes = routes || [];
 
-    var keys = seed['$keys'];
-    var keysLen = keys.length;
-    var keysIndex = -1, key, len;
+    if ('function' === typeof seed) {
+        seed = seed(route);
+    }
 
-    while (++keysIndex < keysLen) {
+    if (!seed || 'object' !== typeof seed) {
+        throw new Error('No route handler found for ' + JSON.stringify(route));
+    } else if (seed.get || seed.set || seed.call) {
+        routes.push(Object.assign({}, { route: route }, seed));
+    } else if (isArray(seed)) {
+        routes.push.apply(routes, seed);
+    } else {
 
-        var next = seed[keysIndex];
-        var keyset = keys[keysIndex];
-        var nextRoute = route.concat([keyset]);
+        var keys = seed['$keys'];
+        var keysLen = keys.length;
+        var keysIndex = -1, key, len;
 
-        if (typeof next === typeofFunction) {
-            routes.push(Object.assign({ route: nextRoute, }, next(nextRoute)));
-        } else if (!next || typeof next !== typeofObject) {
-            throw new Error('No route handler found for ' + JSON.stringify(nextRoute));
-        } else if (next.get || next.set || next.call) {
-            routes.push(Object.assign({}, { route: nextRoute }, next));
-        } else {
-            flatBufferToRoutes(next, routes, nextRoute);
+        while (++keysIndex < keysLen) {
+
+            var next = seed[keysIndex];
+            var keyset = keys[keysIndex];
+
+            flatBufferToRoutes(
+                next, routes,
+                keyset === undefined ?
+                    route : route.concat([keyset]));
         }
     }
 
