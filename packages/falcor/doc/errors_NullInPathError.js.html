@@ -15,23 +15,15 @@ id: api
 </h2>
 <section>
     <article>
-        <pre class="prettyprint source linenums"><code>var NAME = "NullInPathError";
-var MESSAGE = "`null` is not allowed in branch key positions.";
+        <pre class="prettyprint source linenums"><code>var createErrorClass = require('./createErrorClass');
+var MESSAGE = '`null` is not allowed in branch key positions.';
 
 /**
- * Does not allow null in path
+ * Do not allow null in path.
  */
-function NullInPathError() {
+module.exports = createErrorClass('NullInPathError', function() {
     this.message = MESSAGE;
-    this.stack = (new Error()).stack;
-}
-
-// instanceof will be an error, but stack will be correct because its defined in the constructor.
-NullInPathError.prototype = new Error();
-NullInPathError.prototype.name = NAME;
-NullInPathError.message = MESSAGE;
-
-module.exports = NullInPathError;
+});
 </code></pre>
     </article>
 </section>
@@ -81,20 +73,6 @@ module.exports = NullInPathError;
             </li>
          
     </ul>
-
-
-                                
-
-
-                                
-
-
-                            </li>
-                        
-                            <li class="toc-api-class ">
-                                <a href="FromEsObserverAdapter.html" data-target="#FromEsObserverAdapter">FromEsObserverAdapter</a>
-                                
-                                
 
 
                                 
@@ -181,6 +159,10 @@ module.exports = NullInPathError;
             </li>
         
             <li class="toc-api-subgroup-item">
+                <a href="Model.html#getValue" data-target="#getValue">getValue</a>
+            </li>
+        
+            <li class="toc-api-subgroup-item">
                 <a href="Model.html#getVersion" data-target="#getVersion">getVersion</a>
             </li>
         
@@ -198,6 +180,10 @@ module.exports = NullInPathError;
         
             <li class="toc-api-subgroup-item">
                 <a href="Model.html#setCache" data-target="#setCache">setCache</a>
+            </li>
+        
+            <li class="toc-api-subgroup-item">
+                <a href="Model.html#setValue" data-target="#setValue">setValue</a>
             </li>
         
             <li class="toc-api-subgroup-item">
@@ -239,39 +225,6 @@ module.exports = NullInPathError;
             </li>
          
     </ul>
-
-
-                                
-
-
-                            </li>
-                        
-                            <li class="toc-api-class ">
-                                <a href="ModelResponse.html" data-target="#ModelResponse">ModelResponse</a>
-                                
-                                
-
-    <ul class="toc-api-subgroup toc-api-subgroup-methods">
-        <li>
-            <span class="toc-api-subgroup-title">Methods</span>
-        </li>
-        
-            <li class="toc-api-subgroup-item">
-                <a href="ModelResponse.html#forEach" data-target="#forEach">forEach</a>
-            </li>
-        
-            <li class="toc-api-subgroup-item">
-                <a href="ModelResponse.html#progressively" data-target="#progressively">progressively</a>
-            </li>
-        
-            <li class="toc-api-subgroup-item">
-                <a href="ModelResponse.html#subscribe" data-target="#subscribe">subscribe</a>
-            </li>
-         
-    </ul>
-
-
-                                
 
 
                                 
@@ -342,20 +295,6 @@ module.exports = NullInPathError;
             </li>
          
     </ul>
-
-
-                                
-
-
-                                
-
-
-                            </li>
-                        
-                            <li class="toc-api-class ">
-                                <a href="ToEsSubscriptionAdapter.html" data-target="#ToEsSubscriptionAdapter">ToEsSubscriptionAdapter</a>
-                                
-                                
 
 
                                 

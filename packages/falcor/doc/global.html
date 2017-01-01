@@ -50,423 +50,6 @@ id: api
       
 
       
-          <h3 class="subsection-title">Methods</h3>
-
-          
-              
-<section class="method-section">
-    
-        
-
-        <h4 class="name section-header function-name" id="GetRequestV2"><span class="type-signature"></span>GetRequestV2<span class="signature">(scheduler, requestQueue)</span><span class="type-signature return-signature"></span></h4>
-
-        
-    
-
-        
-        <div class="description">
-            <p>Creates a new GetRequest.  This GetRequest takes a scheduler and
-the request queue.  Once the scheduler fires, all batched requests
-will be sent to the server.  Upon request completion, the data is
-merged back into the cache and all callbacks are notified.</p>
-        </div>
-        
-
-    
-
-    
-
-    
-
-    
-        <h5>Parameters:</h5>
-        
-
-<div class="parameters-section">
-    <table class="params">
-        <thead>
-        <tr>
-            
-            <th class="header-name-and-attributes">
-              Name
-              
-            </th>
-            
-
-            <th class="header-type">Type</th>
-
-            
-
-            <th class="last header-description">Description</th>
-        </tr>
-        </thead>
-
-        <tbody>
-        
-
-            <tr>
-                
-                    <td>
-                        <span class="name">scheduler</span>
-                        
-                    </td>
-                
-
-                <td class="type">
-                
-                    
-<span class="param-type">Scheduler</span>
-
-
-                
-                </td>
-
-                
-
-                <td class="description last"><p>-</p></td>
-            </tr>
-
-        
-
-            <tr>
-                
-                    <td>
-                        <span class="name">requestQueue</span>
-                        
-                    </td>
-                
-
-                <td class="type">
-                
-                    
-<span class="param-type"><a href="global.html#RequestQueueV2">RequestQueueV2</a></span>
-
-
-                
-                </td>
-
-                
-
-                <td class="description last"><p>-</p></td>
-            </tr>
-
-        
-        </tbody>
-    </table>
-</div>
-
-    
-
-    
-
-
-
-
-  <dl class="details">
-
-      
-
-      
-
-      
-
-      
-
-      
-
-      
-
-      
-
-      
-
-      
-
-      
-
-      
-
-      
-
-      
-      <dt class="tag-source">Source:</dt>
-      <dd class="tag-source">
-          <a href="request_GetRequestV2.js.html">request/GetRequestV2.js</a>, <a href="request_GetRequestV2.js.html#line20">line 20</a>
-      </dd>
-      
-
-      
-
-      
-
-      
-  </dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</section>
-          
-              
-<section class="method-section">
-    
-        
-
-        <h4 class="name section-header function-name" id="NullInPathError"><span class="type-signature"></span>NullInPathError<span class="signature">()</span><span class="type-signature return-signature"></span></h4>
-
-        
-    
-
-        
-        <div class="description">
-            <p>Does not allow null in path</p>
-        </div>
-        
-
-    
-
-    
-
-    
-
-    
-
-    
-
-
-
-
-  <dl class="details">
-
-      
-
-      
-
-      
-
-      
-
-      
-
-      
-
-      
-
-      
-
-      
-
-      
-
-      
-
-      
-
-      
-      <dt class="tag-source">Source:</dt>
-      <dd class="tag-source">
-          <a href="errors_NullInPathError.js.html">errors/NullInPathError.js</a>, <a href="errors_NullInPathError.js.html#line7">line 7</a>
-      </dd>
-      
-
-      
-
-      
-
-      
-  </dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</section>
-          
-              
-<section class="method-section">
-    
-        
-
-        <h4 class="name section-header function-name" id="RequestQueueV2"><span class="type-signature"></span>RequestQueueV2<span class="signature">(model, scheduler)</span><span class="type-signature return-signature"></span></h4>
-
-        
-    
-
-        
-        <div class="description">
-            <p>The request queue is responsible for queuing the operations to
-the model&quot;s dataSource.</p>
-        </div>
-        
-
-    
-
-    
-
-    
-
-    
-        <h5>Parameters:</h5>
-        
-
-<div class="parameters-section">
-    <table class="params">
-        <thead>
-        <tr>
-            
-            <th class="header-name-and-attributes">
-              Name
-              
-            </th>
-            
-
-            <th class="header-type">Type</th>
-
-            
-
-            <th class="last header-description">Description</th>
-        </tr>
-        </thead>
-
-        <tbody>
-        
-
-            <tr>
-                
-                    <td>
-                        <span class="name">model</span>
-                        
-                    </td>
-                
-
-                <td class="type">
-                
-                    
-<span class="param-type"><a href="Model.html">Model</a></span>
-
-
-                
-                </td>
-
-                
-
-                <td class="description last"><p>-</p></td>
-            </tr>
-
-        
-
-            <tr>
-                
-                    <td>
-                        <span class="name">scheduler</span>
-                        
-                    </td>
-                
-
-                <td class="type">
-                
-                    
-<span class="param-type">Scheduler</span>
-
-
-                
-                </td>
-
-                
-
-                <td class="description last"><p>-</p></td>
-            </tr>
-
-        
-        </tbody>
-    </table>
-</div>
-
-    
-
-    
-
-
-
-
-  <dl class="details">
-
-      
-
-      
-
-      
-
-      
-
-      
-
-      
-
-      
-
-      
-
-      
-
-      
-
-      
-
-      
-
-      
-      <dt class="tag-source">Source:</dt>
-      <dd class="tag-source">
-          <a href="request_RequestQueueV2.js.html">request/RequestQueueV2.js</a>, <a href="request_RequestQueueV2.js.html#line13">line 13</a>
-      </dd>
-      
-
-      
-
-      
-
-      
-  </dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</section>
-          
-      
 
       
           <h3 class="subsection-title">Type Definitions</h3>
@@ -549,7 +132,7 @@ the model&quot;s dataSource.</p>
 
             
 
-            <td class="description last"><p>the $type must be &quot;atom&quot;</p></td>
+            <td class="description last"><p>the $type must be 'atom'</p></td>
         </tr>
 
     
@@ -678,16 +261,16 @@ the model&quot;s dataSource.</p>
         
     <pre class="prettyprint"><code>// Atom with number value, expiring in 2 seconds
  {
-    $type: "atom",
+    $type: 'atom',
     value: 5
     $expires: -2000
  }
  // Atom with Object value that never expires
  {
-    $type: "atom",
+    $type: 'atom',
     value: {
         foo: 5,
-        bar: "baz"
+        bar: 'baz'
     },
     $expires: 1
  }</code></pre>
@@ -826,8 +409,8 @@ the model&quot;s dataSource.</p>
     <pre class="prettyprint"><code>var model = new falcor.Model();
  model.set({
     json: {
-      name: "Steve",
-      surname: "McGuire"
+      name: 'Steve',
+      surname: 'McGuire'
     }
  }).then(function(jsonEnvelope) {
     console.log(jsonEnvelope);
@@ -914,41 +497,41 @@ the model&quot;s dataSource.</p>
  // JSONGraph model modeling a list of film genres, each of which contains the same title.
  {
     // list of user's genres, modeled as a map with ordinal keys
-    "genreLists": {
-        "0": $ref('genresById[123]'),
-        "1": $ref('genresById[522]'),
-        "length": 2
+    'genreLists': {
+        '0': $ref('genresById[123]'),
+        '1': $ref('genresById[522]'),
+        'length': 2
     },
     // map of all genres, organized by ID
-    "genresById": {
+    'genresById': {
         // genre list modeled as map with ordinal keys
-        "123": {
-            "name": "Drama",
-            "0": $ref('titlesById[23]'),
-            "1": $ref('titlesById[99]'),
-            "length": 2
+        '123': {
+            'name': 'Drama',
+            '0': $ref('titlesById[23]'),
+            '1': $ref('titlesById[99]'),
+            'length': 2
         },
         // genre list modeled as map with ordinal keys
-        "522": {
-            "name": "Comedy",
-            "0": $ref('titlesById[23]'),
-            "1": $ref('titlesById[44]'),
-            "length": 2
+        '522': {
+            'name': 'Comedy',
+            '0': $ref('titlesById[23]'),
+            '1': $ref('titlesById[44]'),
+            'length': 2
         }
     },
     // map of all titles, organized by ID
-    "titlesById": {
-       "99": {
-            "name": "House of Cards",
-            "rating": 5
+    'titlesById': {
+       '99': {
+            'name': 'House of Cards',
+            'rating': 5
         },
-        "23": {
-            "name": "Orange is the New Black",
-            "rating": 5
+        '23': {
+            'name': 'Orange is the New Black',
+            'rating': 5
         },
-        "44": {
-            "name": "Arrested Development",
-            "rating": 5
+        '44': {
+            'name': 'Arrested Development',
+            'rating': 5
         }
     }
 }</code></pre>
@@ -1162,20 +745,20 @@ the model&quot;s dataSource.</p>
 var model = new falcor.Model();
 model.set({
   paths: [
-    ["todos", [0,1], ["name","done"]]
+    ['todos', [0,1], ['name','done']]
   ],
   jsonGraph: {
     todos: [
-      $ref("todosById[12]"),
-      $ref("todosById[15]")
+      $ref('todosById[12]'),
+      $ref('todosById[15]')
     ],
     todosById: {
       12: {
-        name: "go to the ATM",
+        name: 'go to the ATM',
         done: false
       },
       15: {
-        name: "buy milk",
+        name: 'buy milk',
         done: false
       }
     }
@@ -1189,11 +772,11 @@ model.set({
 //   json: {
 //     todos: {
 //       0: {
-//         name: "go to the ATM",
+//         name: 'go to the ATM',
 //         done: false
 //       },
 //       1: {
-//         name: "buy milk",
+//         name: 'buy milk',
 //         done: false
 //       }
 //     }
@@ -1212,7 +795,7 @@ model.set({
 
     
     <div class="description">
-        <p>A part of a <a href="global.html#Path">Path</a> that can be any JSON value type. All types are coerced to string, except null. This makes the number 1 and the string &quot;1&quot; equivalent.</p>
+        <p>A part of a <a href="global.html#Path">Path</a> that can be any JSON value type. All types are coerced to string, except null. This makes the number 1 and the string '1' equivalent.</p>
     </div>
     
 
@@ -1441,7 +1024,7 @@ or
         <h5>Example</h5>
         
     <pre class="prettyprint"><code>// Points to the name of product 1234
- ["productsById", "1234", "name"]</code></pre>
+ ['productsById', '1234', 'name']</code></pre>
 
     
 </section>
@@ -1521,7 +1104,7 @@ or
         <h5>Example</h5>
         
     <pre class="prettyprint"><code>// Points to the name and price of products 1234 and 5678
- ["productsById", ["1234", "5678"], ["name", "price"]]</code></pre>
+ ['productsById', ['1234', '5678'], ['name', 'price']]</code></pre>
 
     
 </section>
@@ -1696,8 +1279,8 @@ or
         <h5>Example</h5>
         
     <pre class="prettyprint"><code>{
-	path: ["productsById", "1234", "name"],
-	value: "ABC"
+	path: ['productsById', '1234', 'name'],
+	value: 'ABC'
  }</code></pre>
 
     
@@ -1712,7 +1295,7 @@ or
 
     
     <div class="description">
-        <p>Describe a range of integers. Must contain either a &quot;to&quot; or &quot;length&quot; property.</p>
+        <p>Describe a range of integers. Must contain either a 'to' or 'length' property.</p>
     </div>
     
 
@@ -1828,7 +1411,7 @@ or
                 </td>
             
 
-            <td class="description last"><p>the upper bound of the range (inclusive). Must be &gt;= to the &quot;from&quot; value</p></td>
+            <td class="description last"><p>the upper bound of the range (inclusive). Must be &gt;= to the 'from' value</p></td>
         </tr>
 
     
@@ -1995,20 +1578,6 @@ or
                             </li>
                         
                             <li class="toc-api-class ">
-                                <a href="FromEsObserverAdapter.html" data-target="#FromEsObserverAdapter">FromEsObserverAdapter</a>
-                                
-                                
-
-
-                                
-
-
-                                
-
-
-                            </li>
-                        
-                            <li class="toc-api-class ">
                                 <a href="HttpDataSource.html" data-target="#HttpDataSource">HttpDataSource</a>
                                 
                                 
@@ -2084,6 +1653,10 @@ or
             </li>
         
             <li class="toc-api-subgroup-item">
+                <a href="Model.html#getValue" data-target="#getValue">getValue</a>
+            </li>
+        
+            <li class="toc-api-subgroup-item">
                 <a href="Model.html#getVersion" data-target="#getVersion">getVersion</a>
             </li>
         
@@ -2101,6 +1674,10 @@ or
         
             <li class="toc-api-subgroup-item">
                 <a href="Model.html#setCache" data-target="#setCache">setCache</a>
+            </li>
+        
+            <li class="toc-api-subgroup-item">
+                <a href="Model.html#setValue" data-target="#setValue">setValue</a>
             </li>
         
             <li class="toc-api-subgroup-item">
@@ -2142,39 +1719,6 @@ or
             </li>
          
     </ul>
-
-
-                                
-
-
-                            </li>
-                        
-                            <li class="toc-api-class ">
-                                <a href="ModelResponse.html" data-target="#ModelResponse">ModelResponse</a>
-                                
-                                
-
-    <ul class="toc-api-subgroup toc-api-subgroup-methods">
-        <li>
-            <span class="toc-api-subgroup-title">Methods</span>
-        </li>
-        
-            <li class="toc-api-subgroup-item">
-                <a href="ModelResponse.html#forEach" data-target="#forEach">forEach</a>
-            </li>
-        
-            <li class="toc-api-subgroup-item">
-                <a href="ModelResponse.html#progressively" data-target="#progressively">progressively</a>
-            </li>
-        
-            <li class="toc-api-subgroup-item">
-                <a href="ModelResponse.html#subscribe" data-target="#subscribe">subscribe</a>
-            </li>
-         
-    </ul>
-
-
-                                
 
 
                                 
@@ -2245,20 +1789,6 @@ or
             </li>
          
     </ul>
-
-
-                                
-
-
-                                
-
-
-                            </li>
-                        
-                            <li class="toc-api-class ">
-                                <a href="ToEsSubscriptionAdapter.html" data-target="#ToEsSubscriptionAdapter">ToEsSubscriptionAdapter</a>
-                                
-                                
 
 
                                 

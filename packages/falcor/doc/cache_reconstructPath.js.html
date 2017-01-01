@@ -1,6 +1,6 @@
 ---
 layout: api-page
-title: "typedefs/Atom.js"
+title: "cache/reconstructPath.js"
 id: api
 ---
 
@@ -11,36 +11,30 @@ id: api
   
       
 <h2>
-    typedefs/Atom.js
+    cache/reconstructPath.js
 </h2>
 <section>
     <article>
         <pre class="prettyprint source linenums"><code>/**
- * An atom allows you to treat a JSON value as atomic regardless of its type, ensuring that a JSON object or array is always returned in its entirety. The JSON value must be treated as immutable. Atoms can also be used to associate metadata with a JSON value. This metadata can be used to influence the way values are handled.
- * @typedef {Object} Atom
- * @property {!String} $type - the $type must be 'atom'
- * @property {!*} value - the immutable JSON value
- * @property {number} [$expires] - the time to expire in milliseconds
- *  - positive number: expires in milliseconds since epoch
- *  - negative number: expires relative to when the Atom is merged into the JSONGraph
- *  - number 1: never expires
- * @example
- // Atom with number value, expiring in 2 seconds
- {
-    $type: 'atom',
-    value: 5
-    $expires: -2000
- }
- // Atom with Object value that never expires
- {
-    $type: 'atom',
-    value: {
-        foo: 5,
-        bar: 'baz'
-    },
-    $expires: 1
- }
+ * Reconstructs the path for the current key, from currentPath (requestedPath)
+ * state maintained during set/merge walk operations.
+ *
+ * During the walk, since the requestedPath array is updated after we attempt to
+ * merge/insert nodes during a walk (it reflects the inserted node's parent branch)
+ * we need to reconstitute a path from it.
+ *
+ * @param  {Array} currentPath The current requestedPath state, during the walk
+ * @param  {String} key        The current key value, during the walk
+ * @return {Array} A new array, with the path which represents the node we're about
+ * to insert
  */
+module.exports = function reconstructPath(currentPath, key) {
+
+    var path = currentPath.slice(0, currentPath.depth);
+    path[path.length] = key;
+
+    return path;
+};
 </code></pre>
     </article>
 </section>

@@ -1,6 +1,6 @@
 ---
 layout: api-page
-title: "typedefs/Atom.js"
+title: "cache/getCache.js"
 id: api
 ---
 
@@ -11,36 +11,86 @@ id: api
   
       
 <h2>
-    typedefs/Atom.js
+    cache/getCache.js
 </h2>
 <section>
     <article>
-        <pre class="prettyprint source linenums"><code>/**
- * An atom allows you to treat a JSON value as atomic regardless of its type, ensuring that a JSON object or array is always returned in its entirety. The JSON value must be treated as immutable. Atoms can also be used to associate metadata with a JSON value. This metadata can be used to influence the way values are handled.
- * @typedef {Object} Atom
- * @property {!String} $type - the $type must be 'atom'
- * @property {!*} value - the immutable JSON value
- * @property {number} [$expires] - the time to expire in milliseconds
- *  - positive number: expires in milliseconds since epoch
- *  - negative number: expires relative to when the Atom is merged into the JSONGraph
- *  - number 1: never expires
- * @example
- // Atom with number value, expiring in 2 seconds
- {
-    $type: 'atom',
-    value: 5
-    $expires: -2000
- }
- // Atom with Object value that never expires
- {
-    $type: 'atom',
-    value: {
-        foo: 5,
-        bar: 'baz'
-    },
-    $expires: 1
- }
+        <pre class="prettyprint source linenums"><code>var isInternalKey = require('../support/isInternalKey');
+
+/**
+ * decends and copies the cache.
  */
+module.exports = function getCache(cache) {
+    var out = {};
+    _copyCache(cache, out);
+
+    return out;
+};
+
+function cloneBoxedValue(boxedValue) {
+    var clonedValue = {};
+
+    var keys = Object.keys(boxedValue);
+    var key;
+    var i;
+    var l;
+
+    for (i = 0, l = keys.length; i &lt; l; i++) {
+        key = keys[i];
+
+        if (key === '$type' || !isInternalKey(key)) {
+            clonedValue[key] = boxedValue[key];
+        }
+    }
+
+    return clonedValue;
+}
+
+function _copyCache(node, out, fromKey) {
+    // copy and return
+
+    // only copy objects
+    if (!node || typeof node !== 'object') {
+        return;
+    }
+
+    Object.
+        keys(node).
+        filter(function(key) {
+            // Its not an internal key and the node has a value.  In the cache
+            // there are 3 possibilities for values.
+            // 1: A branch node.
+            // 2: A $type-value node.
+            // 3: undefined
+            // We will strip out 3
+            return (key === '$type' || !isInternalKey(key)) &amp;&amp; node[key] !== undefined;
+        }).
+        forEach(function(key) {
+            var cacheNext = node[key];
+            var outNext = out[key];
+
+            if (!outNext) {
+                outNext = out[key] = {};
+            }
+
+            // Paste the node into the out cache.
+            if (cacheNext.$type) {
+                var isObject = cacheNext.value &amp;&amp; typeof cacheNext.value === 'object';
+                var isUserCreatedcacheNext = !cacheNext[f_wrapped_value];
+                var value;
+                if (isObject || isUserCreatedcacheNext) {
+                    value = cloneBoxedValue(cacheNext);
+                } else {
+                    value = cacheNext.value;
+                }
+
+                out[key] = value;
+                return;
+            }
+
+            _copyCache(cacheNext, outNext, key);
+        });
+}
 </code></pre>
     </article>
 </section>
