@@ -132,6 +132,30 @@ describe('Route', function() {
             ['name', 'rating']]
         ]);
     });
+    it('should allow specific keys and route tokens in the same indexer', function() {
+
+        expect(pluckRoute(toRoutes`{
+            genreLists: {
+                ['length', { integers }]: ${
+                    getHandler
+                }
+            }
+        }`)).to.deep.equal([
+            ['genreLists', ['length', {
+                type: _integers, named: false }]]
+        ]);
+
+        expect(pluckRoute(toRoutes`{
+            genreLists: {
+                [length, { integers: indexes }]: ${
+                    getHandler
+                }
+            }
+        }`)).to.deep.equal([
+            ['genreLists', ['length', {
+                type: _integers, name: 'indexes', named: true }]]
+        ]);
+    });
     it('should parse ranges route token', function() {
 
         expect(pluckRoute(toRoutes`{

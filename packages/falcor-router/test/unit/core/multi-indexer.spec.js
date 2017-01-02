@@ -1,4 +1,5 @@
 var R = require('../../../src/Router');
+var Keys = require('./../../../src/Keys');
 var noOp = function() {};
 var chai = require('chai');
 var expect = chai.expect;
@@ -65,6 +66,83 @@ describe('Multi-Indexer', function() {
                     paths: [['test', ['one', 'two'], 'summary']],
                     jsonGraph: {
                         test: {
+                            one: {summary: 'one'},
+                            two: {summary: 'two'}
+                        }
+                    }
+                });
+                expect(serviceCalls).to.equal(1);
+            }).
+            subscribe(noOp, done, done);
+    });
+
+    it('should allow multiple string indexers to coexist with route tokens in leaf position.', function(done) {
+        var serviceCalls = 0;
+        var onNext = sinon.spy();
+        var router = new R([{
+            route: ['test', [
+                'one', 'two', 'three', getRoutedToken(Keys.integers)
+            ]],
+            get: function(aliasMap) {
+                var keys = aliasMap[1];
+                serviceCalls++;
+
+                expect(Array.isArray(keys)).to.be.ok;
+                return keys.map(function(k) {
+                    return {path: ['test', k], value: k};
+                });
+            }
+        }]);
+
+        router.
+            get([['test', [1, 2, 'one', 'two']]]).
+            do(onNext).
+            do(noOp, noOp, function() {
+                expect(onNext.called).to.be.ok;
+                expect(onNext.getCall(0).args[0]).to.deep.equals({
+                    paths: [['test', [1, 2, 'one', 'two']]],
+                    jsonGraph: {
+                        test: {
+                            1: 1, 2: 2,
+                            one: 'one',
+                            two: 'two'
+                        }
+                    }
+                });
+                expect(serviceCalls).to.equal(1);
+            }).
+            subscribe(noOp, done, done);
+    });
+
+    it('should allow multiple string indexers to coexist with route tokens in branch position.', function(done) {
+        var serviceCalls = 0;
+        var onNext = sinon.spy();
+        var router = new R([{
+            route: ['test', [
+                'one', 'two', 'three', getRoutedToken(Keys.integers)
+            ], 'summary'],
+            get: function(aliasMap) {
+                var keys = aliasMap[1];
+                serviceCalls++;
+
+                expect(Array.isArray(keys)).to.be.ok;
+                return keys.map(function(k) {
+                    return {path: ['test', k, 'summary'], value: k};
+                });
+            }
+        }]);
+
+        router.
+            get([['test', [1, 2, 'one', 'two'], 'summary']]).
+            do(onNext).
+            do(noOp, noOp, function() {
+                expect(onNext.called).to.be.ok;
+                expect(onNext.getCall(0).args[0]).to.deep.equals({
+                    paths: [['test', [1, 2, 'one', 'two'], 'summary']],
+                    jsonGraph: {
+                        test: {
+                            1: {summary: 1},
+                            2: {summary: 2},
                             one: {summary: 'one'},
                             two: {summary: 'two'}
                         }
@@ -192,3 +270,11 @@ describe('Multi-Indexer', function() {
             subscribe(noOp, done, done);
     });
 });
+
+function getRoutedToken(type, name) {
+    return {
+        type: type,
+        named: Boolean(name),
+        name: name
+    };
+}
