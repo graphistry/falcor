@@ -5,6 +5,10 @@ function flatBufferToPaths(seed, paths, path) {
     path = path || [];
     paths = paths || [];
 
+    if (!seed) {
+        return paths;
+    }
+
     var leaf = [];
     var keys = seed['$keys'];
     var keysLen = keys.length;

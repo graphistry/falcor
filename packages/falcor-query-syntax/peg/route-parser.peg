@@ -118,7 +118,7 @@ object
     )?
     value_separator?
     end_object
-    { return members !== null ? members: []; }
+    { return members; }
 
 member =
   name:ellipses value:IdentifierName {
