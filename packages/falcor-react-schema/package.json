@@ -27,6 +27,7 @@
   "author": "Graphistry",
   "license": "ISC",
   "dependencies": {
+    "@graphistry/falcor": "^2.6.15",
     "@graphistry/falcor-json-graph": "^2.5.3",
     "@graphistry/falcor-path-utils": "^2.6.15",
     "@graphistry/falcor-query-syntax": "^2.6.15",
