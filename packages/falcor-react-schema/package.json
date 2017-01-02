@@ -1,6 +1,6 @@
 {
   "name": "@graphistry/falcor-react-schema",
-  "version": "2.6.11",
+  "version": "2.6.15",
   "description": "",
   "main": "lib/index.js",
   "jsnext:main": "src/index.js",
@@ -28,8 +28,8 @@
   "license": "ISC",
   "dependencies": {
     "@graphistry/falcor-json-graph": "^2.5.3",
-    "@graphistry/falcor-path-utils": "^2.6.11",
-    "@graphistry/falcor-query-syntax": "^2.6.11",
+    "@graphistry/falcor-path-utils": "^2.6.15",
+    "@graphistry/falcor-query-syntax": "^2.6.15",
     "babel-plugin-transform-runtime": "~6.15.0",
     "babel-preset-react": "~6.16.0",
     "invariant": "~2.2.2",
@@ -39,7 +39,7 @@
     "rxjs": "~5.0.2"
   },
   "devDependencies": {
-    "@graphistry/falcor-router": "^2.6.11",
+    "@graphistry/falcor-router": "^2.6.15",
     "babel-cli": "~6.18.0",
     "babel-plugin-istanbul": "~3.0.0",
     "babel-plugin-transform-runtime": "~6.15.0",
