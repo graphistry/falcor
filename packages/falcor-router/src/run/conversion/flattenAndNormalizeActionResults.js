@@ -57,14 +57,16 @@ function flattenAndNormalizeActionOutput(match, optimized) {
             return Observable.empty();
         }
         else if (isJSONG(value)) {
-            value.paths = value.paths.map(normalizePath);
+            if (value.relative === true)  {
+                value.paths = value.paths.map(normalizePath);
+            }
             return [{
                 normalizedResult: value,
                 normalizedToken: normalizedToken
             }];
         }
         else if (isPathValue(value)) {
-            if (!value.invalidated) {
+            if (value.relative === true && !value.invalidated) {
                 value.path = normalizePath(value.path);
             }
             return [{

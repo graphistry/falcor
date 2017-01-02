@@ -21,6 +21,7 @@ module.exports = function() {
                 get: function(path) {
                     fn && fn(path);
                     return Observable.of({
+                        relative: true,
                         path: ['summary'],
                         value: $atom(75)
                     })
@@ -183,6 +184,7 @@ module.exports = function() {
 
 function generateVideoPV(id) {
     return {
+        relative: true,
         path: [id, 'summary'],
         value: 'Some Movie ' + id
         // value: $atom({ title: 'Some Movie ' + id })
