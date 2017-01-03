@@ -1,6 +1,6 @@
 {
   "name": "@graphistry/falcor-model-rxjs",
-  "version": "2.6.17",
+  "version": "2.6.18",
   "description": "",
   "main": "lib/Model.js",
   "scripts": {
@@ -16,7 +16,7 @@
   ],
   "dependencies": {
     "rxjs": "~5.0.2",
-    "@graphistry/falcor": "^2.6.17",
+    "@graphistry/falcor": "^2.6.18",
     "@graphistry/falcor-path-syntax": "^2.5.3",
     "babel-plugin-transform-runtime": "~6.15.0"
   },
