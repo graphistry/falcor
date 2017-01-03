@@ -1,0 +1,1 @@
+{"version":3,"sources":["../../src/falcor/index.js"],"names":["get","set"],"mappings":";;;;;;;;;;;;;;;;;QAAOA,G;QACAC,G","file":"index.js","sourcesContent":["export get from './get';\nexport set from './set';\n"]}

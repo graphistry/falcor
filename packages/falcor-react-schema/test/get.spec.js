@@ -8,8 +8,8 @@ describe('get handler', () => {
     it('should traverse the JSON tree and return the data', (done) => {
 
         const Container = createExampleSchema();
-        const routes = Container.schema(createExampleServices());
-        const router = new Router(routes);
+        const schema = Container.schema(createExampleServices());
+        const router = new Router(schema.toArray());
 
         router.get([
             ['genres', 'length'],

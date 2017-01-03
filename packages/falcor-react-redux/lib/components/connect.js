@@ -99,27 +99,29 @@ require('rxjs/add/operator/distinctUntilKeyChanged');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-_falcor.Model.prototype.changes = function () {
-    var _this = this;
+if (!_falcor.Model.prototype.changes) {
+    _falcor.Model.prototype.changes = function () {
+        var _this = this;
 
-    var _root = this._root;
-    var changes = _root.changes;
+        var _root = this._root;
+        var changes = _root.changes;
 
-    if (!changes) {
-        (function () {
-            changes = _root.changes = new _BehaviorSubject.BehaviorSubject(_this);
-            var onChange = _root.onChange;
+        if (!changes) {
+            (function () {
+                changes = _root.changes = new _BehaviorSubject.BehaviorSubject(_this);
+                var onChange = _root.onChange;
 
-            _root.onChange = function () {
-                if (onChange) {
-                    onChange.call(_this);
-                }
-                changes.next(_this);
-            };
-        })();
-    }
-    return changes;
-};
+                _root.onChange = function () {
+                    if (onChange) {
+                        onChange.call(_this);
+                    }
+                    changes.next(_this);
+                };
+            })();
+        }
+        return changes;
+    };
+}
 // import { asap as asapScheduler } from 'rxjs/scheduler/asap';
 
 (0, _setObservableConfig2.default)(_rxjsObservableConfig2.default);
@@ -167,6 +169,8 @@ function mapReduxStoreToProps(store, _ref2) {
                     __proto__: new _falcor.FalcorJSON(store) },
                 __proto__: _falcor.FalcorJSON.prototype
             };
+        } else {
+            store = falcor._seed.json;
         }
     }
     return { data: store };

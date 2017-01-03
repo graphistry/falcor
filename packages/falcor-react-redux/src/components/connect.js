@@ -28,20 +28,22 @@ import 'rxjs/add/operator/auditTime';
 import 'rxjs/add/operator/switchMap';
 import 'rxjs/add/operator/distinctUntilKeyChanged';
 
-Model.prototype.changes = function() {
-    const { _root } = this;
-    let { changes } = _root;
-    if (!changes) {
-        changes = _root.changes = new BehaviorSubject(this);
-        const { onChange } = _root;
-        _root.onChange = () => {
-            if (onChange) {
-                onChange.call(this);
+if (!Model.prototype.changes) {
+    Model.prototype.changes = function() {
+        const { _root } = this;
+        let { changes } = _root;
+        if (!changes) {
+            changes = _root.changes = new BehaviorSubject(this);
+            const { onChange } = _root;
+            _root.onChange = () => {
+                if (onChange) {
+                    onChange.call(this);
+                }
+                changes.next(this);
             }
-            changes.next(this);
         }
+        return changes;
     }
-    return changes;
 }
 
 setObservableConfig(rxjsObservableConfig);
@@ -86,6 +88,8 @@ function mapReduxStoreToProps(store, { falcor }) {
                 __proto__: new FalcorJSON(store) },
                 __proto__: FalcorJSON.prototype
             };
+        } else {
+            store = falcor._seed.json;
         }
     }
     return { data: store };

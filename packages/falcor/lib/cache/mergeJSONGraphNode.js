@@ -71,7 +71,8 @@ module.exports = function mergeJSONGraphNode(
     }
     // If the cache is a reference, we might not need to replace it.
     else {
-        // If the cache is a reference, but the message is empty, leave the cache alone...
+        // If the cache is a reference, but the message is empty,
+        // leave the cache alone...
         if (message == null) {
             // ...unless the cache is an expired reference. In that case, expire
             // the cache node and return undefined.
@@ -119,7 +120,8 @@ module.exports = function mergeJSONGraphNode(
         }
     }
 
-    // If the cache is a leaf but the message is a branch, merge the branch over the leaf.
+    // If the cache is a leaf but the message is a branch,
+    // merge the branch over the leaf.
     if (cType && mIsObject && !mType) {
         return insertNode(replaceNode(
                 node, message, parent, key, lru, version),
@@ -128,17 +130,17 @@ module.exports = function mergeJSONGraphNode(
     }
     // If the message is a sentinel or primitive, insert it into the cache.
     else if (mType || !mIsObject) {
-        // If the cache and the message are the same value, we branch-merged one
-        // of the message's ancestors. If this is the first time we've seen this
-        // leaf, give the message a $size and $type, attach its graph pointers,
-        // and update the cache sizes and versions.
 
         if (mType === $error && errorSelector) {
             message = errorSelector(reconstructPath(requestedPath, key), message);
         }
 
+        // If the cache and the message are the same value, we branch-merged one
+        // of the message's ancestors. If this is the first time we've seen this
+        // leaf, give the message a $size and $type, attach its graph pointers,
+        // and update the cache sizes and versions.
         if (mType && node === message) {
-            if (node[f_parent] == null) {
+            if (!node[f_parent]) {
                 node = wrapNode(node, cType, node.value);
                 parent = updateNodeAncestors(parent, -node.$size, lru, version);
                 node = insertNode(node, parent, key, version, optimizedPath);
@@ -150,33 +152,31 @@ module.exports = function mergeJSONGraphNode(
         // If the message is a primitive value, wrap it in an atom.
         else {
             var isDistinct = true;
+            // If both the cache and message are primitives, we branch-merged
+            // one of the message's ancestors. Insert the value into the cache.
+            if (!cType && !mType) {
+                isDistinct = true;
+            }
             // If the cache is a branch, but the message is a leaf, replace the
             // cache branch with the message leaf.
-            if (!cIsObject || (cType && !isExpired(node, expireImmediate))) {
-
+            else if (!cIsObject || !isExpired(node, expireImmediate)) {
                 // Compare the current cache value with the new value. If either of
                 // them don't have a timestamp, or the message's timestamp is newer,
                 // replace the cache value with the message value. If a comparator
                 // is specified, the comparator takes precedence over timestamps.
                 if (comparator) {
-                    isDistinct = !comparator(
-                        node, message, optimizedPath.slice(0, optimizedPath.index)
+                    isDistinct = !(comparator.length < 3 ?
+                        comparator(node, message) : comparator(node, message,
+                            optimizedPath.slice(0, optimizedPath.index))
                     );
-                } else if (!mType) {
-                    isDistinct = !node || node.value !== message;
                 } else {
-                    isDistinct = !cType || ((
-                        // Comparing either Number or undefined to undefined always results in false.
-                        getTimestamp(message) < getTimestamp(node)) === false) || !(
-                        // They're the same if the following fields are the same.
-                        cType !== mType ||
-                        node.value !== message.value ||
-                        node.$expires !== message.$expires);
+                    // Comparing either Number or undefined to undefined always results in false.
+                    isDistinct = getTimestamp(message) < getTimestamp(node) === false;
                 }
             }
             if (isDistinct) {
-                message = wrapNode(message, mType, mType ? message.value : message);
-                sizeOffset = getSize(node) - getSize(message);
+                sizeOffset = getSize(node) - getSize(message =
+                    wrapNode(message, mType, mType ? message.value : message));
                 node = replaceNode(node, message, parent, key, lru, version);
                 parent = updateNodeAncestors(parent, sizeOffset, lru, version);
                 node = insertNode(node, parent, key, version, optimizedPath);

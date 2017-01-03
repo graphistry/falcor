@@ -100,11 +100,14 @@ describe('DataSource and Cache', function() {
                 }
             });
             var next = false;
+            var version1;
+            var version0 = model.getVersion();
             toObservable(model.
                 set({ path: ['videos', 766, 'title'], value: 'Die Hard' },
                     { path: ['videos', 1234, 'title'], value: 'House of Cards' })).
                 doAction(function(x) {
                     next = true;
+                    version1 = model.getVersion();
                     testRunner.compare({ json: {
                         videos: {
                             766: { title: 'Die Hard' },
@@ -113,7 +116,8 @@ describe('DataSource and Cache', function() {
                     }}, strip(x));
                 }, noOp, function() {
                     testRunner.compare(true, next, 'Expect to be onNext at least 1 time.');
-                    testRunner.compare(false, datasourceSetCalled, 'Expect data source set not to be called.');
+                    testRunner.compare(true, datasourceSetCalled, 'Expect data source set to be called.');
+                    testRunner.compare(1, version1 - version0, 'Expect version to be incremented only once.');
                 }).
                 subscribe(noOp, done, done);
         });

@@ -1,5 +1,6 @@
 var functionTypeof = 'function';
 var Requests = require('./request/Queue');
+var getTimestamp = require('./support/getTimestamp');
 
 function ModelRoot(o, model) {
 
@@ -49,22 +50,36 @@ function ModelRoot(o, model) {
     }
 }
 
-ModelRoot.comparator = function comparator(cacheNode, messageNode) {
-    var cType = cacheNode && cacheNode.$type;
-    var mType = messageNode && messageNode.$type;
+function defaultCompare(node, message) {
+    var cType = node && node.$type;
+    var mType = message && message.$type;
     if (cType) {
+        // If the cache has a type, but the message is a primitive,
+        // the message might be the primitive response from the datasource.
+        // If so, return true, so we don't update the back-reference versions.
         if (!mType) {
-            return cacheNode.value === messageNode;
-        } else {
-            // They are the same only if the following fields are the same.
-            return !(cType !== mType ||
-                     cacheNode.value !== messageNode.value ||
-                     cacheNode.$expires !== messageNode.$expires);
+            return node.value === message;
         }
-    } else if (mType) {
+        // Otherwise they are the same if all the following fields are the same.
+        else if (cType !== mType) {
+            return false; // isDistinct = true
+        } else if (getTimestamp(message) < getTimestamp(node) === true) {
+            return true; // isDistinct = false
+        } else if (node.value !== message.value) {
+            return false; // isDistinct = true
+        } else if (node.$expires !== message.$expires) {
+            return false; // isDistinct = true
+        }
+        return true; // isDistinct = false
+    }
+    // If cache doesn't have a type but the message
+    // does, they must be different.
+    else if (mType) {
         return false;
     }
-    return cacheNode === messageNode;
-};
+    return node === message;
+}
+
+ModelRoot.comparator = ModelRoot.prototype.comparator = defaultCompare;
 
 module.exports = ModelRoot;

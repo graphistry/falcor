@@ -8,7 +8,8 @@ describe('set handler', () => {
     it('should traverse the JSON tree and set the data', (done) => {
 
         const Container = createExampleSchema();
-        const router = new Router(Container.schema(createExampleServices()));
+        const schema = Container.schema(createExampleServices());
+        const router = new Router(schema);
 
         router.set({
             paths: [

@@ -1,10 +1,11 @@
 import FalcorQuerySyntax from '@graphistry/falcor-query-syntax';
+import flatBufferToRoutes from '@graphistry/falcor-path-utils/lib/flatBufferToRoutes';
 
 const { QL } = FalcorQuerySyntax.routes;
 
 export default function wrapSchemaDescriptor({ schema, get, set }, displayName = 'Schema') {
     return function createSchema(context) {
-        return function createRoutes(route) {
+        function createRoutes(route) {
 
             let routes = schema(QL, {
                 get: get.bind(null, route, displayName),
@@ -17,5 +18,7 @@ export default function wrapSchemaDescriptor({ schema, get, set }, displayName =
 
             return routes;
         }
+        createRoutes.toArray = flatBufferToRoutes.bind(null, createRoutes);
+        return createRoutes;
     }
 }
