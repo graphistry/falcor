@@ -114,24 +114,24 @@ function withFragment(fragmentDesc) {
     }
 
     return (0, _hoistStatics2.default)(function (Component) {
-        var Container = function (_FragmentContainer) {
+        var _class, _temp;
+
+        return _temp = _class = function (_FragmentContainer) {
             _inherits(Container, _FragmentContainer);
 
-            function Container() {
+            function Container(props, context) {
                 _classCallCheck(this, Container);
 
-                return _possibleConstructorReturn(this, (Container.__proto__ || (0, _getPrototypeOf2.default)(Container)).apply(this, arguments));
+                var _this = _possibleConstructorReturn(this, (Container.__proto__ || (0, _getPrototypeOf2.default)(Container)).call(this, props, context));
+
+                _this.config = config;
+                _this.Component = Component;
+                _this.fragment = fragmentDesc.fragment;
+                return _this;
             }
 
             return Container;
-        }(FragmentContainer);
-
-        Container.config = fragmentDesc;
-        Container.Component = Component;
-        Container.fragment = fragmentDesc.fragment;
-        Container.displayName = (0, _wrapDisplayName2.default)(Component, 'Fragment');
-
-        return Container;
+        }(FragmentContainer), _class.fragments = fragments, _class.load = fetchEachPropUpdate, _class.contextTypes = contextTypes, _class.childContextTypes = contextTypes, _class.fragment = fragmentDesc.fragment, _class.displayName = (0, _wrapDisplayName2.default)(Component, 'Container'), _temp;
     });
 }
 
@@ -143,15 +143,6 @@ var FragmentContainer = function (_React$Component) {
 
         var _this2 = _possibleConstructorReturn(this, (FragmentContainer.__proto__ || (0, _getPrototypeOf2.default)(FragmentContainer)).call(this, props, context));
 
-        var _this2$constructor = _this2.constructor,
-            config = _this2$constructor.config,
-            fragment = _this2$constructor.fragment,
-            Component = _this2$constructor.Component;
-
-
-        _this2.config = config;
-        _this2.fragment = fragment;
-        _this2.Component = Component;
         _this2.state = { hash: '', version: 0 };
         _this2.propsStream = new _Subject.Subject();
         _this2.propsAction = _this2.propsStream.switchMap(fetchEachPropUpdate, mergeEachPropUpdate);
@@ -300,12 +291,6 @@ var FragmentContainer = function (_React$Component) {
 
     return FragmentContainer;
 }(_react2.default.Component);
-
-FragmentContainer.fragments = fragments;
-FragmentContainer.load = fetchEachPropUpdate;
-FragmentContainer.contextTypes = contextTypes;
-FragmentContainer.childContextTypes = contextTypes;
-
 
 function fragments() {
     var _this4 = this;

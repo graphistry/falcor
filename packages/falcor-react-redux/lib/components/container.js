@@ -79,8 +79,6 @@ var _Subject = require('rxjs/Subject');
 
 var _Observable = require('rxjs/Observable');
 
-var _falcor = require('@graphistry/falcor');
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var typeofNumber = 'number';
@@ -137,19 +135,29 @@ function container(fragmentDesc) {
         }
     }
 
-    return (0, _hoistStatics2.default)(function (BaseComponent) {
+    return (0, _hoistStatics2.default)(function (Component) {
         var _class, _temp;
 
         return _temp = _class = function (_FalcorContainer) {
             (0, _inherits3.default)(Container, _FalcorContainer);
 
-            function Container() {
+            function Container(props, context) {
                 (0, _classCallCheck3.default)(this, Container);
-                return (0, _possibleConstructorReturn3.default)(this, (Container.__proto__ || (0, _getPrototypeOf2.default)(Container)).apply(this, arguments));
+
+                var _this = (0, _possibleConstructorReturn3.default)(this, (Container.__proto__ || (0, _getPrototypeOf2.default)(Container)).call(this, props, context));
+
+                _this.fragment = fragment;
+                _this.Component = Component;
+                _this.mapFragment = mapFragment;
+                _this.renderErrors = renderErrors;
+                _this.renderLoading = renderLoading;
+                _this.dispatchers = mapDispatch(_this);
+                _this.mapFragmentAndProps = mapFragmentAndProps;
+                return _this;
             }
 
             return Container;
-        }(FalcorContainer), _class.fragment = fragment, _class.fragments = fragments, _class.Component = BaseComponent, _class.mapFragment = mapFragment, _class.mapDispatch = mapDispatch, _class.renderErrors = renderErrors, _class.renderLoading = renderLoading, _class.mapFragmentAndProps = mapFragmentAndProps, _class.displayName = (0, _wrapDisplayName2.default)(BaseComponent, 'Container'), _temp;
+        }(FalcorContainer), _class.fragment = fragment, _class.fragments = fragments, _class.contextTypes = contextTypes, _class.childContextTypes = contextTypes, _class.displayName = (0, _wrapDisplayName2.default)(Component, 'Container'), _temp;
     });
 }
 
@@ -231,26 +239,19 @@ var FalcorContainer = function (_React$Component) {
 
         var _this3 = (0, _possibleConstructorReturn3.default)(this, (FalcorContainer.__proto__ || (0, _getPrototypeOf2.default)(FalcorContainer)).call(this, props, context));
 
-        var _this3$constructor = _this3.constructor,
-            fragment = _this3$constructor.fragment,
-            Component = _this3$constructor.Component,
-            mapFragment = _this3$constructor.mapFragment,
-            mapDispatch = _this3$constructor.mapDispatch,
-            renderErrors = _this3$constructor.renderErrors,
-            renderLoading = _this3$constructor.renderLoading,
-            mapFragmentAndProps = _this3$constructor.mapFragmentAndProps;
+        var data = props.data;
+        var falcor = context.falcor;
 
-
-        _this3.fragment = fragment;
-        _this3.Component = Component;
-        _this3.mapFragment = mapFragment;
         _this3.propsStream = new _Subject.Subject();
-        _this3.renderErrors = renderErrors;
-        _this3.renderLoading = renderLoading;
-        _this3.dispatchers = mapDispatch(_this3);
-        _this3.state = { hash: '', version: 0 };
-        _this3.mapFragmentAndProps = mapFragmentAndProps;
         _this3.propsAction = _this3.propsStream.switchMap(fetchEachPropUpdate, mergeEachPropUpdate);
+
+        _this3.state = {
+            dispatch: context.dispatch,
+            data: data, hash: '', version: -1,
+            loading: false, error: undefined,
+            falcor: tryDeref({ data: data, falcor: falcor }),
+            props: (0, _extends3.default)({}, props, { data: undefined })
+        };
         return _this3;
     }
 
@@ -380,24 +381,22 @@ var FalcorContainer = function (_React$Component) {
         value: function render() {
             var Component = this.Component,
                 dispatchers = this.dispatchers,
+                state = this.state,
                 mapFragment = this.mapFragment,
                 renderErrors = this.renderErrors,
                 renderLoading = this.renderLoading,
                 mapFragmentAndProps = this.mapFragmentAndProps;
+            var data = state.data,
+                props = state.props,
+                error = state.error,
+                loading = state.loading;
 
 
             if (!Component) {
                 return null;
             }
 
-            var _state4 = this.state,
-                data = _state4.data,
-                props = _state4.props,
-                falcor = _state4.falcor,
-                error = _state4.error,
-                loading = _state4.loading;
-
-            var mappedFragment = data ? mapFragment(data, props) : new _falcor.FalcorJSON();
+            var mappedFragment = mapFragment(data || [], props);
             var allMergedProps = mapFragmentAndProps(mappedFragment, dispatchers, props);
 
             if (error && renderErrors === true) {
@@ -413,7 +412,4 @@ var FalcorContainer = function (_React$Component) {
     }]);
     return FalcorContainer;
 }(_react2.default.Component);
-
-FalcorContainer.contextTypes = contextTypes;
-FalcorContainer.childContextTypes = contextTypes;
 //# sourceMappingURL=container.js.map

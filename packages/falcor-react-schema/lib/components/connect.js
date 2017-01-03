@@ -35,6 +35,14 @@ require('rxjs/add/operator/switchMap');
 
 require('rxjs/add/operator/distinctUntilKeyChanged');
 
+var _hoistStatics = require('recompose/hoistStatics');
+
+var _hoistStatics2 = _interopRequireDefault(_hoistStatics);
+
+var _mapPropsStream = require('recompose/mapPropsStream');
+
+var _mapPropsStream2 = _interopRequireDefault(_mapPropsStream);
+
 var _setDisplayName = require('recompose/setDisplayName');
 
 var _setDisplayName2 = _interopRequireDefault(_setDisplayName);
@@ -43,18 +51,12 @@ var _wrapDisplayName = require('recompose/wrapDisplayName');
 
 var _wrapDisplayName2 = _interopRequireDefault(_wrapDisplayName);
 
-var _rxjsObservableConfig = require('recompose/rxjsObservableConfig');
-
-var _rxjsObservableConfig2 = _interopRequireDefault(_rxjsObservableConfig);
-
-var _mapPropsStream = require('recompose/mapPropsStream');
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function connect(Component) {
+function connect(BaseComponent) {
     var scheduler = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _animationFrame.animationFrame;
 
-    return compose((0, _setDisplayName2.default)((0, _wrapDisplayName2.default)(Component, 'Connect')), (0, _mapPropsStream.mapPropsStreamWithConfig)(_rxjsObservableConfig2.default)(mapPropsToDistinctChanges(scheduler)));
+    return (0, _hoistStatics2.default)(compose((0, _setDisplayName2.default)((0, _wrapDisplayName2.default)(BaseComponent, 'Connect')), (0, _mapPropsStream2.default)(mapPropsToDistinctChanges(scheduler))))(BaseComponent);
 }
 
 function mapPropsToDistinctChanges(scheduler) {

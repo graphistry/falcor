@@ -10,7 +10,6 @@ import 'rxjs/add/observable/of';
 import 'rxjs/add/operator/switchMap';
 import { Subject } from 'rxjs/Subject';
 import { Observable } from 'rxjs/Observable';
-import { FalcorJSON } from '@graphistry/falcor';
 
 const typeofNumber = 'number';
 const typeofObject = 'object';
@@ -64,16 +63,22 @@ Falcor containers must be created with a fragment function, or an Object with a 
         }
     }
 
-    return hoistStatics((BaseComponent) => class Container extends FalcorContainer {
+    return hoistStatics((Component) => class Container extends FalcorContainer {
         static fragment = fragment;
         static fragments = fragments;
-        static Component = BaseComponent;
-        static mapFragment = mapFragment;
-        static mapDispatch = mapDispatch;
-        static renderErrors = renderErrors;
-        static renderLoading = renderLoading;
-        static mapFragmentAndProps = mapFragmentAndProps;
-        static displayName = wrapDisplayName(BaseComponent, 'Container');
+        static contextTypes = contextTypes;
+        static childContextTypes = contextTypes;
+        static displayName = wrapDisplayName(Component, 'Container');
+        constructor(props, context) {
+            super(props, context);
+            this.fragment = fragment;
+            this.Component = Component;
+            this.mapFragment = mapFragment;
+            this.renderErrors = renderErrors;
+            this.renderLoading = renderLoading;
+            this.dispatchers = mapDispatch(this);
+            this.mapFragmentAndProps = mapFragmentAndProps;
+        }
     });
 }
 
@@ -136,35 +141,24 @@ const contextTypes = {
 };
 
 class FalcorContainer extends React.Component {
-
-    static contextTypes = contextTypes;
-    static childContextTypes = contextTypes;
-
     constructor(props, context) {
 
         super(props, context);
 
-        const { fragment,
-                Component,
-                mapFragment,
-                mapDispatch,
-                renderErrors,
-                renderLoading,
-                mapFragmentAndProps
-        } = this.constructor;
-
-        this.fragment = fragment;
-        this.Component = Component;
-        this.mapFragment = mapFragment;
+        const { data } = props;
+        let { falcor } = context;
         this.propsStream = new Subject();
-        this.renderErrors = renderErrors;
-        this.renderLoading = renderLoading;
-        this.dispatchers = mapDispatch(this);
-        this.state = { hash: '', version: 0 };
-        this.mapFragmentAndProps = mapFragmentAndProps;
         this.propsAction = this.propsStream.switchMap(
             fetchEachPropUpdate, mergeEachPropUpdate
         );
+
+        this.state = {
+            dispatch: context.dispatch,
+            data, hash: '', version: -1,
+            loading: false, error: undefined,
+            falcor: tryDeref({ data, falcor }),
+            props: { ...props, data: undefined },
+        };
     }
     getChildContext() {
         const { falcor, dispatch } = this.state;
@@ -265,15 +259,16 @@ class FalcorContainer extends React.Component {
     render() {
 
         const { Component, dispatchers,
-                mapFragment, renderErrors,
+                state, mapFragment, renderErrors,
                 renderLoading, mapFragmentAndProps } = this;
+
+        const { data, props, error, loading } = state;
 
         if (!Component) {
             return null;
         }
 
-        const { data, props, falcor, error, loading } = this.state;
-        const mappedFragment = data ? mapFragment(data, props) : new FalcorJSON();
+        const mappedFragment = mapFragment(data || [], props);
         const allMergedProps = mapFragmentAndProps(mappedFragment, dispatchers, props);
 
         if (error && renderErrors === true) {

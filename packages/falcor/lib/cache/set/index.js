@@ -18,7 +18,7 @@ function json(model, _args, data, progressive, expireImmediate) {
         missing, fragments, requested,
         args = groupCacheArguments(_args);
 
-    set = setGroupsIntoCache(model, args /*, expireImmediate */);
+    set = setGroupsIntoCache(model, args, expireImmediate);
 
     if ((relative = set.requested).length) {
 
@@ -60,7 +60,7 @@ function jsonGraph(model, _args, data, progressive, expireImmediate) {
         missing, fragments, requested,
         args = groupCacheArguments(_args);
 
-    set = setGroupsIntoCache(model, args /*, expireImmediate */);
+    set = setGroupsIntoCache(model, args, expireImmediate);
 
     if ((relative = set.requested).length && (
          progressive || set.changed)) {
@@ -88,7 +88,7 @@ function jsonGraph(model, _args, data, progressive, expireImmediate) {
     };
 }
 
-function setGroupsIntoCache(model, xs /*, expireImmediate */) {
+function setGroupsIntoCache(model, xs, expireImmediate) {
 
     var changed = false;
     var groupIndex = -1;
@@ -96,7 +96,10 @@ function setGroupsIntoCache(model, xs /*, expireImmediate */) {
     var requestedPaths = [];
     var optimizedPaths = [];
     var modelRoot = model._root;
-    var selector = modelRoot.errorSelector;
+    var errorSelector = modelRoot.errorSelector;
+
+    expireImmediate = expireImmediate && !Boolean(model._source);
+    var comparator = Boolean(model._source) ? null : modelRoot.comparator;
 
     // Takes each of the groups and normalizes their input into
     // requested paths and optimized paths.
@@ -108,7 +111,7 @@ function setGroupsIntoCache(model, xs /*, expireImmediate */) {
 
         if (groupedArgs.length > 0) {
             var operation = module.exports['set' + inputType];
-            var results = operation(model, groupedArgs, selector, null, false);
+            var results = operation(model, groupedArgs, errorSelector, comparator, expireImmediate);
             changed = changed || results[2];
             optimizedPaths.push.apply(optimizedPaths, results[1]);
             if (inputType === 'PathValues') {

@@ -11,17 +11,16 @@ import 'rxjs/add/operator/auditTime';
 import 'rxjs/add/operator/switchMap';
 import 'rxjs/add/operator/distinctUntilKeyChanged';
 
+import hoistStatics from 'recompose/hoistStatics';
+import mapPropsStream from 'recompose/mapPropsStream';
 import setDisplayName from 'recompose/setDisplayName';
 import wrapDisplayName from 'recompose/wrapDisplayName';
-import rxjsObservableConfig from 'recompose/rxjsObservableConfig';
-import { mapPropsStreamWithConfig } from 'recompose/mapPropsStream';
 
-export default function connect(Component, scheduler = animationFrame) {
-    return compose(
-        setDisplayName(wrapDisplayName(Component, 'Connect')),
-        mapPropsStreamWithConfig(rxjsObservableConfig)(
-            mapPropsToDistinctChanges(scheduler))
-    );
+export default function connect(BaseComponent, scheduler = animationFrame) {
+    return hoistStatics(compose(
+        setDisplayName(wrapDisplayName(BaseComponent, 'Connect')),
+        mapPropsStream(mapPropsToDistinctChanges(scheduler))
+    ))(BaseComponent);
 }
 
 function mapPropsToDistinctChanges(scheduler) {

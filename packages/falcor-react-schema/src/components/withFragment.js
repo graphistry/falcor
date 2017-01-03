@@ -42,32 +42,26 @@ Fragment containers must be created with a fragment function, or an Object with 
     }
 
     return hoistStatics((Component) => {
-        class Container extends FragmentContainer {
-            static config = fragmentDesc;
-            static Component = Component;
+        return class Container extends FragmentContainer {
+            static fragments = fragments;
+            static load = fetchEachPropUpdate;
+            static contextTypes = contextTypes;
+            static childContextTypes = contextTypes;
             static fragment = fragmentDesc.fragment;
-            static displayName = wrapDisplayName(Component, 'Fragment');
-        }
-        return Container;
+            static displayName = wrapDisplayName(Component, 'Container');
+            constructor(props, context) {
+                super(props, context);
+                this.config = config;
+                this.Component = Component;
+                this.fragment = fragmentDesc.fragment;
+            }
+        };
     });
 }
 
 class FragmentContainer extends React.Component {
-
-    static fragments = fragments;
-    static load = fetchEachPropUpdate;
-    static contextTypes = contextTypes;
-    static childContextTypes = contextTypes;
-
     constructor(props, context) {
-
         super(props, context);
-
-        const { config, fragment, Component } = this.constructor;
-
-        this.config = config;
-        this.fragment = fragment;
-        this.Component = Component;
         this.state = { hash: '', version: 0 };
         this.propsStream = new Subject();
         this.propsAction = this.propsStream.switchMap(

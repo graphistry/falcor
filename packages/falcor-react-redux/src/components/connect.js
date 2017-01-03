@@ -1,16 +1,10 @@
 import compose from 'recompose/compose';
-import toClass from 'recompose/toClass';
-import mapProps from 'recompose/mapProps';
 import lifecycle from 'recompose/lifecycle';
-import setStatic from 'recompose/setStatic';
-import withProps from 'recompose/withProps';
-import getContext from 'recompose/getContext';
 import withContext from 'recompose/withContext';
-import shouldUpdate from 'recompose/shouldUpdate';
+import hoistStatics from 'recompose/hoistStatics';
 import mapPropsStream from 'recompose/mapPropsStream';
 import setDisplayName from 'recompose/setDisplayName';
 import wrapDisplayName from 'recompose/wrapDisplayName';
-import bindActionCreators from '../utils/bindActionCreators';
 import setObservableConfig from 'recompose/setObservableConfig';
 import rxjsObservableConfig from 'recompose/rxjsObservableConfig';
 
@@ -55,7 +49,7 @@ const contextTypes = {
     dispatch: PropTypes.func
 };
 
-const connect = (BaseComponent, scheduler = animationFrame) => compose(
+const connect = (BaseComponent, scheduler = animationFrame) => hoistStatics(compose(
     connectRedux(mapReduxStoreToProps, 0, mergeReduxProps, reduxOptions),
     setDisplayName(wrapDisplayName(BaseComponent, 'Falcor')),
     mapPropsStream(mapPropsToDistinctChanges(scheduler)),
@@ -70,7 +64,7 @@ const connect = (BaseComponent, scheduler = animationFrame) => compose(
             });
         }
     })
-)(BaseComponent);
+))(BaseComponent);
 
 export { connect };
 export default connect;

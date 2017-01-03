@@ -17,37 +17,17 @@ var _compose = require('recompose/compose');
 
 var _compose2 = _interopRequireDefault(_compose);
 
-var _toClass = require('recompose/toClass');
-
-var _toClass2 = _interopRequireDefault(_toClass);
-
-var _mapProps = require('recompose/mapProps');
-
-var _mapProps2 = _interopRequireDefault(_mapProps);
-
 var _lifecycle = require('recompose/lifecycle');
 
 var _lifecycle2 = _interopRequireDefault(_lifecycle);
-
-var _setStatic = require('recompose/setStatic');
-
-var _setStatic2 = _interopRequireDefault(_setStatic);
-
-var _withProps = require('recompose/withProps');
-
-var _withProps2 = _interopRequireDefault(_withProps);
-
-var _getContext = require('recompose/getContext');
-
-var _getContext2 = _interopRequireDefault(_getContext);
 
 var _withContext = require('recompose/withContext');
 
 var _withContext2 = _interopRequireDefault(_withContext);
 
-var _shouldUpdate = require('recompose/shouldUpdate');
+var _hoistStatics = require('recompose/hoistStatics');
 
-var _shouldUpdate2 = _interopRequireDefault(_shouldUpdate);
+var _hoistStatics2 = _interopRequireDefault(_hoistStatics);
 
 var _mapPropsStream = require('recompose/mapPropsStream');
 
@@ -60,10 +40,6 @@ var _setDisplayName2 = _interopRequireDefault(_setDisplayName);
 var _wrapDisplayName = require('recompose/wrapDisplayName');
 
 var _wrapDisplayName2 = _interopRequireDefault(_wrapDisplayName);
-
-var _bindActionCreators = require('../utils/bindActionCreators');
-
-var _bindActionCreators2 = _interopRequireDefault(_bindActionCreators);
 
 var _setObservableConfig = require('recompose/setObservableConfig');
 
@@ -135,7 +111,7 @@ var contextTypes = {
 
 var connect = function connect(BaseComponent) {
     var scheduler = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _animationFrame.animationFrame;
-    return (0, _compose2.default)((0, _reactRedux.connect)(mapReduxStoreToProps, 0, mergeReduxProps, reduxOptions), (0, _setDisplayName2.default)((0, _wrapDisplayName2.default)(BaseComponent, 'Falcor')), (0, _mapPropsStream2.default)(mapPropsToDistinctChanges(scheduler)), (0, _withContext2.default)(contextTypes, function (_ref) {
+    return (0, _hoistStatics2.default)((0, _compose2.default)((0, _reactRedux.connect)(mapReduxStoreToProps, 0, mergeReduxProps, reduxOptions), (0, _setDisplayName2.default)((0, _wrapDisplayName2.default)(BaseComponent, 'Falcor')), (0, _mapPropsStream2.default)(mapPropsToDistinctChanges(scheduler)), (0, _withContext2.default)(contextTypes, function (_ref) {
         var falcor = _ref.falcor,
             dispatch = _ref.dispatch;
         return {
@@ -148,7 +124,7 @@ var connect = function connect(BaseComponent) {
                 type: 'falcor-react-redux/update'
             });
         }
-    }))(BaseComponent);
+    })))(BaseComponent);
 };
 
 exports.connect = connect;

@@ -80,22 +80,23 @@ function withSchema(schemaDesc) {
     schemaDesc.set = schemaDesc.set || FalcorRouteHandlers.set;
 
     return (0, _hoistStatics2.default)(function (Component) {
-        var Container = function (_SchemaContainer) {
+        var _class, _temp;
+
+        var displayName = (0, _wrapDisplayName2.default)(Component, 'Schema');
+        return _temp = _class = function (_SchemaContainer) {
             _inherits(Container, _SchemaContainer);
 
-            function Container() {
+            function Container(props, context) {
                 _classCallCheck(this, Container);
 
-                return _possibleConstructorReturn(this, (Container.__proto__ || (0, _getPrototypeOf2.default)(Container)).apply(this, arguments));
+                var _this = _possibleConstructorReturn(this, (Container.__proto__ || (0, _getPrototypeOf2.default)(Container)).call(this, props, context));
+
+                _this.Component = Component;
+                return _this;
             }
 
             return Container;
-        }(SchemaContainer);
-
-        Container.Component = Component;
-        ;
-        Container.schema = (0, _wrapSchemaDescriptor2.default)(schemaDesc, Container.displayName = (0, _wrapDisplayName2.default)(Component, 'Schema'));
-        return Container;
+        }(SchemaContainer), _class.displayName = displayName, _class.schema = (0, _wrapSchemaDescriptor2.default)(schemaDesc, displayName), _temp;
     });
 }
 

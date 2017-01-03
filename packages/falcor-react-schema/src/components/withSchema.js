@@ -22,12 +22,15 @@ Schema containers must be created with a schema function, or an Object with a "s
     schemaDesc.set = schemaDesc.set || FalcorRouteHandlers.set;
 
     return hoistStatics((Component) => {
-        class Container extends SchemaContainer {
-            static Component = Component;
+        const displayName = wrapDisplayName(Component, 'Schema');
+        return class Container extends SchemaContainer {
+            static displayName = displayName;
+            static schema = wrapSchemaDescriptor(schemaDesc, displayName);
+            constructor(props, context) {
+                super(props, context);
+                this.Component = Component;
+            }
         };
-        Container.schema = wrapSchemaDescriptor(schemaDesc,
-        Container.displayName = wrapDisplayName(Component, 'Schema'));
-        return Container;
     });
 }
 
