@@ -60,17 +60,16 @@ function defaultCompare(node, message) {
         if (!mType) {
             return node.value === message;
         }
-        // Otherwise they are the same if all the following fields are the same.
-        else if (cType !== mType) {
-            return false; // isDistinct = true
-        } else if (getTimestamp(message) < getTimestamp(node) === true) {
+        // If the message is older than the cache node, then isDistinct = false
+        else if (getTimestamp(message) < getTimestamp(node) === true) {
             return true; // isDistinct = false
-        } else if (node.value !== message.value) {
-            return false; // isDistinct = true
-        } else if (node.$expires !== message.$expires) {
-            return false; // isDistinct = true
         }
-        return true; // isDistinct = false
+        // Otherwise they are the same if all the following fields are the same.
+        return !(
+            cType !== mType ||
+            node.value !== message.value ||
+            node.$expires !== message.$expires
+        );
     }
     // If cache doesn't have a type but the message
     // does, they must be different.
