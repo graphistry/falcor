@@ -62,8 +62,6 @@ function expandAndMapValues(incomingJSON, pathTemplate, options = {}) {
 
     return function innerExpandValues(context) {
 
-        debugger
-
         const path = [];
 
         let json = incomingJSON, pathId = -1, value,
@@ -114,27 +112,26 @@ function mapEachValue(context, pathTemplate, options) {
 
         path = slice.call(path);
 
-        const count = path.length;
         let { idsIndex: index, name } =
             pathTemplate[pathTemplate.length - 1];
 
+        const valueIndex = path.length - 1;
         let key, node = context[name] || context;
 
         do {
-
-            key = path[index];
-
-            if (index < count - 1) {
+            key = path[++index];
+            if (index < valueIndex) {
                 node = node[key] || (node[key] = {});
                 continue;
             }
+            break;
+        } while (true);
 
-            if (!(!value || 'object' !== typeof value)) {
-                value = unboxTypes[value.$type] ? value.value : value;
-            }
+        if (!(!value || 'object' !== typeof value)) {
+            value = unboxTypes[value.$type] ? value.value : value;
+        }
 
-            value = mapValue(node, key, value, path, context);
-        } while (++index < count);
+        value = mapValue(node, key, value, path, context);
 
         if (!value || typeof value !== 'object') {
             value = [{ path, value }];
