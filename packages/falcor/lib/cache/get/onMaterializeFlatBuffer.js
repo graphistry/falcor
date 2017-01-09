@@ -13,7 +13,7 @@ module.exports = onMaterializeFlatBuffer;
 /* eslint-disable no-cond-assign */
 /* eslint-disable no-constant-condition */
 function onMaterializeFlatBuffer(json, path, depth, length,
-                                 branchSelector, boxValues, results,
+                                 branchSelector, boxValues, modelRoot, results,
                                  requestedPath, optimizedPath, optimizedLength,
                                  fromReference, reportMissing, onMissing) {
 
@@ -27,7 +27,7 @@ function onMaterializeFlatBuffer(json, path, depth, length,
         onValueType(undefined, undefined, json,
                     path, depth, undefined, results,
                     requestedPath, depth, optimizedPath,
-                    optimizedLength, fromReference, undefined, undefined,
+                    optimizedLength, fromReference, modelRoot, undefined,
                     false, branchSelector, boxValues, false, reportMissing,
                     false, undefined, onMissing, undefined);
         return boxValues ? clone(materializedAtom) : undefined;
@@ -45,7 +45,7 @@ function onMaterializeFlatBuffer(json, path, depth, length,
         json = {};
         json.__proto__ = FalcorJSON.prototype;
         json[f_meta_data] = f_meta = {};
-        f_meta[f_meta_version] = 0;
+        f_meta[f_meta_version] = modelRoot.version;
         f_meta[f_meta_abs_path] = optimizedPath.slice(
             0, optimizedLength
         );
@@ -54,7 +54,7 @@ function onMaterializeFlatBuffer(json, path, depth, length,
         }
     } else if (!(f_meta = json[f_meta_data])) {
         json[f_meta_data] = f_meta = {};
-        f_meta[f_meta_version] = 0;
+        f_meta[f_meta_version] = modelRoot.version;
         f_meta[f_meta_abs_path] = optimizedPath.slice(
             0, optimizedLength
         );
@@ -124,7 +124,7 @@ function onMaterializeFlatBuffer(json, path, depth, length,
             // insert the materialized branch
             json[nextKey] = onMaterializeFlatBuffer(
                 json[nextKey], nextPath, nextDepth,
-                nextDepth, branchSelector, boxValues, results,
+                nextDepth, branchSelector, boxValues, modelRoot, results,
                 requestedPath, optimizedPath, nextOptimizedLength,
                 fromReference, reportMissing, onMissing
             );

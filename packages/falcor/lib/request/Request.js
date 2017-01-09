@@ -60,15 +60,15 @@ Request.prototype.onNext = function(envelopes) {
         queue.remove(this);
     }
 
-    var boundPath = this.boundPath;
+    var paths, boundPath = this.boundPath;
 
     do {
 
+        paths = env.paths || this.paths;
+
         var jsonGraph = env.jsonGraph;
-        var requested = this.requested;
         var modelRoot = queue.modelRoot;
         var invalidated = env.invalidated;
-        var paths = env.paths || this.paths;
 
         // Run invalidations first.
         if (invalidated && invalidated.length) {
@@ -84,6 +84,7 @@ Request.prototype.onNext = function(envelopes) {
         }
     } while (++envelopeIndex < envelopeCount && (env = envelopes[envelopeIndex]))
 
+    var requested = this.requested.slice(0);
     this.observers.slice(0).forEach(function(observer, index) {
         observer.onNext({
             type: 'get', paths: requested[index] ||

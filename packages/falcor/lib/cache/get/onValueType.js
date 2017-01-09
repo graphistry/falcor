@@ -48,5 +48,5 @@ function onValueType(node, type, json,
                      requestedPath, requestedLength, fromReference,
                      optimizedPath, optimizedLength, reportMissing,
                      materialized, json, branchSelector,
-                     boxValues, onMaterialize);
+                     boxValues, onMaterialize, modelRoot);
 }

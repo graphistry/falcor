@@ -135,6 +135,8 @@ CallSubscriber.prototype.onNext = function(seed) {
         this.version = seed.version;
         this.maxRetryCount = this.maxRetryCount || this.model._root.maxRetryCount;
         return;
+    } else if (!this.destination) {
+        return;
     }
 
     var missing, fragments;
@@ -149,8 +151,11 @@ CallSubscriber.prototype.onNext = function(seed) {
     var hasValue = this.hasValue;
     var operation = this.operation;
     var progressive = this.progressive;
-
     var seedIsImmutable = progressive && data;
+
+    if (model._recycleJSON && this.type === 'get') {
+        seedIsImmutable = false;
+    }
 
     // If we request paths as JSON in progressive mode, ensure each progressive
     // valueNode is immutable. If not in progressive mode, we can write into the
@@ -214,6 +219,10 @@ CallSubscriber.prototype.onError = function(error) {
 
 CallSubscriber.prototype.complete =
 CallSubscriber.prototype.onCompleted = function(error) {
+
+    if (!this.destination) {
+        return;
+    }
 
     var data, type, errors, errored;
 

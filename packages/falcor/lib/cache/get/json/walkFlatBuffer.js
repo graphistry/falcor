@@ -288,14 +288,12 @@ function walkPathAndBuildOutput(root, node, json, path,
         // here if we encountered a Key.
         while (keyIsRange && ++nextKey <= rangeEnd);
 
-        if (!hasMissingPath) {
-            f_code = '' + getHashCode('' + f_code + nextPathKey +
-                                     (  nextPath && nextPath['$code'] || ''));
-        }
+        f_code = '' + getHashCode('' + f_code + nextPathKey +
+                                 (  nextPath && nextPath['$code'] || ''));
     }
 
     if (hasMissingPath) {
-        f_code = '__incomplete__';
+        f_code = '' + getHashCode('' + f_code + '__incomplete__');
     }
 
     if (f_meta) {
@@ -323,11 +321,11 @@ function onMissing(path, depth, results,
                    requestedPath, requestedLength, fromReference,
                    optimizedPath, optimizedLength, reportMissing,
                    reportMaterialized, json, branchSelector,
-                   boxValues, onMaterialize) {
+                   boxValues, onMaterialize, modelRoot) {
 
     if (reportMaterialized) {
         return onMaterialize(json, path, depth, depth, branchSelector,
-                             boxValues, results, requestedPath, optimizedPath,
+                             boxValues, modelRoot, results, requestedPath, optimizedPath,
                              optimizedLength, fromReference, reportMissing, onMissing);
     }
 
@@ -340,6 +338,6 @@ function onMissing(path, depth, results,
                                  requestedPath, requestedLength, fromReference,
                                  optimizedPath, optimizedLength, reportMissing,
                                  false, json, branchSelector,
-                                 boxValues, onMaterialize);
+                                 boxValues, onMaterialize, modelRoot);
     });
 }

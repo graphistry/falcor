@@ -457,94 +457,51 @@ describe('DataSource and Cache', function() {
 
     });
     describe('Recycle JSON', function() {
-        it('should get multiple arguments with multiple trips to the dataSource into a single toJSON response.', function(done) {
+        it('should get multiple arguments with multiple trips to the dataSource into a single toJSON response with recycleJSON true.', function(done) {
             var model = new Model({cache: M(), source: new LocalDataSource(Cache()), recycleJSON: true});
             var count = 0;
             toObservable(model.
                 get(['lolomo', 0, 0, 'item', 'title'], ['lolomo', 0, 1, 'item', 'title'])).
                 doAction(function(x) {
                     count++;
-                    // x.json[f_meta_data] = x.json[f_meta_data];
-                    // x.json['lolomo'][f_meta_data] = x.json['lolomo'][f_meta_data];
-                    // x.json['lolomo'][0][f_meta_data] = x.json['lolomo'][0][f_meta_data];
-                    // x.json['lolomo'][0][0][f_meta_data] = x.json['lolomo'][0][0][f_meta_data];
-                    // x.json['lolomo'][0][1][f_meta_data] = x.json['lolomo'][0][1][f_meta_data];
-                    // x.json['lolomo'][0][0]['item'][f_meta_data] = x.json['lolomo'][0][0]['item'][f_meta_data];
-                    // x.json['lolomo'][0][1]['item'][f_meta_data] = x.json['lolomo'][0][1]['item'][f_meta_data];
-                    expect(x).to.deep.equals({
-                        __proto__: FalcorJSON.prototype,
+                    expect(x instanceof FalcorJSON).to.equal(true);
+                    expect(JSON.parse(x.toString(true))).to.deep.equals({
                         json: {
-                            __proto__: FalcorJSON.prototype,
                             [f_meta_data]: {
-                                '$code':          '350990479',
-                                [f_meta_keys]:        { lolomo: true },
-                                [f_meta_abs_path]:    undefined,
-                                [f_meta_deref_from]:  undefined,
-                                [f_meta_deref_to]:    undefined,
-                                [f_meta_version]:     1
+                                '$code': '350990479',
                             },
                             lolomo: {
-                                __proto__: FalcorJSON.prototype,
                                 [f_meta_data]: {
-                                    '$code':          '1437563678',
-                                    [f_meta_keys]:        { 0: true },
+                                    '$code':              '1437563678',
                                     [f_meta_abs_path]:    ['lolomos', '1234'],
-                                    [f_meta_deref_from]:  undefined,
-                                    [f_meta_deref_to]:    undefined,
-                                    [f_meta_version]:     1
                                 },
                                 0: {
-                                    __proto__: FalcorJSON.prototype,
                                     [f_meta_data]: {
-                                        '$code':          '2823858104',
-                                        [f_meta_keys]:        { 0: true, 1: true },
+                                        '$code':              '2823858104',
                                         [f_meta_abs_path]:    ['lists', 'A'],
-                                        [f_meta_deref_from]:  undefined,
-                                        [f_meta_deref_to]:    undefined,
-                                        [f_meta_version]:     1
                                     },
                                     0: {
-                                        __proto__: FalcorJSON.prototype,
                                         [f_meta_data]: {
-                                            '$code':          '3681981706',
-                                            [f_meta_keys]:        { item: true },
+                                            '$code':              '3681981706',
                                             [f_meta_abs_path]:    ['lists', 'A', '0'],
-                                            [f_meta_deref_from]:  undefined,
-                                            [f_meta_deref_to]:    undefined,
-                                            [f_meta_version]:     0
                                         },
                                         item: {
-                                            __proto__: FalcorJSON.prototype,
                                             [f_meta_data]: {
-                                                '$code':          '165499941',
-                                                [f_meta_keys]:        { title: true },
+                                                '$code':              '165499941',
                                                 [f_meta_abs_path]:    ['videos', '0'],
-                                                [f_meta_deref_from]:  undefined,
-                                                [f_meta_deref_to]:    undefined,
-                                                [f_meta_version]:     0
                                             },
                                             title: 'Video 0'
                                         }
                                     },
                                     1: {
-                                        __proto__: FalcorJSON.prototype,
                                         [f_meta_data]: {
-                                            '$code':          '3681981706',
-                                            [f_meta_keys]:        { item: true },
+                                            '$code':              '3681981706',
                                             [f_meta_abs_path]:    ['lists', 'A', 1],
-                                            [f_meta_deref_from]:  undefined,
-                                            [f_meta_deref_to]:    undefined,
-                                            [f_meta_version]:     1
                                         },
                                         item: {
-                                            __proto__: FalcorJSON.prototype,
                                             [f_meta_data]: {
-                                                '$code':          '165499941',
-                                                [f_meta_keys]:        { title: true },
+                                                '$code':              '165499941',
                                                 [f_meta_abs_path]:    ['videos', '1'],
-                                                [f_meta_deref_from]:  undefined,
-                                                [f_meta_deref_to]:    undefined,
-                                                [f_meta_version]:     1
                                             },
                                             title: 'Video 1'
                                         }
@@ -572,87 +529,44 @@ describe('DataSource and Cache', function() {
                 get(['lolomo', 0, 0, 'item', 'title'], ['lolomo', 0, 1, 'item', 'title'])).
                 doAction(function(x) {
                     count++;
-                    // x.json[f_meta_data] = x.json[f_meta_data];
-                    // x.json['lolomo'][f_meta_data] = x.json['lolomo'][f_meta_data];
-                    // x.json['lolomo'][0][f_meta_data] = x.json['lolomo'][0][f_meta_data];
-                    // x.json['lolomo'][0][0][f_meta_data] = x.json['lolomo'][0][0][f_meta_data];
-                    // x.json['lolomo'][0][1][f_meta_data] = x.json['lolomo'][0][1][f_meta_data];
-                    // x.json['lolomo'][0][0]['item'][f_meta_data] = x.json['lolomo'][0][0]['item'][f_meta_data];
-                    // x.json['lolomo'][0][1]['item'][f_meta_data] = x.json['lolomo'][0][1]['item'][f_meta_data];
-                    expect(x).to.deep.equals({
-                        __proto__: FalcorJSON.prototype,
+                    expect(x instanceof FalcorJSON).to.equal(true);
+                    expect(JSON.parse(x.toString(true))).to.deep.equals({
                         json: {
-                            __proto__: FalcorJSON.prototype,
                             [f_meta_data]: {
-                                '$code':          '350990479',
-                                [f_meta_keys]:        { lolomo: true },
-                                [f_meta_abs_path]:    undefined,
-                                [f_meta_deref_from]:  undefined,
-                                [f_meta_deref_to]:    undefined,
-                                [f_meta_version]:     1
+                                '$code': '350990479',
                             },
                             lolomo: {
-                                __proto__: FalcorJSON.prototype,
                                 [f_meta_data]: {
-                                    '$code':          '1437563678',
-                                    [f_meta_keys]:        { 0: true },
-                                    [f_meta_abs_path]:    ['lolomos', '1234'],
-                                    [f_meta_deref_from]:  undefined,
-                                    [f_meta_deref_to]:    undefined,
-                                    [f_meta_version]:     0
+                                    '$code': '1437563678',
+                                    [f_meta_abs_path]: ['lolomos', '1234'],
                                 },
                                 0: {
-                                    __proto__: FalcorJSON.prototype,
                                     [f_meta_data]: {
-                                        '$code':          '2823858104',
-                                        [f_meta_keys]:        { 0: true, 1: true },
-                                        [f_meta_abs_path]:    ['lists', 'A'],
-                                        [f_meta_deref_from]:  undefined,
-                                        [f_meta_deref_to]:    undefined,
-                                        [f_meta_version]:     0
+                                        '$code': '2823858104',
+                                        [f_meta_abs_path]: ['lists', 'A'],
                                     },
                                     0: {
-                                        __proto__: FalcorJSON.prototype,
                                         [f_meta_data]: {
-                                            '$code':          '3681981706',
-                                            [f_meta_keys]:        { item: true },
-                                            [f_meta_abs_path]:    ['lists', 'A', '0'],
-                                            [f_meta_deref_from]:  undefined,
-                                            [f_meta_deref_to]:    undefined,
-                                            [f_meta_version]:     0
+                                            '$code': '3681981706',
+                                            [f_meta_abs_path]: ['lists', 'A', '0'],
                                         },
                                         item: {
-                                            __proto__: FalcorJSON.prototype,
                                             [f_meta_data]: {
-                                                '$code':          '165499941',
-                                                [f_meta_keys]:        { title: true },
-                                                [f_meta_abs_path]:    ['videos', '0'],
-                                                [f_meta_deref_from]:  undefined,
-                                                [f_meta_deref_to]:    undefined,
-                                                [f_meta_version]:     0
+                                                '$code': '165499941',
+                                                [f_meta_abs_path]: ['videos', '0'],
                                             },
                                             title: 'Video 0'
                                         }
                                     },
                                     1: {
-                                        __proto__: FalcorJSON.prototype,
                                         [f_meta_data]: {
-                                            '$code':          '3681981706',
-                                            [f_meta_keys]:        { item: true },
-                                            [f_meta_abs_path]:    ['lists', 'A', '1'],
-                                            [f_meta_deref_from]:  undefined,
-                                            [f_meta_deref_to]:    undefined,
-                                            [f_meta_version]:     0
+                                            '$code': '3681981706',
+                                            [f_meta_abs_path]: ['lists', 'A', '1'],
                                         },
                                         item: {
-                                            __proto__: FalcorJSON.prototype,
                                             [f_meta_data]: {
-                                                '$code':          '165499941',
-                                                [f_meta_keys]:        { title: true },
-                                                [f_meta_abs_path]:    ['videos', 1],
-                                                [f_meta_deref_from]:  undefined,
-                                                [f_meta_deref_to]:    undefined,
-                                                [f_meta_version]:     1
+                                                '$code': '165499941',
+                                                [f_meta_abs_path]: ['videos', 1],
                                             },
                                             title: 'Video 1'
                                         }
@@ -666,7 +580,224 @@ describe('DataSource and Cache', function() {
                 }).
                 subscribe(noOp, done, done);
         });
+
+        describe('Progressively', function() {
+            it('should get multiple arguments with multiple trips to the dataSource into a single recycled JSON response.', function(done) {
+                var model = new Model({
+                    cache: M(), recycleJSON: true,
+                    source: new LocalDataSource(Cache()),
+                });
+                var count = 0;
+                toObservable(model.
+                    get(['lolomo', 0, 0, 'item', 'title'], ['lolomo', 0, 1, 'item', 'title']).
+                    progressively()).
+                    doAction(function(x) {
+                        count++;
+                        expect(x instanceof FalcorJSON).to.equal(true);
+                        if (count === 1) {
+                            expect(JSON.parse(x.toString(true))).to.deep.equals({
+                                json: {
+                                    [f_meta_data]: {
+                                        '$code': '1026392279',
+                                    },
+                                    lolomo: {
+                                        [f_meta_data]: {
+                                            '$code': '2048578627',
+                                            [f_meta_abs_path]: ['lolomos', '1234'],
+                                        },
+                                        0: {
+                                            [f_meta_data]: {
+                                                '$code': '3313108736',
+                                                [f_meta_abs_path]: ['lists', 'A'],
+                                            },
+                                            0: {
+                                                [f_meta_data]: {
+                                                    '$code': '3681981706',
+                                                    [f_meta_abs_path]: ['lists', 'A', '0'],
+                                                },
+                                                item: {
+                                                    [f_meta_data]: {
+                                                        '$code': '165499941',
+                                                        [f_meta_abs_path]: ['videos', '0'],
+                                                    },
+                                                    title: 'Video 0'
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                        } else {
+                            expect(JSON.parse(x.toString(true))).to.deep.equals({
+                                json: {
+                                    [f_meta_data]: {
+                                        '$code': '350990479',
+                                    },
+                                    lolomo: {
+                                        [f_meta_data]: {
+                                            '$code': '1437563678',
+                                            [f_meta_abs_path]: ['lolomos', '1234'],
+                                        },
+                                        0: {
+                                            [f_meta_data]: {
+                                                '$code': '2823858104',
+                                                [f_meta_abs_path]: ['lists', 'A'],
+                                            },
+                                            0: {
+                                                [f_meta_data]: {
+                                                    '$code': '3681981706',
+                                                    [f_meta_abs_path]: ['lists', 'A', '0'],
+                                                },
+                                                item: {
+                                                    [f_meta_data]: {
+                                                        '$code': '165499941',
+                                                        [f_meta_abs_path]: ['videos', '0'],
+                                                    },
+                                                    title: 'Video 0'
+                                                }
+                                            },
+                                            1: {
+                                                [f_meta_data]: {
+                                                    '$code': '3681981706',
+                                                    [f_meta_abs_path]: ['lists', 'A', 1],
+                                                },
+                                                item: {
+                                                    [f_meta_data]: {
+                                                        '$code': '165499941',
+                                                        [f_meta_abs_path]: ['videos', '1'],
+                                                    },
+                                                    title: 'Video 1'
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    }, noOp, function() {
+                        expect(count).to.equals(2);
+                    }).
+                    subscribe(noOp, done, done);
+            });
+
+            it('should get complex path with multiple trips to the dataSource into a single toJSON response.', function(done) {
+                var model = new Model({cache: M(), source: new LocalDataSource(Cache()), recycleJSON: true});
+                var count = 0;
+                toObservable(model.
+                    get(['lolomo', 0, {to: 1}, 'item', 'title']).
+                    progressively()).
+                    doAction(function(x) {
+                        count++;
+                        expect(x instanceof FalcorJSON).to.equal(true);
+                        if (count === 1) {
+                            expect(JSON.parse(x.toString(true))).to.deep.equals({
+                                json: {
+                                    [f_meta_data]: {
+                                        '$code': '2638721673',
+                                    },
+                                    lolomo: {
+                                        [f_meta_data]: {
+                                            '$code': '3579356194',
+                                            [f_meta_abs_path]: ['lolomos', '1234'],
+                                        },
+                                        0: {
+                                            [f_meta_data]: {
+                                                '$code': '3922956651',
+                                                [f_meta_abs_path]: ['lists', 'A'],
+                                            },
+                                            0: {
+                                                [f_meta_data]: {
+                                                    '$code': '3681981706',
+                                                    [f_meta_abs_path]: ['lists', 'A', '0'],
+                                                },
+                                                item: {
+                                                    [f_meta_data]: {
+                                                        '$code': '165499941',
+                                                        [f_meta_abs_path]: ['videos', '0'],
+                                                    },
+                                                    title: 'Video 0'
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                        } else {
+                            expect(JSON.parse(x.toString(true))).to.deep.equals({
+                                json: {
+                                    [f_meta_data]: {
+                                        '$code': '2988950702',
+                                    },
+                                    lolomo: {
+                                        [f_meta_data]: {
+                                            '$code': '2223524821',
+                                            [f_meta_abs_path]: ['lolomos', '1234'],
+                                        },
+                                        0: {
+                                            [f_meta_data]: {
+                                                '$code': '2400656047',
+                                                [f_meta_abs_path]: ['lists', 'A'],
+                                            },
+                                            0: {
+                                                [f_meta_data]: {
+                                                    '$code': '3681981706',
+                                                    [f_meta_abs_path]: ['lists', 'A', '0'],
+                                                },
+                                                item: {
+                                                    [f_meta_data]: {
+                                                        '$code': '165499941',
+                                                        [f_meta_abs_path]: ['videos', '0'],
+                                                    },
+                                                    title: 'Video 0'
+                                                }
+                                            },
+                                            1: {
+                                                [f_meta_data]: {
+                                                    '$code': '3681981706',
+                                                    [f_meta_abs_path]: ['lists', 'A', 1],
+                                                },
+                                                item: {
+                                                    [f_meta_data]: {
+                                                        '$code': '165499941',
+                                                        [f_meta_abs_path]: ['videos', '1'],
+                                                    },
+                                                    title: 'Video 1'
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    }, noOp, function() {
+                        expect(count).to.equals(2);
+                    }).
+                    subscribe(noOp, done, done);
+            });
+
+            it('should get the same response object with multiple trips to the dataSource.', function(done) {
+                var model = new Model({cache: M(), source: new LocalDataSource(Cache()), recycleJSON: true});
+                var revisions = [];
+                toObservable(model.
+                    get(['lolomo', 0, [0, 1], 'item', 'title']).
+                    progressively()).
+                    doAction(function(x) {
+                        expect(x instanceof FalcorJSON).to.equal(true);
+                        revisions.push(x);
+                    }, noOp, function() {
+                        expect(revisions.length).to.equals(2);
+                        expect(revisions[1]).to.equal(revisions[0]);
+                        expect(revisions[1].json.lolomo[0]).to.equal(revisions[0].json.lolomo[0]);
+                        expect(revisions[1].json.lolomo[0][0]).to.equal(revisions[0].json.lolomo[0][0]);
+                        expect(revisions[1].json.lolomo[0][1]).to.equal(revisions[0].json.lolomo[0][1]);
+                    }).
+                    subscribe(noOp, done, done);
+            });
+
+        });
+
     });
+
     describe('Error Selector (during merge)', function() {
 
         function generateErrorSelectorSpy() {

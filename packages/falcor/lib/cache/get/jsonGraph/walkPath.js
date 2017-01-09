@@ -198,7 +198,7 @@ function onMissing(path, depth, results,
                    requestedPath, requestedLength, fromReference,
                    optimizedPath, optimizedLength, reportMissing,
                    reportMaterialized, seed, branchSelector,
-                   boxValues, onMaterialize) {
+                   boxValues, onMaterialize, modelRoot) {
 
     var json, isLeaf;
 
@@ -220,5 +220,5 @@ function onMissing(path, depth, results,
                              requestedPath, requestedLength, fromReference,
                              optimizedPath, optimizedLength, reportMissing,
                              !isLeaf && reportMaterialized, json,
-                             branchSelector, true, onMaterialize);
+                             branchSelector, true, onMaterialize, modelRoot);
 }

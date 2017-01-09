@@ -7,7 +7,7 @@ function onMissing(path, depth, results,
                    requestedPath, requestedLength, fromReference,
                    optimizedPath, optimizedLength, reportMissing,
                    reportMaterialized, json, branchSelector,
-                   boxValues, onMaterialize) {
+                   boxValues, onMaterialize, modelRoot) {
 
     if (!reportMissing && !reportMaterialized) {
         return;
@@ -73,7 +73,7 @@ function onMissing(path, depth, results,
     } while (true);
 
     if (reportMaterialized) {
-        return onMaterialize(json, mPath, missDepth, missTotal, branchSelector, boxValues);
+        return onMaterialize(json, mPath, missDepth, missTotal, branchSelector, boxValues, modelRoot);
     }
 }
 /* eslint-enable */

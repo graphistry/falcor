@@ -203,8 +203,10 @@ describe('DataSource Only', function() {
         });
 
         it('should perform multiple trips to a dataSource.', function(done) {
+            var datasourceGetCount = 0;
             var get = sinon.spy(function(source, paths) {
-                if (paths.length === 0) {
+                datasourceGetCount++;
+                if (paths.length === 2) {
                     paths.pop();
                 }
             });
@@ -219,6 +221,7 @@ describe('DataSource Only', function() {
                 doAction(onNext).
                 doAction(noOp, noOp, function() {
                     expect(onNext.callCount).to.equal(0);
+                    expect(datasourceGetCount).to.equal(2);
                 }).
                 defaultIfEmpty({}).
                 flatMap(function() {
@@ -226,6 +229,7 @@ describe('DataSource Only', function() {
                 }).
                 doAction(secondOnNext).
                 doAction(noOp, noOp, function() {
+                    expect(datasourceGetCount).to.equal(2);
                     expect(secondOnNext.calledOnce).to.be.ok;
                     expect(strip(secondOnNext.getCall(0).args[0])).to.deep.equals({
                         json: {videos: {0: {title: 'Video 0'}}}

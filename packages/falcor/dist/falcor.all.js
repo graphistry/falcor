@@ -663,7 +663,7 @@ function onValueType(node, type, json, path, depth, seed, results, requestedPath
         return undefined;
     }
 
-    return onMissing(path, depth, results, requestedPath, requestedLength, fromReference, optimizedPath, optimizedLength, reportMissing, materialized, json, branchSelector, boxValues, onMaterialize);
+    return onMissing(path, depth, results, requestedPath, requestedLength, fromReference, optimizedPath, optimizedLength, reportMissing, materialized, json, branchSelector, boxValues, onMaterialize, modelRoot);
 }
 
 /***/ },
@@ -1398,7 +1398,7 @@ var isArray = Array.isArray;
 module.exports = onMissing;
 
 /* eslint-disable no-constant-condition */
-function onMissing(path, depth, results, requestedPath, requestedLength, fromReference, optimizedPath, optimizedLength, reportMissing, reportMaterialized, json, branchSelector, boxValues, onMaterialize) {
+function onMissing(path, depth, results, requestedPath, requestedLength, fromReference, optimizedPath, optimizedLength, reportMissing, reportMaterialized, json, branchSelector, boxValues, onMaterialize, modelRoot) {
 
     if (!reportMissing && !reportMaterialized) {
         return;
@@ -1464,7 +1464,7 @@ function onMissing(path, depth, results, requestedPath, requestedLength, fromRef
     } while (true);
 
     if (reportMaterialized) {
-        return onMaterialize(json, mPath, missDepth, missTotal, branchSelector, boxValues);
+        return onMaterialize(json, mPath, missDepth, missTotal, branchSelector, boxValues, modelRoot);
     }
 }
 /* eslint-enable */
@@ -2545,7 +2545,7 @@ module.exports = onMaterialize;
 /* eslint-disable camelcase */
 /* eslint-disable no-cond-assign */
 /* eslint-disable no-constant-condition */
-function onMaterialize(json, path, depth, length, branchSelector, boxValues) {
+function onMaterialize(json, path, depth, length, branchSelector, boxValues, modelRoot) {
 
     var type, refTarget;
 
@@ -2574,17 +2574,17 @@ function onMaterialize(json, path, depth, length, branchSelector, boxValues) {
         json = {};
         json.__proto__ = FalcorJSON.prototype;
         json["ƒ_meta"] = f_meta = {};
-        f_meta["version"] = 0;
+        f_meta["version"] = modelRoot.version;
         f_meta["abs_path"] = path.slice(0, depth);
         if (branchSelector) {
             json = branchSelector(json);
         }
     } else if (!(f_meta = json["ƒ_meta"])) {
         json["ƒ_meta"] = f_meta = {};
-        f_meta["version"] = 0;
+        f_meta["version"] = modelRoot.version;
         f_meta["abs_path"] = path.slice(0, depth);
     } else {
-        f_meta["version"] = 0;
+        f_meta["version"] = modelRoot.version;
         f_meta["abs_path"] = path.slice(0, depth);
     }
 
@@ -2658,7 +2658,7 @@ function onMaterialize(json, path, depth, length, branchSelector, boxValues) {
         // Now that we have the next key, step down one level in the cache.
         do {
             // insert the materialized branch
-            json[nextKey] = onMaterialize(json[nextKey], path, nextDepth, length, branchSelector, boxValues);
+            json[nextKey] = onMaterialize(json[nextKey], path, nextDepth, length, branchSelector, boxValues, modelRoot);
         }
         // Re-enter the inner loop and continue iterating the Range, or exit
         // here if we encountered a Key.
@@ -4294,6 +4294,11 @@ Model.prototype.withoutDataSource = function withoutDataSource() {
     });
 };
 
+/* implement inspect method for node's inspect utility */
+Model.prototype.inspect = function inspect() {
+    return '{ v: ' + this.getVersion() + ' p: [' + this._path.join(', ') + '] }';
+};
+
 Model.prototype.toJSON = function toJSON() {
     return {
         $type: 'ref',
@@ -4837,13 +4842,11 @@ function walkPathAndBuildOutput(root, node, json, path, depth, seed, results, re
         // here if we encountered a Key.
         while (keyIsRange && ++nextKey <= rangeEnd);
 
-        if (!hasMissingPath) {
-            f_code = '' + getHashCode('' + f_code + nextPathKey + (nextPath && nextPath['$code'] || ''));
-        }
+        f_code = '' + getHashCode('' + f_code + nextPathKey + (nextPath && nextPath['$code'] || ''));
     }
 
     if (hasMissingPath) {
-        f_code = '__incomplete__';
+        f_code = '' + getHashCode('' + f_code + '__incomplete__');
     }
 
     if (f_meta) {
@@ -4867,10 +4870,10 @@ function walkPathAndBuildOutput(root, node, json, path, depth, seed, results, re
 }
 /* eslint-enable */
 
-function onMissing(path, depth, results, requestedPath, requestedLength, fromReference, optimizedPath, optimizedLength, reportMissing, reportMaterialized, json, branchSelector, boxValues, onMaterialize) {
+function onMissing(path, depth, results, requestedPath, requestedLength, fromReference, optimizedPath, optimizedLength, reportMissing, reportMaterialized, json, branchSelector, boxValues, onMaterialize, modelRoot) {
 
     if (reportMaterialized) {
-        return onMaterialize(json, path, depth, depth, branchSelector, boxValues, results, requestedPath, optimizedPath, optimizedLength, fromReference, reportMissing, onMissing);
+        return onMaterialize(json, path, depth, depth, branchSelector, boxValues, modelRoot, results, requestedPath, optimizedPath, optimizedLength, fromReference, reportMissing, onMissing);
     }
 
     var paths = path ? flatBufferToPaths(path) : [[]];
@@ -4878,7 +4881,7 @@ function onMissing(path, depth, results, requestedPath, requestedLength, fromRef
 
     return paths.forEach(function (restPath) {
         requestedLength = depth + restPath.length;
-        return originalOnMissing(rPath.concat(restPath), depth, results, requestedPath, requestedLength, fromReference, optimizedPath, optimizedLength, reportMissing, false, json, branchSelector, boxValues, onMaterialize);
+        return originalOnMissing(rPath.concat(restPath), depth, results, requestedPath, requestedLength, fromReference, optimizedPath, optimizedLength, reportMissing, false, json, branchSelector, boxValues, onMaterialize, modelRoot);
     });
 }
 
@@ -5457,7 +5460,7 @@ function walkPathAndBuildOutput(root, node, path, depth, seed, results, requeste
 }
 /* eslint-enable */
 
-function onMissing(path, depth, results, requestedPath, requestedLength, fromReference, optimizedPath, optimizedLength, reportMissing, reportMaterialized, seed, branchSelector, boxValues, onMaterialize) {
+function onMissing(path, depth, results, requestedPath, requestedLength, fromReference, optimizedPath, optimizedLength, reportMissing, reportMaterialized, seed, branchSelector, boxValues, onMaterialize, modelRoot) {
 
     var json, isLeaf;
 
@@ -5470,7 +5473,7 @@ function onMissing(path, depth, results, requestedPath, requestedLength, fromRef
         json = inlineValue(isLeaf && clone(materializedAtom) || undefined, optimizedPath, optimizedLength, seed, !isLeaf);
     }
 
-    return originalOnMissing(path, depth, results, requestedPath, requestedLength, fromReference, optimizedPath, optimizedLength, reportMissing, !isLeaf && reportMaterialized, json, branchSelector, true, onMaterialize);
+    return originalOnMissing(path, depth, results, requestedPath, requestedLength, fromReference, optimizedPath, optimizedLength, reportMissing, !isLeaf && reportMaterialized, json, branchSelector, true, onMaterialize, modelRoot);
 }
 
 /***/ },
@@ -5491,7 +5494,7 @@ module.exports = onMaterializeFlatBuffer;
 /* eslint-disable camelcase */
 /* eslint-disable no-cond-assign */
 /* eslint-disable no-constant-condition */
-function onMaterializeFlatBuffer(json, path, depth, length, branchSelector, boxValues, results, requestedPath, optimizedPath, optimizedLength, fromReference, reportMissing, onMissing) {
+function onMaterializeFlatBuffer(json, path, depth, length, branchSelector, boxValues, modelRoot, results, requestedPath, optimizedPath, optimizedLength, fromReference, reportMissing, onMissing) {
 
     var type, refTarget;
 
@@ -5500,7 +5503,7 @@ function onMaterializeFlatBuffer(json, path, depth, length, branchSelector, boxV
     // If there's nowhere to go, we've reached a terminal node, or hit
     // the end of the path, stop now. Either build missing paths or report the value.
     if (undefined === path) {
-        onValueType(undefined, undefined, json, path, depth, undefined, results, requestedPath, depth, optimizedPath, optimizedLength, fromReference, undefined, undefined, false, branchSelector, boxValues, false, reportMissing, false, undefined, onMissing, undefined);
+        onValueType(undefined, undefined, json, path, depth, undefined, results, requestedPath, depth, optimizedPath, optimizedLength, fromReference, modelRoot, undefined, false, branchSelector, boxValues, false, reportMissing, false, undefined, onMissing, undefined);
         return boxValues ? clone(materializedAtom) : undefined;
     }
 
@@ -5518,14 +5521,14 @@ function onMaterializeFlatBuffer(json, path, depth, length, branchSelector, boxV
         json = {};
         json.__proto__ = FalcorJSON.prototype;
         json["ƒ_meta"] = f_meta = {};
-        f_meta["version"] = 0;
+        f_meta["version"] = modelRoot.version;
         f_meta["abs_path"] = optimizedPath.slice(0, optimizedLength);
         if (branchSelector) {
             json = branchSelector(json);
         }
     } else if (!(f_meta = json["ƒ_meta"])) {
         json["ƒ_meta"] = f_meta = {};
-        f_meta["version"] = 0;
+        f_meta["version"] = modelRoot.version;
         f_meta["abs_path"] = optimizedPath.slice(0, optimizedLength);
     } else {
         f_old_keys = f_meta["keys"];
@@ -5588,7 +5591,7 @@ function onMaterializeFlatBuffer(json, path, depth, length, branchSelector, boxV
             }
 
             // insert the materialized branch
-            json[nextKey] = onMaterializeFlatBuffer(json[nextKey], nextPath, nextDepth, nextDepth, branchSelector, boxValues, results, requestedPath, optimizedPath, nextOptimizedLength, fromReference, reportMissing, onMissing);
+            json[nextKey] = onMaterializeFlatBuffer(json[nextKey], nextPath, nextDepth, nextDepth, branchSelector, boxValues, modelRoot, results, requestedPath, optimizedPath, nextOptimizedLength, fromReference, reportMissing, onMissing);
         }
         // Re-enter the inner loop and continue iterating the Range, or exit
         // here if we encountered a Key.
@@ -6489,6 +6492,8 @@ CallSubscriber.prototype.next = CallSubscriber.prototype.onNext = function (seed
         this.version = seed.version;
         this.maxRetryCount = this.maxRetryCount || this.model._root.maxRetryCount;
         return;
+    } else if (!this.destination) {
+        return;
     }
 
     var missing, fragments;
@@ -6503,8 +6508,11 @@ CallSubscriber.prototype.next = CallSubscriber.prototype.onNext = function (seed
     var hasValue = this.hasValue;
     var operation = this.operation;
     var progressive = this.progressive;
-
     var seedIsImmutable = progressive && data;
+
+    if (model._recycleJSON && this.type === 'get') {
+        seedIsImmutable = false;
+    }
 
     // If we request paths as JSON in progressive mode, ensure each progressive
     // valueNode is immutable. If not in progressive mode, we can write into the
@@ -6562,6 +6570,10 @@ CallSubscriber.prototype.error = CallSubscriber.prototype.onError = function (er
 };
 
 CallSubscriber.prototype.complete = CallSubscriber.prototype.onCompleted = function (error) {
+
+    if (!this.destination) {
+        return;
+    }
 
     var data, type, errors, errored;
 
@@ -6867,15 +6879,16 @@ Request.prototype.next = Request.prototype.onNext = function (envelopes) {
         queue.remove(this);
     }
 
-    var boundPath = this.boundPath;
+    var paths,
+        boundPath = this.boundPath;
 
     do {
 
+        paths = env.paths || this.paths;
+
         var jsonGraph = env.jsonGraph;
-        var requested = this.requested;
         var modelRoot = queue.modelRoot;
         var invalidated = env.invalidated;
-        var paths = env.paths || this.paths;
 
         // Run invalidations first.
         if (invalidated && invalidated.length) {
@@ -6887,6 +6900,7 @@ Request.prototype.next = Request.prototype.onNext = function (envelopes) {
         }
     } while (++envelopeIndex < envelopeCount && (env = envelopes[envelopeIndex]));
 
+    var requested = this.requested.slice(0);
     this.observers.slice(0).forEach(function (observer, index) {
         observer.onNext({
             type: 'get', paths: requested[index] || filterPathsBoundTo(boundPath, paths)
