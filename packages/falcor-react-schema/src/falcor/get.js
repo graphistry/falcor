@@ -62,8 +62,8 @@ function expandValues(pathTemplate) {
         context = context || {};
 
         const vals = [], path = [];
-        let value = context,
-            key, type, index = -1,
+        let key, index = -1,
+            value = context,
             pathId = -1, valsId = -1,
             count = pathTemplate.length;
 
@@ -78,12 +78,12 @@ function expandValues(pathTemplate) {
         count = rest.length;
 
         do {
-            if (value === undefined) {
-                break;
-            } else if (index === count || !value || 'object' !== typeof value) {
+            if (index === count) {
                 vals[++valsId] = { value, path };
                 break;
-            } else if (type = value.$type) {
+            } else if (value === undefined) {
+                break;
+            } else if (!value || 'object' !== typeof value || value.$type) {
                 vals[++valsId] = { value, path };
                 break;
             }

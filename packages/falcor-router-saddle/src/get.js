@@ -65,8 +65,8 @@ function expandValues(lists) {
         context = context || {};
 
         const vals = [], path = [];
-        let index = -1, count = lists.length,
-            key, type, pathId = -1, valsId = -1,
+        let key, pathId = -1, valsId = -1,
+            index = -1, count = lists.length,
             value = context[lists[count - 1]] || context;
 
         while (++index < count) {
@@ -79,12 +79,12 @@ function expandValues(lists) {
         count = rest.length;
 
         do {
-            if (value === undefined) {
-                break;
-            } else if (index === count || !value || typeofObject !== typeof value) {
+            if (index === count) {
                 vals[++valsId] = { value, path };
                 break;
-            } else if (type = value.$type) {
+            } else if (value === undefined) {
+                break;
+            } else if (!value || typeofObject !== typeof value || value.$type) {
                 vals[++valsId] = { value, path };
                 break;
             }
