@@ -3,10 +3,6 @@ import { Model as FalcorModel } from '@graphistry/falcor';
 import { fromPath, fromPathsOrPathValues } from '@graphistry/falcor-path-syntax';
 
 class Model extends FalcorModel {
-    /* implement inspect method for node's inspect utility */
-    inspect() {
-        return `{ v:${this.getVersion()} p:[${this._path.join(', ')}] }`;
-    }
     get(...getArgs) {
         return new ObservableModelResponse(super.get.apply(
             this, fromPathsOrPathValues(getArgs)));

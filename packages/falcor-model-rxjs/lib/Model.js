@@ -59,13 +59,6 @@ var Model = function (_FalcorModel) {
     }
 
     _createClass(Model, [{
-        key: 'inspect',
-
-        /* implement inspect method for node's inspect utility */
-        value: function inspect() {
-            return '{ v:' + this.getVersion() + ' p:[' + this._path.join(', ') + '] }';
-        }
-    }, {
         key: 'get',
         value: function get() {
             for (var _len = arguments.length, getArgs = Array(_len), _key = 0; _key < _len; _key++) {

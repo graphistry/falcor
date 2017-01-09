@@ -510,6 +510,11 @@ Model.prototype.withoutDataSource = function withoutDataSource() {
     });
 };
 
+/* implement inspect method for node's inspect utility */
+Model.prototype.inspect = function inspect() {
+    return '{ v: ' + this.getVersion() + ' p: [' + this._path.join(', ') + '] }';
+}
+
 Model.prototype.toJSON = function toJSON() {
     return {
         $type: 'ref',
