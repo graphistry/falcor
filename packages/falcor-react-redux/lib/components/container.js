@@ -234,23 +234,25 @@ var contextTypes = {
 var FalcorContainer = function (_React$Component) {
     (0, _inherits3.default)(FalcorContainer, _React$Component);
 
-    function FalcorContainer(props, context) {
+    function FalcorContainer(componentProps, context) {
         (0, _classCallCheck3.default)(this, FalcorContainer);
 
-        var _this3 = (0, _possibleConstructorReturn3.default)(this, (FalcorContainer.__proto__ || (0, _getPrototypeOf2.default)(FalcorContainer)).call(this, props, context));
+        var _this3 = (0, _possibleConstructorReturn3.default)(this, (FalcorContainer.__proto__ || (0, _getPrototypeOf2.default)(FalcorContainer)).call(this, componentProps, context));
 
-        var data = props.data;
         var falcor = context.falcor;
+        var data = componentProps.data,
+            props = (0, _objectWithoutProperties3.default)(componentProps, ['data']);
+
 
         _this3.propsStream = new _Subject.Subject();
         _this3.propsAction = _this3.propsStream.switchMap(fetchEachPropUpdate, mergeEachPropUpdate);
 
         _this3.state = {
+            data: data, props: props,
+            hash: '', version: -1,
             dispatch: context.dispatch,
-            data: data, hash: '', version: -1,
             loading: false, error: undefined,
-            falcor: tryDeref({ data: data, falcor: falcor }),
-            props: (0, _extends3.default)({}, props, { data: undefined })
+            falcor: tryDeref({ data: data, falcor: falcor })
         };
         return _this3;
     }
@@ -270,16 +272,22 @@ var FalcorContainer = function (_React$Component) {
             var _props = this.props,
                 currProps = _props === undefined ? {} : _props,
                 _state2 = this.state,
-                currState = _state2 === undefined ? {} : _state2;
+                currState = _state2 === undefined ? {} : _state2,
+                _context = this.context,
+                currContext = _context === undefined ? {} : _context;
 
 
             if (this.renderLoading === true && currState.loading !== nextState.loading) {
+                // this.trace('scu loading', currState.loading, '->', nextState.loading);
                 return true;
             } else if (currState.version !== nextState.version) {
+                // this.trace('scu version', currState.version, '->', nextState.version);
                 return true;
             } else if (currState.error !== nextState.error) {
+                // this.trace('scu error', currState.error, '->', nextState.error);
                 return true;
             } else if (currState.hash !== nextState.hash) {
+                // this.trace('scu hash', currState.hash, '->', nextState.hash);
                 return true;
             }
 
@@ -294,27 +302,33 @@ var FalcorContainer = function (_React$Component) {
 
 
             if (!(0, _shallowEqual2.default)(currData, nextData)) {
+                // this.trace('scu data', currData, '->', nextData);
                 return true;
             } else if (!(0, _shallowEqual2.default)(currStyle, nextStyle)) {
+                // this.trace('scu style', currStyle, '->', nextStyle);
                 return true;
             } else if (!(0, _shallowEqual2.default)(restCurrProps, restNextProps)) {
+                // this.trace('scu props', restCurrProps, '->', restNextProps);
                 return true;
             }
 
+            // this.trace('scu', false);
             return false;
         }
     }, {
         key: 'componentWillReceiveProps',
         value: function componentWillReceiveProps(nextProps, nextContext) {
             // Receive new props from the owner
+            var data = nextProps.data,
+                props = (0, _objectWithoutProperties3.default)(nextProps, ['data']);
+
             this.propsStream.next({
-                loading: false,
-                data: nextProps.data,
+                data: data, props: props,
                 fragment: this.fragment,
                 falcor: nextContext.falcor,
+                version: this.state.version,
                 dispatch: nextContext.dispatch,
-                renderLoading: this.renderLoading,
-                props: (0, _extends3.default)({}, nextProps, { data: undefined })
+                renderLoading: this.renderLoading
             });
         }
     }, {
@@ -322,45 +336,51 @@ var FalcorContainer = function (_React$Component) {
         value: function componentWillMount() {
             var _this4 = this;
 
+            var _props2 = this.props,
+                data = _props2.data,
+                props = (0, _objectWithoutProperties3.default)(_props2, ['data']);
             // Subscribe to child prop changes so we know when to re-render
+
             this.propsSubscription = this.propsAction.subscribe(function (nextState) {
                 _this4.setState(nextState);
             });
             this.propsStream.next({
-                loading: false,
-                data: this.props.data,
+                data: data, props: props,
                 fragment: this.fragment,
                 falcor: this.context.falcor,
+                version: this.state.version,
                 dispatch: this.context.dispatch,
-                renderLoading: this.renderLoading,
-                props: (0, _extends3.default)({}, this.props, { data: undefined })
+                renderLoading: this.renderLoading
             });
         }
     }, {
         key: 'componentWillUpdate',
         value: function componentWillUpdate() {
+            this.trace('cwu', this.state.loading || false);
+        }
+    }, {
+        key: 'trace',
+        value: function trace() {
+            var _console;
+
             if (!global['__trace_container_updates__']) {
                 return;
             }
+
+            for (var _len = arguments.length, message = Array(_len), _key = 0; _key < _len; _key++) {
+                message[_key] = arguments[_key];
+            }
+
+            (_console = console).log.apply(_console, [this.inspect()].concat(message));
+        }
+    }, {
+        key: 'inspect',
+        value: function inspect() {
             var _state3 = this.state,
                 state = _state3 === undefined ? {} : _state3;
             var falcor = state.falcor;
 
-            if (falcor) {
-                console.log('cwu:', this.getFalcorPathString());
-            }
-        }
-    }, {
-        key: 'getFalcorPathString',
-        value: function getFalcorPathString() {
-            return this.state && this.state.falcor && this.state.falcor.getPath().reduce(function (xs, key, idx) {
-                if (idx === 0) {
-                    return key;
-                } else if (typeofNumber === (typeof key === 'undefined' ? 'undefined' : (0, _typeof3.default)(key))) {
-                    return xs + '[' + key + ']';
-                }
-                return xs + '[\'' + key + '\']';
-            }, '') || '';
+            return falcor && falcor.inspect() || '{ v: -1, p: [] }';
         }
     }, {
         key: 'componentWillUnmount',
@@ -379,22 +399,23 @@ var FalcorContainer = function (_React$Component) {
     }, {
         key: 'render',
         value: function render() {
-            var Component = this.Component,
+            var renderErrors = this.renderErrors,
+                renderLoading = this.renderLoading,
+                mapFragment = this.mapFragment,
+                mapFragmentAndProps = this.mapFragmentAndProps,
+                Component = this.Component,
                 dispatchers = this.dispatchers,
                 state = this.state,
-                mapFragment = this.mapFragment,
-                renderErrors = this.renderErrors,
-                renderLoading = this.renderLoading,
-                mapFragmentAndProps = this.mapFragmentAndProps;
-            var data = state.data,
-                props = state.props,
-                error = state.error,
-                loading = state.loading;
+                context = this.context;
 
 
             if (!Component) {
                 return null;
             }
+
+            var data = state.data,
+                props = state.props,
+                error = state.error;
 
             var mappedFragment = mapFragment(data || [], props);
             var allMergedProps = mapFragmentAndProps(mappedFragment, dispatchers, props);
@@ -403,8 +424,8 @@ var FalcorContainer = function (_React$Component) {
                 allMergedProps.error = error;
             }
 
-            if (loading && renderLoading === true) {
-                allMergedProps.loading = loading;
+            if (renderLoading === true) {
+                allMergedProps.loading = state.loading;
             }
 
             return _react2.default.createElement(Component, allMergedProps);

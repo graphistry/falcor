@@ -9,10 +9,6 @@ var _extends2 = require('babel-runtime/helpers/extends');
 
 var _extends3 = _interopRequireDefault(_extends2);
 
-var _typeof2 = require('babel-runtime/helpers/typeof');
-
-var _typeof3 = _interopRequireDefault(_typeof2);
-
 var _compose = require('recompose/compose');
 
 var _compose2 = _interopRequireDefault(_compose);
@@ -131,25 +127,24 @@ exports.connect = connect;
 exports.default = connect;
 
 
-function mapReduxStoreToProps(store, _ref2) {
+function mapReduxStoreToProps(data, _ref2) {
     var falcor = _ref2.falcor;
 
+
     (0, _invariant2.default)(falcor, 'The top level "connect" container requires a root falcor model.');
-    if (!store || typeofObject !== (typeof store === 'undefined' ? 'undefined' : (0, _typeof3.default)(store))) {
-        store = !falcor._recycleJSON ? new _falcor.FalcorJSON() : falcor._seed && falcor._seed.json || undefined;
-    } else if (!(store instanceof _falcor.FalcorJSON)) {
-        if (!falcor._recycleJSON) {
-            store = new _falcor.FalcorJSON(store);
-        } else if (!falcor._seed || !falcor._seed.json) {
-            falcor._seed = { json: store = {
-                    __proto__: new _falcor.FalcorJSON(store) },
-                __proto__: _falcor.FalcorJSON.prototype
-            };
-        } else {
-            store = falcor._seed.json;
+
+    if (data instanceof _falcor.FalcorJSON) {
+        return { data: data };
+    } else if (falcor._recycleJSON) {
+        if (falcor._seed && falcor._seed.json) {
+            return { data: falcor._seed.json };
         }
+        falcor._seed = {};
+        falcor._seed.__proto__ = _falcor.FalcorJSON.prototype;
+        return { data: falcor._seed.json = new _falcor.FalcorJSON(data) };
     }
-    return { data: store };
+
+    return { data: new _falcor.FalcorJSON(data) };
 }
 
 function mergeReduxProps(_ref3, _ref4, _ref5) {

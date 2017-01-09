@@ -69,24 +69,22 @@ const connect = (BaseComponent, scheduler = animationFrame) => hoistStatics(comp
 export { connect };
 export default connect;
 
-function mapReduxStoreToProps(store, { falcor }) {
+function mapReduxStoreToProps(data, { falcor }) {
+
     invariant(falcor, `The top level "connect" container requires a root falcor model.`);
-    if (!store || typeofObject !== typeof store) {
-        store = !falcor._recycleJSON ? new FalcorJSON() :
-            falcor._seed && falcor._seed.json || undefined;
-    } else if (!(store instanceof FalcorJSON)) {
-        if (!falcor._recycleJSON) {
-            store = new FalcorJSON(store);
-        } else if (!falcor._seed || !falcor._seed.json) {
-            falcor._seed = { json: store = {
-                __proto__: new FalcorJSON(store) },
-                __proto__: FalcorJSON.prototype
-            };
-        } else {
-            store = falcor._seed.json;
+
+    if (data instanceof FalcorJSON) {
+        return { data };
+    } else if (falcor._recycleJSON) {
+        if (falcor._seed && falcor._seed.json) {
+            return { data: falcor._seed.json };
         }
+        falcor._seed = {};
+        falcor._seed.__proto__ = FalcorJSON.prototype;
+        return { data: falcor._seed.json = new FalcorJSON(data) };
     }
-    return { data: store };
+
+    return { data: new FalcorJSON(data) };
 }
 
 function mergeReduxProps({ data }, { dispatch }, { falcor }) {

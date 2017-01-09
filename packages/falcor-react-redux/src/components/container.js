@@ -137,27 +137,28 @@ function mergeEachPropUpdate(
 
 const contextTypes = {
     falcor: PropTypes.object,
-    dispatch: PropTypes.func
+    dispatch: PropTypes.func,
 };
 
 class FalcorContainer extends React.Component {
-    constructor(props, context) {
+    constructor(componentProps, context) {
 
-        super(props, context);
+        super(componentProps, context);
 
-        const { data } = props;
-        let { falcor } = context;
+        const { falcor } = context;
+        const { data, ...props } = componentProps;
+
         this.propsStream = new Subject();
         this.propsAction = this.propsStream.switchMap(
             fetchEachPropUpdate, mergeEachPropUpdate
         );
 
         this.state = {
+            data, props,
+            hash: '', version: -1,
             dispatch: context.dispatch,
-            data, hash: '', version: -1,
             loading: false, error: undefined,
-            falcor: tryDeref({ data, falcor }),
-            props: { ...props, data: undefined },
+            falcor: tryDeref({ data, falcor })
         };
     }
     getChildContext() {
@@ -167,82 +168,80 @@ class FalcorContainer extends React.Component {
     shouldComponentUpdate(nextProps, nextState, nextContext) {
 
         const { props: currProps = {},
-                state: currState = {} } = this;
+                state: currState = {},
+                context: currContext = {} } = this;
 
         if (this.renderLoading === true && currState.loading !== nextState.loading) {
+            // this.trace('scu loading', currState.loading, '->', nextState.loading);
             return true;
         } else if (currState.version !== nextState.version) {
+            // this.trace('scu version', currState.version, '->', nextState.version);
             return true;
         } else if (currState.error !== nextState.error) {
+            // this.trace('scu error', currState.error, '->', nextState.error);
             return true;
         } else if (currState.hash !== nextState.hash) {
+            // this.trace('scu hash', currState.hash, '->', nextState.hash);
             return true;
         }
 
-        const { data: currData,
-                style: currStyle = {},
-                ...restCurrProps } = currProps;
-
-        const { data: nextData,
-                style: nextStyle = currStyle,
-                ...restNextProps } = nextProps;
+        const { data: currData, style: currStyle = {}, ...restCurrProps } = currProps;
+        const { data: nextData, style: nextStyle = currStyle, ...restNextProps } = nextProps;
 
         if (!shallowEqual(currData, nextData)) {
+            // this.trace('scu data', currData, '->', nextData);
             return true;
         } else if (!shallowEqual(currStyle, nextStyle)) {
+            // this.trace('scu style', currStyle, '->', nextStyle);
             return true;
         } else if (!shallowEqual(restCurrProps, restNextProps)) {
+            // this.trace('scu props', restCurrProps, '->', restNextProps);
             return true;
         }
 
+        // this.trace('scu', false);
         return false;
     }
     componentWillReceiveProps(nextProps, nextContext) {
         // Receive new props from the owner
+        const { data, ...props } = nextProps;
         this.propsStream.next({
-            loading: false,
-            data: nextProps.data,
+            data, props,
             fragment: this.fragment,
             falcor: nextContext.falcor,
+            version: this.state.version,
             dispatch: nextContext.dispatch,
-            renderLoading: this.renderLoading,
-            props: { ...nextProps, data: undefined },
+            renderLoading: this.renderLoading
         });
     }
     componentWillMount() {
+        const { data, ...props } = this.props;
         // Subscribe to child prop changes so we know when to re-render
         this.propsSubscription = this.propsAction.subscribe((nextState) => {
             this.setState(nextState);
         });
         this.propsStream.next({
-            loading: false,
-            data: this.props.data,
+            data, props,
             fragment: this.fragment,
             falcor: this.context.falcor,
+            version: this.state.version,
             dispatch: this.context.dispatch,
-            renderLoading: this.renderLoading,
-            props: { ...this.props, data: undefined },
+            renderLoading: this.renderLoading
         });
     }
     componentWillUpdate() {
+        this.trace('cwu', this.state.loading || false);
+    }
+    trace(...message) {
         if (!global['__trace_container_updates__']) {
             return;
         }
+        console.log(this.inspect(), ...message);
+    }
+    inspect(...message) {
         const { state = {} } = this;
         const { falcor } = state;
-        if (falcor) {
-            console.log(`cwu:`, this.getFalcorPathString());
-        }
-    }
-    getFalcorPathString() {
-        return this.state && this.state.falcor && this.state.falcor.getPath().reduce((xs, key, idx) => {
-            if (idx === 0) {
-                return key;
-            } else if (typeofNumber === typeof key) {
-                return `${xs}[${key}]`;
-            }
-            return `${xs}['${key}']`;
-        }, '') || '';
+        return falcor && falcor.inspect() || `{ v: -1, p: [] }`;
     }
     componentWillUnmount() {
         // Clean-up subscription before un-mounting
@@ -258,16 +257,15 @@ class FalcorContainer extends React.Component {
     }
     render() {
 
-        const { Component, dispatchers,
-                state, mapFragment, renderErrors,
-                renderLoading, mapFragmentAndProps } = this;
-
-        const { data, props, error, loading } = state;
+        const { renderErrors, renderLoading,
+                mapFragment, mapFragmentAndProps,
+                Component, dispatchers, state, context } = this;
 
         if (!Component) {
             return null;
         }
 
+        const { data, props, error } = state;
         const mappedFragment = mapFragment(data || [], props);
         const allMergedProps = mapFragmentAndProps(mappedFragment, dispatchers, props);
 
@@ -275,8 +273,8 @@ class FalcorContainer extends React.Component {
             allMergedProps.error = error;
         }
 
-        if (loading && renderLoading === true) {
-            allMergedProps.loading = loading;
+        if (renderLoading === true) {
+            allMergedProps.loading = state.loading;
         }
 
         return <Component { ...allMergedProps }/>;

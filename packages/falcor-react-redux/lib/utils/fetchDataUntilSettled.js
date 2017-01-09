@@ -37,14 +37,13 @@ function fetchDataUntilSettled(_ref) {
     var data = _ref.data,
         props = _ref.props,
         falcor = _ref.falcor,
-        fragment = _ref.fragment,
-        renderLoading = _ref.renderLoading;
+        version = _ref.version,
+        fragment = _ref.fragment;
 
 
     var memo = {
         query: null, loading: true,
-        version: falcor.getVersion(),
-        data: data, props: props, falcor: falcor, fragment: fragment
+        data: data, props: props, falcor: falcor, version: version, fragment: fragment
     };
     memo.mapNext = handleNext(memo, falcor);
     memo.catchError = handleError(memo, falcor);
@@ -61,24 +60,23 @@ function _fetchDataUntilSettled(memo) {
         falcor = memo.falcor,
         fragment = memo.fragment;
 
-    if (query !== (memo.query = fragment(memo.data || {}, memo.props))) /*||
-                                                                        (version !== (memo.version = falcor.getVersion()))*/{
-            var _memoizedQuerySyntax = memoizedQuerySyntax(memo.query),
-                ast = _memoizedQuerySyntax.ast,
-                error = _memoizedQuerySyntax.error;
+    if (query !== (memo.query = fragment(memo.data || {}, memo.props)) || version !== (memo.version = falcor.getVersion())) {
+        var _memoizedQuerySyntax = memoizedQuerySyntax(memo.query),
+            ast = _memoizedQuerySyntax.ast,
+            error = _memoizedQuerySyntax.error;
 
-            if (error) {
-                if (typeof console !== 'undefined' && typeof console.error === 'function') {
-                    console.error((0, _pegjsUtil.errorMessage)(error));
-                    console.error('Error parsing query: ' + memo.query);
-                }
-                memo.error = error;
-            } else {
-                return _Observable.Observable.from(!memo.renderLoading ? falcor.get(ast) : falcor.get(ast).progressively()).map(memo.mapNext).catch(memo.catchError);
+        if (error) {
+            if (typeof console !== 'undefined' && typeof console.error === 'function') {
+                console.error((0, _pegjsUtil.errorMessage)(error));
+                console.error('Error parsing query: ' + memo.query);
             }
+            memo.error = error;
+            memo.version = falcor.getVersion();
+        } else {
+            return _Observable.Observable.from(falcor.get(ast)).map(memo.mapNext).catch(memo.catchError);
         }
+    }
     memo.loading = false;
-    memo.version = falcor.getVersion();
     return _Observable.Observable.of(memo);
 }
 
