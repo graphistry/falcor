@@ -219,9 +219,10 @@ function mergeEachPropUpdate(_ref2, _ref3) {
         version = _ref3.version,
         loading = _ref3.loading;
 
+    var hash = data && data.$__hash;
+    loading = loading || !(hash !== '__loading__');
     return {
-        props: props, falcor: falcor, dispatch: dispatch,
-        hash: data && data.$__hash,
+        hash: hash, props: props, falcor: falcor, dispatch: dispatch,
         data: data, error: error, loading: loading, version: version
     };
 }
@@ -249,9 +250,7 @@ var FalcorContainer = function (_React$Component) {
 
         _this3.state = {
             data: data, props: props,
-            hash: '', version: -1,
             dispatch: context.dispatch,
-            loading: false, error: undefined,
             falcor: tryDeref({ data: data, falcor: falcor })
         };
         return _this3;
@@ -269,25 +268,31 @@ var FalcorContainer = function (_React$Component) {
     }, {
         key: 'shouldComponentUpdate',
         value: function shouldComponentUpdate(nextProps, nextState, nextContext) {
-            var _props = this.props,
+            var renderLoading = this.renderLoading,
+                _props = this.props,
                 currProps = _props === undefined ? {} : _props,
                 _state2 = this.state,
-                currState = _state2 === undefined ? {} : _state2,
-                _context = this.context,
-                currContext = _context === undefined ? {} : _context;
+                currState = _state2 === undefined ? {} : _state2;
 
 
-            if (this.renderLoading === true && currState.loading !== nextState.loading) {
-                // this.trace('scu loading', currState.loading, '->', nextState.loading);
-                return true;
-            } else if (currState.version !== nextState.version) {
-                // this.trace('scu version', currState.version, '->', nextState.version);
+            if (renderLoading === true) {
+                if (currState.loading !== nextState.loading) {
+                    this.traceShouldUpdate('loading', currState.loading, '->', nextState.loading);
+                    return true;
+                } else if (!(nextState.hash !== '__loading__')) {
+                    this.traceShouldUpdate('loading global && nextState.hash === "__loading__"', nextProps);
+                    return true;
+                }
+            }
+
+            if (currState.version !== nextState.version) {
+                this.traceShouldUpdate('version', currState.version, '->', nextState.version);
                 return true;
             } else if (currState.error !== nextState.error) {
-                // this.trace('scu error', currState.error, '->', nextState.error);
+                this.traceShouldUpdate('error', currState.error, '->', nextState.error);
                 return true;
             } else if (currState.hash !== nextState.hash) {
-                // this.trace('scu hash', currState.hash, '->', nextState.hash);
+                this.traceShouldUpdate('hash', currState.hash, '->', nextState.hash);
                 return true;
             }
 
@@ -302,17 +307,18 @@ var FalcorContainer = function (_React$Component) {
 
 
             if (!(0, _shallowEqual2.default)(currData, nextData)) {
-                // this.trace('scu data', currData, '->', nextData);
+                this.traceShouldUpdate('data', currData, '->', nextData);
                 return true;
             } else if (!(0, _shallowEqual2.default)(currStyle, nextStyle)) {
-                // this.trace('scu style', currStyle, '->', nextStyle);
+                this.traceShouldUpdate('style', currStyle, '->', nextStyle);
                 return true;
             } else if (!(0, _shallowEqual2.default)(restCurrProps, restNextProps)) {
-                // this.trace('scu props', restCurrProps, '->', restNextProps);
+                this.traceShouldUpdate('props', restCurrProps, '->', restNextProps);
                 return true;
             }
 
-            // this.trace('scu', false);
+            this.traceShouldUpdate(false, currProps, '->', nextProps);
+
             return false;
         }
     }, {
@@ -355,15 +361,15 @@ var FalcorContainer = function (_React$Component) {
         }
     }, {
         key: 'componentWillUpdate',
-        value: function componentWillUpdate() {
-            this.trace('cwu', this.state.loading || false);
+        value: function componentWillUpdate(nextProps, nextState) {
+            this.traceWillUpdate(nextState.loading || false, nextProps, nextState);
         }
     }, {
-        key: 'trace',
-        value: function trace() {
+        key: 'traceShouldUpdate',
+        value: function traceShouldUpdate() {
             var _console;
 
-            if (!global['__trace_container_updates__']) {
+            if (!global['__trace_container_diffs__']) {
                 return;
             }
 
@@ -372,6 +378,21 @@ var FalcorContainer = function (_React$Component) {
             }
 
             (_console = console).log.apply(_console, [this.inspect()].concat(message));
+        }
+    }, {
+        key: 'traceWillUpdate',
+        value: function traceWillUpdate() {
+            var _console2;
+
+            if (!global['__trace_container_updates__']) {
+                return;
+            }
+
+            for (var _len2 = arguments.length, message = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+                message[_key2] = arguments[_key2];
+            }
+
+            (_console2 = console).log.apply(_console2, [this.inspect()].concat(message));
         }
     }, {
         key: 'inspect',
@@ -425,7 +446,7 @@ var FalcorContainer = function (_React$Component) {
             }
 
             if (renderLoading === true) {
-                allMergedProps.loading = state.loading;
+                allMergedProps.loading = state.loading || false;
             }
 
             return _react2.default.createElement(Component, allMergedProps);

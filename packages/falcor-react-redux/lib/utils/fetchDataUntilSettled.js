@@ -73,7 +73,7 @@ function _fetchDataUntilSettled(memo) {
             memo.error = error;
             memo.version = falcor.getVersion();
         } else {
-            return _Observable.Observable.from(falcor.get(ast)).map(memo.mapNext).catch(memo.catchError);
+            return _Observable.Observable.from(falcor.get(ast).progressively()).map(memo.mapNext).catch(memo.catchError);
         }
     }
     memo.loading = false;

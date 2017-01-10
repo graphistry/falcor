@@ -42,7 +42,7 @@ function _fetchDataUntilSettled(memo) {
             memo.version = falcor.getVersion();
         } else {
             return Observable
-                .from(falcor.get(ast))
+                .from(falcor.get(ast).progressively())
                 .map(memo.mapNext).catch(memo.catchError);
         }
     }
