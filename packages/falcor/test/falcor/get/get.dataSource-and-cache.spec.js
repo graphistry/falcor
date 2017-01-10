@@ -585,11 +585,13 @@ describe('DataSource and Cache', function() {
             it('should get multiple arguments with multiple trips to the dataSource into a single recycled JSON response.', function(done) {
                 var model = new Model({
                     cache: M(), recycleJSON: true,
-                    source: new LocalDataSource(Cache()),
+                    source: new LocalDataSource(Cache(), { materialize: true }),
                 });
                 var count = 0;
+                model._root.cache.videos[0].undef = { $type: 'atom' };
+                model._source.model._root.cache.videos[1].undef = { $type: 'atom' };
                 toObservable(model.
-                    get(['lolomo', 0, 0, 'item', 'title'], ['lolomo', 0, 1, 'item', 'title']).
+                    get(['lolomo', 0, 0, 'item', ['title', 'undef']], ['lolomo', 0, 1, 'item', ['title', 'undef']]).
                     progressively()).
                     doAction(function(x) {
                         count++;
@@ -598,26 +600,26 @@ describe('DataSource and Cache', function() {
                             expect(JSON.parse(x.toString(true))).to.deep.equals({
                                 json: {
                                     [f_meta_data]: {
-                                        '$code': '1026392279',
+                                        '$code': '__loading__',
                                     },
                                     lolomo: {
                                         [f_meta_data]: {
-                                            '$code': '2048578627',
+                                            '$code': '__loading__',
                                             [f_meta_abs_path]: ['lolomos', '1234'],
                                         },
                                         0: {
                                             [f_meta_data]: {
-                                                '$code': '3313108736',
+                                                '$code': '__loading__',
                                                 [f_meta_abs_path]: ['lists', 'A'],
                                             },
                                             0: {
                                                 [f_meta_data]: {
-                                                    '$code': '3681981706',
+                                                    '$code': '901320925',
                                                     [f_meta_abs_path]: ['lists', 'A', '0'],
                                                 },
                                                 item: {
                                                     [f_meta_data]: {
-                                                        '$code': '165499941',
+                                                        '$code': '4113242691',
                                                         [f_meta_abs_path]: ['videos', '0'],
                                                     },
                                                     title: 'Video 0'
@@ -631,26 +633,26 @@ describe('DataSource and Cache', function() {
                             expect(JSON.parse(x.toString(true))).to.deep.equals({
                                 json: {
                                     [f_meta_data]: {
-                                        '$code': '350990479',
+                                        '$code': '974387055',
                                     },
                                     lolomo: {
                                         [f_meta_data]: {
-                                            '$code': '1437563678',
+                                            '$code': '3454200840',
                                             [f_meta_abs_path]: ['lolomos', '1234'],
                                         },
                                         0: {
                                             [f_meta_data]: {
-                                                '$code': '2823858104',
+                                                '$code': '945722345',
                                                 [f_meta_abs_path]: ['lists', 'A'],
                                             },
                                             0: {
                                                 [f_meta_data]: {
-                                                    '$code': '3681981706',
+                                                    '$code': '901320925',
                                                     [f_meta_abs_path]: ['lists', 'A', '0'],
                                                 },
                                                 item: {
                                                     [f_meta_data]: {
-                                                        '$code': '165499941',
+                                                        '$code': '4113242691',
                                                         [f_meta_abs_path]: ['videos', '0'],
                                                     },
                                                     title: 'Video 0'
@@ -658,12 +660,12 @@ describe('DataSource and Cache', function() {
                                             },
                                             1: {
                                                 [f_meta_data]: {
-                                                    '$code': '3681981706',
+                                                    '$code': '901320925',
                                                     [f_meta_abs_path]: ['lists', 'A', 1],
                                                 },
                                                 item: {
                                                     [f_meta_data]: {
-                                                        '$code': '165499941',
+                                                        '$code': '4113242691',
                                                         [f_meta_abs_path]: ['videos', '1'],
                                                     },
                                                     title: 'Video 1'
@@ -693,16 +695,16 @@ describe('DataSource and Cache', function() {
                             expect(JSON.parse(x.toString(true))).to.deep.equals({
                                 json: {
                                     [f_meta_data]: {
-                                        '$code': '2638721673',
+                                        '$code': '__loading__',
                                     },
                                     lolomo: {
                                         [f_meta_data]: {
-                                            '$code': '3579356194',
+                                            '$code': '__loading__',
                                             [f_meta_abs_path]: ['lolomos', '1234'],
                                         },
                                         0: {
                                             [f_meta_data]: {
-                                                '$code': '3922956651',
+                                                '$code': '__loading__',
                                                 [f_meta_abs_path]: ['lists', 'A'],
                                             },
                                             0: {

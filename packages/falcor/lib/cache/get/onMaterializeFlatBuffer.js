@@ -60,12 +60,13 @@ function onMaterializeFlatBuffer(json, path, depth, length,
         );
     } else {
         f_old_keys = f_meta[f_meta_keys];
+        f_meta[f_meta_version] = modelRoot.version;
         f_meta[f_meta_abs_path] = optimizedPath.slice(
             0, optimizedLength
         );
     }
 
-    f_new_keys = {};
+    f_new_keys = Object.create(null);
 
     var nextPath;
     var keysIndex = -1;
@@ -134,7 +135,7 @@ function onMaterializeFlatBuffer(json, path, depth, length,
         while (keyIsRange && ++nextKey <= rangeEnd);
     }
 
-    f_meta['$code'] = '__incomplete__';
+    f_meta['$code'] = '__missing__';
     f_meta[f_meta_keys] = f_new_keys;
     if (f_old_keys) {
         for (nextKey in f_old_keys) {

@@ -78,7 +78,7 @@ function walkPathAndBuildOutput(root, node, json, path,
         }
 
         if (nodeAbsPath !== jsonAbsPath) {
-            f_meta['$code'] = '__incomplete__';
+            f_meta['$code'] = '__loading__';
             f_meta[f_meta_abs_path] = nodeAbsPath;
             f_meta[f_meta_version] = node[f_version];
             f_meta[f_meta_deref_to] = refContainerRefPath;
@@ -181,11 +181,11 @@ function walkPathAndBuildOutput(root, node, json, path,
                     materialized, hasDataSource, treatErrorsAsValues, allowFromWhenceYouCame
                 );
 
-                nextJSON = arr[0];
-                hasMissingPath = hasMissingPath || arr[1];
-
-                if (nextJSON === undefined && !materialized) {
+                if (!hasMissingPath && arr[1] === true) {
                     hasMissingPath = true;
+                }
+
+                if ((nextJSON = arr[0]) === undefined && !materialized) {
                     if (json && json.hasOwnProperty(nextKey)) {
                         delete json[nextKey];
                     }
@@ -239,11 +239,11 @@ function walkPathAndBuildOutput(root, node, json, path,
                     materialized, hasDataSource, treatErrorsAsValues, allowFromWhenceYouCame
                 );
 
-                nextJSON = arr[0];
-                hasMissingPath = hasMissingPath || arr[1];
-
-                if (nextJSON === undefined) {
+                if (!hasMissingPath && arr[1] === true) {
                     hasMissingPath = true;
+                }
+
+                if ((nextJSON = arr[0]) === undefined) {
                     if (json && json.hasOwnProperty(nextKey)) {
                         delete json[nextKey];
                     }
@@ -288,12 +288,14 @@ function walkPathAndBuildOutput(root, node, json, path,
         // here if we encountered a Key.
         while (keyIsRange && ++nextKey <= rangeEnd);
 
-        f_code = '' + getHashCode('' + f_code + nextPathKey +
-                                 (  nextPath && nextPath['$code'] || ''));
+        if (!hasMissingPath) {
+            f_code = '' + getHashCode('' + f_code + nextPathKey +
+                                     (  nextPath && nextPath['$code'] || ''));
+        }
     }
 
     if (hasMissingPath) {
-        f_code = '' + getHashCode('' + f_code + '__incomplete__');
+        f_code = '__loading__';
     }
 
     if (f_meta) {
