@@ -1,3 +1,4 @@
+import 'rxjs/add/observable/fromPromise';
 import { Observable } from 'rxjs/Observable';
 import { Model as FalcorModel } from '@graphistry/falcor';
 import { fromPath, fromPathsOrPathValues } from '@graphistry/falcor-path-syntax';
@@ -20,7 +21,8 @@ class Model extends FalcorModel {
         ));
     }
     invalidate(...invalidateArgs) {
-        return super.invalidate.apply(this, fromPathsOrPathValues(invalidateArgs));
+        return Observable.fromPromise(super.invalidate.apply(
+            this, fromPathsOrPathValues(invalidateArgs)));
     }
     getItems(thisPathsSelector = () => [['length']],
              restPathsSelector = ({ json: { length }}) => []) {

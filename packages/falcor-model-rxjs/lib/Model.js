@@ -35,6 +35,8 @@ var _get = function get(object, property, receiver) { if (object === null) objec
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+require('rxjs/add/observable/fromPromise');
+
 var _Observable2 = require('rxjs/Observable');
 
 var _falcor = require('@graphistry/falcor');
@@ -91,7 +93,7 @@ var Model = function (_FalcorModel) {
                 invalidateArgs[_key3] = arguments[_key3];
             }
 
-            return _get(Model.prototype.__proto__ || (0, _getPrototypeOf2.default)(Model.prototype), 'invalidate', this).apply(this, (0, _falcorPathSyntax.fromPathsOrPathValues)(invalidateArgs));
+            return _Observable2.Observable.fromPromise(_get(Model.prototype.__proto__ || (0, _getPrototypeOf2.default)(Model.prototype), 'invalidate', this).apply(this, (0, _falcorPathSyntax.fromPathsOrPathValues)(invalidateArgs)));
         }
     }, {
         key: 'getItems',
