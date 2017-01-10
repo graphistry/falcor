@@ -34,7 +34,6 @@ LocalSource.prototype = {
         var opts = this._options;
         var wait = +opts.wait;
         var miss = opts.miss;
-        var batch = opts.batch;
         var onGet = opts.onGet;
         var onResults = opts.onResults;
         var errorSelector = opts.errorSelector;
@@ -50,7 +49,7 @@ LocalSource.prototype = {
                 }
 
                 onResults(seed);
-                observer.onNext(batch ? [seed] : seed);
+                observer.onNext(seed);
                 observer.onCompleted();
             }
             if (wait > 0) {

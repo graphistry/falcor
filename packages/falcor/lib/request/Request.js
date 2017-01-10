@@ -33,23 +33,12 @@ function Request(type, queue, source, scheduler) {
 Request.prototype = Object.create(Subject.prototype);
 
 Request.prototype.next =
-Request.prototype.onNext = function(envelopes) {
+Request.prototype.onNext = function(env) {
 
     var queue = this.parent;
 
     if (!queue) {
         return;
-    }
-
-    var env = envelopes,
-        envelopeIndex = 0,
-        envelopeCount = 0;
-
-    if (isArray(envelopes)) {
-        if ((envelopeCount = envelopes.length) <= 0) {
-            return;
-        }
-        env = envelopes[0];
     }
 
     if (this.responded === false) {
@@ -60,31 +49,34 @@ Request.prototype.onNext = function(envelopes) {
         queue.remove(this);
     }
 
-    var paths, boundPath = this.boundPath;
-
-    do {
-
-        paths = env.paths || this.paths;
-
-        var jsonGraph = env.jsonGraph;
-        var modelRoot = queue.modelRoot;
-        var invalidated = env.invalidated;
-
-        // Run invalidations first.
-        if (invalidated && invalidated.length) {
-            invalidatePaths({ _root: modelRoot, _path: [] }, invalidated, false);
-        }
-
-        if (paths && paths.length && !(!jsonGraph || typeof jsonGraph !== 'object')) {
-            paths = setJSONGraphs(
-                { _root: modelRoot },
-                [{ paths: paths, jsonGraph: jsonGraph }],
-                modelRoot.errorSelector, modelRoot.comparator, false
-            )[0];
-        }
-    } while (++envelopeIndex < envelopeCount && (env = envelopes[envelopeIndex]))
-
+    var changed = false;
+    var jsonGraph = env.jsonGraph;
+    var boundPath = this.boundPath;
+    var modelRoot = queue.modelRoot;
+    var invalidated = env.invalidated;
+    var paths = env.paths || this.paths;
     var requested = this.requested.slice(0);
+    var rootChangeHandler = modelRoot.onChange;
+
+    // Run invalidations first.
+    if (invalidated && invalidated.length) {
+        changed = invalidatePaths({ _root: modelRoot, _path: [] }, invalidated, false);
+    }
+
+    if (paths && paths.length && !(!jsonGraph || typeof jsonGraph !== 'object')) {
+        var results = setJSONGraphs(
+            { _root: modelRoot },
+            [{ paths: paths, jsonGraph: jsonGraph }],
+            modelRoot.errorSelector, modelRoot.comparator, false
+        );
+        paths = results[0];
+        changed = changed || results[2];
+    }
+
+    if (changed && rootChangeHandler) {
+        rootChangeHandler();
+    }
+
     this.observers.slice(0).forEach(function(observer, index) {
         observer.onNext({
             type: 'get', paths: requested[index] ||
