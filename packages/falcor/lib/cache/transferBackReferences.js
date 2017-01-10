@@ -4,13 +4,13 @@ module.exports = function transferBackReferences(fromNode, destNode) {
         i = -1;
     while (++i < fromNodeRefsLength) {
         var ref = fromNode[f_ref + i];
-        if (ref !== void 0) {
+        if (ref !== undefined) {
             ref[f_context] = destNode;
             destNode[f_ref + (destNodeRefsLength + i)] = ref;
-            fromNode[f_ref + i] = void 0;
+            fromNode[f_ref + i] = undefined;
         }
     }
     destNode[f_refs_length] = fromNodeRefsLength + destNodeRefsLength;
-    fromNode[f_refs_length] = void 0;
+    fromNode[f_refs_length] = undefined;
     return destNode;
 };

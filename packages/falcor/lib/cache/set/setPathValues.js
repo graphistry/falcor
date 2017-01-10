@@ -29,7 +29,6 @@ module.exports = function setPathValues(model, pathValues, errorSelector, compar
     }
 
     var parent = node[f_parent] || cache;
-    var initialVersion = cache[f_version];
 
     var requestedPath = [];
     var requestedPaths = [];
@@ -57,15 +56,12 @@ module.exports = function setPathValues(model, pathValues, errorSelector, compar
     arr[1] = undefined;
     arr[2] = undefined;
 
-    var newVersion = cache[f_version];
-    var rootChangeHandler = modelRoot.onChange;
-
-    if (initialVersion !== newVersion) {
+    if (cache[f_version] === version) {
         modelRoot.version = version;
-        rootChangeHandler && rootChangeHandler();
+        return [requestedPaths, optimizedPaths, true];
     }
 
-    return [requestedPaths, optimizedPaths, initialVersion !== newVersion];
+    return [requestedPaths, optimizedPaths, false];
 };
 
 /* eslint-disable no-constant-condition */

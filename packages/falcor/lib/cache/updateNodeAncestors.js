@@ -1,17 +1,20 @@
-var removeNode = require('./removeNode');
+var removeNodeAndDescendants = require('./removeNodeAndDescendants');
 var updateBackReferenceVersions = require('./updateBackReferenceVersions');
 
-module.exports = function updateNodeAncestors(nodeArg, offset, lru, version) {
-    var child = nodeArg;
+module.exports = updateNodeAncestors;
+
+function updateNodeAncestors(node, offset, lru, version) {
+    var curr = node, next = curr[f_parent];
     do {
-        var node = child[f_parent];
-        var size = child.$size = (child.$size || 0) - offset;
-        if (size <= 0 && node != null) {
-            removeNode(child, node, child[f_key], lru);
-        } else if (child[f_version] !== version) {
-            updateBackReferenceVersions(child, version);
+        if ((curr.$size = (curr.$size || 0) - offset) > 0) {
+            if (!(next = curr[f_parent])) {
+                curr[f_version] = version;
+            } else if (curr[f_version] !== version) {
+                updateBackReferenceVersions(curr, version);
+            }
+        } else if (next = curr[f_parent]) {
+            removeNodeAndDescendants(curr, next, curr[f_key], lru, version);
         }
-        child = node;
-    } while (child);
-    return nodeArg;
-};
+    } while (curr = next);
+    return node;
+}

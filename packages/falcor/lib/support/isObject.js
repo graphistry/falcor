@@ -1,4 +1,5 @@
-var objTypeof = 'object';
-module.exports = function isObject(value) {
-    return value !== null && typeof value === objTypeof;
-};
+module.exports = isObject;
+
+function isObject(value) {
+    return value !== null && typeof value === 'object';
+}

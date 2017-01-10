@@ -1,4 +1,3 @@
-var removeNode = require('../cache/removeNode');
 var updateNodeAncestors = require('../cache/updateNodeAncestors');
 
 module.exports = function collect(lru, expired, totalArg, max, ratioArg, version) {
@@ -10,39 +9,24 @@ module.exports = function collect(lru, expired, totalArg, max, ratioArg, version
         ratio = 0.75;
     }
 
-    var shouldUpdate = typeof version === 'number';
-    var targetSize = max * ratio;
-    var parent, node, size;
+    var node, size, targetSize = max * ratio;
 
-    node = expired.pop();
-
-    while (node) {
-        size = node.$size || 0;
-        total -= size;
-        if (shouldUpdate === true) {
-            updateNodeAncestors(node, size, lru, version);
-        } else if (parent = node[f_parent]) {  // eslint-disable-line no-cond-assign
-            removeNode(node, parent, node[f_key], lru);
-        }
-        node = expired.pop();
+    while (node = expired.pop()) {
+        total -= (size = node.$size || 0);
+        updateNodeAncestors(node, size, lru, version);
     }
 
     if (total >= max) {
         var prev = lru[f_tail];
-        node = prev;
-        while ((total >= targetSize) && node) {
+        while ((total >= targetSize) && (node = prev)) {
             prev = prev[f_prev];
-            size = node.$size || 0;
-            total -= size;
-            if (shouldUpdate === true) {
-                updateNodeAncestors(node, size, lru, version);
-            }
-            node = prev;
+            total -= (size = node.$size || 0);
+            updateNodeAncestors(node, size, lru, version);
         }
 
-        lru[f_tail] = lru[f_prev] = node;
+        lru[f_tail] = node;
         if (node == null) {
-            lru[f_head] = lru[f_next] = undefined;
+            lru[f_head] = undefined;
         } else {
             node[f_next] = undefined;
         }

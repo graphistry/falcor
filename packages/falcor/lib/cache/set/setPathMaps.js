@@ -30,7 +30,6 @@ module.exports = function setPathMaps(model, pathMapEnvelopes, errorSelector, co
     }
 
     var parent = node[f_parent] || cache;
-    var initialVersion = cache[f_version];
 
     var requestedPath = [];
     var requestedPaths = [];
@@ -56,15 +55,12 @@ module.exports = function setPathMaps(model, pathMapEnvelopes, errorSelector, co
     arr[1] = undefined;
     arr[2] = undefined;
 
-    var newVersion = cache[f_version];
-    var rootChangeHandler = modelRoot.onChange;
-
-    if (initialVersion !== newVersion) {
+    if (cache[f_version] === version) {
         modelRoot.version = version;
-        rootChangeHandler && rootChangeHandler();
+        return [requestedPaths, optimizedPaths, true];
     }
 
-    return [requestedPaths, optimizedPaths, initialVersion !== newVersion];
+    return [requestedPaths, optimizedPaths, false];
 };
 
 /* eslint-disable no-constant-condition */
@@ -210,7 +206,7 @@ function setNode(
         type = node && node.$type;
     }
 
-    if (type === void 0) {
+    if (!branch || type === undefined) {
         if (key == null) {
             if (branch) {
                 throw new NullInPathError();
@@ -253,5 +249,5 @@ function getKeys(pathMap) {
         return keys;
     }
 
-    return void 0;
+    return undefined;
 }

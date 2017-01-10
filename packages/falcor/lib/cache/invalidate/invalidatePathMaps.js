@@ -1,3 +1,4 @@
+var arr = new Array(2);
 var isExpired = require('../isExpired');
 var expireNode = require('../expireNode');
 var lruPromote = require('../../lru/promote');
@@ -6,7 +7,6 @@ var createHardlink = require('../createHardlink');
 var getBoundCacheNode = require('../getBoundCacheNode');
 var isInternalKey = require('../../support/isInternalKey');
 var updateNodeAncestors = require('../updateNodeAncestors');
-var removeNodeAndDescendants = require('../removeNodeAndDescendants');
 
 /**
  * Sets a list of PathMaps into a JSON Graph.
@@ -15,24 +15,24 @@ var removeNodeAndDescendants = require('../removeNodeAndDescendants');
  * @param {Array.<PathMapEnvelope>} pathMapEnvelopes - the a list of @PathMapEnvelopes to set.
  */
 
-module.exports = function invalidatePathMaps(model, pathMapEnvelopes, expireImmediate) {
+module.exports = invalidatePathMaps;
+
+function invalidatePathMaps(model, pathMapEnvelopes, expireImmediate) {
 
     var modelRoot = model._root;
     var lru = modelRoot;
     var expired = modelRoot.expired;
-    var version = modelRoot.version++;
+    var version = modelRoot.version + 1;
     var comparator = modelRoot._comparator;
     var cache = modelRoot.cache;
     var node = getBoundCacheNode(model);
 
     if (!node) {
-        return;
+        return false;
     }
 
-    var parent = node[f_parent] || cache;
-    var initialVersion = cache[f_version];
-
     var pathMapIndex = -1;
+    var parent = node[f_parent] || cache;
     var pathMapCount = pathMapEnvelopes.length;
 
     while (++pathMapIndex < pathMapCount) {
@@ -45,13 +45,16 @@ module.exports = function invalidatePathMaps(model, pathMapEnvelopes, expireImme
         );
     }
 
-    var newVersion = cache[f_version];
-    var rootChangeHandler = modelRoot.onChange;
+    arr[0] = undefined;
+    arr[1] = undefined;
 
-    if (rootChangeHandler && initialVersion !== newVersion) {
-        rootChangeHandler();
+    if (cache[f_version] === version) {
+        modelRoot.version = version;
+        return true;
     }
-};
+
+    return false;
+}
 
 function invalidatePathMap(
     pathMap, depth, root, parent, node, version,
@@ -65,13 +68,13 @@ function invalidatePathMap(
         if (!isInternalKey(key)) {
             var child = pathMap[key];
             var branch = !(!child || typeof child !== 'object') && !child.$type;
-            var results = invalidateNode(
+            arr = invalidateNode(
                 root, parent, node,
                 key, child, branch, false, version, expired,
                 lru, comparator, expireImmediate
             );
-            var nextNode = results[0];
-            var nextParent = results[1];
+            var nextNode = arr[0];
+            var nextParent = arr[1];
             if (nextNode) {
                 if (branch) {
                     invalidatePathMap(
@@ -79,8 +82,8 @@ function invalidatePathMap(
                         root, nextParent, nextNode,
                         version, expired, lru, comparator, expireImmediate
                     );
-                } else if (removeNodeAndDescendants(nextNode, nextParent, key, lru)) {
-                    updateNodeAncestors(nextParent, getSize(nextNode), lru, version);
+                } else {
+                    updateNodeAncestors(nextNode, getSize(nextNode), lru, version);
                 }
             }
         }
@@ -93,7 +96,9 @@ function invalidateReference(
 
     if (isExpired(node, expireImmediate)) {
         expireNode(node, expired, lru);
-        return [undefined, root];
+        arr[0] = undefined;
+        arr[1] = root;
+        return arr;
     }
 
     lruPromote(lru, node);
@@ -116,16 +121,16 @@ function invalidateReference(
         do {
             var key = reference[index];
             var branch = index < count;
-            var results = invalidateNode(
+            arr = invalidateNode(
                 root, parent, node,
                 key, value, branch, true, version,
                 expired, lru, comparator, expireImmediate
             );
-            node = results[0];
-            if (!node || typeof node !== 'object') {
-                return results;
+            node = arr[0];
+            if (!node && typeof node !== 'object') {
+                return arr;
             }
-            parent = results[1];
+            parent = arr[1];
         } while (index++ < count);
 
         if (container[f_context] !== node) {
@@ -133,7 +138,10 @@ function invalidateReference(
         }
     }
 
-    return [node, parent];
+    arr[0] = node;
+    arr[1] = parent;
+
+    return arr;
 }
 
 function invalidateNode(
@@ -145,35 +153,36 @@ function invalidateNode(
 
     while (type === $ref) {
 
-        var results = invalidateReference(
+        arr = invalidateReference(
             value, root, node, version, expired,
             lru, comparator, expireImmediate
         );
 
-        node = results[0];
+        node = arr[0];
 
         if (!node && typeof node !== 'object') {
-            return results;
+            return arr;
         }
 
-        parent = results[1];
-        type = node && node.$type;
+        parent = arr[1];
+        type = node.$type;
     }
 
-    if (type !== void 0) {
-        return [node, parent];
-    }
-
-    if (key == null) {
-        if (branch) {
-            throw new Error('`null` is not allowed in branch key positions.');
-        } else if (node) {
-            key = node[f_key];
+    if (type === undefined) {
+        if (key == null) {
+            if (branch) {
+                throw new Error('`null` is not allowed in branch key positions.');
+            } else if (node) {
+                key = node[f_key];
+            }
+        } else {
+            parent = node;
+            node = parent[key];
         }
-    } else {
-        parent = node;
-        node = parent[key];
     }
 
-    return [node, parent];
+    arr[0] = node;
+    arr[1] = parent;
+
+    return arr;
 }

@@ -21,7 +21,6 @@ module.exports = function setJSONGraphs(model, jsonGraphEnvelopes, errorSelector
     var expired = modelRoot.expired;
     var version = modelRoot.version + 1;
     var cache = modelRoot.cache;
-    var initialVersion = cache[f_version];
 
     var requestedPath = [];
     var optimizedPath = [];
@@ -60,15 +59,12 @@ module.exports = function setJSONGraphs(model, jsonGraphEnvelopes, errorSelector
     arr[3] = undefined;
     arr[4] = undefined;
 
-    var newVersion = cache[f_version];
-    var rootChangeHandler = modelRoot.onChange;
-
-    if (initialVersion !== newVersion) {
+    if (cache[f_version] === version) {
         modelRoot.version = version;
-        rootChangeHandler && rootChangeHandler();
+        return [requestedPaths, optimizedPaths, true];
     }
 
-    return [requestedPaths, optimizedPaths, initialVersion !== newVersion];
+    return [requestedPaths, optimizedPaths, false];
 };
 
 /* eslint-disable no-constant-condition */

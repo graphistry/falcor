@@ -8,12 +8,16 @@ module.exports = {
 };
 
 function invalidate(model, args, seed, progressive, expireImmediate) {
-    invalidateArgumentGroups(model, groupCacheArguments(args), expireImmediate);
+    if (invalidateArgumentGroups(model, groupCacheArguments(args), expireImmediate)) {
+        var rootChangeHandler = model._root.onChange;
+        rootChangeHandler && rootChangeHandler();
+    }
     return {};
 }
 
 function invalidateArgumentGroups(model, xs, expireImmediate) {
 
+    var changed = false;
     var groupIndex = -1;
     var groupCount = xs.length;
 
@@ -29,9 +33,13 @@ function invalidateArgumentGroups(model, xs, expireImmediate) {
             if (inputType === 'PathValues') {
                 groupedArgs = groupedArgs.map(pluckPaths);
             }
-            module.exports['invalidate' + inputType](model, groupedArgs, expireImmediate);
+            var operation = module.exports['invalidate' + inputType];
+            if (operation(model, groupedArgs, expireImmediate)) {
+                changed = true;
+            }
         }
     }
+    return changed;
 }
 
 function pluckPaths(x) {

@@ -37,6 +37,9 @@ function json(model, _args, data, progressive, expireImmediate) {
             fragments = jsong.data;
             missing = fragments.paths;
             requested = jsong.requested;
+
+            var rootChangeHandler = model._root.onChange;
+            rootChangeHandler && rootChangeHandler();
         }
     }
 
@@ -63,7 +66,7 @@ function jsonGraph(model, _args, data, progressive, expireImmediate) {
     set = setGroupsIntoCache(model, args, expireImmediate);
 
     if ((relative = set.requested).length && (
-         progressive || set.changed)) {
+         progressive || (changed = set.changed))) {
 
         jsong = getJSONGraph({
             _root: model._root,
@@ -74,6 +77,11 @@ function jsonGraph(model, _args, data, progressive, expireImmediate) {
         fragments = jsong.data;
         missing = fragments.paths;
         requested = jsong.requested;
+
+        if (changed) {
+            var rootChangeHandler = model._root.onChange;
+            rootChangeHandler && rootChangeHandler();
+        }
     }
 
     return {

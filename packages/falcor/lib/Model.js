@@ -6,7 +6,6 @@ var TimeoutScheduler = require('./schedulers/TimeoutScheduler');
 var ImmediateScheduler = require('./schedulers/ImmediateScheduler');
 var collapse = require('@graphistry/falcor-path-utils/lib/collapse');
 
-var lruCollect = require('./lru/collect');
 var getSize = require('./support/getSize');
 var isObject = require('./support/isObject');
 var isJSONEnvelope = require('./support/isJSONEnvelope');
@@ -303,25 +302,32 @@ Model.prototype.setCache = function modelSetCache(cacheOrJSONGraphEnvelope) {
         modelRoot.cache = this._node = {};
 
         if (typeof cache !== 'undefined') {
-            lruCollect(modelRoot, modelRoot.expired, getSize(cache), 0);
+            modelRoot.expired = [];
+            modelRoot[f_head] = undefined;
+            modelRoot[f_tail] = undefined;
             if (this._recycleJSON) {
                 this._seed = {};
                 this._seed.__proto__ = FalcorJSON.prototype;
             }
         }
 
-        var paths;
+        var results, rootOnChangeHandler;
         if (isJSONGraphEnvelope(cacheOrJSONGraphEnvelope)) {
-            paths = setJSONGraphs(options, [cacheOrJSONGraphEnvelope])[0];
+            results = setJSONGraphs(options, [cacheOrJSONGraphEnvelope]);
         } else if (isJSONEnvelope(cacheOrJSONGraphEnvelope)) {
-            paths = setCache(options, [cacheOrJSONGraphEnvelope])[0];
+            results = setCache(options, [cacheOrJSONGraphEnvelope]);
         } else if (isObject(cacheOrJSONGraphEnvelope)) {
-            paths = setCache(options, [{ json: cacheOrJSONGraphEnvelope }])[0];
+            results = setCache(options, [{ json: cacheOrJSONGraphEnvelope }]);
         }
 
-        // performs promotion without producing output.
-        if (paths) {
-            getJSON(options, paths, null, false, false);
+        if (results) {
+            // performs promotion without producing output.
+            if (results[0].length) {
+                getJSON(options, results[0], null, false, false);
+            }
+            if (results[2] && (rootOnChangeHandler = modelRoot.onChange)) {
+                rootOnChangeHandler();
+            }
         }
     } else if (typeof cache === 'undefined') {
         this._root.cache = {};

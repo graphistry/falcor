@@ -6,7 +6,6 @@ var getSize = require('../../support/getSize');
 var createHardlink = require('../createHardlink');
 var getBoundCacheNode = require('../getBoundCacheNode');
 var updateNodeAncestors = require('../updateNodeAncestors');
-var removeNodeAndDescendants = require('../removeNodeAndDescendants');
 var iterateKeySet = require('@graphistry/falcor-path-utils/lib/iterateKeySet');
 
 /**
@@ -16,24 +15,24 @@ var iterateKeySet = require('@graphistry/falcor-path-utils/lib/iterateKeySet');
  * @param {Array.<PathValue>} paths - the PathValues to set.
  */
 
-module.exports = function invalidatePathSets(model, paths, expireImmediate) {
+module.exports = invalidatePathSets;
+
+function invalidatePathSets(model, paths, expireImmediate) {
 
     var modelRoot = model._root;
     var lru = modelRoot;
     var expired = modelRoot.expired;
-    var version = modelRoot.version++;
+    var version = modelRoot.version + 1;
     var cache = modelRoot.cache;
     var node = getBoundCacheNode(model);
 
     if (!node) {
-        return;
+        return false;
     }
-
-    var parent = node[f_parent] || cache;
-    var initialVersion = cache[f_version];
 
     var pathIndex = -1;
     var pathCount = paths.length;
+    var parent = node[f_parent] || cache;
 
     while (++pathIndex < pathCount) {
 
@@ -48,13 +47,13 @@ module.exports = function invalidatePathSets(model, paths, expireImmediate) {
     arr[0] = undefined;
     arr[1] = undefined;
 
-    var newVersion = cache[f_version];
-    var rootChangeHandler = modelRoot.onChange;
-
-    if (rootChangeHandler && initialVersion !== newVersion) {
-        rootChangeHandler();
+    if (cache[f_version] === version) {
+        modelRoot.version = version;
+        return true;
     }
-};
+
+    return false;
+}
 
 function invalidatePathSet(
     path, depth, root, parent, node,
@@ -80,8 +79,8 @@ function invalidatePathSet(
                     root, nextParent, nextNode,
                     version, expired, lru, expireImmediate
                 );
-            } else if (removeNodeAndDescendants(nextNode, nextParent, key, lru)) {
-                updateNodeAncestors(nextParent, getSize(nextNode), lru, version);
+            } else {
+                updateNodeAncestors(nextNode, getSize(nextNode), lru, version);
             }
         }
         key = iterateKeySet(keySet, note);
@@ -161,19 +160,17 @@ function invalidateNode(
         type = node.$type;
     }
 
-    if (type !== void 0) {
-        return [node, parent];
-    }
-
-    if (key == null) {
-        if (branch) {
-            throw new Error('`null` is not allowed in branch key positions.');
-        } else if (node) {
-            key = node[f_key];
+    if (type === undefined) {
+        if (key == null) {
+            if (branch) {
+                throw new Error('`null` is not allowed in branch key positions.');
+            } else if (node) {
+                key = node[f_key];
+            }
+        } else {
+            parent = node;
+            node = parent[key];
         }
-    } else {
-        parent = node;
-        node = parent[key];
     }
 
     arr[0] = node;
