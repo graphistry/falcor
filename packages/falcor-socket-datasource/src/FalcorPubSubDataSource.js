@@ -35,29 +35,29 @@ function request(method, parameters, observer, ...rest) {
 
     const { event, cancel, model, emitter } = this;
 
-    if (emitter.connected !== false) {
+    if (emitter && emitter.connected !== false) {
 
-        let finalized = false;
+        let disposed = false;
         const id = simpleflake().toJSON();
         const responseToken = `${event}-${id}`;
         const cancellationToken = `${cancel}-${id}`;
 
-        emitter.on(responseToken, handler);
+        emitter.on(responseToken, handleResponse);
         emitter.emit(event, { id, method, ...parameters });
 
         return {
             unsubscribe() { this.dispose(); },
             dispose() {
-                emitter.removeListener(responseToken, handler);
-                if (!finalized) {
-                    finalized = true;
+                if (!disposed) {
+                    disposed = true;
+                    emitter.removeListener(responseToken, handleResponse);
                     emitter.emit(cancellationToken);
                 }
             }
         };
 
-        function handler({ kind, value, error }) {
-            if (finalized) {
+        function handleResponse({ kind, value, error }) {
+            if (disposed) {
                 return;
             }
             switch (kind) {
@@ -65,31 +65,40 @@ function request(method, parameters, observer, ...rest) {
                     observer.onNext && observer.onNext(value);
                     break;
                 case 'E':
-                    finalized = true;
+                    disposed = true;
+                    emitter.removeListener(responseToken, handleResponse);
                     observer.onError && observer.onError(error);
                     break;
                 case 'C':
-                    finalized = true;
-                    if (value && observer.onNext) {
-                        observer.onNext(value);
+                    disposed = true;
+                    emitter.removeListener(responseToken, handleResponse);
+                    if (value) {
+                        observer.onNext && observer.onNext(value);
                     }
                     observer.onCompleted && observer.onCompleted();
                     break;
             }
-        };
-    } else if (model) {
+        }
+    }
+
+    if (model) {
+
         let thisPath, callPath, pathSets, jsonGraphEnvelope;
+
         if (method === 'set') {
             jsonGraphEnvelope = parameters.jsonGraphEnvelope;
         } else if (method === 'get' || method === 'call') {
+
             jsonGraphEnvelope = {};
             pathSets = parameters.pathSets;
+
             if (method === 'call') {
                 callPath = parameters.callPath;
                 thisPath = callPath.slice(0, -1);
                 pathSets = parameters.thisPaths || [];
                 pathSets = pathSets.map((path) => thisPath.concat(path));
             }
+
             model._getPathValuesAsJSONG(
                 model
                     ._materialize()
@@ -99,6 +108,11 @@ function request(method, parameters, observer, ...rest) {
         }
         observer.onNext && observer.onNext(jsonGraphEnvelope);
     }
+
     observer.onCompleted && observer.onCompleted();
-    return { unsubscribe() {}, dispose() {} };
+
+    return {
+        dispose() {},
+        unsubscribe() {}
+    };
 }

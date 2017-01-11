@@ -97,14 +97,14 @@ function request(method, parameters, observer) {
         emitter = this.emitter;
 
 
-    if (emitter.connected !== false) {
+    if (emitter && emitter.connected !== false) {
         var _ret = function () {
-            var handler = function handler(_ref) {
+            var handleResponse = function handleResponse(_ref) {
                 var kind = _ref.kind,
                     value = _ref.value,
                     error = _ref.error;
 
-                if (finalized) {
+                if (disposed) {
                     return;
                 }
                 switch (kind) {
@@ -112,25 +112,27 @@ function request(method, parameters, observer) {
                         observer.onNext && observer.onNext(value);
                         break;
                     case 'E':
-                        finalized = true;
+                        disposed = true;
+                        emitter.removeListener(responseToken, handleResponse);
                         observer.onError && observer.onError(error);
                         break;
                     case 'C':
-                        finalized = true;
-                        if (value && observer.onNext) {
-                            observer.onNext(value);
+                        disposed = true;
+                        emitter.removeListener(responseToken, handleResponse);
+                        if (value) {
+                            observer.onNext && observer.onNext(value);
                         }
                         observer.onCompleted && observer.onCompleted();
                         break;
                 }
             };
 
-            var finalized = false;
+            var disposed = false;
             var id = (0, _simpleflakes.simpleflake)().toJSON();
             var responseToken = event + '-' + id;
             var cancellationToken = cancel + '-' + id;
 
-            emitter.on(responseToken, handler);
+            emitter.on(responseToken, handleResponse);
             emitter.emit(event, _extends({ id: id, method: method }, parameters));
 
             return {
@@ -139,30 +141,34 @@ function request(method, parameters, observer) {
                         this.dispose();
                     },
                     dispose: function dispose() {
-                        emitter.removeListener(responseToken, handler);
-                        if (!finalized) {
-                            finalized = true;
+                        if (!disposed) {
+                            disposed = true;
+                            emitter.removeListener(responseToken, handleResponse);
                             emitter.emit(cancellationToken);
                         }
                     }
                 }
             };
-
-            ;
         }();
 
         if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
-    } else if (model) {
+    }
+
+    if (model) {
         (function () {
+
             var thisPath = void 0,
                 callPath = void 0,
                 pathSets = void 0,
                 jsonGraphEnvelope = void 0;
+
             if (method === 'set') {
                 jsonGraphEnvelope = parameters.jsonGraphEnvelope;
             } else if (method === 'get' || method === 'call') {
+
                 jsonGraphEnvelope = {};
                 pathSets = parameters.pathSets;
+
                 if (method === 'call') {
                     callPath = parameters.callPath;
                     thisPath = callPath.slice(0, -1);
@@ -171,14 +177,17 @@ function request(method, parameters, observer) {
                         return thisPath.concat(path);
                     });
                 }
+
                 model._getPathValuesAsJSONG(model._materialize().withoutDataSource().treatErrorsAsValues(), pathSets, jsonGraphEnvelope, false, false);
             }
             observer.onNext && observer.onNext(jsonGraphEnvelope);
         })();
     }
+
     observer.onCompleted && observer.onCompleted();
+
     return {
-        unsubscribe: function unsubscribe() {},
-        dispose: function dispose() {}
+        dispose: function dispose() {},
+        unsubscribe: function unsubscribe() {}
     };
 }

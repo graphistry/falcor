@@ -58,64 +58,55 @@ function response(_ref) {
     var responseToken = event + '-' + id;
     var cancellationToken = cancel + '-' + id;
 
-    var _handleCancellationForId = null;
-    var disposed = false,
-        finalized = false,
+    var operation = {},
+        disposed = false,
         value = undefined;
 
     var DataSource = getDataSource(emitter);
     var streaming = DataSource._streaming || false;
-    var operation = DataSource[method].apply(DataSource, _toConsumableArray(parameters)).subscribe(function (x) {
+
+    emitter.on(cancellationToken, dispose);
+
+    operation = DataSource[method].apply(DataSource, _toConsumableArray(parameters)).subscribe(function (x) {
         value = x;
-        if (!disposed && !finalized && streaming) {
+        if (!disposed && streaming) {
             emitter.emit(responseToken, { kind: 'N', value: value });
         }
     }, function (error) {
-        if (disposed || finalized) {
-            return;
-        }
-        disposed = finalized = true;
-        if (_handleCancellationForId) {
-            emitter.removeListener(cancellationToken, _handleCancellationForId);
-            _handleCancellationForId = null;
-        }
-        if (streaming || value === undefined) {
-            emitter.emit(responseToken, { kind: 'E', error: error });
-        } else {
-            emitter.emit(responseToken, { kind: 'E', error: error, value: value });
+        if (dispose()) {
+            if (streaming || value === undefined) {
+                emitter.emit(responseToken, { kind: 'E', error: error });
+            } else {
+                emitter.emit(responseToken, { kind: 'E', error: error, value: value });
+            }
         }
     }, function () {
-        if (disposed || finalized) {
-            return;
-        }
-        disposed = finalized = true;
-        if (_handleCancellationForId) {
-            emitter.removeListener(cancellationToken, _handleCancellationForId);
-            _handleCancellationForId = null;
-        }
-        if (streaming || value === undefined) {
-            emitter.emit(responseToken, { kind: 'C' });
-        } else {
-            emitter.emit(responseToken, { kind: 'C', value: value });
+        if (dispose()) {
+            if (streaming || value === undefined) {
+                emitter.emit(responseToken, { kind: 'C' });
+            } else {
+                emitter.emit(responseToken, { kind: 'C', value: value });
+            }
         }
     });
 
-    if (!finalized) {
-        _handleCancellationForId = function handleCancellationForId() {
-            if (disposed || finalized) {
-                return;
-            }
-            disposed = finalized = true;
-            emitter.removeListener(cancellationToken, _handleCancellationForId);
-            _handleCancellationForId = null;
-            if (typeof operation.dispose === 'function') {
-                operation.dispose();
-            } else if (typeof operation.unsubscribe === 'function') {
-                operation.unsubscribe();
-            } else if (typeof operation === 'function') {
-                operation();
-            }
-        };
-        emitter.on(cancellationToken, _handleCancellationForId);
+    function dispose() {
+        if (disposed) {
+            return false;
+        }
+        disposed = true;
+        emitter.removeListener(cancellationToken, dispose);
+        if (!operation) {
+            return false;
+        }
+        if (typeof operation.dispose === 'function') {
+            operation.dispose();
+        } else if (typeof operation.unsubscribe === 'function') {
+            operation.unsubscribe();
+        } else if (typeof operation === 'function') {
+            operation();
+        }
+        operation = null;
+        return true;
     }
 }
