@@ -221,7 +221,7 @@ function mergeEachPropUpdate(_ref2, _ref3) {
 
     var hash = data && data.$__hash;
     var status = data && data.$__status;
-    loading = loading || !(status !== 'pending');
+    loading = loading || status === 'pending';
     return {
         hash: hash, props: props, falcor: falcor, dispatch: dispatch,
         data: data, error: error, loading: loading, version: version

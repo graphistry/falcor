@@ -2369,38 +2369,6 @@ function getJSON(model, paths, seed, progressive, expireImmediate) {
             arr[0] = undefined;
             arr[1] = undefined;
         } while (++pathsIndex < pathsCount);
-
-        // if (recycleJSON) {
-        //     isFlatBuffer = true;
-        //     if (pathsCount > 1 || isArray(paths[0])) {
-        //         paths = [computeFlatBufferHash(toFlatBuffer(paths, {}))];
-        //     }
-        //     arr = walkFlatBufferAndBuildOutput(cache, node, json, paths[0], 0, seed, results,
-        //                                        requestedPath, optimizedPath, optimizedLength,
-        //                                        /* fromReference = */ false, referenceContainer,
-        //                                        modelRoot, expired, expireImmediate, branchSelector,
-        //                                        boxValues, materialized, hasDataSource,
-        //                                        treatErrorsAsValues, allowFromWhenceYouCame);
-        //     json = arr[0];
-        //     arr[0] = undefined;
-        //     arr[1] = undefined;
-        // } else {
-        //     do {
-        //         path = paths[pathsIndex];
-        //         requestedLength = path.length;
-        //         arr = walkPathAndBuildOutput(cache, node, json, path,
-        //                                   /* depth = */ 0, seed, results,
-        //                                      requestedPath, requestedLength,
-        //                                      optimizedPath, optimizedLength,
-        //                                      /* fromReference = */ false, referenceContainer,
-        //                                      modelRoot, expired, expireImmediate, branchSelector,
-        //                                      boxValues, materialized, hasDataSource,
-        //                                      treatErrorsAsValues, allowFromWhenceYouCame);
-        //         json = arr[0];
-        //         arr[0] = undefined;
-        //         arr[1] = undefined;
-        //     } while (++pathsIndex < pathsCount);
-        // }
     }
 
     var requested = results.requested;
@@ -4852,11 +4820,7 @@ function walkPathAndBuildOutput(root, node, json, path, depth, seed, results, re
         // here if we encountered a Key.
         while (keyIsRange && ++nextKey <= rangeEnd);
 
-        if (hasMissingPath) {
-            f_code = '' + getHashCode('' + f_code + (nextPath && nextPath['$code'] || ''));
-        } else {
-            f_code = '' + getHashCode('' + f_code + nextPathKey + (nextPath && nextPath['$code'] || ''));
-        }
+        f_code = '' + getHashCode('' + f_code + (!hasMissingPath ? nextPathKey : '') + (nextPath ? nextPath['$code'] : ''));
     }
 
     if (f_meta) {
