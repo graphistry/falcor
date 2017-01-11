@@ -1,3 +1,4 @@
+var arr = new Array(2);
 var isArray = Array.isArray;
 var typeofNumber = 'number';
 var typeofObject = 'object';
@@ -36,13 +37,15 @@ function walkPathAndBuildOutput(root, node, json, path,
     if (node === undefined || (
         type = node.$type) || (
         depth === requestedLength)) {
-        return onValueType(node, type, json,
-                           path, depth, seed, results,
-                           requestedPath, requestedLength,
-                           optimizedPath, optimizedLength,
-                           fromReference, modelRoot, expired, expireImmediate,
-                           branchSelector, boxValues, materialized, hasDataSource,
-                           treatErrorsAsValues, onValue, onMissing, onMaterialize);
+        arr[1] = hasDataSource && node === undefined;
+        arr[0] = onValueType(node, type, json,
+                             path, depth, seed, results,
+                             requestedPath, requestedLength,
+                             optimizedPath, optimizedLength,
+                             fromReference, modelRoot, expired, expireImmediate,
+                             branchSelector, boxValues, materialized, hasDataSource,
+                             treatErrorsAsValues, onValue, onMissing, onMaterialize);
+        return arr;
     }
 
     var f_meta;
@@ -71,7 +74,9 @@ function walkPathAndBuildOutput(root, node, json, path,
         if (nextDepth < requestedLength) {
             throw new NullInPathError();
         }
-        return json;
+        arr[0] = json;
+        arr[1] = false;
+        return arr;
     }
 
     if (allowFromWhenceYouCame && referenceContainer) {
@@ -84,8 +89,8 @@ function walkPathAndBuildOutput(root, node, json, path,
     } else if (f_meta = json[f_meta_data]) {
         f_meta[f_meta_version] = node[f_version];
         f_meta[f_meta_abs_path] = node[f_abs_path];
-        f_meta[f_meta_deref_to] = refContainerRefPath;
-        f_meta[f_meta_deref_from] = refContainerAbsPath;
+        refContainerRefPath && (f_meta[f_meta_deref_to] = refContainerRefPath);
+        refContainerAbsPath && (f_meta[f_meta_deref_from] = refContainerAbsPath);
     }
 
     // Iterate over every key in the keyset. This loop is perhaps a bit clever,
@@ -110,6 +115,8 @@ function walkPathAndBuildOutput(root, node, json, path,
     // until the Keyset is exhausted. `keysetIndex` and `keysetLength` are
     // initialized to -1 and 0 respectively, so if a Keyset wasn't encountered
     // at this depth in the path, then the outer loop exits after one execution.
+
+     var hasMissingPath = false;
 
     iteratingKeyset: do {
 
@@ -168,14 +175,20 @@ function walkPathAndBuildOutput(root, node, json, path,
             optimizedPath[optimizedLength] = nextKey;
 
             if (nextDepth === requestedLength) {
-                nextJSON = walkPathAndBuildOutput(
+
+                arr = walkPathAndBuildOutput(
                     root, next, nextJSON, path, nextDepth, seed,
                     results, requestedPath, requestedLength, nextOptimizedPath,
                     nextOptimizedLength, fromReference, nextReferenceContainer,
                     modelRoot, expired, expireImmediate, branchSelector, boxValues,
                     materialized, hasDataSource, treatErrorsAsValues, allowFromWhenceYouCame
                 );
-                if (nextJSON === undefined && !materialized) {
+
+                if (arr[1] === true) {
+                    hasMissingPath = true;
+                }
+
+                if ((nextJSON = arr[0]) === undefined && !materialized) {
                     continue;
                 }
             }
@@ -218,13 +231,19 @@ function walkPathAndBuildOutput(root, node, json, path,
                 // cache hit. Otherwise, don't waste the cycles creating a branch
                 // if everything underneath is a cache miss.
 
-                if (undefined === (nextJSON = walkPathAndBuildOutput(
-                        root, next, nextJSON, path, nextDepth, seed,
-                        results, requestedPath, requestedLength, nextOptimizedPath,
-                        nextOptimizedLength, fromReference, nextReferenceContainer,
-                        modelRoot, expired, expireImmediate, branchSelector, boxValues,
-                        materialized, hasDataSource, treatErrorsAsValues, allowFromWhenceYouCame
-                    ))) {
+                arr = walkPathAndBuildOutput(
+                    root, next, nextJSON, path, nextDepth, seed,
+                    results, requestedPath, requestedLength, nextOptimizedPath,
+                    nextOptimizedLength, fromReference, nextReferenceContainer,
+                    modelRoot, expired, expireImmediate, branchSelector, boxValues,
+                    materialized, hasDataSource, treatErrorsAsValues, allowFromWhenceYouCame
+                );
+
+                if (arr[1] === true) {
+                    hasMissingPath = true;
+                }
+
+                if ((nextJSON = arr[0]) === undefined) {
                     continue;
                 }
             }
@@ -236,8 +255,8 @@ function walkPathAndBuildOutput(root, node, json, path,
                 f_meta = {};
                 f_meta[f_meta_version] = node[f_version];
                 f_meta[f_meta_abs_path] = node[f_abs_path];
-                f_meta[f_meta_deref_to] = refContainerRefPath;
-                f_meta[f_meta_deref_from] = refContainerAbsPath;
+                refContainerRefPath && (f_meta[f_meta_deref_to] = refContainerRefPath);
+                refContainerAbsPath && (f_meta[f_meta_deref_from] = refContainerAbsPath);
                 json = {};
                 json[f_meta_data] = f_meta;
                 json.__proto__ = FalcorJSON.prototype;
@@ -266,7 +285,14 @@ function walkPathAndBuildOutput(root, node, json, path,
         keyset = keysOrRanges[keysetIndex];
     } while (true);
 
+    if (f_meta) {
+        f_meta[f_meta_status] = hasMissingPath && 'pending' || 'resolved';
+    }
+
     // `json` will be a branch if any cache hits, or undefined if all cache misses
-    return json;
+    arr[0] = json;
+    arr[1] = hasMissingPath;
+
+    return arr;
 }
 /* eslint-enable */

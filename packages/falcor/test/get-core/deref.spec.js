@@ -145,10 +145,9 @@ describe('Deref', function() {
                     json: {
                         __proto__: FalcorJSON.prototype,
                         [f_meta_data]: {
-                            [f_meta_abs_path]:   ['a', 'b'],
-                            [f_meta_deref_from]: undefined,
-                            [f_meta_deref_to]:   undefined,
-                            [f_meta_version]:    0
+                            [f_meta_abs_path]: ['a', 'b'],
+                            [f_meta_version]: 0,
+                            [f_meta_status]: 'resolved'
                         },
                         e: '&'
                     }

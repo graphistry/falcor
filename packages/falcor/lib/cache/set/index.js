@@ -1,6 +1,5 @@
 var getJSON = require('../get/json');
 var getJSONGraph = require('../get/jsonGraph');
-var arrayFlatMap = require('../../support/array-flat-map');
 var groupCacheArguments = require('../groupCacheArguments');
 
 module.exports = {
@@ -141,4 +140,20 @@ function setGroupsIntoCache(model, xs, expireImmediate) {
 
 function pluckPaths(x) {
     return x.path || x.paths;
+}
+
+function arrayFlatMap(array, selector) {
+    var index = -1;
+    var i = -1;
+    var n = array.length;
+    var array2 = [];
+    while (++i < n) {
+        var array3 = selector(array[i], i, array);
+        var j = -1;
+        var k = array3.length;
+        while (++j < k) {
+            array2[++index] = array3[j];
+        }
+    }
+    return array2;
 }

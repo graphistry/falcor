@@ -54,17 +54,15 @@ describe('Errors', function() {
             output: {
                 json: {
                     [f_meta_data]: {
-                        [f_meta_abs_path]:    undefined,
-                        [f_meta_deref_from]:  undefined,
-                        [f_meta_deref_to]:    undefined,
-                        [f_meta_version]:     0
+                        [f_meta_abs_path]: undefined,
+                        [f_meta_version]: 0,
+                        [f_meta_status]: 'resolved'
                     },
                     to: {
                         [f_meta_data]: {
-                            [f_meta_abs_path]:    ['to'],
-                            [f_meta_deref_from]:  undefined,
-                            [f_meta_deref_to]:    undefined,
-                            [f_meta_version]:     0
+                            [f_meta_abs_path]: ['to'],
+                            [f_meta_version]: 0,
+                            [f_meta_status]: 'resolved'
                         },
                         error: 'Oops!'
                     }
@@ -81,17 +79,15 @@ describe('Errors', function() {
             output: {
                 json: {
                     [f_meta_data]: {
-                        [f_meta_abs_path]:    undefined,
-                        [f_meta_deref_from]:  undefined,
-                        [f_meta_deref_to]:    undefined,
-                        [f_meta_version]:     0
+                        [f_meta_abs_path]: undefined,
+                        [f_meta_version]: 0,
+                        [f_meta_status]: 'resolved'
                     },
                     to: {
                         [f_meta_data]: {
-                            [f_meta_abs_path]:    ['to'],
-                            [f_meta_deref_from]:  undefined,
-                            [f_meta_deref_to]:    undefined,
-                            [f_meta_version]:     0
+                            [f_meta_abs_path]: ['to'],
+                            [f_meta_version]: 0,
+                            [f_meta_status]: 'resolved'
                         },
                         error: error('Oops!')
                     }
@@ -122,24 +118,21 @@ describe('Errors', function() {
             output: {
                 json: {
                     [f_meta_data]: {
-                        [f_meta_abs_path]:    undefined,
-                        [f_meta_deref_from]:  undefined,
-                        [f_meta_deref_to]:    undefined,
-                        [f_meta_version]:     0
+                        [f_meta_abs_path]: undefined,
+                        [f_meta_version]: 0,
+                        [f_meta_status]: 'resolved'
                     },
                     list: {
                         [f_meta_data]: {
-                            [f_meta_abs_path]:    ['list'],
-                            [f_meta_deref_from]:  undefined,
-                            [f_meta_deref_to]:    undefined,
-                            [f_meta_version]:     0
+                            [f_meta_abs_path]: ['list'],
+                            [f_meta_version]: 0,
+                            [f_meta_status]: 'resolved'
                         },
                         0: {
                             [f_meta_data]: {
-                                [f_meta_abs_path]:    ['to'],
-                                [f_meta_deref_from]:  undefined,
-                                [f_meta_deref_to]:    undefined,
-                                [f_meta_version]:     0
+                                [f_meta_abs_path]: ['to'],
+                                [f_meta_version]: 0,
+                                [f_meta_status]: 'resolved'
                             },
                             title: 'Hello World'
                         }

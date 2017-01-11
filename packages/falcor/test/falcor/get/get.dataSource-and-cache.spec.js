@@ -465,43 +465,50 @@ describe('DataSource and Cache', function() {
                 doAction(function(x) {
                     count++;
                     expect(x instanceof FalcorJSON).to.equal(true);
-                    expect(JSON.parse(x.toString(true))).to.deep.equals({
+                    expect(JSON.parse(x.toString(true, true))).to.deep.equals({
                         json: {
                             [f_meta_data]: {
                                 '$code': '350990479',
+                                [f_meta_status]: 'resolved'
                             },
                             lolomo: {
                                 [f_meta_data]: {
-                                    '$code':              '1437563678',
-                                    [f_meta_abs_path]:    ['lolomos', '1234'],
+                                    '$code': '1437563678',
+                                    [f_meta_abs_path]: ['lolomos', '1234'],
+                                    [f_meta_status]: 'resolved'
                                 },
                                 0: {
                                     [f_meta_data]: {
-                                        '$code':              '2823858104',
-                                        [f_meta_abs_path]:    ['lists', 'A'],
+                                        '$code': '2823858104',
+                                        [f_meta_abs_path]: ['lists', 'A'],
+                                        [f_meta_status]: 'resolved'
                                     },
                                     0: {
                                         [f_meta_data]: {
-                                            '$code':              '3681981706',
-                                            [f_meta_abs_path]:    ['lists', 'A', '0'],
+                                            '$code': '3681981706',
+                                            [f_meta_abs_path]: ['lists', 'A', '0'],
+                                            [f_meta_status]: 'resolved'
                                         },
                                         item: {
                                             [f_meta_data]: {
-                                                '$code':              '165499941',
-                                                [f_meta_abs_path]:    ['videos', '0'],
+                                                '$code': '165499941',
+                                                [f_meta_abs_path]: ['videos', '0'],
+                                                [f_meta_status]: 'resolved'
                                             },
                                             title: 'Video 0'
                                         }
                                     },
                                     1: {
                                         [f_meta_data]: {
-                                            '$code':              '3681981706',
-                                            [f_meta_abs_path]:    ['lists', 'A', 1],
+                                            '$code': '3681981706',
+                                            [f_meta_abs_path]: ['lists', 'A', 1],
+                                            [f_meta_status]: 'resolved'
                                         },
                                         item: {
                                             [f_meta_data]: {
-                                                '$code':              '165499941',
-                                                [f_meta_abs_path]:    ['videos', '1'],
+                                                '$code': '165499941',
+                                                [f_meta_abs_path]: ['videos', '1'],
+                                                [f_meta_status]: 'resolved'
                                             },
                                             title: 'Video 1'
                                         }
@@ -525,35 +532,39 @@ describe('DataSource and Cache', function() {
             });
             var count = 0;
             toObservable(model.
-                // get(['lolomo', 0, { length: 2 }, 'item', 'title'])).
                 get(['lolomo', 0, 0, 'item', 'title'], ['lolomo', 0, 1, 'item', 'title'])).
                 doAction(function(x) {
                     count++;
                     expect(x instanceof FalcorJSON).to.equal(true);
-                    expect(JSON.parse(x.toString(true))).to.deep.equals({
+                    expect(JSON.parse(x.toString(true, true))).to.deep.equals({
                         json: {
                             [f_meta_data]: {
                                 '$code': '350990479',
+                                [f_meta_status]: 'resolved'
                             },
                             lolomo: {
                                 [f_meta_data]: {
                                     '$code': '1437563678',
                                     [f_meta_abs_path]: ['lolomos', '1234'],
+                                    [f_meta_status]: 'resolved'
                                 },
                                 0: {
                                     [f_meta_data]: {
                                         '$code': '2823858104',
                                         [f_meta_abs_path]: ['lists', 'A'],
+                                        [f_meta_status]: 'resolved'
                                     },
                                     0: {
                                         [f_meta_data]: {
                                             '$code': '3681981706',
                                             [f_meta_abs_path]: ['lists', 'A', '0'],
+                                            [f_meta_status]: 'resolved'
                                         },
                                         item: {
                                             [f_meta_data]: {
                                                 '$code': '165499941',
                                                 [f_meta_abs_path]: ['videos', '0'],
+                                                [f_meta_status]: 'resolved'
                                             },
                                             title: 'Video 0'
                                         }
@@ -562,11 +573,13 @@ describe('DataSource and Cache', function() {
                                         [f_meta_data]: {
                                             '$code': '3681981706',
                                             [f_meta_abs_path]: ['lists', 'A', '1'],
+                                            [f_meta_status]: 'resolved'
                                         },
                                         item: {
                                             [f_meta_data]: {
                                                 '$code': '165499941',
                                                 [f_meta_abs_path]: ['videos', 1],
+                                                [f_meta_status]: 'resolved'
                                             },
                                             title: 'Video 1'
                                         }
@@ -597,29 +610,34 @@ describe('DataSource and Cache', function() {
                         count++;
                         expect(x instanceof FalcorJSON).to.equal(true);
                         if (count === 1) {
-                            expect(JSON.parse(x.toString(true))).to.deep.equals({
+                            expect(JSON.parse(x.toString(true, true))).to.deep.equals({
                                 json: {
                                     [f_meta_data]: {
-                                        '$code': '__loading__',
+                                        '$code': '1378446605',
+                                        [f_meta_status]: 'pending'
                                     },
                                     lolomo: {
                                         [f_meta_data]: {
-                                            '$code': '__loading__',
+                                            '$code': '2056930616',
+                                            [f_meta_status]: 'pending',
                                             [f_meta_abs_path]: ['lolomos', '1234'],
                                         },
                                         0: {
                                             [f_meta_data]: {
-                                                '$code': '__loading__',
+                                                '$code': '932389016',
+                                                [f_meta_status]: 'pending',
                                                 [f_meta_abs_path]: ['lists', 'A'],
                                             },
                                             0: {
                                                 [f_meta_data]: {
                                                     '$code': '901320925',
+                                                    [f_meta_status]: 'resolved',
                                                     [f_meta_abs_path]: ['lists', 'A', '0'],
                                                 },
                                                 item: {
                                                     [f_meta_data]: {
                                                         '$code': '4113242691',
+                                                        [f_meta_status]: 'resolved',
                                                         [f_meta_abs_path]: ['videos', '0'],
                                                     },
                                                     title: 'Video 0'
@@ -630,29 +648,34 @@ describe('DataSource and Cache', function() {
                                 }
                             });
                         } else {
-                            expect(JSON.parse(x.toString(true))).to.deep.equals({
+                            expect(JSON.parse(x.toString(true, true))).to.deep.equals({
                                 json: {
                                     [f_meta_data]: {
                                         '$code': '974387055',
+                                        [f_meta_status]: 'resolved'
                                     },
                                     lolomo: {
                                         [f_meta_data]: {
                                             '$code': '3454200840',
+                                            [f_meta_status]: 'resolved',
                                             [f_meta_abs_path]: ['lolomos', '1234'],
                                         },
                                         0: {
                                             [f_meta_data]: {
                                                 '$code': '945722345',
+                                                [f_meta_status]: 'resolved',
                                                 [f_meta_abs_path]: ['lists', 'A'],
                                             },
                                             0: {
                                                 [f_meta_data]: {
                                                     '$code': '901320925',
+                                                    [f_meta_status]: 'resolved',
                                                     [f_meta_abs_path]: ['lists', 'A', '0'],
                                                 },
                                                 item: {
                                                     [f_meta_data]: {
                                                         '$code': '4113242691',
+                                                        [f_meta_status]: 'resolved',
                                                         [f_meta_abs_path]: ['videos', '0'],
                                                     },
                                                     title: 'Video 0'
@@ -661,11 +684,13 @@ describe('DataSource and Cache', function() {
                                             1: {
                                                 [f_meta_data]: {
                                                     '$code': '901320925',
+                                                    [f_meta_status]: 'resolved',
                                                     [f_meta_abs_path]: ['lists', 'A', 1],
                                                 },
                                                 item: {
                                                     [f_meta_data]: {
                                                         '$code': '4113242691',
+                                                        [f_meta_status]: 'resolved',
                                                         [f_meta_abs_path]: ['videos', '1'],
                                                     },
                                                     title: 'Video 1'
@@ -692,30 +717,35 @@ describe('DataSource and Cache', function() {
                         count++;
                         expect(x instanceof FalcorJSON).to.equal(true);
                         if (count === 1) {
-                            expect(JSON.parse(x.toString(true))).to.deep.equals({
+                            expect(JSON.parse(x.toString(true, true))).to.deep.equals({
                                 json: {
                                     [f_meta_data]: {
-                                        '$code': '__loading__',
+                                        '$code': '855611276',
+                                        [f_meta_status]: 'pending'
                                     },
                                     lolomo: {
                                         [f_meta_data]: {
-                                            '$code': '__loading__',
+                                            '$code': '587981637',
                                             [f_meta_abs_path]: ['lolomos', '1234'],
+                                            [f_meta_status]: 'pending'
                                         },
                                         0: {
                                             [f_meta_data]: {
-                                                '$code': '__loading__',
+                                                '$code': '3715347144',
                                                 [f_meta_abs_path]: ['lists', 'A'],
+                                                [f_meta_status]: 'pending'
                                             },
                                             0: {
                                                 [f_meta_data]: {
                                                     '$code': '3681981706',
                                                     [f_meta_abs_path]: ['lists', 'A', '0'],
+                                                    [f_meta_status]: 'resolved'
                                                 },
                                                 item: {
                                                     [f_meta_data]: {
                                                         '$code': '165499941',
                                                         [f_meta_abs_path]: ['videos', '0'],
+                                                        [f_meta_status]: 'resolved'
                                                     },
                                                     title: 'Video 0'
                                                 }
@@ -725,30 +755,35 @@ describe('DataSource and Cache', function() {
                                 }
                             });
                         } else {
-                            expect(JSON.parse(x.toString(true))).to.deep.equals({
+                            expect(JSON.parse(x.toString(true, true))).to.deep.equals({
                                 json: {
                                     [f_meta_data]: {
                                         '$code': '2988950702',
+                                        [f_meta_status]: 'resolved'
                                     },
                                     lolomo: {
                                         [f_meta_data]: {
                                             '$code': '2223524821',
                                             [f_meta_abs_path]: ['lolomos', '1234'],
+                                            [f_meta_status]: 'resolved'
                                         },
                                         0: {
                                             [f_meta_data]: {
                                                 '$code': '2400656047',
                                                 [f_meta_abs_path]: ['lists', 'A'],
+                                                [f_meta_status]: 'resolved'
                                             },
                                             0: {
                                                 [f_meta_data]: {
                                                     '$code': '3681981706',
                                                     [f_meta_abs_path]: ['lists', 'A', '0'],
+                                                    [f_meta_status]: 'resolved'
                                                 },
                                                 item: {
                                                     [f_meta_data]: {
                                                         '$code': '165499941',
                                                         [f_meta_abs_path]: ['videos', '0'],
+                                                        [f_meta_status]: 'resolved'
                                                     },
                                                     title: 'Video 0'
                                                 }
@@ -757,11 +792,13 @@ describe('DataSource and Cache', function() {
                                                 [f_meta_data]: {
                                                     '$code': '3681981706',
                                                     [f_meta_abs_path]: ['lists', 'A', 1],
+                                                    [f_meta_status]: 'resolved'
                                                 },
                                                 item: {
                                                     [f_meta_data]: {
                                                         '$code': '165499941',
                                                         [f_meta_abs_path]: ['videos', '1'],
+                                                        [f_meta_status]: 'resolved'
                                                     },
                                                     title: 'Video 1'
                                                 }

@@ -107,25 +107,22 @@ describe('Edges', function() {
             output: {
                 json: {
                     [f_meta_data]: {
-                        [f_meta_abs_path]:    undefined,
-                        [f_meta_deref_from]:  undefined,
-                        [f_meta_deref_to]:    undefined,
-                        [f_meta_version]:     0
+                        [f_meta_abs_path]: undefined,
+                        [f_meta_version]: 0,
+                        [f_meta_status]: 'resolved'
 
                     },
                     videos: {
                         [f_meta_data]: {
-                            [f_meta_abs_path]:    ['videos'],
-                            [f_meta_deref_from]:  undefined,
-                            [f_meta_deref_to]:    undefined,
-                            [f_meta_version]:     0
+                            [f_meta_abs_path]: ['videos'],
+                            [f_meta_version]: 0,
+                            [f_meta_status]: 'resolved'
                         },
                         1234: {
                             [f_meta_data]: {
-                                [f_meta_abs_path]:    ['videos', 1234],
-                                [f_meta_deref_from]:  undefined,
-                                [f_meta_deref_to]:    undefined,
-                                [f_meta_version]:     0
+                                [f_meta_abs_path]: ['videos', 1234],
+                                [f_meta_version]: 0,
+                                [f_meta_status]: 'resolved'
                             },
                             title: 'Running Man'
                         }

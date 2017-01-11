@@ -36,40 +36,37 @@ describe('Values', function() {
             output: {
                 json: {
                     [f_meta_data]: {
-                        [f_meta_abs_path]:    undefined,
-                        [f_meta_deref_from]:  undefined,
-                        [f_meta_deref_to]:    undefined,
-                        [f_meta_version]:     0
+                        [f_meta_abs_path]: undefined,
+                        [f_meta_version]: 0,
+                        [f_meta_status]: 'pending'
                     },
                     videos: {
                         [f_meta_data]: {
-                            [f_meta_abs_path]:    ['videos'],
-                            [f_meta_deref_from]:  undefined,
-                            [f_meta_deref_to]:    undefined,
-                            [f_meta_version]:     0
+                            [f_meta_abs_path]: ['videos'],
+                            [f_meta_version]: 0,
+                            [f_meta_status]: 'pending'
                         },
                         0: {
                             [f_meta_data]: {
-                                [f_meta_abs_path]:    ['videos', 0],
-                                [f_meta_deref_from]:  undefined,
-                                [f_meta_deref_to]:    undefined,
-                                [f_meta_version]:     0
+                                [f_meta_abs_path]: ['videos', 0],
+                                [f_meta_version]: 0,
+                                [f_meta_status]: 'resolved'
                             },
                             title: undefined
                         },
                         1: {
                             [f_meta_data]: {
-                                [f_meta_abs_path]:    ['videos', 1],
-                                [f_meta_deref_from]:  undefined,
-                                [f_meta_deref_to]:    undefined,
-                                [f_meta_version]:     0
+                                [f_meta_abs_path]: ['videos', 1],
+                                [f_meta_version]: 0,
+                                [f_meta_status]: 'resolved'
                             },
                             title: undefined
                         },
                         2: {
                             [f_meta_data]: {
-                                [f_meta_abs_path]:    ['videos', 2],
-                                [f_meta_version]:     0
+                                [f_meta_abs_path]: ['videos', 2],
+                                [f_meta_version]: 0,
+                                [f_meta_status]: 'resolved'
                             },
                             title: undefined
                         }
@@ -102,40 +99,37 @@ describe('Values', function() {
             output: {
                 json: {
                     [f_meta_data]: {
-                        [f_meta_abs_path]:    undefined,
-                        [f_meta_deref_from]:  undefined,
-                        [f_meta_deref_to]:    undefined,
-                        [f_meta_version]:     0
+                        [f_meta_abs_path]: undefined,
+                        [f_meta_version]: 0,
+                        [f_meta_status]: 'pending'
                     },
                     videos: {
                         [f_meta_data]: {
-                            [f_meta_abs_path]:    ['videos'],
-                            [f_meta_deref_from]:  undefined,
-                            [f_meta_deref_to]:    undefined,
-                            [f_meta_version]:     0
+                            [f_meta_abs_path]: ['videos'],
+                            [f_meta_version]: 0,
+                            [f_meta_status]: 'pending'
                         },
                         0: {
                             [f_meta_data]: {
-                                [f_meta_abs_path]:    ['videos', 0],
-                                [f_meta_deref_from]:  undefined,
-                                [f_meta_deref_to]:    undefined,
-                                [f_meta_version]:     0
+                                [f_meta_abs_path]: ['videos', 0],
+                                [f_meta_version]: 0,
+                                [f_meta_status]: 'resolved'
                             },
                             title: {$type: 'atom'}
                         },
                         1: {
                             [f_meta_data]: {
-                                [f_meta_abs_path]:    ['videos', 1],
-                                [f_meta_deref_from]:  undefined,
-                                [f_meta_deref_to]:    undefined,
-                                [f_meta_version]:     0
+                                [f_meta_abs_path]: ['videos', 1],
+                                [f_meta_version]: 0,
+                                [f_meta_status]: 'resolved'
                             },
                             title: {$type: 'atom'}
                         },
                         2: {
                             [f_meta_data]: {
-                                [f_meta_abs_path]:    ['videos', 2],
-                                [f_meta_version]:     0
+                                [f_meta_abs_path]: ['videos', 2],
+                                [f_meta_version]: 0,
+                                [f_meta_status]: 'resolved'
                             },
                             title: {$type: 'atom'}
                         }
@@ -190,25 +184,22 @@ describe('Values', function() {
             output: {
                 json: {
                     [f_meta_data]: {
-                        [f_meta_abs_path]:    undefined,
-                        [f_meta_deref_from]:  undefined,
-                        [f_meta_deref_to]:    undefined,
-                        [f_meta_version]:     0
+                        [f_meta_abs_path]: undefined,
+                        [f_meta_version]: 0,
+                        [f_meta_status]: 'resolved'
                     },
                     lolomo: {
                         [f_meta_data]: {
-                            [f_meta_abs_path]:    ['lolomo'],
-                            [f_meta_deref_from]:  undefined,
-                            [f_meta_deref_to]:    undefined,
-                            [f_meta_version]:     0
+                            [f_meta_abs_path]: ['lolomo'],
+                            [f_meta_version]: 0,
+                            [f_meta_status]: 'resolved'
                         },
                         length: 1,
                         0: {
                             [f_meta_data]: {
-                                [f_meta_abs_path]:    ['lolomo', '0'],
-                                [f_meta_deref_from]:  undefined,
-                                [f_meta_deref_to]:    undefined,
-                                [f_meta_version]:     0
+                                [f_meta_abs_path]: ['lolomo', '0'],
+                                [f_meta_version]: 0,
+                                [f_meta_status]: 'resolved'
                             },
                             length: 1337
                         }
@@ -277,36 +268,32 @@ describe('Values', function() {
             output: {
                 json: {
                     [f_meta_data]: {
-                        [f_meta_abs_path]:    undefined,
-                        [f_meta_deref_from]:  undefined,
-                        [f_meta_deref_to]:    undefined,
-                        [f_meta_version]:     0
+                        [f_meta_abs_path]: undefined,
+                        [f_meta_version]: 0,
+                        [f_meta_status]: 'resolved'
                     },
                     $__userGenerated: true,
                     videos: {
                         [f_meta_data]: {
-                            [f_meta_abs_path]:    ['videos'],
-                            [f_meta_deref_from]:  undefined,
-                            [f_meta_deref_to]:    undefined,
-                            [f_meta_version]:     0
+                            [f_meta_abs_path]: ['videos'],
+                            [f_meta_version]: 0,
+                            [f_meta_status]: 'resolved'
                         },
                         $__userGenerated: true,
                         0: {
                             [f_meta_data]: {
-                                [f_meta_abs_path]:    ['videos', 0],
-                                [f_meta_deref_from]:  undefined,
-                                [f_meta_deref_to]:    undefined,
-                                [f_meta_version]:     0
+                                [f_meta_abs_path]: ['videos', 0],
+                                [f_meta_version]: 0,
+                                [f_meta_status]: 'resolved'
                             },
                             $__userGenerated: true,
                             title: 'Video 0'
                         },
                         1: {
                             [f_meta_data]: {
-                                [f_meta_abs_path]:    ['videos', 1],
-                                [f_meta_deref_from]:  undefined,
-                                [f_meta_deref_to]:    undefined,
-                                [f_meta_version]:     0
+                                [f_meta_abs_path]: ['videos', 1],
+                                [f_meta_version]: 0,
+                                [f_meta_status]: 'resolved'
                             },
                             $__userGenerated: true,
                             title: 'Video 1'
@@ -393,49 +380,31 @@ describe('Values', function() {
             seed
         );
 
-        expect(seed).to.deep.equals({
-            __proto__: FalcorJSON.prototype,
+        expect(JSON.parse(seed.toString(true, true))).to.deep.equals({
             json: {
-                __proto__: FalcorJSON.prototype,
                 [f_meta_data]: {
-                    '$code':              '15293993',
-                    [f_meta_keys]:        { videos: true },
-                    [f_meta_abs_path]:    undefined,
-                    [f_meta_deref_from]:  undefined,
-                    [f_meta_deref_to]:    undefined,
-                    [f_meta_version]:     0
+                    '$code': '15293993',
+                    [f_meta_status]: 'resolved'
                 },
                 videos: {
-                    __proto__: FalcorJSON.prototype,
                     [f_meta_data]: {
-                        '$code':              '1236527484',
-                        [f_meta_keys]:        { 0: true, 1: true },
-                        [f_meta_abs_path]:    ['videos'],
-                        [f_meta_deref_from]:  undefined,
-                        [f_meta_deref_to]:    undefined,
-                        [f_meta_version]:     0
+                        '$code': '1236527484',
+                        [f_meta_abs_path]: ['videos'],
+                        [f_meta_status]: 'resolved'
                     },
                     0: {
-                        __proto__: FalcorJSON.prototype,
                         [f_meta_data]: {
-                            '$code':              '165499941',
-                            [f_meta_keys]:        { title: true },
-                            [f_meta_abs_path]:    ['videos', '0'],
-                            [f_meta_deref_from]:  undefined,
-                            [f_meta_deref_to]:    undefined,
-                            [f_meta_version]:     0
+                            '$code': '165499941',
+                            [f_meta_abs_path]: ['videos', '0'],
+                            [f_meta_status]: 'resolved'
                         },
                         title: 'Video 0'
                     },
                     1: {
-                        __proto__: FalcorJSON.prototype,
                         [f_meta_data]: {
-                            '$code':              '165499941',
-                            [f_meta_keys]:        { title: true },
-                            [f_meta_abs_path]:    ['videos', '1'],
-                            [f_meta_deref_from]:  undefined,
-                            [f_meta_deref_to]:    undefined,
-                            [f_meta_version]:     0
+                            '$code': '165499941',
+                            [f_meta_abs_path]: ['videos', '1'],
+                            [f_meta_status]: 'resolved'
                         },
                         title: 'Video 1'
                     }
@@ -473,37 +442,23 @@ describe('Values', function() {
         expect(seed.json.videos[0]).to.be.ok;
         expect(seed.json.videos[1]).to.equal(undefined);
 
-        expect(seed).to.deep.equals({
-            __proto__: FalcorJSON.prototype,
+        expect(JSON.parse(seed.toString(true, true))).to.deep.equals({
             json: {
-                __proto__: FalcorJSON.prototype,
                 [f_meta_data]: {
-                    '$code':              '580640226',
-                    [f_meta_keys]:        { videos: true },
-                    [f_meta_abs_path]:    undefined,
-                    [f_meta_deref_from]:  undefined,
-                    [f_meta_deref_to]:    undefined,
-                    [f_meta_version]:     0
+                    '$code': '580640226',
+                    [f_meta_status]: 'resolved'
                 },
                 videos: {
-                    __proto__: FalcorJSON.prototype,
                     [f_meta_data]: {
-                        '$code':              '1405226223',
-                        [f_meta_keys]:        { 0: true },
-                        [f_meta_abs_path]:    ['videos'],
-                        [f_meta_deref_from]:  undefined,
-                        [f_meta_deref_to]:    undefined,
-                        [f_meta_version]:     0
+                        '$code': '1405226223',
+                        [f_meta_abs_path]: ['videos'],
+                        [f_meta_status]: 'resolved'
                     },
                     0: {
-                        __proto__: FalcorJSON.prototype,
                         [f_meta_data]: {
-                            '$code':              '165499941',
-                            [f_meta_keys]:        { title: true },
-                            [f_meta_abs_path]:    ['videos', '0'],
-                            [f_meta_deref_from]:  undefined,
-                            [f_meta_deref_to]:    undefined,
-                            [f_meta_version]:     0
+                            '$code': '165499941',
+                            [f_meta_abs_path]: ['videos', '0'],
+                            [f_meta_status]: 'resolved'
                         },
                         title: 'Video 0'
                     }

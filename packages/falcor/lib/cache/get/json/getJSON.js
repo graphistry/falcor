@@ -55,34 +55,71 @@ function getJSON(model, paths, seed, progressive, expireImmediate) {
     var arr, path, pathsIndex = 0, pathsCount = paths.length;
 
     if (pathsCount > 0) {
+
         if (recycleJSON) {
             isFlatBuffer = true;
             if (pathsCount > 1 || isArray(paths[0])) {
+                pathsCount = 1;
                 paths = [computeFlatBufferHash(toFlatBuffer(paths, {}))];
             }
-            arr = walkFlatBufferAndBuildOutput(cache, node, json, paths[0], 0, seed, results,
-                                               requestedPath, optimizedPath, optimizedLength,
-                                               /* fromReference = */ false, referenceContainer,
-                                               modelRoot, expired, expireImmediate, branchSelector,
-                                               boxValues, materialized, hasDataSource,
-                                               treatErrorsAsValues, allowFromWhenceYouCame);
+        }
+
+        do {
+            path = paths[pathsIndex];
+            if (isFlatBuffer) {
+                arr = walkFlatBufferAndBuildOutput(cache, node, json, paths[0], 0, seed, results,
+                                                   requestedPath, optimizedPath, optimizedLength,
+                                                   /* fromReference = */ false, referenceContainer,
+                                                   modelRoot, expired, expireImmediate, branchSelector,
+                                                   boxValues, materialized, hasDataSource,
+                                                   treatErrorsAsValues, allowFromWhenceYouCame);
+            } else {
+                requestedLength = path.length;
+                arr = walkPathAndBuildOutput(cache, node, json, path,
+                                          /* depth = */ 0, seed, results,
+                                             requestedPath, requestedLength,
+                                             optimizedPath, optimizedLength,
+                                             /* fromReference = */ false, referenceContainer,
+                                             modelRoot, expired, expireImmediate, branchSelector,
+                                             boxValues, materialized, hasDataSource,
+                                             treatErrorsAsValues, allowFromWhenceYouCame);
+            }
             json = arr[0];
             arr[0] = undefined;
             arr[1] = undefined;
-        } else {
-            do {
-                path = paths[pathsIndex];
-                requestedLength = path.length;
-                json = walkPathAndBuildOutput(cache, node, json, path,
-                                           /* depth = */ 0, seed, results,
-                                              requestedPath, requestedLength,
-                                              optimizedPath, optimizedLength,
-                                              /* fromReference = */ false, referenceContainer,
-                                              modelRoot, expired, expireImmediate, branchSelector,
-                                              boxValues, materialized, hasDataSource,
-                                              treatErrorsAsValues, allowFromWhenceYouCame);
-            } while (++pathsIndex < pathsCount)
-        }
+        } while (++pathsIndex < pathsCount);
+
+        // if (recycleJSON) {
+        //     isFlatBuffer = true;
+        //     if (pathsCount > 1 || isArray(paths[0])) {
+        //         paths = [computeFlatBufferHash(toFlatBuffer(paths, {}))];
+        //     }
+        //     arr = walkFlatBufferAndBuildOutput(cache, node, json, paths[0], 0, seed, results,
+        //                                        requestedPath, optimizedPath, optimizedLength,
+        //                                        /* fromReference = */ false, referenceContainer,
+        //                                        modelRoot, expired, expireImmediate, branchSelector,
+        //                                        boxValues, materialized, hasDataSource,
+        //                                        treatErrorsAsValues, allowFromWhenceYouCame);
+        //     json = arr[0];
+        //     arr[0] = undefined;
+        //     arr[1] = undefined;
+        // } else {
+        //     do {
+        //         path = paths[pathsIndex];
+        //         requestedLength = path.length;
+        //         arr = walkPathAndBuildOutput(cache, node, json, path,
+        //                                   /* depth = */ 0, seed, results,
+        //                                      requestedPath, requestedLength,
+        //                                      optimizedPath, optimizedLength,
+        //                                      /* fromReference = */ false, referenceContainer,
+        //                                      modelRoot, expired, expireImmediate, branchSelector,
+        //                                      boxValues, materialized, hasDataSource,
+        //                                      treatErrorsAsValues, allowFromWhenceYouCame);
+        //         json = arr[0];
+        //         arr[0] = undefined;
+        //         arr[1] = undefined;
+        //     } while (++pathsIndex < pathsCount);
+        // }
     }
 
     var requested = results.requested;

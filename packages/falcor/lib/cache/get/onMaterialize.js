@@ -39,6 +39,7 @@ function onMaterialize(json, path, depth, length,
         json = {};
         json.__proto__ = FalcorJSON.prototype;
         json[f_meta_data] = f_meta = {};
+        f_meta[f_meta_status] = 'resolved';
         f_meta[f_meta_version] = modelRoot.version;
         f_meta[f_meta_abs_path] = path.slice(0, depth);
         if (branchSelector) {
@@ -46,9 +47,11 @@ function onMaterialize(json, path, depth, length,
         }
     } else if (!(f_meta = json[f_meta_data])) {
         json[f_meta_data] = f_meta = {};
+        f_meta[f_meta_status] = 'resolved';
         f_meta[f_meta_version] = modelRoot.version;
         f_meta[f_meta_abs_path] = path.slice(0, depth);
     } else {
+        f_meta[f_meta_status] = 'resolved';
         f_meta[f_meta_version] = modelRoot.version;
         f_meta[f_meta_abs_path] = path.slice(0, depth);
     }

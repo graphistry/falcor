@@ -21,6 +21,7 @@ module.exports = {
     'f_meta_data':       require('./f_meta_data'),
     'f_meta_path':       require('./f_meta_path'),
     'f_meta_keys':       require('./f_meta_keys'),
+    'f_meta_status':     require('./f_meta_status'),
     'f_meta_version':    require('./f_meta_version'),
     'f_meta_abs_path':   require('./f_meta_abs_path'),
     'f_meta_deref_to':   require('./f_meta_deref_to'),

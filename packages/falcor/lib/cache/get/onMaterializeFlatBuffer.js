@@ -45,6 +45,8 @@ function onMaterializeFlatBuffer(json, path, depth, length,
         json = {};
         json.__proto__ = FalcorJSON.prototype;
         json[f_meta_data] = f_meta = {};
+        f_meta['$code'] = '';
+        f_meta[f_meta_status] = 'resolved';
         f_meta[f_meta_version] = modelRoot.version;
         f_meta[f_meta_abs_path] = optimizedPath.slice(
             0, optimizedLength
@@ -54,12 +56,16 @@ function onMaterializeFlatBuffer(json, path, depth, length,
         }
     } else if (!(f_meta = json[f_meta_data])) {
         json[f_meta_data] = f_meta = {};
+        f_meta['$code'] = '';
+        f_meta[f_meta_status] = 'resolved';
         f_meta[f_meta_version] = modelRoot.version;
         f_meta[f_meta_abs_path] = optimizedPath.slice(
             0, optimizedLength
         );
     } else {
         f_old_keys = f_meta[f_meta_keys];
+        f_meta['$code'] = '';
+        f_meta[f_meta_status] = 'resolved';
         f_meta[f_meta_version] = modelRoot.version;
         f_meta[f_meta_abs_path] = optimizedPath.slice(
             0, optimizedLength
@@ -135,7 +141,6 @@ function onMaterializeFlatBuffer(json, path, depth, length,
         while (keyIsRange && ++nextKey <= rangeEnd);
     }
 
-    f_meta['$code'] = '__missing__';
     f_meta[f_meta_keys] = f_new_keys;
     if (f_old_keys) {
         for (nextKey in f_old_keys) {

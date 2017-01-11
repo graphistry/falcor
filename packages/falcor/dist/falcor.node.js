@@ -78,7 +78,7 @@ module.exports =
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 107);
+/******/ 	return __webpack_require__(__webpack_require__.s = 106);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -126,16 +126,18 @@ module.exports = function expireNode(node, expired, lru) {
     }
 }
 
-Object.defineProperties(FalcorJSON.prototype, ['concat', 'copyWithin', 'entries', 'every', 'fill', 'filter', 'find', 'findIndex', 'forEach', 'includes', 'indexOf', 'join', 'keys', 'lastIndexOf', 'map', 'pop', 'push', 'reduce', 'reduceRight', 'reverse', 'shift', 'slice', 'some', 'sort', 'splice', 'unshift', 'values'].reduce(function (descriptors, name) {
-    descriptors[name] = {
-        writable: true, enumerable: false,
-        value: bindArrayMethod(Array.prototype[name])
-    };
-    return descriptors;
-}, {
+var protoBlacklist = {
+    length: true,
+    toString: true,
+    constructor: true,
+    toLocaleString: true
+};
+
+var protoDescriptors = {
     toJSON: { enumerable: false, value: toJSON },
     toProps: { enumerable: false, value: toProps },
     toString: { enumerable: false, value: toString },
+    toLocaleString: { enumerable: false, value: toString },
     $__hash: {
         enumerable: false,
         get: function () {
@@ -150,6 +152,13 @@ Object.defineProperties(FalcorJSON.prototype, ['concat', 'copyWithin', 'entries'
             return f_meta && f_meta["abs_path"] || [];
         }
     },
+    $__status: {
+        enumerable: false,
+        get: function () {
+            var f_meta = this["ƒ_meta"];
+            return f_meta && f_meta["status"] || 'resolved';
+        }
+    },
     $__version: {
         enumerable: false,
         get: function () {
@@ -157,13 +166,23 @@ Object.defineProperties(FalcorJSON.prototype, ['concat', 'copyWithin', 'entries'
             return f_meta && f_meta["version"] || 0;
         }
     }
-}));
+};
 
-function bindArrayMethod(fn) {
-    return (bound.fn = fn) && bound;
-    function bound() {
-        return bound.fn.apply(this, arguments);
+Object.defineProperties(FalcorJSON.prototype, Object.getOwnPropertyNames(Array.prototype).reduce(function (descriptors, name) {
+    if (!protoBlacklist.hasOwnProperty(name)) {
+        var fn = Array.prototype[name];
+        if (typeof fn === 'function') {
+            descriptors[name] = {
+                value: bindArrayMethod(name, fn),
+                writable: true, enumerable: false
+            };
+        }
     }
+    return descriptors;
+}, protoDescriptors));
+
+function bindArrayMethod(name, fn) {
+    return new Function('fn', 'return function ' + name + ' () {' + 'return fn.apply(this, arguments);' + '};')(fn);
 }
 
 var isArray = Array.isArray;
@@ -191,8 +210,8 @@ function toJSON() {
     return serialize(getInst.apply(this, arguments), toJSON);
 }
 
-function toString(includeMetadata) {
-    return JSON.stringify(serialize(getInst.call(this, this), serialize, includeMetadata === true));
+function toString(includeMetadata, includeStatus) {
+    return JSON.stringify(serialize(getInst.call(this, this), serialize, includeMetadata === true, false, includeStatus === true));
 }
 
 function toProps(inst) {
@@ -217,7 +236,7 @@ function toProps(inst) {
     return json;
 }
 
-function serialize(inst, serializer, includeMetadata, createWithProto) {
+function serialize(inst, serializer, includeMetadata, createWithProto, includeStatus) {
 
     if (!inst || typeof inst !== typeofObject) {
         return inst;
@@ -241,6 +260,7 @@ function serialize(inst, serializer, includeMetadata, createWithProto) {
         if (includeMetadata && (f_meta = inst["ƒ_meta"])) {
 
             var $code = f_meta['$code'];
+            var status = f_meta["status"];
             var abs_path = f_meta["abs_path"];
             var deref_to = f_meta["deref_to"];
             var deref_from = f_meta["deref_from"];
@@ -250,6 +270,7 @@ function serialize(inst, serializer, includeMetadata, createWithProto) {
             abs_path && (f_meta["abs_path"] = abs_path);
             deref_to && (f_meta["deref_to"] = deref_to);
             deref_from && (f_meta["deref_from"] = deref_from);
+            includeStatus && status && (f_meta["status"] = status);
 
             xs["ƒ_meta"] = f_meta;
 
@@ -262,7 +283,7 @@ function serialize(inst, serializer, includeMetadata, createWithProto) {
 
         while (++count < total) {
             if ((key = keys[count]) !== "ƒ_meta") {
-                xs[key] = serializer(inst[key], serializer, includeMetadata);
+                xs[key] = serializer(inst[key], serializer, includeMetadata, createWithProto, includeStatus);
             }
         }
     }
@@ -1801,8 +1822,8 @@ var walkPathAndBuildOutput = __webpack_require__(64);
 var walkFlatBufferAndBuildOutput = __webpack_require__(63);
 var getBoundCacheNode = __webpack_require__(16);
 var InvalidModelError = __webpack_require__(81);
-var toFlatBuffer = __webpack_require__(105);
-var computeFlatBufferHash = __webpack_require__(99);
+var toFlatBuffer = __webpack_require__(104);
+var computeFlatBufferHash = __webpack_require__(98);
 
 module.exports = getJSON;
 
@@ -1857,25 +1878,62 @@ function getJSON(model, paths, seed, progressive, expireImmediate) {
         pathsCount = paths.length;
 
     if (pathsCount > 0) {
+
         if (recycleJSON) {
             isFlatBuffer = true;
             if (pathsCount > 1 || isArray(paths[0])) {
+                pathsCount = 1;
                 paths = [computeFlatBufferHash(toFlatBuffer(paths, {}))];
             }
-            arr = walkFlatBufferAndBuildOutput(cache, node, json, paths[0], 0, seed, results, requestedPath, optimizedPath, optimizedLength,
-            /* fromReference = */false, referenceContainer, modelRoot, expired, expireImmediate, branchSelector, boxValues, materialized, hasDataSource, treatErrorsAsValues, allowFromWhenceYouCame);
+        }
+
+        do {
+            path = paths[pathsIndex];
+            if (isFlatBuffer) {
+                arr = walkFlatBufferAndBuildOutput(cache, node, json, paths[0], 0, seed, results, requestedPath, optimizedPath, optimizedLength,
+                /* fromReference = */false, referenceContainer, modelRoot, expired, expireImmediate, branchSelector, boxValues, materialized, hasDataSource, treatErrorsAsValues, allowFromWhenceYouCame);
+            } else {
+                requestedLength = path.length;
+                arr = walkPathAndBuildOutput(cache, node, json, path,
+                /* depth = */0, seed, results, requestedPath, requestedLength, optimizedPath, optimizedLength,
+                /* fromReference = */false, referenceContainer, modelRoot, expired, expireImmediate, branchSelector, boxValues, materialized, hasDataSource, treatErrorsAsValues, allowFromWhenceYouCame);
+            }
             json = arr[0];
             arr[0] = undefined;
             arr[1] = undefined;
-        } else {
-            do {
-                path = paths[pathsIndex];
-                requestedLength = path.length;
-                json = walkPathAndBuildOutput(cache, node, json, path,
-                /* depth = */0, seed, results, requestedPath, requestedLength, optimizedPath, optimizedLength,
-                /* fromReference = */false, referenceContainer, modelRoot, expired, expireImmediate, branchSelector, boxValues, materialized, hasDataSource, treatErrorsAsValues, allowFromWhenceYouCame);
-            } while (++pathsIndex < pathsCount);
-        }
+        } while (++pathsIndex < pathsCount);
+
+        // if (recycleJSON) {
+        //     isFlatBuffer = true;
+        //     if (pathsCount > 1 || isArray(paths[0])) {
+        //         paths = [computeFlatBufferHash(toFlatBuffer(paths, {}))];
+        //     }
+        //     arr = walkFlatBufferAndBuildOutput(cache, node, json, paths[0], 0, seed, results,
+        //                                        requestedPath, optimizedPath, optimizedLength,
+        //                                        /* fromReference = */ false, referenceContainer,
+        //                                        modelRoot, expired, expireImmediate, branchSelector,
+        //                                        boxValues, materialized, hasDataSource,
+        //                                        treatErrorsAsValues, allowFromWhenceYouCame);
+        //     json = arr[0];
+        //     arr[0] = undefined;
+        //     arr[1] = undefined;
+        // } else {
+        //     do {
+        //         path = paths[pathsIndex];
+        //         requestedLength = path.length;
+        //         arr = walkPathAndBuildOutput(cache, node, json, path,
+        //                                   /* depth = */ 0, seed, results,
+        //                                      requestedPath, requestedLength,
+        //                                      optimizedPath, optimizedLength,
+        //                                      /* fromReference = */ false, referenceContainer,
+        //                                      modelRoot, expired, expireImmediate, branchSelector,
+        //                                      boxValues, materialized, hasDataSource,
+        //                                      treatErrorsAsValues, allowFromWhenceYouCame);
+        //         json = arr[0];
+        //         arr[0] = undefined;
+        //         arr[1] = undefined;
+        //     } while (++pathsIndex < pathsCount);
+        // }
     }
 
     var requested = results.requested;
@@ -2118,6 +2176,7 @@ function onMaterialize(json, path, depth, length, branchSelector, boxValues, mod
         json = {};
         json.__proto__ = FalcorJSON.prototype;
         json["ƒ_meta"] = f_meta = {};
+        f_meta["status"] = 'resolved';
         f_meta["version"] = modelRoot.version;
         f_meta["abs_path"] = path.slice(0, depth);
         if (branchSelector) {
@@ -2125,9 +2184,11 @@ function onMaterialize(json, path, depth, length, branchSelector, boxValues, mod
         }
     } else if (!(f_meta = json["ƒ_meta"])) {
         json["ƒ_meta"] = f_meta = {};
+        f_meta["status"] = 'resolved';
         f_meta["version"] = modelRoot.version;
         f_meta["abs_path"] = path.slice(0, depth);
     } else {
+        f_meta["status"] = 'resolved';
         f_meta["version"] = modelRoot.version;
         f_meta["abs_path"] = path.slice(0, depth);
     }
@@ -2228,7 +2289,7 @@ function onMaterialize(json, path, depth, length, branchSelector, boxValues, mod
 /***/ function(module, exports, __webpack_require__) {
 
 var isArray = Array.isArray;
-var isPathValue = __webpack_require__(94);
+var isPathValue = __webpack_require__(93);
 var isJSONEnvelope = __webpack_require__(51);
 var isJSONGraphEnvelope = __webpack_require__(52);
 
@@ -2461,7 +2522,7 @@ function invalidateNode(root, parent, node, key, value, branch, reference, versi
 /***/ function(module, exports, __webpack_require__) {
 
 var $now = __webpack_require__(31);
-var getType = __webpack_require__(93);
+var getType = __webpack_require__(92);
 var getSize = __webpack_require__(8);
 var getTimestamp = __webpack_require__(30);
 
@@ -2582,9 +2643,9 @@ module.exports = function replaceNode(node, replacement, parent, key, lru, versi
 
 var isArray = Array.isArray;
 var now = __webpack_require__(53);
-var clone = __webpack_require__(91);
+var clone = __webpack_require__(90);
 var getSize = __webpack_require__(8);
-var getExpires = __webpack_require__(92);
+var getExpires = __webpack_require__(91);
 var expiresNow = __webpack_require__(31);
 
 var atomSize = 50;
@@ -2700,7 +2761,7 @@ module.exports = function lruSplice(root, object) {
 
 /* WEBPACK VAR INJECTION */(function(global) {var Subscriber = __webpack_require__(13);
 var Subscription = __webpack_require__(14);
-var $$observable = __webpack_require__(95).default;
+var $$observable = __webpack_require__(94).default;
 
 module.exports = Source;
 
@@ -3672,8 +3733,8 @@ var getReferenceTarget = __webpack_require__(35);
 var onMaterialize = __webpack_require__(68);
 var NullInPathError = __webpack_require__(3);
 var InvalidKeySetError = __webpack_require__(11);
-var getHashCode = __webpack_require__(101);
-var flatBufferToPaths = __webpack_require__(100);
+var getHashCode = __webpack_require__(100);
+var flatBufferToPaths = __webpack_require__(99);
 
 module.exports = walkPathAndBuildOutput;
 
@@ -3734,12 +3795,13 @@ function walkPathAndBuildOutput(root, node, json, path, depth, seed, results, re
             json.__proto__.__proto__ = FalcorJSON.prototype;
         }
 
-        if (nodeAbsPath !== jsonAbsPath) {
-            f_meta['$code'] = '__loading__';
+        if (!arrayEqual(nodeAbsPath, jsonAbsPath)) {
+            f_meta['$code'] = '';
+            f_meta["status"] = 'pending';
             f_meta["abs_path"] = nodeAbsPath;
             f_meta["version"] = node["ƒ_version"];
-            f_meta["deref_to"] = refContainerRefPath;
-            f_meta["deref_from"] = refContainerAbsPath;
+            refContainerRefPath && (f_meta["deref_to"] = refContainerRefPath);
+            refContainerAbsPath && (f_meta["deref_from"] = refContainerAbsPath);
             if (f_old_keys = f_meta["keys"]) {
                 f_meta["keys"] = Object.create(null);
                 for (nextKey in f_old_keys) {
@@ -3761,8 +3823,8 @@ function walkPathAndBuildOutput(root, node, json, path, depth, seed, results, re
         f_old_keys = f_meta["keys"];
         f_meta["abs_path"] = nodeAbsPath;
         f_meta["version"] = node["ƒ_version"];
-        f_meta["deref_to"] = refContainerRefPath;
-        f_meta["deref_from"] = refContainerAbsPath;
+        refContainerRefPath && (f_meta["deref_to"] = refContainerRefPath);
+        refContainerAbsPath && (f_meta["deref_from"] = refContainerAbsPath);
     }
 
     f_new_keys = Object.create(null);
@@ -3830,7 +3892,7 @@ function walkPathAndBuildOutput(root, node, json, path, depth, seed, results, re
 
                 arr = walkPathAndBuildOutput(root, next, nextJSON, nextPath, nextDepth, seed, results, requestedPath, nextOptimizedPath, nextOptimizedLength, fromReference, nextReferenceContainer, modelRoot, expired, expireImmediate, branchSelector, boxValues, materialized, hasDataSource, treatErrorsAsValues, allowFromWhenceYouCame);
 
-                if (!hasMissingPath && arr[1] === true) {
+                if (arr[1] === true) {
                     hasMissingPath = true;
                 }
 
@@ -3881,7 +3943,7 @@ function walkPathAndBuildOutput(root, node, json, path, depth, seed, results, re
 
                 arr = walkPathAndBuildOutput(root, next, nextJSON, nextPath, nextDepth, seed, results, requestedPath, nextOptimizedPath, nextOptimizedLength, fromReference, nextReferenceContainer, modelRoot, expired, expireImmediate, branchSelector, boxValues, materialized, hasDataSource, treatErrorsAsValues, allowFromWhenceYouCame);
 
-                if (!hasMissingPath && arr[1] === true) {
+                if (arr[1] === true) {
                     hasMissingPath = true;
                 }
 
@@ -3900,8 +3962,8 @@ function walkPathAndBuildOutput(root, node, json, path, depth, seed, results, re
                 f_meta = {};
                 f_meta["version"] = node["ƒ_version"];
                 f_meta["abs_path"] = node["ƒ_abs_path"];
-                f_meta["deref_to"] = refContainerRefPath;
-                f_meta["deref_from"] = refContainerAbsPath;
+                refContainerRefPath && (f_meta["deref_to"] = refContainerRefPath);
+                refContainerAbsPath && (f_meta["deref_from"] = refContainerAbsPath);
                 json = {};
                 json["ƒ_meta"] = f_meta;
                 json.__proto__ = FalcorJSON.prototype;
@@ -3930,18 +3992,17 @@ function walkPathAndBuildOutput(root, node, json, path, depth, seed, results, re
         // here if we encountered a Key.
         while (keyIsRange && ++nextKey <= rangeEnd);
 
-        if (!hasMissingPath) {
+        if (hasMissingPath) {
+            f_code = '' + getHashCode('' + f_code + (nextPath && nextPath['$code'] || ''));
+        } else {
             f_code = '' + getHashCode('' + f_code + nextPathKey + (nextPath && nextPath['$code'] || ''));
         }
-    }
-
-    if (hasMissingPath) {
-        f_code = '__loading__';
     }
 
     if (f_meta) {
         f_meta['$code'] = f_code;
         f_meta["keys"] = f_new_keys;
+        f_meta["status"] = hasMissingPath && 'pending' || 'resolved';
         if (f_old_keys) {
             for (nextKey in f_old_keys) {
                 if (f_old_keys[nextKey]) {
@@ -3975,10 +4036,27 @@ function onMissing(path, depth, results, requestedPath, requestedLength, fromRef
     });
 }
 
+function arrayEqual(xs, ys) {
+    if (xs === ys) {
+        return true;
+    }
+    var len = xs.length;
+    if (len !== ys.length) {
+        return false;
+    }
+    while (~--len) {
+        if (xs[len] !== ys[len]) {
+            return false;
+        }
+    }
+    return true;
+}
+
 /***/ },
 /* 64 */
 /***/ function(module, exports, __webpack_require__) {
 
+var arr = new Array(2);
 var isArray = Array.isArray;
 var typeofNumber = 'number';
 var typeofObject = 'object';
@@ -4007,7 +4085,9 @@ function walkPathAndBuildOutput(root, node, json, path, depth, seed, results, re
     // If there's nowhere to go, we've reached a terminal node, or hit
     // the end of the path, stop now. Either build missing paths or report the value.
     if (node === undefined || (type = node.$type) || depth === requestedLength) {
-        return onValueType(node, type, json, path, depth, seed, results, requestedPath, requestedLength, optimizedPath, optimizedLength, fromReference, modelRoot, expired, expireImmediate, branchSelector, boxValues, materialized, hasDataSource, treatErrorsAsValues, onValue, onMissing, onMaterialize);
+        arr[1] = hasDataSource && node === undefined;
+        arr[0] = onValueType(node, type, json, path, depth, seed, results, requestedPath, requestedLength, optimizedPath, optimizedLength, fromReference, modelRoot, expired, expireImmediate, branchSelector, boxValues, materialized, hasDataSource, treatErrorsAsValues, onValue, onMissing, onMaterialize);
+        return arr;
     }
 
     var f_meta;
@@ -4043,7 +4123,9 @@ function walkPathAndBuildOutput(root, node, json, path, depth, seed, results, re
         if (nextDepth < requestedLength) {
             throw new NullInPathError();
         }
-        return json;
+        arr[0] = json;
+        arr[1] = false;
+        return arr;
     }
 
     if (allowFromWhenceYouCame && referenceContainer) {
@@ -4056,8 +4138,8 @@ function walkPathAndBuildOutput(root, node, json, path, depth, seed, results, re
     } else if (f_meta = json["ƒ_meta"]) {
         f_meta["version"] = node["ƒ_version"];
         f_meta["abs_path"] = node["ƒ_abs_path"];
-        f_meta["deref_to"] = refContainerRefPath;
-        f_meta["deref_from"] = refContainerAbsPath;
+        refContainerRefPath && (f_meta["deref_to"] = refContainerRefPath);
+        refContainerAbsPath && (f_meta["deref_from"] = refContainerAbsPath);
     }
 
     // Iterate over every key in the keyset. This loop is perhaps a bit clever,
@@ -4082,6 +4164,8 @@ function walkPathAndBuildOutput(root, node, json, path, depth, seed, results, re
     // until the Keyset is exhausted. `keysetIndex` and `keysetLength` are
     // initialized to -1 and 0 respectively, so if a Keyset wasn't encountered
     // at this depth in the path, then the outer loop exits after one execution.
+
+    var hasMissingPath = false;
 
     iteratingKeyset: do {
 
@@ -4140,8 +4224,14 @@ function walkPathAndBuildOutput(root, node, json, path, depth, seed, results, re
             optimizedPath[optimizedLength] = nextKey;
 
             if (nextDepth === requestedLength) {
-                nextJSON = walkPathAndBuildOutput(root, next, nextJSON, path, nextDepth, seed, results, requestedPath, requestedLength, nextOptimizedPath, nextOptimizedLength, fromReference, nextReferenceContainer, modelRoot, expired, expireImmediate, branchSelector, boxValues, materialized, hasDataSource, treatErrorsAsValues, allowFromWhenceYouCame);
-                if (nextJSON === undefined && !materialized) {
+
+                arr = walkPathAndBuildOutput(root, next, nextJSON, path, nextDepth, seed, results, requestedPath, requestedLength, nextOptimizedPath, nextOptimizedLength, fromReference, nextReferenceContainer, modelRoot, expired, expireImmediate, branchSelector, boxValues, materialized, hasDataSource, treatErrorsAsValues, allowFromWhenceYouCame);
+
+                if (arr[1] === true) {
+                    hasMissingPath = true;
+                }
+
+                if ((nextJSON = arr[0]) === undefined && !materialized) {
                     continue;
                 }
             } else {
@@ -4183,7 +4273,13 @@ function walkPathAndBuildOutput(root, node, json, path, depth, seed, results, re
                 // cache hit. Otherwise, don't waste the cycles creating a branch
                 // if everything underneath is a cache miss.
 
-                if (undefined === (nextJSON = walkPathAndBuildOutput(root, next, nextJSON, path, nextDepth, seed, results, requestedPath, requestedLength, nextOptimizedPath, nextOptimizedLength, fromReference, nextReferenceContainer, modelRoot, expired, expireImmediate, branchSelector, boxValues, materialized, hasDataSource, treatErrorsAsValues, allowFromWhenceYouCame))) {
+                arr = walkPathAndBuildOutput(root, next, nextJSON, path, nextDepth, seed, results, requestedPath, requestedLength, nextOptimizedPath, nextOptimizedLength, fromReference, nextReferenceContainer, modelRoot, expired, expireImmediate, branchSelector, boxValues, materialized, hasDataSource, treatErrorsAsValues, allowFromWhenceYouCame);
+
+                if (arr[1] === true) {
+                    hasMissingPath = true;
+                }
+
+                if ((nextJSON = arr[0]) === undefined) {
                     continue;
                 }
             }
@@ -4195,8 +4291,8 @@ function walkPathAndBuildOutput(root, node, json, path, depth, seed, results, re
                 f_meta = {};
                 f_meta["version"] = node["ƒ_version"];
                 f_meta["abs_path"] = node["ƒ_abs_path"];
-                f_meta["deref_to"] = refContainerRefPath;
-                f_meta["deref_from"] = refContainerAbsPath;
+                refContainerRefPath && (f_meta["deref_to"] = refContainerRefPath);
+                refContainerAbsPath && (f_meta["deref_from"] = refContainerAbsPath);
                 json = {};
                 json["ƒ_meta"] = f_meta;
                 json.__proto__ = FalcorJSON.prototype;
@@ -4225,8 +4321,15 @@ function walkPathAndBuildOutput(root, node, json, path, depth, seed, results, re
         keyset = keysOrRanges[keysetIndex];
     } while (true);
 
+    if (f_meta) {
+        f_meta["status"] = hasMissingPath && 'pending' || 'resolved';
+    }
+
     // `json` will be a branch if any cache hits, or undefined if all cache misses
-    return json;
+    arr[0] = json;
+    arr[1] = hasMissingPath;
+
+    return arr;
 }
 /* eslint-enable */
 
@@ -4611,6 +4714,8 @@ function onMaterializeFlatBuffer(json, path, depth, length, branchSelector, boxV
         json = {};
         json.__proto__ = FalcorJSON.prototype;
         json["ƒ_meta"] = f_meta = {};
+        f_meta['$code'] = '';
+        f_meta["status"] = 'resolved';
         f_meta["version"] = modelRoot.version;
         f_meta["abs_path"] = optimizedPath.slice(0, optimizedLength);
         if (branchSelector) {
@@ -4618,10 +4723,14 @@ function onMaterializeFlatBuffer(json, path, depth, length, branchSelector, boxV
         }
     } else if (!(f_meta = json["ƒ_meta"])) {
         json["ƒ_meta"] = f_meta = {};
+        f_meta['$code'] = '';
+        f_meta["status"] = 'resolved';
         f_meta["version"] = modelRoot.version;
         f_meta["abs_path"] = optimizedPath.slice(0, optimizedLength);
     } else {
         f_old_keys = f_meta["keys"];
+        f_meta['$code'] = '';
+        f_meta["status"] = 'resolved';
         f_meta["version"] = modelRoot.version;
         f_meta["abs_path"] = optimizedPath.slice(0, optimizedLength);
     }
@@ -4689,7 +4798,6 @@ function onMaterializeFlatBuffer(json, path, depth, length, branchSelector, boxV
         while (keyIsRange && ++nextKey <= rangeEnd);
     }
 
-    f_meta['$code'] = '__missing__';
     f_meta["keys"] = f_new_keys;
     if (f_old_keys) {
         for (nextKey in f_old_keys) {
@@ -5041,7 +5149,6 @@ module.exports = function mergeJSONGraphNode(parent, node, message, key, request
 
 var getJSON = __webpack_require__(21);
 var getJSONGraph = __webpack_require__(22);
-var arrayFlatMap = __webpack_require__(90);
 var groupCacheArguments = __webpack_require__(39);
 
 module.exports = {
@@ -5192,6 +5299,22 @@ function setGroupsIntoCache(model, xs, expireImmediate) {
 
 function pluckPaths(x) {
     return x.path || x.paths;
+}
+
+function arrayFlatMap(array, selector) {
+    var index = -1;
+    var i = -1;
+    var n = array.length;
+    var array2 = [];
+    while (++i < n) {
+        var array3 = selector(array[i], i, array);
+        var j = -1;
+        var k = array3.length;
+        while (++j < k) {
+            array2[++index] = array3[j];
+        }
+    }
+    return array2;
 }
 
 /***/ },
@@ -5976,10 +6099,10 @@ var setJSONGraphs = __webpack_require__(17);
 var setPathValues = __webpack_require__(27);
 var invalidatePaths = __webpack_require__(25);
 
-var toPaths = __webpack_require__(106);
-var toCollapseMap = __webpack_require__(103);
-var toCollapseTrees = __webpack_require__(104);
-var hasIntersection = __webpack_require__(102);
+var toPaths = __webpack_require__(105);
+var toCollapseMap = __webpack_require__(102);
+var toCollapseTrees = __webpack_require__(103);
+var hasIntersection = __webpack_require__(101);
 
 module.exports = Request;
 
@@ -6322,26 +6445,6 @@ module.exports = TimeoutScheduler;
 
 /***/ },
 /* 90 */
-/***/ function(module, exports) {
-
-module.exports = function arrayFlatMap(array, selector) {
-    var index = -1;
-    var i = -1;
-    var n = array.length;
-    var array2 = [];
-    while (++i < n) {
-        var array3 = selector(array[i], i, array);
-        var j = -1;
-        var k = array3.length;
-        while (++j < k) {
-            array2[++index] = array3[j];
-        }
-    }
-    return array2;
-};
-
-/***/ },
-/* 91 */
 /***/ function(module, exports, __webpack_require__) {
 
 var isArray = Array.isArray;
@@ -6364,7 +6467,7 @@ function clone(source) {
 }
 
 /***/ },
-/* 92 */
+/* 91 */
 /***/ function(module, exports, __webpack_require__) {
 
 var isObject = __webpack_require__(5);
@@ -6373,7 +6476,7 @@ module.exports = function getSize(node) {
 };
 
 /***/ },
-/* 93 */
+/* 92 */
 /***/ function(module, exports, __webpack_require__) {
 
 var isObject = __webpack_require__(5);
@@ -6387,7 +6490,7 @@ module.exports = function getType(node, anyType) {
 };
 
 /***/ },
-/* 94 */
+/* 93 */
 /***/ function(module, exports, __webpack_require__) {
 
 var isArray = Array.isArray;
@@ -6398,14 +6501,14 @@ module.exports = function isPathValue(pathValue) {
 };
 
 /***/ },
-/* 95 */
+/* 94 */
 /***/ function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(96);
+module.exports = __webpack_require__(95);
 
 
 /***/ },
-/* 96 */
+/* 95 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6415,7 +6518,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _ponyfill = __webpack_require__(97);
+var _ponyfill = __webpack_require__(96);
 
 var _ponyfill2 = _interopRequireDefault(_ponyfill);
 
@@ -6438,10 +6541,10 @@ if (typeof self !== 'undefined') {
 
 var result = (0, _ponyfill2['default'])(root);
 exports['default'] = result;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(32), __webpack_require__(98)(module)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(32), __webpack_require__(97)(module)))
 
 /***/ },
-/* 97 */
+/* 96 */
 /***/ function(module, exports) {
 
 "use strict";
@@ -6470,7 +6573,7 @@ function symbolObservablePonyfill(root) {
 };
 
 /***/ },
-/* 98 */
+/* 97 */
 /***/ function(module, exports) {
 
 module.exports = function(module) {
@@ -6496,55 +6599,55 @@ module.exports = function(module) {
 
 
 /***/ },
-/* 99 */
+/* 98 */
 /***/ function(module, exports) {
 
 module.exports = require("@graphistry/falcor-path-utils/lib/computeFlatBufferHash");
 
 /***/ },
-/* 100 */
+/* 99 */
 /***/ function(module, exports) {
 
 module.exports = require("@graphistry/falcor-path-utils/lib/flatBufferToPaths");
 
 /***/ },
-/* 101 */
+/* 100 */
 /***/ function(module, exports) {
 
 module.exports = require("@graphistry/falcor-path-utils/lib/getHashCode");
 
 /***/ },
-/* 102 */
+/* 101 */
 /***/ function(module, exports) {
 
 module.exports = require("@graphistry/falcor-path-utils/lib/hasIntersection");
 
 /***/ },
-/* 103 */
+/* 102 */
 /***/ function(module, exports) {
 
 module.exports = require("@graphistry/falcor-path-utils/lib/toCollapseMap");
 
 /***/ },
-/* 104 */
+/* 103 */
 /***/ function(module, exports) {
 
 module.exports = require("@graphistry/falcor-path-utils/lib/toCollapseTrees");
 
 /***/ },
-/* 105 */
+/* 104 */
 /***/ function(module, exports) {
 
 module.exports = require("@graphistry/falcor-path-utils/lib/toFlatBuffer");
 
 /***/ },
-/* 106 */
+/* 105 */
 /***/ function(module, exports) {
 
 module.exports = require("@graphistry/falcor-path-utils/lib/toPaths");
 
 /***/ },
-/* 107 */
+/* 106 */
 /***/ function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__(56);

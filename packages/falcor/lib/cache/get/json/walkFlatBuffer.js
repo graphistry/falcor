@@ -77,12 +77,13 @@ function walkPathAndBuildOutput(root, node, json, path,
             json.__proto__.__proto__ = FalcorJSON.prototype;
         }
 
-        if (nodeAbsPath !== jsonAbsPath) {
-            f_meta['$code'] = '__loading__';
+        if (!arrayEqual(nodeAbsPath, jsonAbsPath)) {
+            f_meta['$code'] = '';
+            f_meta[f_meta_status] = 'pending';
             f_meta[f_meta_abs_path] = nodeAbsPath;
             f_meta[f_meta_version] = node[f_version];
-            f_meta[f_meta_deref_to] = refContainerRefPath;
-            f_meta[f_meta_deref_from] = refContainerAbsPath;
+            refContainerRefPath && (f_meta[f_meta_deref_to] = refContainerRefPath);
+            refContainerAbsPath && (f_meta[f_meta_deref_from] = refContainerAbsPath);
             if (f_old_keys = f_meta[f_meta_keys]) {
                 f_meta[f_meta_keys] = Object.create(null);
                 for (nextKey in f_old_keys) {
@@ -106,8 +107,8 @@ function walkPathAndBuildOutput(root, node, json, path,
         f_old_keys = f_meta[f_meta_keys];
         f_meta[f_meta_abs_path] = nodeAbsPath;
         f_meta[f_meta_version] = node[f_version];
-        f_meta[f_meta_deref_to] = refContainerRefPath;
-        f_meta[f_meta_deref_from] = refContainerAbsPath;
+        refContainerRefPath && (f_meta[f_meta_deref_to] = refContainerRefPath);
+        refContainerAbsPath && (f_meta[f_meta_deref_from] = refContainerAbsPath);
     }
 
     f_new_keys = Object.create(null);
@@ -181,7 +182,7 @@ function walkPathAndBuildOutput(root, node, json, path,
                     materialized, hasDataSource, treatErrorsAsValues, allowFromWhenceYouCame
                 );
 
-                if (!hasMissingPath && arr[1] === true) {
+                if (arr[1] === true) {
                     hasMissingPath = true;
                 }
 
@@ -239,7 +240,7 @@ function walkPathAndBuildOutput(root, node, json, path,
                     materialized, hasDataSource, treatErrorsAsValues, allowFromWhenceYouCame
                 );
 
-                if (!hasMissingPath && arr[1] === true) {
+                if (arr[1] === true) {
                     hasMissingPath = true;
                 }
 
@@ -258,8 +259,8 @@ function walkPathAndBuildOutput(root, node, json, path,
                 f_meta = {};
                 f_meta[f_meta_version] = node[f_version];
                 f_meta[f_meta_abs_path] = node[f_abs_path];
-                f_meta[f_meta_deref_to] = refContainerRefPath;
-                f_meta[f_meta_deref_from] = refContainerAbsPath;
+                refContainerRefPath && (f_meta[f_meta_deref_to] = refContainerRefPath);
+                refContainerAbsPath && (f_meta[f_meta_deref_from] = refContainerAbsPath);
                 json = {};
                 json[f_meta_data] = f_meta;
                 json.__proto__ = FalcorJSON.prototype;
@@ -288,19 +289,15 @@ function walkPathAndBuildOutput(root, node, json, path,
         // here if we encountered a Key.
         while (keyIsRange && ++nextKey <= rangeEnd);
 
-        if (!hasMissingPath) {
-            f_code = '' + getHashCode('' + f_code + nextPathKey +
-                                     (  nextPath && nextPath['$code'] || ''));
-        }
-    }
-
-    if (hasMissingPath) {
-        f_code = '__loading__';
+        f_code = '' + getHashCode('' + f_code +
+                                 ( !hasMissingPath ? nextPathKey : '') +
+                                 (  nextPath ? nextPath['$code'] : ''));
     }
 
     if (f_meta) {
         f_meta['$code'] = f_code;
         f_meta[f_meta_keys] = f_new_keys;
+        f_meta[f_meta_status] = hasMissingPath && 'pending' || 'resolved';
         if (f_old_keys) {
             for (nextKey in f_old_keys) {
                 if (f_old_keys[nextKey]) {
@@ -342,4 +339,20 @@ function onMissing(path, depth, results,
                                  false, json, branchSelector,
                                  boxValues, onMaterialize, modelRoot);
     });
+}
+
+function arrayEqual(xs, ys) {
+    if (xs === ys) {
+        return true;
+    }
+    var len = xs.length;
+    if (len !== ys.length) {
+        return false;
+    }
+    while (~--len) {
+        if (xs[len] !== ys[len]) {
+            return false;
+        }
+    }
+    return true;
 }

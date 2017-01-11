@@ -90,17 +90,15 @@ describe('References', function() {
             output: {
                 json: {
                     [f_meta_data]: {
-                        [f_meta_abs_path]:    undefined,
-                        [f_meta_deref_from]:  undefined,
-                        [f_meta_deref_to]:    undefined,
-                        [f_meta_version]:     0
+                        [f_meta_abs_path]: undefined,
+                        [f_meta_version]: 0,
+                        [f_meta_status]: 'resolved'
                     },
                     toReference: {
                         [f_meta_data]: {
-                            [f_meta_abs_path]:    ['too'],
-                            [f_meta_deref_from]:  undefined,
-                            [f_meta_deref_to]:    undefined,
-                            [f_meta_version]:     0
+                            [f_meta_abs_path]: ['too'],
+                            [f_meta_version]: 0,
+                            [f_meta_status]: 'resolved'
                         },
                         title: 'Title'
                     }
@@ -216,24 +214,21 @@ describe('References', function() {
             output: {
                 json: {
                     [f_meta_data]: {
-                        [f_meta_abs_path]:    undefined,
-                        [f_meta_deref_from]:  undefined,
-                        [f_meta_deref_to]:    undefined,
-                        [f_meta_version]:     0
+                        [f_meta_abs_path]: undefined,
+                        [f_meta_version]: 0,
+                        [f_meta_status]: 'resolved'
                     },
                     to: {
                         [f_meta_data]: {
-                            [f_meta_abs_path]:    ['to'],
-                            [f_meta_deref_from]:  undefined,
-                            [f_meta_deref_to]:    undefined,
-                            [f_meta_version]:     0
+                            [f_meta_abs_path]: ['to'],
+                            [f_meta_version]: 0,
+                            [f_meta_status]: 'resolved'
                         },
                         reference: {
                             [f_meta_data]: {
-                                [f_meta_abs_path]:    ['too'],
-                                [f_meta_deref_from]:  undefined,
-                                [f_meta_deref_to]:    undefined,
-                                [f_meta_version]:     0
+                                [f_meta_abs_path]: ['too'],
+                                [f_meta_version]: 0,
+                                [f_meta_status]: 'resolved'
                             },
                             title: 'Title'
                         },
@@ -255,38 +250,41 @@ describe('References', function() {
             output: {
                 json: {
                     [f_meta_data]: {
-                        [f_meta_abs_path]:    undefined,
-                        [f_meta_deref_from]:  undefined,
-                        [f_meta_deref_to]:    undefined,
-                        [f_meta_version]:     0
+                        [f_meta_abs_path]: undefined,
+                        [f_meta_version]: 0,
+                        [f_meta_status]: 'resolved'
                     },
                     lolomo: {
                         [f_meta_data]: {
-                            [f_meta_abs_path]:    ['lolomos', 1234],
-                            [f_meta_deref_from]:  ['lolomo'],
-                            [f_meta_deref_to]:    ['lolomos', 1234],
-                            [f_meta_version]:     0
+                            [f_meta_abs_path]: ['lolomos', 1234],
+                            [f_meta_deref_from]: ['lolomo'],
+                            [f_meta_deref_to]: ['lolomos', 1234],
+                            [f_meta_version]: 0,
+                            [f_meta_status]: 'resolved'
                         },
                         0: {
                             [f_meta_data]: {
-                                [f_meta_abs_path]:    ['lists', 'A'],
-                                [f_meta_deref_from]:  ['lolomos', 1234, 0],
-                                [f_meta_deref_to]:    ['lists', 'A'],
-                                [f_meta_version]:     0
+                                [f_meta_abs_path]: ['lists', 'A'],
+                                [f_meta_deref_from]: ['lolomos', 1234, 0],
+                                [f_meta_deref_to]: ['lists', 'A'],
+                                [f_meta_version]: 0,
+                                [f_meta_status]: 'resolved'
                             },
                             0: {
                                 [f_meta_data]: {
-                                    [f_meta_abs_path]:    ['lists', 'A', 0],
-                                    [f_meta_deref_from]:  ['lolomos', 1234, 0],
-                                    [f_meta_deref_to]:    ['lists', 'A'],
-                                    [f_meta_version]:     0
+                                    [f_meta_abs_path]: ['lists', 'A', 0],
+                                    [f_meta_deref_from]: ['lolomos', 1234, 0],
+                                    [f_meta_deref_to]: ['lists', 'A'],
+                                    [f_meta_version]: 0,
+                                    [f_meta_status]: 'resolved'
                                 },
                                 item: {
                                     [f_meta_data]: {
-                                        [f_meta_abs_path]:    ['videos', 0],
-                                        [f_meta_deref_from]:  ['lists', 'A', 0, 'item'],
-                                        [f_meta_deref_to]:    ['videos', 0],
-                                        [f_meta_version]:     0
+                                        [f_meta_abs_path]: ['videos', 0],
+                                        [f_meta_deref_from]: ['lists', 'A', 0, 'item'],
+                                        [f_meta_deref_to]: ['videos', 0],
+                                        [f_meta_version]: 0,
+                                        [f_meta_status]: 'resolved'
                                     },
                                     title: 'Video 0'
                                 }

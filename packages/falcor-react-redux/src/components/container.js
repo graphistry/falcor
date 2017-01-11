@@ -129,7 +129,8 @@ function mergeEachPropUpdate(
     { data, error, version, loading }
 ) {
     const hash = data && data.$__hash;
-    loading = loading || !(hash !== '__loading__');
+    const status = data && data.$__status;
+    loading = loading || status === 'pending';
     return {
         hash, props, falcor, dispatch,
         data, error, loading, version
@@ -170,17 +171,10 @@ class FalcorContainer extends React.Component {
                 props: currProps = {},
                 state: currState = {} } = this;
 
-        if (renderLoading === true) {
-            if (currState.loading !== nextState.loading) {
-                this.traceShouldUpdate('loading', currState.loading, '->', nextState.loading);
-                return true;
-            } else if (!(nextState.hash !== '__loading__')) {
-                this.traceShouldUpdate('loading global && nextState.hash === "__loading__"', nextProps);
-                return true;
-            }
-        }
-
-        if (currState.version !== nextState.version) {
+        if (renderLoading === true && currState.loading !== nextState.loading) {
+            this.traceShouldUpdate('loading', currState.loading, '->', nextState.loading);
+            return true;
+        } else if (currState.version !== nextState.version) {
             this.traceShouldUpdate('version', currState.version, '->', nextState.version);
             return true;
         } else if (currState.error !== nextState.error) {

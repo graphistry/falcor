@@ -220,7 +220,8 @@ function mergeEachPropUpdate(_ref2, _ref3) {
         loading = _ref3.loading;
 
     var hash = data && data.$__hash;
-    loading = loading || !(hash !== '__loading__');
+    var status = data && data.$__status;
+    loading = loading || !(status !== 'pending');
     return {
         hash: hash, props: props, falcor: falcor, dispatch: dispatch,
         data: data, error: error, loading: loading, version: version
@@ -275,17 +276,10 @@ var FalcorContainer = function (_React$Component) {
                 currState = _state2 === undefined ? {} : _state2;
 
 
-            if (renderLoading === true) {
-                if (currState.loading !== nextState.loading) {
-                    this.traceShouldUpdate('loading', currState.loading, '->', nextState.loading);
-                    return true;
-                } else if (!(nextState.hash !== '__loading__')) {
-                    this.traceShouldUpdate('loading global && nextState.hash === "__loading__"', nextProps);
-                    return true;
-                }
-            }
-
-            if (currState.version !== nextState.version) {
+            if (renderLoading === true && currState.loading !== nextState.loading) {
+                this.traceShouldUpdate('loading', currState.loading, '->', nextState.loading);
+                return true;
+            } else if (currState.version !== nextState.version) {
                 this.traceShouldUpdate('version', currState.version, '->', nextState.version);
                 return true;
             } else if (currState.error !== nextState.error) {
