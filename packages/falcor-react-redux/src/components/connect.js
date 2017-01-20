@@ -50,7 +50,7 @@ const contextTypes = {
 };
 
 const connect = (BaseComponent, scheduler = animationFrame) => hoistStatics(compose(
-    connectRedux(mapReduxStoreToProps, 0, mergeReduxProps, reduxOptions),
+    connectRedux(mapReduxStoreToProps, null, null, reduxOptions),
     setDisplayName(wrapDisplayName(BaseComponent, 'Falcor')),
     mapPropsStream(mapPropsToDistinctChanges(scheduler)),
     withContext(contextTypes, ({ falcor, dispatch }) => ({
@@ -85,10 +85,6 @@ function mapReduxStoreToProps(data, { falcor }) {
     }
 
     return { data: new FalcorJSON(data) };
-}
-
-function mergeReduxProps({ data }, { dispatch }, { falcor }) {
-    return { data, falcor, dispatch };
 }
 
 function mapPropsToDistinctChanges(scheduler) {

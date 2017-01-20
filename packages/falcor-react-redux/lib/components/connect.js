@@ -107,7 +107,7 @@ var contextTypes = {
 
 var connect = function connect(BaseComponent) {
     var scheduler = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _animationFrame.animationFrame;
-    return (0, _hoistStatics2.default)((0, _compose2.default)((0, _reactRedux.connect)(mapReduxStoreToProps, 0, mergeReduxProps, reduxOptions), (0, _setDisplayName2.default)((0, _wrapDisplayName2.default)(BaseComponent, 'Falcor')), (0, _mapPropsStream2.default)(mapPropsToDistinctChanges(scheduler)), (0, _withContext2.default)(contextTypes, function (_ref) {
+    return (0, _hoistStatics2.default)((0, _compose2.default)((0, _reactRedux.connect)(mapReduxStoreToProps, null, null, reduxOptions), (0, _setDisplayName2.default)((0, _wrapDisplayName2.default)(BaseComponent, 'Falcor')), (0, _mapPropsStream2.default)(mapPropsToDistinctChanges(scheduler)), (0, _withContext2.default)(contextTypes, function (_ref) {
         var falcor = _ref.falcor,
             dispatch = _ref.dispatch;
         return {
@@ -147,22 +147,14 @@ function mapReduxStoreToProps(data, _ref2) {
     return { data: new _falcor.FalcorJSON(data) };
 }
 
-function mergeReduxProps(_ref3, _ref4, _ref5) {
-    var data = _ref3.data;
-    var dispatch = _ref4.dispatch;
-    var falcor = _ref5.falcor;
-
-    return { data: data, falcor: falcor, dispatch: dispatch };
-}
-
 function mapPropsToDistinctChanges(scheduler) {
     return function innerMapPropsToDistinctChanges(prop$) {
         return prop$.switchMap(mapPropsToChanges, mapChangeToProps).distinctUntilKeyChanged('version').auditTime(0, scheduler);
     };
 }
 
-function mapPropsToChanges(_ref6) {
-    var falcor = _ref6.falcor;
+function mapPropsToChanges(_ref3) {
+    var falcor = _ref3.falcor;
 
     return falcor.changes();
 }
