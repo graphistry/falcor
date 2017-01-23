@@ -5,10 +5,6 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = fetchDataUntilSettled;
 
-var _warning = require('warning');
-
-var _warning2 = _interopRequireDefault(_warning);
-
 var _pegjsUtil = require('pegjs-util');
 
 var _memoizeQueryies = require('./memoizeQueryies');
@@ -56,11 +52,10 @@ function _fetchDataUntilSettled(memo) {
         return _Observable.Observable.empty();
     }
     var query = memo.query,
-        version = memo.version,
         falcor = memo.falcor,
         fragment = memo.fragment;
 
-    if (query !== (memo.query = fragment(memo.data || {}, memo.props)) || version !== (memo.version = falcor.getVersion())) {
+    if (query !== (memo.query = fragment(memo.data || {}, memo.props))) {
         var _memoizedQuerySyntax = memoizedQuerySyntax(memo.query),
             ast = _memoizedQuerySyntax.ast,
             error = _memoizedQuerySyntax.error;

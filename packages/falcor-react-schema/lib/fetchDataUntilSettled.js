@@ -33,14 +33,13 @@ function fetchDataUntilSettled(_ref) {
     var data = _ref.data,
         props = _ref.props,
         model = _ref.model,
-        fragment = _ref.fragment,
-        renderLoading = _ref.renderLoading;
+        version = _ref.version,
+        fragment = _ref.fragment;
 
 
     var memo = {
         query: null, loading: true,
-        version: model.getVersion(),
-        data: data, props: props, model: model, fragment: fragment
+        data: data, props: props, model: model, version: version, fragment: fragment
     };
     memo.mapNext = handleNext(memo, model);
     memo.catchError = handleError(memo, model);
@@ -53,28 +52,26 @@ function _fetchDataUntilSettled(memo) {
         return _Observable.Observable.empty();
     }
     var query = memo.query,
-        version = memo.version,
         model = memo.model,
         fragment = memo.fragment;
 
-    if (query !== (memo.query = fragment(memo.data || {}, memo.props || {}))) /*||
-                                                                              (version !== (memo.version = model.getVersion()))*/{
-            var _memoizedQuerySyntax = memoizedQuerySyntax(memo.query),
-                ast = _memoizedQuerySyntax.ast,
-                error = _memoizedQuerySyntax.error;
+    if (query !== (memo.query = fragment(memo.data || {}, memo.props || {}))) {
+        var _memoizedQuerySyntax = memoizedQuerySyntax(memo.query),
+            ast = _memoizedQuerySyntax.ast,
+            error = _memoizedQuerySyntax.error;
 
-            if (error) {
-                if (typeof console !== 'undefined' && typeof console.error === 'function') {
-                    console.error((0, _pegjsUtil.errorMessage)(error));
-                    console.error('Error parsing query: ' + memo.query);
-                }
-                memo.error = error;
-            } else {
-                return _Observable.Observable.from(!memo.renderLoading ? model.get(ast) : model.get(ast).progressively()).map(memo.mapNext).catch(memo.catchError);
+        if (error) {
+            if (typeof console !== 'undefined' && typeof console.error === 'function') {
+                console.error((0, _pegjsUtil.errorMessage)(error));
+                console.error('Error parsing query: ' + memo.query);
             }
+            memo.error = error;
+            memo.version = model.getVersion();
+        } else {
+            return _Observable.Observable.from(model.get(ast).progressively()).map(memo.mapNext).catch(memo.catchError);
         }
+    }
     memo.loading = false;
-    memo.version = model.getVersion();
     return _Observable.Observable.of(memo);
 }
 

@@ -1,4 +1,3 @@
-import warning from 'warning';
 import { errorMessage } from 'pegjs-util';
 import memoizeQueryies from './memoizeQueryies';
 import { Observable } from 'rxjs/Observable';
@@ -29,9 +28,8 @@ function _fetchDataUntilSettled(memo) {
     if (memo.loading === false) {
         return Observable.empty();
     }
-    const { query, version, falcor, fragment } = memo;
-    if ((query !== (memo.query = fragment(memo.data || {}, memo.props))) ||
-        (version !== (memo.version = falcor.getVersion()))) {
+    const { query, falcor, fragment } = memo;
+    if (query !== (memo.query = fragment(memo.data || {}, memo.props))) {
         const { ast, error } = memoizedQuerySyntax(memo.query);
         if (error) {
             if (typeof console !== 'undefined' && typeof console.error === 'function') {

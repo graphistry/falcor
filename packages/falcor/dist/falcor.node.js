@@ -4262,6 +4262,7 @@ function walkPathAndBuildOutput(root, node, json, path, depth, seed, results, re
                 json.__proto__ = FalcorJSON.prototype;
                 // Empower developers to instrument branch node creation by
                 // providing a custom function. If they do, delegate branch
+                // node creation to them.
                 if (branchSelector) {
                     json = branchSelector(json);
                 }

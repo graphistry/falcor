@@ -124,7 +124,7 @@ function withFragment(fragmentDesc) {
 
                 var _this = _possibleConstructorReturn(this, (Container.__proto__ || (0, _getPrototypeOf2.default)(Container)).call(this, props, context));
 
-                _this.config = config;
+                _this.config = fragmentDesc;
                 _this.Component = Component;
                 _this.fragment = fragmentDesc.fragment;
                 return _this;
@@ -331,11 +331,10 @@ function mergeEachPropUpdate(_ref2, _ref3) {
         version = _ref3.version,
         loading = _ref3.loading;
 
-    return {
-        data: data, error: error, props: props,
-        model: model, loading: loading, version: version,
-        hash: data && data.$__hash
-    };
+    var hash = data && data.$__hash;
+    var status = data && data.$__status;
+    loading = loading || status === 'pending';
+    return { hash: hash, data: data, props: props, model: model, error: error, loading: loading, version: version };
 }
 
 function defaultMapFragment(fragmentProps) {

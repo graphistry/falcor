@@ -11,13 +11,12 @@ import 'rxjs/add/observable/empty';
 const memoizedQuerySyntax = memoizeQueryies(100);
 
 export default function fetchDataUntilSettled({
-    data, props, model, fragment, renderLoading
+    data, props, model, version, fragment
 }) {
 
     const memo = {
         query: null, loading: true,
-        version: model.getVersion(),
-        data, props, model, fragment,
+        data, props, model, version, fragment,
     };
     memo.mapNext = handleNext(memo, model);
     memo.catchError = handleError(memo, model);
@@ -29,9 +28,8 @@ function _fetchDataUntilSettled(memo) {
     if (memo.loading === false) {
         return Observable.empty();
     }
-    const { query, version, model, fragment } = memo;
-    if ((query !== (memo.query = fragment(memo.data || {}, memo.props || {}))) /*||
-        (version !== (memo.version = model.getVersion()))*/) {
+    const { query, model, fragment } = memo;
+    if (query !== (memo.query = fragment(memo.data || {}, memo.props || {}))) {
         const { ast, error } = memoizedQuerySyntax(memo.query);
         if (error) {
             if (typeof console !== 'undefined' && typeof console.error === 'function') {
@@ -39,17 +37,14 @@ function _fetchDataUntilSettled(memo) {
                 console.error(`Error parsing query: ${memo.query}`);
             }
             memo.error = error;
+            memo.version = model.getVersion();
         } else {
             return Observable
-                .from(!memo.renderLoading ?
-                       model.get(ast) :
-                       model.get(ast).progressively())
-                .map(memo.mapNext)
-                .catch(memo.catchError);
+                .from(model.get(ast).progressively())
+                .map(memo.mapNext).catch(memo.catchError);
         }
     }
     memo.loading = false;
-    memo.version = model.getVersion();
     return Observable.of(memo);
 }
 

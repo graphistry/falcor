@@ -51,7 +51,7 @@ Fragment containers must be created with a fragment function, or an Object with 
             static displayName = wrapDisplayName(Component, 'Container');
             constructor(props, context) {
                 super(props, context);
-                this.config = config;
+                this.config = fragmentDesc;
                 this.Component = Component;
                 this.fragment = fragmentDesc.fragment;
             }
@@ -201,11 +201,10 @@ function mergeEachPropUpdate(
     { props, model },
     { data, error, version, loading }
 ) {
-    return {
-        data, error, props,
-        model, loading, version,
-        hash: data && data.$__hash
-    };
+    const hash = data && data.$__hash;
+    const status = data && data.$__status;
+    loading = loading || status === 'pending';
+    return { hash, data, props, model, error, loading, version };
 }
 
 function defaultMapFragment(fragmentProps) {
