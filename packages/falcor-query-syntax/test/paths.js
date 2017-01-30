@@ -114,7 +114,7 @@ describe('Paths', function() {
             ['titles', 'length']
         ]);
     });
-    it('should invert backwards ranges', function() {
+    it('should not invert backwards ranges', function() {
         expect(toPaths`{
             titles: {
                 length,
@@ -125,7 +125,7 @@ describe('Paths', function() {
                 }
             }
         }`).to.deep.equal([
-            ['titles', { from:0, length:10 }, ['name', 'rating', 'box-shot']],
+            ['titles', { from: 0, length:0 }, ['name', 'rating', 'box-shot']],
             ['titles', 'length']
         ]);
     });
@@ -140,7 +140,7 @@ describe('Paths', function() {
                 }
             }
         }`).to.deep.equal([
-            ['titles', { from:0, length:0 }, ['name', 'rating', 'box-shot']],
+            ['titles', { from: 0, length:0 }, ['name', 'rating', 'box-shot']],
             ['titles', 'length']
         ]);
     });
@@ -203,7 +203,7 @@ describe('Paths', function() {
                 }
             }
         }`).to.deep.equal([
-            ['titles', { from:0, length:10 }, ['rating', 'box-shot']]
+            ['titles', { from:0, length:0 }, ['rating', 'box-shot']]
         ]);
     });
     it('should do all the things at once', function() {
@@ -225,10 +225,10 @@ describe('Paths', function() {
                 }
             }
         }`).to.deep.equal([
-            ['genreLists', { from: 1, length: 9 }, 'color', null],
-            ['genreLists', { from: 1, length: 9 }, 'titles', { from: 9, length: 2 }, ['name', 'rating', 'box-shot']],
-            ['genreLists', { from: 1, length: 9 }, 'titles', 'length'],
-            ['genreLists', { from: 1, length: 9 }, ['name', 'rating']],
+            ['genreLists', { from: 0, length: 0 }, 'color', null],
+            ['genreLists', { from: 0, length: 0 }, 'titles', { from: 9, length: 2 }, ['name', 'rating', 'box-shot']],
+            ['genreLists', { from: 0, length: 0 }, 'titles', 'length'],
+            ['genreLists', { from: 0, length: 0 }, ['name', 'rating']],
             ['genreLists', 'length']
         ]);
         var stringifiedResults = template`{
@@ -263,13 +263,13 @@ describe('Paths', function() {
                     },
                     '$keys': ['name', 'rating', 'color', 'titles']
                 },
-                '$keys': ['length', { from: 1, length: 9 }]
+                '$keys': ['length', { from: 0, length: 0 }]
             },
             '$keys': ['genreLists']
         });
     });
     it('should collapse duplicate keys when exploded and recollapsed', function() {
-        var range = { from: 10, to: 9 };
+        var range = { from: 9, to: 10 };
         var flatBuf = toFlatBuffer(toPaths`{
             genreLists: {
                 length,
@@ -283,7 +283,7 @@ describe('Paths', function() {
             ...{
                 genreLists: {
                     length,
-                    [10..1]: {
+                    [1..10]: {
                         name, rating,
                         color: { ${null} },
                         titles: {
