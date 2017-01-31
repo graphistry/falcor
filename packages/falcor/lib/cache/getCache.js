@@ -1,76 +1,58 @@
-var isInternalKey = require('../support/isInternalKey');
+var clone = require('./clone');
+var isInternal = require('../internal/isInternal');
 
-/**
- * decends and copies the cache.
- */
-module.exports = function getCache(cache) {
-    var out = {};
-    _copyCache(cache, out);
+module.exports = getCache;
 
-    return out;
-};
+function getCache(model, cache) {
+    return getCacheInternal(cache, {}, model._boxed, model._materialized);
+}
 
-function cloneBoxedValue(boxedValue) {
-    var clonedValue = {};
+function getCacheInternal(node, jsonArg, boxValues, materialized) {
 
-    var keys = Object.keys(boxedValue);
-    var key;
-    var i;
-    var l;
+    var json = jsonArg, type, value;
 
-    for (i = 0, l = keys.length; i < l; i++) {
-        key = keys[i];
+    if (!node || typeof node !== 'object') {
+        return node;
+    } else if (type = node.$type) {
 
-        if (key === '$type' || !isInternalKey(key)) {
-            clonedValue[key] = boxedValue[key];
+        if (undefined === (value = node.value)) {
+            if (materialized) {
+                value = { $type: $atom };
+            } else if (node[f_wrapped_value]) {
+                value = clone(node);
+            }
+        }
+        // boxValues always clones the node
+        else if (boxValues || !(
+            /**
+             * getCache should always clone:
+             * - refs
+             * - errors
+             * - atoms we didn't create
+             * - atoms we created to wrap Objects
+             **/
+            $ref !== type &&
+            $error !== type &&
+            node[f_wrapped_value] &&
+            typeof value !== 'object')) {
+            value = clone(node);
+        }
+        return value;
+    }
+
+    var keys = Object.keys(node);
+    var keysLen = keys.length, keyIndex = -1;
+
+    while (++keyIndex < keysLen) {
+        var key = keys[keyIndex];
+        if (key !== '$size' && !isInternal(key) && undefined !== (value =
+            getCacheInternal(node[key], json && json[key], boxValues, materialized))) {
+            if (json === undefined) {
+                json = {};
+            }
+            json[key] = value;
         }
     }
 
-    return clonedValue;
-}
-
-function _copyCache(node, out, fromKey) {
-    // copy and return
-
-    // only copy objects
-    if (!node || typeof node !== 'object') {
-        return;
-    }
-
-    Object.
-        keys(node).
-        filter(function(key) {
-            // Its not an internal key and the node has a value.  In the cache
-            // there are 3 possibilities for values.
-            // 1: A branch node.
-            // 2: A $type-value node.
-            // 3: undefined
-            // We will strip out 3
-            return (key === '$type' || !isInternalKey(key)) && node[key] !== undefined;
-        }).
-        forEach(function(key) {
-            var cacheNext = node[key];
-            var outNext = out[key];
-
-            if (!outNext) {
-                outNext = out[key] = {};
-            }
-
-            // Paste the node into the out cache.
-            if (cacheNext.$type) {
-                var isObject = cacheNext.value && typeof cacheNext.value === 'object';
-                var isUserCreatedcacheNext = !cacheNext[f_wrapped_value];
-                var value;
-                if (isObject || isUserCreatedcacheNext) {
-                    value = cloneBoxedValue(cacheNext);
-                } else {
-                    value = cacheNext.value;
-                }
-
-                out[key] = value;
-                return;
-            }
-
-            _copyCache(cacheNext, outNext, key);
-        });
+    return json;
 }
