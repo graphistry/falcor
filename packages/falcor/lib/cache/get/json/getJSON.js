@@ -58,10 +58,10 @@ function getJSON(model, paths, seed, progressive, expireImmediate) {
 
         if (recycleJSON) {
             isFlatBuffer = true;
-            if (pathsCount > 1 || isArray(paths[0])) {
-                pathsCount = 1;
+            if ((pathsCount > 1 && expireImmediate) || isArray(paths[0])) {
                 paths = [computeFlatBufferHash(toFlatBuffer(paths, {}))];
             }
+            pathsCount = 1;
         }
 
         do {

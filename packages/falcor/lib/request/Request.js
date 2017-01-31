@@ -56,6 +56,7 @@ Request.prototype.onNext = function(env) {
     var invalidated = env.invalidated;
     var paths = env.paths || this.paths;
     var requested = this.requested.slice(0);
+    var observers = this.observers.slice(0);
     var rootChangeHandler = modelRoot.onChange;
 
     // Run invalidations first.
@@ -77,7 +78,7 @@ Request.prototype.onNext = function(env) {
         rootChangeHandler();
     }
 
-    this.observers.slice(0).forEach(function(observer, index) {
+    observers.forEach(function(observer, index) {
         observer.onNext({
             type: 'get', paths: requested[index] ||
                 filterPathsBoundTo(boundPath, paths)
@@ -254,7 +255,9 @@ function findIntersections(tree,
 
     var index = -1;
     var complementIndex = -1;
+    var reqComplementsIdx = -1;
     var intersectionIndex = -1;
+    var reqIntersectionIdx = -1;
     var optTotal = optimized.length;
     var reqTotal = requested.length - 1;
 
@@ -264,14 +267,18 @@ function findIntersections(tree,
         var subTree = tree[pathLen];
         if (subTree && hasIntersection(subTree, path, 0, pathLen)) {
             optimizedIntersection[++intersectionIndex] = path;
-            requestedIntersection[intersectionIndex] = requested[
-                index < reqTotal ? index : reqTotal
-            ];
+            if (reqIntersectionIdx < reqTotal) {
+                requestedIntersection[++reqIntersectionIdx] = requested[
+                    index < reqTotal ? index : reqTotal
+                ];
+            }
         } else {
             optimizedComplements[++complementIndex] = path;
-            requestedComplements[complementIndex] = requested[
-                index < reqTotal ? index : reqTotal
-            ];
+            if (reqComplementsIdx < reqTotal) {
+                requestedComplements[++reqComplementsIdx] = requested[
+                    index < reqTotal ? index : reqTotal
+                ];
+            }
         }
     }
 
