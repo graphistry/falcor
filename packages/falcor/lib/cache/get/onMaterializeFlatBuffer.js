@@ -1,5 +1,3 @@
-var typeofNumber = 'number';
-var typeofObject = 'object';
 var clone = require('../clone');
 var onValueType = require('./onValueType');
 var FalcorJSON = require('./json/FalcorJSON');
@@ -12,12 +10,12 @@ module.exports = onMaterializeFlatBuffer;
 /* eslint-disable camelcase */
 /* eslint-disable no-cond-assign */
 /* eslint-disable no-constant-condition */
-function onMaterializeFlatBuffer(json, path, depth, length,
+function onMaterializeFlatBuffer(jsonArg, path, depth, length,
                                  branchSelector, boxValues, modelRoot, results,
                                  requestedPath, optimizedPath, optimizedLength,
                                  fromReference, reportMissing, onMissing) {
 
-    var type, refTarget;
+    var json = jsonArg, type, refTarget;
 
     // ============ Check for base cases ================
 
@@ -41,7 +39,7 @@ function onMaterializeFlatBuffer(json, path, depth, length,
         nextDepth = depth + 1, rangeEnd,
         nextOptimizedLength = optimizedLength + 1;
 
-    if (!json || typeofObject !== typeof json) {
+    if (!json || 'object' !== typeof json) {
         json = {};
         json.__proto__ = FalcorJSON.prototype;
         json[f_meta_data] = f_meta = {};
@@ -99,7 +97,7 @@ function onMaterializeFlatBuffer(json, path, depth, length,
             continue;
         }
         // If the keyset is a primitive value, we've found our `nextKey`.
-        else if (typeofObject !== typeof keyset) {
+        else if ('object' !== typeof keyset) {
             nextKey = keyset;
             rangeEnd = undefined;
             keyIsRange = false;
@@ -108,7 +106,7 @@ function onMaterializeFlatBuffer(json, path, depth, length,
         else {
             rangeEnd = keyset.to;
             nextKey = keyset.from || 0;
-            if (typeofNumber !== typeof rangeEnd) {
+            if ('number' !== typeof rangeEnd) {
                 rangeEnd = nextKey + (keyset.length || 0) - 1;
             }
             if ((rangeEnd - nextKey) < 0) {

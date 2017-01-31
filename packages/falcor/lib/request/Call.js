@@ -49,7 +49,8 @@ Call.prototype._subscribe = function(subscriber) {
     return subscriber;
 }
 
-Call.prototype._toJSON = function(data, errors) {
+Call.prototype._toJSON = function(dataArg, errors) {
+    var data = dataArg;
     if (data === undefined) {
         data = {};
         data.__proto__ = FalcorJSON.prototype;
@@ -60,7 +61,8 @@ Call.prototype._toJSON = function(data, errors) {
     ), this.source);
 }
 
-Call.prototype._toJSONG = function(data, errors) {
+Call.prototype._toJSONG = function(dataArg, errors) {
+    var data = dataArg;
     if (data === undefined) {
         data = {};
         data.__proto__ = FalcorJSON.prototype;
@@ -108,9 +110,16 @@ CallOperator.prototype.call = function(source, destination) {
 function CallSubscriber(destination, data, errors, operation, progressive, maxRetryCount) {
     Subscriber.call(this, destination);
     this.data = data;
+    this.missing = null;
+    this.request = null;
+    this.started = false;
     this.retryCount = -1;
     this.errors = errors;
+    this.errored = false;
+    this.relative = null;
     this.hasValue = false;
+    this.fragments = null;
+    this.requested = null;
     this.completed = false;
     this.operation = operation;
     this.progressive = progressive;

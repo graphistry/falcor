@@ -1,4 +1,6 @@
-module.exports = function createHardlink(from, to) {
+module.exports = createHardlink;
+
+function createHardlink(from, to) {
 
     // create a back reference
     var backRefs = to[f_refs_length] || 0;
@@ -8,4 +10,4 @@ module.exports = function createHardlink(from, to) {
     // create a hard reference
     from[f_ref_index] = backRefs;
     from[f_context] = to;
-};
+}

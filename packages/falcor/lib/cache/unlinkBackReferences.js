@@ -1,4 +1,6 @@
-module.exports = function unlinkBackReferences(node) {
+module.exports = unlinkBackReferences;
+
+function unlinkBackReferences(node) {
     var i = -1, n = node[f_refs_length] || 0;
     while (++i < n) {
         var ref = node[f_ref + i];
@@ -8,4 +10,4 @@ module.exports = function unlinkBackReferences(node) {
     }
     node[f_refs_length] = void 0;
     return node;
-};
+}

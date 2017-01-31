@@ -9,10 +9,9 @@ function clone(node) {
 
     while (++index < length) {
         key = keys[index];
-        if (isInternal(key)) {
-            continue;
+        if (key !== '$size' && !isInternal(key)) {
+            json[key] = node[key];
         }
-        json[key] = node[key];
     }
 
     return json;

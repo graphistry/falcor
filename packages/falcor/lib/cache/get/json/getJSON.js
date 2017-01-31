@@ -8,9 +8,10 @@ var computeFlatBufferHash = require('@graphistry/falcor-path-utils/lib/computeFl
 
 module.exports = getJSON;
 
-function getJSON(model, paths, seed, progressive, expireImmediate) {
+function getJSON(model, pathsArg, seed, progressive, expireImmediate) {
 
     var node,
+        paths = pathsArg,
         referenceContainer,
         boundPath = model._path,
         modelRoot = model._root,
@@ -42,7 +43,6 @@ function getJSON(model, paths, seed, progressive, expireImmediate) {
 
     var isFlatBuffer = false,
         json = seed && seed.json,
-        results = { data: seed },
         boxValues = model._boxed,
         expired = modelRoot.expired,
         recycleJSON = model._recycleJSON,
@@ -50,7 +50,9 @@ function getJSON(model, paths, seed, progressive, expireImmediate) {
         branchSelector = modelRoot.branchSelector,
         materialized = seed && model._materialized,
         treatErrorsAsValues = model._treatErrorsAsValues,
-        allowFromWhenceYouCame = model._allowFromWhenceYouCame;
+        allowFromWhenceYouCame = model._allowFromWhenceYouCame,
+        results = { args: null, data: seed, hasValue: false,
+                    relative: null, requested: null, missing: null };
 
     var arr, path, pathsIndex = 0, pathsCount = paths.length;
 

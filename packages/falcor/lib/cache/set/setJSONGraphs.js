@@ -14,7 +14,9 @@ var iterateKeySet = require('@graphistry/falcor-path-utils/lib/iterateKeySet');
  * @return {Array.<Array.<Path>>} - an Array of Arrays where each inner Array is a list of requested and optimized paths (respectively) for the successfully set values.
  */
 
-module.exports = function setJSONGraphs(model, jsonGraphEnvelopes, errorSelector, comparator, expireImmediate) {
+module.exports = setJSONGraphs;
+
+function setJSONGraphs(model, jsonGraphEnvelopes, errorSelector, comparator, expireImmediate) {
 
     var modelRoot = model._root;
     var lru = modelRoot;
@@ -65,7 +67,7 @@ module.exports = function setJSONGraphs(model, jsonGraphEnvelopes, errorSelector
     }
 
     return [requestedPaths, optimizedPaths, false];
-};
+}
 
 /* eslint-disable no-constant-condition */
 function setJSONGraphPathSet(
@@ -84,7 +86,7 @@ function setJSONGraphPathSet(
 
         requestedPath.depth = depth;
 
-        var results = setNode(
+        setNode(
             root, parent, node, messageRoot, messageParent, message,
             key, branch, false, requestedPath, optimizedPath, version,
             expired, lru, comparator, errorSelector, expireImmediate
@@ -93,16 +95,16 @@ function setJSONGraphPathSet(
         requestedPath[depth] = key;
         requestedPath.index = depth;
 
-        var nextNode = results[0];
-        var nextParent = results[1];
-        var nextOptimizedPath = results[4];
+        var nextNode = arr[0];
+        var nextParent = arr[1];
+        var nextOptimizedPath = arr[4];
         nextOptimizedPath[nextOptimizedPath.index++] = key;
 
         if (nextNode) {
             if (branch) {
                 setJSONGraphPathSet(
                     path, depth + 1, root, nextParent, nextNode,
-                    messageRoot, results[3], results[2],
+                    messageRoot, arr[3], arr[2],
                     requestedPaths, optimizedPaths, requestedPath, nextOptimizedPath,
                     version, expired, lru, comparator, errorSelector, expireImmediate
                 );
@@ -121,13 +123,14 @@ function setJSONGraphPathSet(
 /* eslint-enable */
 
 function setReference(
-    root, node, messageRoot, message, requestedPath, optimizedPath,
+    root, nodeArg, messageRoot, message, requestedPath, optimizedPathArg,
     version, expired, lru, comparator, errorSelector, expireImmediate) {
 
     var parent;
     var messageParent;
+    var node = nodeArg;
     var reference = node.value;
-    optimizedPath = reference.slice(0);
+    var optimizedPath = reference.slice(0);
 
     if (isExpired(node, expireImmediate)) {
         expireNode(node, expired, lru);
@@ -148,20 +151,20 @@ function setReference(
             var branch = index < count;
             optimizedPath.index = index;
 
-            var results = setNode(
+            setNode(
                 root, parent, node, messageRoot, messageParent, message,
                 key, branch, true, requestedPath, optimizedPath, version,
                 expired, lru, comparator, errorSelector, expireImmediate
             );
-            node = results[0];
-            optimizedPath = results[4];
+            node = arr[0];
+            optimizedPath = arr[4];
             if (!node || typeof node !== 'object') {
                 optimizedPath.index = index;
-                return results;
+                return;
             }
-            parent = results[1];
-            message = results[2];
-            messageParent = results[3];
+            parent = arr[1];
+            message = arr[2];
+            messageParent = arr[3];
         } while (index++ < count);
 
         optimizedPath.index = index;
@@ -176,34 +179,37 @@ function setReference(
     arr[2] = message;
     arr[3] = messageParent;
     arr[4] = optimizedPath;
-
-    return arr;
 }
 
 function setNode(
-    root, parent, node, messageRoot, messageParent, message,
-    key, branch, reference, requestedPath, optimizedPath, version,
+    root, parentArg, nodeArg, messageRoot, messageParentArg, messageArg,
+    key, branch, reference, requestedPath, optimizedPathArg, version,
     expired, lru, comparator, errorSelector, expireImmediate) {
 
+    var node = nodeArg;
     var type = node.$type;
+    var parent = parentArg;
+    var message = messageArg;
+    var optimizedPath = optimizedPathArg;
+    var messageParent = messageParentArg;
 
     while (type === $ref) {
 
-        var results = setReference(
+        setReference(
             root, node, messageRoot, message, requestedPath, optimizedPath,
             version, expired, lru, comparator, errorSelector, expireImmediate
         );
 
-        node = results[0];
+        node = arr[0];
 
         if (!node || typeof node !== 'object') {
-            return results;
+            return;
         }
 
-        parent = results[1];
-        message = results[2];
-        messageParent = results[3];
-        optimizedPath = results[4];
+        parent = arr[1];
+        message = arr[2];
+        messageParent = arr[3];
+        optimizedPath = arr[4];
         type = node.$type;
     }
 
@@ -232,6 +238,4 @@ function setNode(
     arr[2] = message;
     arr[3] = messageParent;
     arr[4] = optimizedPath;
-
-    return arr;
 }

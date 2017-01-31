@@ -12,6 +12,7 @@ function onValueType(node, type, json,
                      branchSelector, boxValues, materialized, reportMissing,
                      treatErrorsAsValues, onValue, onMissing, onMaterialize) {
 
+    var _reportMissing = reportMissing;
     var reportMaterialized = reportMissing;
 
     if (type) {
@@ -22,7 +23,7 @@ function onValueType(node, type, json,
         } else {
             lruPromote(modelRoot, node);
             if (node.value === undefined) {
-                reportMissing = false;
+                _reportMissing = false;
                 reportMaterialized = materialized;
             } else {
                 if (seed) {
@@ -46,7 +47,7 @@ function onValueType(node, type, json,
 
     return onMissing(path, depth, results,
                      requestedPath, requestedLength, fromReference,
-                     optimizedPath, optimizedLength, reportMissing,
+                     optimizedPath, optimizedLength, _reportMissing,
                      materialized, json, branchSelector,
                      boxValues, onMaterialize, modelRoot);
 }

@@ -1,7 +1,5 @@
 var arr = new Array(2);
 var isArray = Array.isArray;
-var typeofNumber = 'number';
-var typeofObject = 'object';
 var onValue = require('./onValue');
 var onMissing = require('../onMissing');
 var FalcorJSON = require('./FalcorJSON');
@@ -11,24 +9,24 @@ var onMaterialize = require('../onMaterialize');
 var getReferenceTarget = require('./getReferenceTarget');
 var NullInPathError = require('../../../errors/NullInPathError');
 var InvalidKeySetError = require('../../../errors/InvalidKeySetError');
-var materializedAtom = require('@graphistry/falcor-path-utils/lib/support/materializedAtom');
 
 module.exports = walkPathAndBuildOutput;
 
 /* eslint-disable camelcase */
 /* eslint-disable no-cond-assign */
 /* eslint-disable no-constant-condition */
-function walkPathAndBuildOutput(root, node, json, path,
+function walkPathAndBuildOutput(root, node, jsonArg, path,
                                 depth, seed, results,
                                 requestedPath, requestedLength,
                                 optimizedPath, optimizedLength,
-                                fromReference, referenceContainer,
+                                fromReferenceArg, referenceContainer,
                                 modelRoot, expired, expireImmediate,
                                 branchSelector, boxValues, materialized,
                                 hasDataSource, treatErrorsAsValues,
                                 allowFromWhenceYouCame) {
 
-    var type, refTarget;
+    var json = jsonArg, type, refTarget;
+    var fromReference = fromReferenceArg;
 
     // ============ Check for base cases ================
 
@@ -84,7 +82,7 @@ function walkPathAndBuildOutput(root, node, json, path,
         refContainerAbsPath = referenceContainer[f_abs_path];
     }
 
-    if (!json || typeofObject !== typeof json) {
+    if (!json || 'object' !== typeof json) {
         json = undefined;
     } else if (f_meta = json[f_meta_data]) {
         f_meta[f_meta_version] = node[f_version];
@@ -116,12 +114,12 @@ function walkPathAndBuildOutput(root, node, json, path,
     // initialized to -1 and 0 respectively, so if a Keyset wasn't encountered
     // at this depth in the path, then the outer loop exits after one execution.
 
-     var hasMissingPath = false;
+    var hasMissingPath = false;
 
     iteratingKeyset: do {
 
         // If the keyset is a primitive value, we've found our `nextKey`.
-        if (typeofObject !== typeof keyset) {
+        if ('object' !== typeof keyset) {
             nextKey = keyset;
             rangeEnd = undefined;
             keyIsRange = false;
@@ -153,7 +151,7 @@ function walkPathAndBuildOutput(root, node, json, path,
         else {
             rangeEnd = keyset.to;
             nextKey = keyset.from || 0;
-            if (typeofNumber !== typeof rangeEnd) {
+            if ('number' !== typeof rangeEnd) {
                 rangeEnd = nextKey + (keyset.length || 0) - 1;
             }
             if ((rangeEnd - nextKey) < 0) {
@@ -176,7 +174,7 @@ function walkPathAndBuildOutput(root, node, json, path,
 
             if (nextDepth === requestedLength) {
 
-                arr = walkPathAndBuildOutput(
+                walkPathAndBuildOutput(
                     root, next, nextJSON, path, nextDepth, seed,
                     results, requestedPath, requestedLength, nextOptimizedPath,
                     nextOptimizedLength, fromReference, nextReferenceContainer,
@@ -231,7 +229,7 @@ function walkPathAndBuildOutput(root, node, json, path,
                 // cache hit. Otherwise, don't waste the cycles creating a branch
                 // if everything underneath is a cache miss.
 
-                arr = walkPathAndBuildOutput(
+                walkPathAndBuildOutput(
                     root, next, nextJSON, path, nextDepth, seed,
                     results, requestedPath, requestedLength, nextOptimizedPath,
                     nextOptimizedLength, fromReference, nextReferenceContainer,

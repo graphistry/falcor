@@ -1,4 +1,6 @@
-module.exports = function insertNode(node, parent, key, version, optimizedPath) {
+module.exports = insertNode;
+
+function insertNode(node, parent, key, version, optimizedPath) {
     node[f_key] = key;
     node[f_parent] = parent;
 
@@ -12,4 +14,4 @@ module.exports = function insertNode(node, parent, key, version, optimizedPath) 
     parent[key] = node;
 
     return node;
-};
+}

@@ -28,10 +28,10 @@ function getJSONGraph(model, paths, seed, progressive, expireImmediate) {
         expired = modelRoot.expired,
         materialized = model._materialized,
         hasDataSource = Boolean(model._source),
+        pathsIndex = -1, pathsCount = paths.length,
         treatErrorsAsValues = model._treatErrorsAsValues,
-
-        results = { data: seed },
-        pathsIndex = -1, pathsCount = paths.length;
+        results = { args: null, data: seed, paths: null,
+                    relative: null, requested: null, jsonGraph: null };
 
     while (++pathsIndex < pathsCount) {
         var path = paths[pathsIndex];
@@ -44,8 +44,7 @@ function getJSONGraph(model, paths, seed, progressive, expireImmediate) {
                                boxValues, materialized, hasDataSource, treatErrorsAsValues);
     }
 
-    results.args =
-    results.relative = results.requested;
+    results.args = results.relative = results.requested;
 
     return results;
 }

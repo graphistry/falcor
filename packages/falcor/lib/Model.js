@@ -196,9 +196,9 @@ Model.prototype.deref = require('./deref');
 
 /**
  * A dereferenced model can become invalid when the reference from which it was
- * built has been removed/collected/expired/etc etc.  To fix the issue, a from
- * the parent request should be made (no parent, then from the root) for a valid
- * path and re-dereference performed to update what the model is bound too.
+ * built has been removed/collected/expired/etc etc.  To fix the issue, a request
+ * from the parent should be made (no parent, then from the root) for a valid
+ * path and re-dereference performed to update where the model is bound.
  *
  * @method
  * @private
@@ -326,7 +326,7 @@ Model.prototype.setCache = function modelSetCache(cacheOrJSONGraphEnvelope) {
                 getJSON(options, results[0], null, false, false);
             }
             if (results[2] && (rootOnChangeHandler = modelRoot.onChange)) {
-                rootOnChangeHandler();
+                rootOnChangeHandler.call(modelRoot.topLevelModel);
             }
         }
     } else if (typeof cache === 'undefined') {
@@ -343,12 +343,10 @@ Model.prototype.setCache = function modelSetCache(cacheOrJSONGraphEnvelope) {
  // Storing the boxshot of the first 10 titles in the first 10 genreLists to local storage.
  localStorage.setItem('cache', JSON.stringify(model.getCache('genreLists[0...10][0...10].boxshot')));
  */
-Model.prototype.getCache = function _getCache() {
-
-    var paths = Array.prototype.slice.call(arguments, 0);
+Model.prototype.getCache = function _getCache(...paths) {
 
     if (paths.length === 0) {
-        return getCache(this._root.cache);
+        return getCache(this, this._root.cache);
     }
 
     var seed = {};

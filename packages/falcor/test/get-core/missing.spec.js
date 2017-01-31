@@ -507,7 +507,7 @@ describe('Missing', function() {
                 var x = model._getPathValuesAsPathMap(
                     model,
                     [[{to:1}, {to:1}, {to:1}, ['title', 'summary']]],
-                    { __proto__: FalcorJSON.prototype }
+                    { __proto__: FalcorJSON.prototype }, false, true
                 ).data;
 
                 expect(JSON.parse(x.toString(true, true))).to.deep.equals({

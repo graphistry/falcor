@@ -1,6 +1,4 @@
 var arr = new Array(2);
-var typeofNumber = 'number';
-var typeofObject = 'object';
 var onValue = require('./onValue');
 var FalcorJSON = require('./FalcorJSON');
 var isExpired = require('../../isExpired');
@@ -18,16 +16,17 @@ module.exports = walkPathAndBuildOutput;
 /* eslint-disable camelcase */
 /* eslint-disable no-cond-assign */
 /* eslint-disable no-constant-condition */
-function walkPathAndBuildOutput(root, node, json, path,
+function walkPathAndBuildOutput(root, node, jsonArg, path,
                                 depth, seed, results, requestedPath,
                                 optimizedPath, optimizedLength,
-                                fromReference, referenceContainer,
+                                fromReferenceArg, referenceContainer,
                                 modelRoot, expired, expireImmediate,
                                 branchSelector, boxValues, materialized,
                                 hasDataSource, treatErrorsAsValues,
                                 allowFromWhenceYouCame) {
 
-    var type, refTarget;
+    var json = jsonArg, type, refTarget;
+    var fromReference = fromReferenceArg;
 
     // ============ Check for base cases ================
 
@@ -64,7 +63,7 @@ function walkPathAndBuildOutput(root, node, json, path,
         refContainerAbsPath = referenceContainer[f_abs_path];
     }
 
-    if (!json || typeofObject !== typeof json) {
+    if (!json || 'object' !== typeof json) {
         json = undefined;
     } else if (f_meta = json[f_meta_data]) {
 
@@ -140,7 +139,7 @@ function walkPathAndBuildOutput(root, node, json, path,
             continue;
         }
         // If the keyset is a primitive value, we've found our `nextKey`.
-        else if (typeofObject !== typeof keyset) {
+        else if ('object' !== typeof keyset) {
             nextKey = keyset;
             rangeEnd = undefined;
             keyIsRange = false;
@@ -150,7 +149,7 @@ function walkPathAndBuildOutput(root, node, json, path,
         else {
             rangeEnd = keyset.to;
             nextKey = keyset.from || 0;
-            if (typeofNumber !== typeof rangeEnd) {
+            if ('number' !== typeof rangeEnd) {
                 rangeEnd = nextKey + (keyset.length || 0) - 1;
             }
             if ((rangeEnd - nextKey) < 0) {
@@ -174,7 +173,7 @@ function walkPathAndBuildOutput(root, node, json, path,
 
             if (nextPath === undefined) {
 
-                arr = walkPathAndBuildOutput(
+                walkPathAndBuildOutput(
                     root, next, nextJSON, nextPath, nextDepth, seed,
                     results, requestedPath, nextOptimizedPath,
                     nextOptimizedLength, fromReference, nextReferenceContainer,
@@ -232,7 +231,7 @@ function walkPathAndBuildOutput(root, node, json, path,
                 // cache hit. Otherwise, don't waste the cycles creating a branch
                 // if everything underneath is a cache miss.
 
-                arr = walkPathAndBuildOutput(
+                walkPathAndBuildOutput(
                     root, next, nextJSON, nextPath, nextDepth, seed,
                     results, requestedPath, nextOptimizedPath,
                     nextOptimizedLength, fromReference, nextReferenceContainer,

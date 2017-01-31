@@ -10,7 +10,7 @@ module.exports = {
 function invalidate(model, args, seed, progressive, expireImmediate) {
     if (invalidateArgumentGroups(model, groupCacheArguments(args), expireImmediate)) {
         var rootChangeHandler = model._root.onChange;
-        rootChangeHandler && rootChangeHandler();
+        rootChangeHandler && rootChangeHandler.call(model._root.topLevelModel);
     }
     return {};
 }

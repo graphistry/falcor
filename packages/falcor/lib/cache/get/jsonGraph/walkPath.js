@@ -19,10 +19,11 @@ function walkPathAndBuildOutput(root, node, path,
                                 depth, seed, results,
                                 requestedPath, requestedLength,
                                 optimizedPath, optimizedLength,
-                                fromReference, modelRoot, expired, expireImmediate,
+                                fromReferenceArg, modelRoot, expired, expireImmediate,
                                 boxValues, materialized, hasDataSource, treatErrorsAsValues) {
 
     var type, refTarget;
+    var fromReference = fromReferenceArg;
 
     // ============ Check for base cases ================
 

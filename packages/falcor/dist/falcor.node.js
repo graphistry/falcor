@@ -86,10 +86,12 @@ module.exports =
 /***/ function(module, exports, __webpack_require__) {
 
 var now = __webpack_require__(53);
-var $now = __webpack_require__(31);
+var $now = __webpack_require__(30);
 var $never = __webpack_require__(54);
 
-module.exports = function isExpired(node, expireImmediate) {
+module.exports = isExpired;
+
+function isExpired(node, expireImmediate) {
     var exp = node.$expires;
     if (exp === undefined || exp === null || exp === $never) {
         return false;
@@ -97,32 +99,60 @@ module.exports = function isExpired(node, expireImmediate) {
         return expireImmediate;
     }
     return exp < now();
-};
+}
 
 /***/ },
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
-var splice = __webpack_require__(48);
+var isInternal = __webpack_require__(19);
 
-module.exports = function expireNode(node, expired, lru) {
-    if (!node["ƒ_invalidated"]) {
-        node["ƒ_invalidated"] = true;
-        expired.push(node);
-        splice(lru, node);
+module.exports = clone;
+
+function clone(node) {
+
+    var key,
+        keys = Object.keys(node),
+        json = {},
+        index = -1,
+        length = keys.length;
+
+    while (++index < length) {
+        key = keys[index];
+        if (key !== '$size' && !isInternal(key)) {
+            json[key] = node[key];
+        }
     }
-    return node;
-};
+
+    return json;
+}
 
 /***/ },
 /* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
+var splice = __webpack_require__(48);
+
+module.exports = expireNode;
+
+function expireNode(node, expired, lru) {
+    if (!node["f_invalidated"]) {
+        node["f_invalidated"] = true;
+        expired.push(node);
+        splice(lru, node);
+    }
+    return node;
+}
+
+/***/ },
+/* 3 */
+/***/ function(module, exports, __webpack_require__) {
+
 /* WEBPACK VAR INJECTION */(function(global) {function FalcorJSON(f_meta) {
     if (!f_meta) {
-        this["ƒ_meta"] = {};
-    } else if (!(this["ƒ_meta"] = f_meta["ƒ_meta"])) {
-        this["ƒ_meta"] = f_meta;
+        this["f_meta"] = {};
+    } else if (!(this["f_meta"] = f_meta["f_meta"])) {
+        this["f_meta"] = f_meta;
     }
 }
 
@@ -141,28 +171,28 @@ var protoDescriptors = {
     $__hash: {
         enumerable: false,
         get: function () {
-            var f_meta = this["ƒ_meta"];
+            var f_meta = this["f_meta"];
             return f_meta && f_meta['$code'] || '';
         }
     },
     $__path: {
         enumerable: false,
         get: function () {
-            var f_meta = this["ƒ_meta"];
+            var f_meta = this["f_meta"];
             return f_meta && f_meta["abs_path"] || [];
         }
     },
     $__status: {
         enumerable: false,
         get: function () {
-            var f_meta = this["ƒ_meta"];
+            var f_meta = this["f_meta"];
             return f_meta && f_meta["status"] || 'resolved';
         }
     },
     $__version: {
         enumerable: false,
         get: function () {
-            var f_meta = this["ƒ_meta"];
+            var f_meta = this["f_meta"];
             return f_meta && f_meta["version"] || 0;
         }
     }
@@ -173,7 +203,7 @@ Object.defineProperties(FalcorJSON.prototype, Object.getOwnPropertyNames(Array.p
         var fn = Array.prototype[name];
         if (typeof fn === 'function') {
             descriptors[name] = {
-                value: bindArrayMethod(name, fn),
+                value: bindArrayMethod(fn),
                 writable: true, enumerable: false
             };
         }
@@ -181,21 +211,47 @@ Object.defineProperties(FalcorJSON.prototype, Object.getOwnPropertyNames(Array.p
     return descriptors;
 }, protoDescriptors));
 
-function bindArrayMethod(name, fn) {
-    return new Function('fn', 'return function ' + name + ' () {' + 'return fn.apply(this, arguments);' + '};')(fn);
+function bindArrayMethod(fn) {
+    return function () {
+        var node = this,
+            json = node,
+            atom = node.length,
+            length = atom,
+            type;
+        // If length isn't a number, an $atom with a numeric `value`, or if the
+        // unboxed length isn't a valid Array length, bail early.
+        // If we're still waiting on pending updates, return an empty Array.
+        // Otherwise, throw a RangeError.
+        if ((type = typeof atom) !== 'number' && (!atom || type !== 'object' || atom.$type !== "atom" || typeof (length = atom.value) !== 'number') || length < 0 || length !== (length | 0)) {
+            if (node.$__status === 'pending') {
+                return [];
+            }
+            throw new RangeError('Invalid FalcorJSON length');
+        }
+        // Temporarily set length to the unboxed length, call the bound Array
+        // method, then reset the length back to the boxed value. This is
+        // necessary because a few Array methods (like sort) operate on the
+        // Array in-place, so we can't pass a sliced copy of this instance to
+        // the bound Array method. Do this even when the length isn't boxed, so
+        // if calling the bound Array method writes to length, it's reset to the
+        // value in the cache.
+        node.length = length;
+        json = fn.apply(node, arguments);
+        node.length = atom;
+        return json;
+    };
 }
 
 var isArray = Array.isArray;
-var typeofObject = 'object';
-var typeofString = 'string';
 
-function getInst(inst) {
+function getInst(x) {
+    var inst = x;
     var typeofInst = typeof inst;
     var argsLen = arguments.length;
     if (argsLen === 0) {
         inst = this;
-    } else if (typeofInst !== typeofString) {
-        if (!inst || typeofInst !== typeofObject) {
+    } else if (typeofInst !== 'string') {
+        if (!inst || typeofInst !== 'object') {
             return inst;
         }
     } else if (argsLen !== 1) {
@@ -214,21 +270,20 @@ function toString(includeMetadata, includeStatus) {
     return JSON.stringify(serialize(getInst.call(this, this), serialize, includeMetadata === true, false, includeStatus === true));
 }
 
-function toProps(inst) {
+function toProps(x) {
 
-    inst = getInst.apply(this, arguments);
-
+    var inst = getInst.apply(this, arguments);
     var f_meta_inst,
         f_meta_json,
         version = 0;
     var json = serialize(inst, toProps, true, true);
 
-    if (inst && (f_meta_inst = inst["ƒ_meta"])) {
+    if (inst && (f_meta_inst = inst["f_meta"])) {
         version = f_meta_inst["version"];
     }
 
-    if (!(!json || typeof json !== typeofObject)) {
-        if (f_meta_json = json["ƒ_meta"]) {
+    if (!(!json || typeof json !== 'object')) {
+        if (f_meta_json = json["f_meta"]) {
             f_meta_json["version"] = version;
         }
     }
@@ -238,7 +293,7 @@ function toProps(inst) {
 
 function serialize(inst, serializer, includeMetadata, createWithProto, includeStatus) {
 
-    if (!inst || typeof inst !== typeofObject) {
+    if (!inst || typeof inst !== 'object') {
         return inst;
     }
 
@@ -257,7 +312,7 @@ function serialize(inst, serializer, includeMetadata, createWithProto, includeSt
             xs.__proto__ = FalcorJSON.prototype;
         }
 
-        if (includeMetadata && (f_meta = inst["ƒ_meta"])) {
+        if (includeMetadata && (f_meta = inst["f_meta"])) {
 
             var $code = f_meta['$code'];
             var status = f_meta["status"];
@@ -272,7 +327,7 @@ function serialize(inst, serializer, includeMetadata, createWithProto, includeSt
             deref_from && (f_meta["deref_from"] = deref_from);
             includeStatus && status && (f_meta["status"] = status);
 
-            xs["ƒ_meta"] = f_meta;
+            xs["f_meta"] = f_meta;
 
             if (createWithProto) {
                 ys = {};
@@ -282,7 +337,7 @@ function serialize(inst, serializer, includeMetadata, createWithProto, includeSt
         }
 
         while (++count < total) {
-            if ((key = keys[count]) !== "ƒ_meta") {
+            if ((key = keys[count]) !== "f_meta") {
                 xs[key] = serializer(inst[key], serializer, includeMetadata, createWithProto, includeStatus);
             }
         }
@@ -292,13 +347,13 @@ function serialize(inst, serializer, includeMetadata, createWithProto, includeSt
 }
 
 module.exports = FalcorJSON;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(32)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(31)))
 
 /***/ },
-/* 3 */
+/* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
-var createErrorClass = __webpack_require__(4);
+var createErrorClass = __webpack_require__(5);
 var MESSAGE = '`null` is not allowed in branch key positions.';
 
 /**
@@ -309,7 +364,7 @@ module.exports = createErrorClass('NullInPathError', function () {
 });
 
 /***/ },
-/* 4 */
+/* 5 */
 /***/ function(module, exports) {
 
 module.exports = createErrorClass;
@@ -334,7 +389,7 @@ function createErrorClass(name, init) {
 }
 
 /***/ },
-/* 5 */
+/* 6 */
 /***/ function(module, exports) {
 
 module.exports = isObject;
@@ -344,56 +399,33 @@ function isObject(value) {
 }
 
 /***/ },
-/* 6 */
-/***/ function(module, exports, __webpack_require__) {
-
-var isInternal = __webpack_require__(29);
-
-module.exports = clone;
-
-function clone(node) {
-
-    var key,
-        keys = Object.keys(node),
-        json = {},
-        index = -1,
-        length = keys.length;
-
-    while (++index < length) {
-        key = keys[index];
-        if (isInternal(key)) {
-            continue;
-        }
-        json[key] = node[key];
-    }
-
-    return json;
-}
-
-/***/ },
 /* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
-module.exports = function createHardlink(from, to) {
+module.exports = createHardlink;
+
+function createHardlink(from, to) {
 
     // create a back reference
-    var backRefs = to["ƒ_refs_length"] || 0;
-    to["ƒ_ref" + backRefs] = from;
-    to["ƒ_refs_length"] = backRefs + 1;
+    var backRefs = to["f_refs_length"] || 0;
+    to["f_ref" + backRefs] = from;
+    to["f_refs_length"] = backRefs + 1;
 
     // create a hard reference
-    from["ƒ_ref_index"] = backRefs;
-    from["ƒ_context"] = to;
-};
+    from["f_ref_index"] = backRefs;
+    from["f_context"] = to;
+}
 
 /***/ },
 /* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
-var isObject = __webpack_require__(5);
-module.exports = function getSize(node) {
+var isObject = __webpack_require__(6);
+module.exports = getSize;
+
+function getSize(node) {
     return isObject(node) && node.$size || 0;
-};
+}
 
 /***/ },
 /* 9 */
@@ -434,23 +466,23 @@ function getCachePosition(cache, path) {
 /* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
-var removeNodeAndDescendants = __webpack_require__(26);
-var updateBackReferenceVersions = __webpack_require__(28);
+var removeNodeAndDescendants = __webpack_require__(25);
+var updateBackReferenceVersions = __webpack_require__(27);
 
 module.exports = updateNodeAncestors;
 
 function updateNodeAncestors(node, offset, lru, version) {
     var curr = node,
-        next = curr["ƒ_parent"];
+        next;
     do {
         if ((curr.$size = (curr.$size || 0) - offset) > 0) {
-            if (!(next = curr["ƒ_parent"])) {
-                curr["ƒ_version"] = version;
-            } else if (curr["ƒ_version"] !== version) {
+            if (!(next = curr["f_parent"])) {
+                curr["f_version"] = version;
+            } else if (curr["f_version"] !== version) {
                 updateBackReferenceVersions(curr, version);
             }
-        } else if (next = curr["ƒ_parent"]) {
-            removeNodeAndDescendants(curr, next, curr["ƒ_key"], lru, version);
+        } else if (next = curr["f_parent"]) {
+            removeNodeAndDescendants(curr, next, curr["f_key"], lru, version);
         }
     } while (curr = next);
     return node;
@@ -460,7 +492,7 @@ function updateNodeAncestors(node, offset, lru, version) {
 /* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
-var createErrorClass = __webpack_require__(4);
+var createErrorClass = __webpack_require__(5);
 
 /**
  * InvalidKeySetError happens when a dataSource syncronously throws
@@ -479,46 +511,48 @@ module.exports = createErrorClass('InvalidKeySetError', function (path, keysOrRa
 
 var EXPIRES_NEVER = __webpack_require__(54);
 
+module.exports = lruPromote;
+
 // [H] -> Next -> ... -> [T]
 // [T] -> Prev -> ... -> [H]
-module.exports = function lruPromote(root, object) {
+function lruPromote(lru, node) {
     // Never promote node.$expires === 1.  They cannot expire.
-    if (object.$expires === EXPIRES_NEVER) {
+    if (node.$expires === EXPIRES_NEVER) {
         return;
     }
 
-    var head = root["ƒ_head"];
+    var head = lru["f_head"];
 
     // Nothing is in the cache.
     if (!head) {
-        root["ƒ_head"] = root["ƒ_tail"] = object;
+        lru["f_head"] = lru["f_tail"] = node;
         return;
     }
 
-    if (head === object) {
+    if (head === node) {
         return;
     }
 
     // The item always exist in the cache since to get anything in the
     // cache it first must go through set.
-    var prev = object["ƒ_prev"];
-    var next = object["ƒ_next"];
+    var prev = node["f_prev"];
+    var next = node["f_next"];
     if (next) {
-        next["ƒ_prev"] = prev;
+        next["f_prev"] = prev;
     }
     if (prev) {
-        prev["ƒ_next"] = next;
+        prev["f_next"] = next;
     }
-    object["ƒ_prev"] = undefined;
+    node["f_prev"] = undefined;
 
     // Insert into head position
-    root["ƒ_head"] = object;
-    object["ƒ_next"] = head;
-    head["ƒ_prev"] = object;
+    lru["f_head"] = node;
+    node["f_next"] = head;
+    head["f_prev"] = node;
 
     // If the item we promoted was the tail, then set prev to tail.
-    if (object === root["ƒ_tail"]) {
-        root["ƒ_tail"] = prev;
+    if (node === lru["f_tail"]) {
+        lru["f_tail"] = prev;
     }
 };
 
@@ -637,24 +671,25 @@ Subscription.prototype.dispose = Subscription.prototype.unsubscribe = function (
 /***/ function(module, exports, __webpack_require__) {
 
 var isExpired = __webpack_require__(0);
-var expireNode = __webpack_require__(1);
+var expireNode = __webpack_require__(2);
 var lruPromote = __webpack_require__(12);
 
 module.exports = onValueType;
 
 function onValueType(node, type, json, path, depth, seed, results, requestedPath, requestedLength, optimizedPath, optimizedLength, fromReference, modelRoot, expired, expireImmediate, branchSelector, boxValues, materialized, reportMissing, treatErrorsAsValues, onValue, onMissing, onMaterialize) {
 
+    var _reportMissing = reportMissing;
     var reportMaterialized = reportMissing;
 
     if (type) {
         if (isExpired(node, expireImmediate)) {
-            if (!node["ƒ_invalidated"]) {
+            if (!node["f_invalidated"]) {
                 expireNode(node, expired, modelRoot);
             }
         } else {
             lruPromote(modelRoot, node);
             if (node.value === undefined) {
-                reportMissing = false;
+                _reportMissing = false;
                 reportMaterialized = materialized;
             } else {
                 if (seed) {
@@ -674,7 +709,7 @@ function onValueType(node, type, json, path, depth, seed, results, requestedPath
         return undefined;
     }
 
-    return onMissing(path, depth, results, requestedPath, requestedLength, fromReference, optimizedPath, optimizedLength, reportMissing, materialized, json, branchSelector, boxValues, onMaterialize, modelRoot);
+    return onMissing(path, depth, results, requestedPath, requestedLength, fromReference, optimizedPath, optimizedLength, _reportMissing, materialized, json, branchSelector, boxValues, onMaterialize, modelRoot);
 }
 
 /***/ },
@@ -688,7 +723,7 @@ module.exports = getBoundCacheNode;
 function getBoundCacheNode(model, path) {
     path = path || model._path;
     var node = model._node;
-    if (!node || node["ƒ_parent"] === undefined || node["ƒ_invalidated"]) {
+    if (!node || node["f_parent"] === undefined || node["f_invalidated"]) {
         model._node = null;
         if (path.length === 0) {
             node = model._root.cache;
@@ -708,11 +743,11 @@ function getBoundCacheNode(model, path) {
 
 var arr = new Array(5);
 var isExpired = __webpack_require__(0);
-var expireNode = __webpack_require__(1);
+var expireNode = __webpack_require__(2);
 var createHardlink = __webpack_require__(7);
 var mergeJSONGraphNode = __webpack_require__(72);
-var NullInPathError = __webpack_require__(3);
-var iterateKeySet = __webpack_require__(33);
+var NullInPathError = __webpack_require__(4);
+var iterateKeySet = __webpack_require__(32);
 
 /**
  * Merges a list of {@link JSONGraphEnvelope}s into a {@link JSONGraph}.
@@ -722,7 +757,9 @@ var iterateKeySet = __webpack_require__(33);
  * @return {Array.<Array.<Path>>} - an Array of Arrays where each inner Array is a list of requested and optimized paths (respectively) for the successfully set values.
  */
 
-module.exports = function setJSONGraphs(model, jsonGraphEnvelopes, errorSelector, comparator, expireImmediate) {
+module.exports = setJSONGraphs;
+
+function setJSONGraphs(model, jsonGraphEnvelopes, errorSelector, comparator, expireImmediate) {
 
     var modelRoot = model._root;
     var lru = modelRoot;
@@ -761,13 +798,13 @@ module.exports = function setJSONGraphs(model, jsonGraphEnvelopes, errorSelector
     arr[3] = undefined;
     arr[4] = undefined;
 
-    if (cache["ƒ_version"] === version) {
+    if (cache["f_version"] === version) {
         modelRoot.version = version;
         return [requestedPaths, optimizedPaths, true];
     }
 
     return [requestedPaths, optimizedPaths, false];
-};
+}
 
 /* eslint-disable no-constant-condition */
 function setJSONGraphPathSet(path, depth, root, parent, node, messageRoot, messageParent, message, requestedPaths, optimizedPaths, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector, expireImmediate) {
@@ -782,19 +819,19 @@ function setJSONGraphPathSet(path, depth, root, parent, node, messageRoot, messa
 
         requestedPath.depth = depth;
 
-        var results = setNode(root, parent, node, messageRoot, messageParent, message, key, branch, false, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector, expireImmediate);
+        setNode(root, parent, node, messageRoot, messageParent, message, key, branch, false, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector, expireImmediate);
 
         requestedPath[depth] = key;
         requestedPath.index = depth;
 
-        var nextNode = results[0];
-        var nextParent = results[1];
-        var nextOptimizedPath = results[4];
+        var nextNode = arr[0];
+        var nextParent = arr[1];
+        var nextOptimizedPath = arr[4];
         nextOptimizedPath[nextOptimizedPath.index++] = key;
 
         if (nextNode) {
             if (branch) {
-                setJSONGraphPathSet(path, depth + 1, root, nextParent, nextNode, messageRoot, results[3], results[2], requestedPaths, optimizedPaths, requestedPath, nextOptimizedPath, version, expired, lru, comparator, errorSelector, expireImmediate);
+                setJSONGraphPathSet(path, depth + 1, root, nextParent, nextNode, messageRoot, arr[3], arr[2], requestedPaths, optimizedPaths, requestedPath, nextOptimizedPath, version, expired, lru, comparator, errorSelector, expireImmediate);
             } else {
                 requestedPaths.push(requestedPath.slice(0, requestedPath.index + 1));
                 optimizedPaths.push(nextOptimizedPath.slice(0, nextOptimizedPath.index));
@@ -809,12 +846,13 @@ function setJSONGraphPathSet(path, depth, root, parent, node, messageRoot, messa
 }
 /* eslint-enable */
 
-function setReference(root, node, messageRoot, message, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector, expireImmediate) {
+function setReference(root, nodeArg, messageRoot, message, requestedPath, optimizedPathArg, version, expired, lru, comparator, errorSelector, expireImmediate) {
 
     var parent;
     var messageParent;
+    var node = nodeArg;
     var reference = node.value;
-    optimizedPath = reference.slice(0);
+    var optimizedPath = reference.slice(0);
 
     if (isExpired(node, expireImmediate)) {
         expireNode(node, expired, lru);
@@ -835,21 +873,21 @@ function setReference(root, node, messageRoot, message, requestedPath, optimized
             var branch = index < count;
             optimizedPath.index = index;
 
-            var results = setNode(root, parent, node, messageRoot, messageParent, message, key, branch, true, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector, expireImmediate);
-            node = results[0];
-            optimizedPath = results[4];
+            setNode(root, parent, node, messageRoot, messageParent, message, key, branch, true, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector, expireImmediate);
+            node = arr[0];
+            optimizedPath = arr[4];
             if (!node || typeof node !== 'object') {
                 optimizedPath.index = index;
-                return results;
+                return;
             }
-            parent = results[1];
-            message = results[2];
-            messageParent = results[3];
+            parent = arr[1];
+            message = arr[2];
+            messageParent = arr[3];
         } while (index++ < count);
 
         optimizedPath.index = index;
 
-        if (container["ƒ_context"] !== node) {
+        if (container["f_context"] !== node) {
             createHardlink(container, node);
         }
     }
@@ -859,28 +897,31 @@ function setReference(root, node, messageRoot, message, requestedPath, optimized
     arr[2] = message;
     arr[3] = messageParent;
     arr[4] = optimizedPath;
-
-    return arr;
 }
 
-function setNode(root, parent, node, messageRoot, messageParent, message, key, branch, reference, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector, expireImmediate) {
+function setNode(root, parentArg, nodeArg, messageRoot, messageParentArg, messageArg, key, branch, reference, requestedPath, optimizedPathArg, version, expired, lru, comparator, errorSelector, expireImmediate) {
 
+    var node = nodeArg;
     var type = node.$type;
+    var parent = parentArg;
+    var message = messageArg;
+    var optimizedPath = optimizedPathArg;
+    var messageParent = messageParentArg;
 
     while (type === "ref") {
 
-        var results = setReference(root, node, messageRoot, message, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector, expireImmediate);
+        setReference(root, node, messageRoot, message, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector, expireImmediate);
 
-        node = results[0];
+        node = arr[0];
 
         if (!node || typeof node !== 'object') {
-            return results;
+            return;
         }
 
-        parent = results[1];
-        message = results[2];
-        messageParent = results[3];
-        optimizedPath = results[4];
+        parent = arr[1];
+        message = arr[2];
+        messageParent = arr[3];
+        optimizedPath = arr[4];
         type = node.$type;
     }
 
@@ -889,7 +930,7 @@ function setNode(root, parent, node, messageRoot, messageParent, message, key, b
             if (branch) {
                 throw new NullInPathError();
             } else if (node) {
-                key = node["ƒ_key"];
+                key = node["f_key"];
             }
         } else {
             parent = node;
@@ -906,8 +947,6 @@ function setNode(root, parent, node, messageRoot, messageParent, message, key, b
     arr[2] = message;
     arr[3] = messageParent;
     arr[4] = optimizedPath;
-
-    return arr;
 }
 
 /***/ },
@@ -917,11 +956,11 @@ function setNode(root, parent, node, messageRoot, messageParent, message, key, b
 var arr = new Array(3);
 var isArray = Array.isArray;
 var isExpired = __webpack_require__(0);
-var expireNode = __webpack_require__(1);
+var expireNode = __webpack_require__(2);
 var createHardlink = __webpack_require__(7);
 var getCachePosition = __webpack_require__(9);
-var isInternalKey = __webpack_require__(19);
-var NullInPathError = __webpack_require__(3);
+var isInternalKey = __webpack_require__(29);
+var NullInPathError = __webpack_require__(4);
 var mergeValueOrInsertBranch = __webpack_require__(42);
 
 /**
@@ -932,7 +971,9 @@ var mergeValueOrInsertBranch = __webpack_require__(42);
  * @return {Array.<Array.<Path>>} - an Array of Arrays where each inner Array is a list of requested and optimized paths (respectively) for the successfully set values.
  */
 
-module.exports = function setPathMaps(model, pathMapEnvelopes, errorSelector, comparator, expireImmediate) {
+module.exports = setPathMaps;
+
+function setPathMaps(model, pathMapEnvelopes, errorSelector, comparator, expireImmediate) {
 
     var modelRoot = model._root;
     var expired = modelRoot.expired;
@@ -945,7 +986,7 @@ module.exports = function setPathMaps(model, pathMapEnvelopes, errorSelector, co
         return [[], [], false];
     }
 
-    var parent = node["ƒ_parent"] || cache;
+    var parent = node["f_parent"] || cache;
 
     var requestedPath = [];
     var requestedPaths = [];
@@ -967,13 +1008,13 @@ module.exports = function setPathMaps(model, pathMapEnvelopes, errorSelector, co
     arr[1] = undefined;
     arr[2] = undefined;
 
-    if (cache["ƒ_version"] === version) {
+    if (cache["f_version"] === version) {
         modelRoot.version = version;
         return [requestedPaths, optimizedPaths, true];
     }
 
     return [requestedPaths, optimizedPaths, false];
-};
+}
 
 /* eslint-disable no-constant-condition */
 function setPathMap(pathMap, depth, root, parent, node, requestedPaths, optimizedPaths, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector, expireImmediate) {
@@ -993,14 +1034,14 @@ function setPathMap(pathMap, depth, root, parent, node, requestedPaths, optimize
 
             requestedPath.depth = depth;
 
-            var results = setNode(root, parent, node, key, child, branch, false, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector, expireImmediate);
+            setNode(root, parent, node, key, child, branch, false, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector, expireImmediate);
 
             requestedPath[depth] = key;
             requestedPath.index = depth;
 
-            var nextNode = results[0];
-            var nextParent = results[1];
-            var nextOptimizedPath = results[2];
+            var nextNode = arr[0];
+            var nextParent = arr[1];
+            var nextOptimizedPath = arr[2];
             nextOptimizedPath[nextOptimizedPath.index++] = key;
 
             if (nextNode) {
@@ -1020,11 +1061,12 @@ function setPathMap(pathMap, depth, root, parent, node, requestedPaths, optimize
 }
 /* eslint-enable */
 
-function setReference(value, root, node, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector, expireImmediate) {
+function setReference(value, root, nodeArg, requestedPath, optimizedPathArg, version, expired, lru, comparator, errorSelector, expireImmediate) {
 
     var parent;
+    var node = nodeArg;
     var reference = node.value;
-    optimizedPath = reference.slice(0);
+    var optimizedPath = reference.slice(0);
 
     if (isExpired(node, expireImmediate)) {
         expireNode(node, expired, lru);
@@ -1035,10 +1077,10 @@ function setReference(value, root, node, requestedPath, optimizedPath, version, 
         var container = node;
         parent = root;
 
-        node = node["ƒ_context"];
+        node = node["f_context"];
 
         if (node != null) {
-            parent = node["ƒ_parent"] || root;
+            parent = node["f_parent"] || root;
             optimizedPath.index = reference.length;
         } else {
 
@@ -1052,18 +1094,18 @@ function setReference(value, root, node, requestedPath, optimizedPath, version, 
                 var key = reference[index];
                 var branch = index < count;
                 var results = setNode(root, parent, node, key, value, branch, true, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector, expireImmediate);
-                node = results[0];
-                optimizedPath = results[2];
+                node = arr[0];
+                optimizedPath = arr[2];
                 if (!node || typeof node !== 'object') {
                     optimizedPath.index = index;
-                    return results;
+                    return;
                 }
-                parent = results[1];
+                parent = arr[1];
             } while (index++ < count);
 
             optimizedPath.index = index;
 
-            if (container["ƒ_context"] !== node) {
+            if (container["f_context"] !== node) {
                 createHardlink(container, node);
             }
         }
@@ -1072,26 +1114,27 @@ function setReference(value, root, node, requestedPath, optimizedPath, version, 
     arr[0] = node;
     arr[1] = parent;
     arr[2] = optimizedPath;
-
-    return arr;
 }
 
-function setNode(root, parent, node, key, value, branch, reference, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector, expireImmediate) {
+function setNode(root, parentArg, nodeArg, key, value, branch, reference, requestedPath, optimizedPathArg, version, expired, lru, comparator, errorSelector, expireImmediate) {
 
+    var node = nodeArg;
     var type = node.$type;
+    var parent = parentArg;
+    var optimizedPath = optimizedPathArg;
 
     while (type === "ref") {
 
-        var results = setReference(value, root, node, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector, expireImmediate);
+        setReference(value, root, node, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector, expireImmediate);
 
-        node = results[0];
+        node = arr[0];
 
         if (!node || typeof node !== 'object') {
-            return results;
+            return;
         }
 
-        parent = results[1];
-        optimizedPath = results[2];
+        parent = arr[1];
+        optimizedPath = arr[2];
         type = node && node.$type;
     }
 
@@ -1100,7 +1143,7 @@ function setNode(root, parent, node, key, value, branch, reference, requestedPat
             if (branch) {
                 throw new NullInPathError();
             } else if (node) {
-                key = node["ƒ_key"];
+                key = node["f_key"];
             }
         } else {
             parent = node;
@@ -1113,8 +1156,6 @@ function setNode(root, parent, node, key, value, branch, reference, requestedPat
     arr[0] = node;
     arr[1] = parent;
     arr[2] = optimizedPath;
-
-    return arr;
 }
 
 function getKeys(pathMap) {
@@ -1142,41 +1183,32 @@ function getKeys(pathMap) {
 /***/ function(module, exports, __webpack_require__) {
 
 /**
- * Determined if the key passed in is an internal key.
+ * Determined if the key passed in is an f_ internal key.
  *
  * @param {String} x The key
  * @private
  * @returns {Boolean}
  */
 
-module.exports = isInternalKey;
+var f_ = __webpack_require__(83);
+var regexp = new RegExp('^' + f_, 'i', 'g');
 
-var isInternal = __webpack_require__(29);
-
-function isInternalKey(key) {
-  return key && key[0] === '$' || isInternal(key);
-}
+module.exports = regexp.test.bind(regexp);
 
 /***/ },
 /* 20 */
-/***/ function(module, exports) {
-
-module.exports = require("@graphistry/falcor-path-utils/lib/support/materializedAtom");
-
-/***/ },
-/* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__(34);
 
 /***/ },
-/* 22 */
+/* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__(37);
 
 /***/ },
-/* 23 */
+/* 22 */
 /***/ function(module, exports) {
 
 module.exports = inlineJSONGraphValue;
@@ -1208,7 +1240,7 @@ function inlineJSONGraphValue(node, path, length, seed, branch) {
 /* eslint-enable */
 
 /***/ },
-/* 24 */
+/* 23 */
 /***/ function(module, exports) {
 
 var isArray = Array.isArray;
@@ -1313,18 +1345,18 @@ function isEmptyKeySet(keyset) {
 }
 
 /***/ },
-/* 25 */
+/* 24 */
 /***/ function(module, exports, __webpack_require__) {
 
 var arr = new Array(2);
 var isExpired = __webpack_require__(0);
-var expireNode = __webpack_require__(1);
+var expireNode = __webpack_require__(2);
 var lruPromote = __webpack_require__(12);
 var getSize = __webpack_require__(8);
 var createHardlink = __webpack_require__(7);
 var getBoundCacheNode = __webpack_require__(16);
 var updateNodeAncestors = __webpack_require__(10);
-var iterateKeySet = __webpack_require__(33);
+var iterateKeySet = __webpack_require__(32);
 
 /**
  * Invalidates a list of Paths in a JSON Graph.
@@ -1350,7 +1382,7 @@ function invalidatePathSets(model, paths, expireImmediate) {
 
     var pathIndex = -1;
     var pathCount = paths.length;
-    var parent = node["ƒ_parent"] || cache;
+    var parent = node["f_parent"] || cache;
 
     while (++pathIndex < pathCount) {
 
@@ -1362,7 +1394,7 @@ function invalidatePathSets(model, paths, expireImmediate) {
     arr[0] = undefined;
     arr[1] = undefined;
 
-    if (cache["ƒ_version"] === version) {
+    if (cache["f_version"] === version) {
         modelRoot.version = version;
         return true;
     }
@@ -1378,7 +1410,7 @@ function invalidatePathSet(path, depth, root, parent, node, version, expired, lr
     var key = iterateKeySet(keySet, note);
 
     do {
-        arr = invalidateNode(root, parent, node, key, branch, false, version, expired, lru, expireImmediate);
+        invalidateNode(root, parent, node, key, branch, false, version, expired, lru, expireImmediate);
         var nextNode = arr[0];
         var nextParent = arr[1];
         if (nextNode) {
@@ -1392,13 +1424,15 @@ function invalidatePathSet(path, depth, root, parent, node, version, expired, lr
     } while (!note.done);
 }
 
-function invalidateReference(root, node, version, expired, lru, expireImmediate) {
+function invalidateReference(root, nodeArg, version, expired, lru, expireImmediate) {
+
+    var node = nodeArg;
 
     if (isExpired(node, expireImmediate)) {
         expireNode(node, expired, lru);
         arr[0] = undefined;
         arr[1] = root;
-        return arr;
+        return;
     }
 
     lruPromote(lru, node);
@@ -1407,10 +1441,10 @@ function invalidateReference(root, node, version, expired, lru, expireImmediate)
     var reference = node.value;
     var parent = root;
 
-    node = node["ƒ_context"];
+    node = node["f_context"];
 
     if (node != null) {
-        parent = node["ƒ_parent"] || root;
+        parent = node["f_parent"] || root;
     } else {
 
         var index = 0;
@@ -1421,37 +1455,37 @@ function invalidateReference(root, node, version, expired, lru, expireImmediate)
         do {
             var key = reference[index];
             var branch = index < count;
-            arr = invalidateNode(root, parent, node, key, branch, true, version, expired, lru, expireImmediate);
+            invalidateNode(root, parent, node, key, branch, true, version, expired, lru, expireImmediate);
             node = arr[0];
             if (!node && typeof node !== 'object') {
-                return arr;
+                return;
             }
             parent = arr[1];
         } while (index++ < count);
 
-        if (container["ƒ_context"] !== node) {
+        if (container["f_context"] !== node) {
             createHardlink(container, node);
         }
     }
 
     arr[0] = node;
     arr[1] = parent;
-
-    return arr;
 }
 
-function invalidateNode(root, parent, node, key, branch, reference, version, expired, lru, expireImmediate) {
+function invalidateNode(root, parentArg, nodeArg, key, branch, reference, version, expired, lru, expireImmediate) {
 
+    var node = nodeArg;
+    var parent = parentArg;
     var type = node.$type;
 
     while (type === "ref") {
 
-        arr = invalidateReference(root, node, version, expired, lru, expireImmediate);
+        invalidateReference(root, node, version, expired, lru, expireImmediate);
 
         node = arr[0];
 
         if (!node && typeof node !== 'object') {
-            return arr;
+            return;
         }
 
         parent = arr[1];
@@ -1463,7 +1497,7 @@ function invalidateNode(root, parent, node, key, branch, reference, version, exp
             if (branch) {
                 throw new Error('`null` is not allowed in branch key positions.');
             } else if (node) {
-                key = node["ƒ_key"];
+                key = node["f_key"];
             }
         } else {
             parent = node;
@@ -1473,19 +1507,17 @@ function invalidateNode(root, parent, node, key, branch, reference, version, exp
 
     arr[0] = node;
     arr[1] = parent;
-
-    return arr;
 }
 
 /***/ },
-/* 26 */
+/* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
 var lruSplice = __webpack_require__(48);
-var isInternalKey = __webpack_require__(19);
+var isInternalKey = __webpack_require__(29);
 var unlinkBackReferences = __webpack_require__(75);
 var unlinkForwardReference = __webpack_require__(76);
-var updateBackReferenceVersions = __webpack_require__(28);
+var updateBackReferenceVersions = __webpack_require__(27);
 
 module.exports = removeNodeAndDescendants;
 
@@ -1505,23 +1537,23 @@ function removeNodeAndDescendants(node, parent, key, lru, version) {
             lruSplice(lru, node);
         }
         unlinkBackReferences(updateBackReferenceVersions(node, version));
-        parent[key] = node["ƒ_parent"] = undefined;
+        parent[key] = node["f_parent"] = undefined;
         return true;
     }
     return false;
 }
 
 /***/ },
-/* 27 */
+/* 26 */
 /***/ function(module, exports, __webpack_require__) {
 
 var arr = new Array(3);
 var isExpired = __webpack_require__(0);
-var expireNode = __webpack_require__(1);
+var expireNode = __webpack_require__(2);
 var createHardlink = __webpack_require__(7);
 var getCachePosition = __webpack_require__(9);
-var NullInPathError = __webpack_require__(3);
-var iterateKeySet = __webpack_require__(33);
+var NullInPathError = __webpack_require__(4);
+var iterateKeySet = __webpack_require__(32);
 var mergeValueOrInsertBranch = __webpack_require__(42);
 
 /**
@@ -1532,7 +1564,9 @@ var mergeValueOrInsertBranch = __webpack_require__(42);
  * @return {Array.<Array.<Path>>} - an Array of Arrays where each inner Array is a list of requested and optimized paths (respectively) for the successfully set values.
  */
 
-module.exports = function setPathValues(model, pathValues, errorSelector, comparator, expireImmediate) {
+module.exports = setPathValues;
+
+function setPathValues(model, pathValues, errorSelector, comparator, expireImmediate) {
 
     var modelRoot = model._root;
     var expired = modelRoot.expired;
@@ -1545,7 +1579,7 @@ module.exports = function setPathValues(model, pathValues, errorSelector, compar
         return [[], [], false];
     }
 
-    var parent = node["ƒ_parent"] || cache;
+    var parent = node["f_parent"] || cache;
 
     var requestedPath = [];
     var requestedPaths = [];
@@ -1569,13 +1603,13 @@ module.exports = function setPathValues(model, pathValues, errorSelector, compar
     arr[1] = undefined;
     arr[2] = undefined;
 
-    if (cache["ƒ_version"] === version) {
+    if (cache["f_version"] === version) {
         modelRoot.version = version;
         return [requestedPaths, optimizedPaths, true];
     }
 
     return [requestedPaths, optimizedPaths, false];
-};
+}
 
 /* eslint-disable no-constant-condition */
 function setPathSet(value, path, depth, root, parent, node, requestedPaths, optimizedPaths, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector, expireImmediate) {
@@ -1592,14 +1626,14 @@ function setPathSet(value, path, depth, root, parent, node, requestedPaths, opti
         requestedPath[depth] = key;
         requestedPath.index = depth;
 
-        var results = setNode(root, parent, node, key, value, branch, false, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector, expireImmediate);
+        setNode(root, parent, node, key, value, branch, false, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector, expireImmediate);
 
         requestedPath[depth] = key;
         requestedPath.index = depth;
 
-        var nextNode = results[0];
-        var nextParent = results[1];
-        var nextOptimizedPath = results[2];
+        var nextNode = arr[0];
+        var nextParent = arr[1];
+        var nextOptimizedPath = arr[2];
         nextOptimizedPath[nextOptimizedPath.index++] = key;
 
         if (nextNode) {
@@ -1619,11 +1653,12 @@ function setPathSet(value, path, depth, root, parent, node, requestedPaths, opti
 }
 /* eslint-enable */
 
-function setReference(value, root, node, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector, expireImmediate) {
+function setReference(value, root, nodeArg, requestedPath, optimizedPathArg, version, expired, lru, comparator, errorSelector, expireImmediate) {
 
     var parent;
+    var node = nodeArg;
     var reference = node.value;
-    optimizedPath = reference.slice(0);
+    var optimizedPath = reference.slice(0);
 
     if (isExpired(node, expireImmediate)) {
         expireNode(node, expired, lru);
@@ -1635,10 +1670,10 @@ function setReference(value, root, node, requestedPath, optimizedPath, version, 
         var container = node;
         parent = root;
 
-        node = node["ƒ_context"];
+        node = node["f_context"];
 
         if (node != null) {
-            parent = node["ƒ_parent"] || root;
+            parent = node["f_parent"] || root;
             optimizedPath.index = reference.length;
         } else {
 
@@ -1652,19 +1687,19 @@ function setReference(value, root, node, requestedPath, optimizedPath, version, 
                 var branch = index < count;
                 optimizedPath.index = index;
 
-                var results = setNode(root, parent, node, key, value, branch, true, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector, expireImmediate);
-                node = results[0];
-                optimizedPath = results[2];
+                setNode(root, parent, node, key, value, branch, true, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector, expireImmediate);
+                node = arr[0];
+                optimizedPath = arr[2];
                 if (!node || typeof node !== 'object') {
                     optimizedPath.index = index;
-                    return results;
+                    return;
                 }
-                parent = results[1];
+                parent = arr[1];
             } while (index++ < count);
 
             optimizedPath.index = index;
 
-            if (container["ƒ_context"] !== node) {
+            if (container["f_context"] !== node) {
                 createHardlink(container, node);
             }
         }
@@ -1673,26 +1708,27 @@ function setReference(value, root, node, requestedPath, optimizedPath, version, 
     arr[0] = node;
     arr[1] = parent;
     arr[2] = optimizedPath;
-
-    return arr;
 }
 
-function setNode(root, parent, node, key, value, branch, reference, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector, expireImmediate) {
+function setNode(root, parentArg, nodeArg, key, value, branch, reference, requestedPath, optimizedPathArg, version, expired, lru, comparator, errorSelector, expireImmediate) {
 
+    var node = nodeArg;
     var type = node.$type;
+    var parent = parentArg;
+    var optimizedPath = optimizedPathArg;
 
     while (type === "ref") {
 
-        var results = setReference(value, root, node, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector, expireImmediate);
+        setReference(value, root, node, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector, expireImmediate);
 
-        node = results[0];
+        node = arr[0];
 
         if (!node || typeof node !== 'object') {
-            return results;
+            return;
         }
 
-        parent = results[1];
-        optimizedPath = results[2];
+        parent = arr[1];
+        optimizedPath = arr[2];
         type = node.$type;
     }
 
@@ -1701,7 +1737,7 @@ function setNode(root, parent, node, key, value, branch, reference, requestedPat
             if (branch) {
                 throw new NullInPathError();
             } else if (node) {
-                key = node["ƒ_key"];
+                key = node["f_key"];
             }
         } else {
             parent = node;
@@ -1714,12 +1750,10 @@ function setNode(root, parent, node, key, value, branch, reference, requestedPat
     arr[0] = node;
     arr[1] = parent;
     arr[2] = optimizedPath;
-
-    return arr;
 }
 
 /***/ },
-/* 28 */
+/* 27 */
 /***/ function(module, exports, __webpack_require__) {
 
 module.exports = updateBackReferenceVersions;
@@ -1733,15 +1767,15 @@ function updateBackReferenceVersions(nodeArg, version) {
         n;
     do {
         i = -1;
-        ref = node["ƒ_parent"];
-        node["ƒ_version"] = version;
-        n = node["ƒ_refs_length"] || 0;
+        ref = node["f_parent"];
+        node["f_version"] = version;
+        n = node["f_refs_length"] || 0;
         do {
-            if (ref && ref["ƒ_version"] !== version) {
+            if (ref && ref["f_version"] !== version) {
                 stack[count++] = ref;
             }
             if (++i < n) {
-                ref = node["ƒ_ref" + i];
+                ref = node["f_ref" + i];
                 continue;
             }
             break;
@@ -1751,39 +1785,44 @@ function updateBackReferenceVersions(nodeArg, version) {
 }
 
 /***/ },
+/* 28 */
+/***/ function(module, exports, __webpack_require__) {
+
+var isObject = __webpack_require__(6);
+module.exports = getTimestamp;
+
+function getTimestamp(node) {
+    return isObject(node) && node.$timestamp || undefined;
+}
+
+/***/ },
 /* 29 */
 /***/ function(module, exports, __webpack_require__) {
 
 /**
- * Determined if the key passed in is an f_ internal key.
+ * Determined if the key passed in is an internal key.
  *
  * @param {String} x The key
  * @private
  * @returns {Boolean}
  */
 
-var f_ = __webpack_require__(83);
-var regexp = new RegExp('^' + f_, 'i', 'g');
+module.exports = isInternalKey;
 
-module.exports = regexp.test.bind(regexp);
+var isInternal = __webpack_require__(19);
+
+function isInternalKey(key) {
+  return key && key[0] === '$' || isInternal(key);
+}
 
 /***/ },
 /* 30 */
-/***/ function(module, exports, __webpack_require__) {
-
-var isObject = __webpack_require__(5);
-module.exports = function getTimestamp(node) {
-    return isObject(node) && node.$timestamp || undefined;
-};
-
-/***/ },
-/* 31 */
 /***/ function(module, exports) {
 
 module.exports = 0;
 
 /***/ },
-/* 32 */
+/* 31 */
 /***/ function(module, exports) {
 
 var g;
@@ -1808,10 +1847,16 @@ module.exports = g;
 
 
 /***/ },
-/* 33 */
+/* 32 */
 /***/ function(module, exports) {
 
 module.exports = require("@graphistry/falcor-path-utils/lib/iterateKeySet");
+
+/***/ },
+/* 33 */
+/***/ function(module, exports) {
+
+module.exports = require("@graphistry/falcor-path-utils/lib/support/materializedAtom");
 
 /***/ },
 /* 34 */
@@ -1827,9 +1872,10 @@ var computeFlatBufferHash = __webpack_require__(98);
 
 module.exports = getJSON;
 
-function getJSON(model, paths, seed, progressive, expireImmediate) {
+function getJSON(model, pathsArg, seed, progressive, expireImmediate) {
 
     var node,
+        paths = pathsArg,
         referenceContainer,
         boundPath = model._path,
         modelRoot = model._root,
@@ -1862,7 +1908,6 @@ function getJSON(model, paths, seed, progressive, expireImmediate) {
 
     var isFlatBuffer = false,
         json = seed && seed.json,
-        results = { data: seed },
         boxValues = model._boxed,
         expired = modelRoot.expired,
         recycleJSON = model._recycleJSON,
@@ -1870,7 +1915,9 @@ function getJSON(model, paths, seed, progressive, expireImmediate) {
         branchSelector = modelRoot.branchSelector,
         materialized = seed && model._materialized,
         treatErrorsAsValues = model._treatErrorsAsValues,
-        allowFromWhenceYouCame = model._allowFromWhenceYouCame;
+        allowFromWhenceYouCame = model._allowFromWhenceYouCame,
+        results = { args: null, data: seed, hasValue: false,
+        relative: null, requested: null, missing: null };
 
     var arr,
         path,
@@ -1881,10 +1928,10 @@ function getJSON(model, paths, seed, progressive, expireImmediate) {
 
         if (recycleJSON) {
             isFlatBuffer = true;
-            if (pathsCount > 1 || isArray(paths[0])) {
-                pathsCount = 1;
+            if (pathsCount > 1 && expireImmediate || isArray(paths[0])) {
                 paths = [computeFlatBufferHash(toFlatBuffer(paths, {}))];
             }
+            pathsCount = 1;
         }
 
         do {
@@ -1942,11 +1989,12 @@ module.exports = getReferenceTarget;
 /* eslint-disable no-console */
 /* eslint-disable no-cond-assign */
 /* eslint-disable no-constant-condition */
-function getReferenceTarget(root, ref, modelRoot, expireImmediate) {
+function getReferenceTarget(root, refArg, modelRoot, expireImmediate) {
 
-    promote(modelRoot, ref);
+    promote(modelRoot, refArg);
 
     var context,
+        ref = refArg,
         key,
         type,
         depth = 0,
@@ -1956,7 +2004,7 @@ function getReferenceTarget(root, ref, modelRoot, expireImmediate) {
         length = path.length;
 
     do {
-        if (depth === 0 && undefined !== (context = ref["ƒ_context"])) {
+        if (depth === 0 && undefined !== (context = ref["f_context"])) {
             node = context;
             depth = length;
         } else {
@@ -2026,7 +2074,7 @@ function getReferenceTarget(root, ref, modelRoot, expireImmediate) {
 /* 36 */
 /***/ function(module, exports, __webpack_require__) {
 
-var clone = __webpack_require__(6);
+var clone = __webpack_require__(1);
 var onError = __webpack_require__(62);
 
 module.exports = onJSONValue;
@@ -2079,10 +2127,11 @@ function getJSONGraph(model, paths, seed, progressive, expireImmediate) {
         expired = modelRoot.expired,
         materialized = model._materialized,
         hasDataSource = Boolean(model._source),
-        treatErrorsAsValues = model._treatErrorsAsValues,
-        results = { data: seed },
         pathsIndex = -1,
-        pathsCount = paths.length;
+        pathsCount = paths.length,
+        treatErrorsAsValues = model._treatErrorsAsValues,
+        results = { args: null, data: seed, paths: null,
+        relative: null, requested: null, jsonGraph: null };
 
     while (++pathsIndex < pathsCount) {
         var path = paths[pathsIndex];
@@ -2102,22 +2151,22 @@ function getJSONGraph(model, paths, seed, progressive, expireImmediate) {
 /***/ function(module, exports, __webpack_require__) {
 
 var isArray = Array.isArray;
-var typeofNumber = 'number';
-var typeofObject = 'object';
-var clone = __webpack_require__(6);
-var FalcorJSON = __webpack_require__(2);
-var NullInPathError = __webpack_require__(3);
+var clone = __webpack_require__(1);
+var FalcorJSON = __webpack_require__(3);
+var NullInPathError = __webpack_require__(4);
 var InvalidKeySetError = __webpack_require__(11);
-var materializedAtom = __webpack_require__(20);
+var materializedAtom = __webpack_require__(33);
 
 module.exports = onMaterialize;
 
 /* eslint-disable camelcase */
 /* eslint-disable no-cond-assign */
 /* eslint-disable no-constant-condition */
-function onMaterialize(json, path, depth, length, branchSelector, boxValues, modelRoot) {
+function onMaterialize(jsonArg, path, depth, length, branchSelector, boxValues, modelRoot) {
 
-    var type, refTarget;
+    var json = jsonArg,
+        type,
+        refTarget;
 
     // ============ Check for base cases ================
 
@@ -2140,18 +2189,18 @@ function onMaterialize(json, path, depth, length, branchSelector, boxValues, mod
 
     keyset = path[depth];
 
-    if (!json || typeofObject !== typeof json) {
+    if (!json || 'object' !== typeof json) {
         json = {};
         json.__proto__ = FalcorJSON.prototype;
-        json["ƒ_meta"] = f_meta = {};
+        json["f_meta"] = f_meta = {};
         f_meta["status"] = 'resolved';
         f_meta["version"] = modelRoot.version;
         f_meta["abs_path"] = path.slice(0, depth);
         if (branchSelector) {
             json = branchSelector(json);
         }
-    } else if (!(f_meta = json["ƒ_meta"])) {
-        json["ƒ_meta"] = f_meta = {};
+    } else if (!(f_meta = json["f_meta"])) {
+        json["f_meta"] = f_meta = {};
         f_meta["status"] = 'resolved';
         f_meta["version"] = modelRoot.version;
         f_meta["abs_path"] = path.slice(0, depth);
@@ -2187,7 +2236,7 @@ function onMaterialize(json, path, depth, length, branchSelector, boxValues, mod
     iteratingKeyset: do {
 
         // If the keyset is a primitive value, we've found our `nextKey`.
-        if (typeofObject !== typeof keyset) {
+        if ('object' !== typeof keyset) {
             nextKey = keyset;
             rangeEnd = undefined;
             keyIsRange = false;
@@ -2219,7 +2268,7 @@ function onMaterialize(json, path, depth, length, branchSelector, boxValues, mod
             else {
                     rangeEnd = keyset.to;
                     nextKey = keyset.from || 0;
-                    if (typeofNumber !== typeof rangeEnd) {
+                    if ('number' !== typeof rangeEnd) {
                         rangeEnd = nextKey + (keyset.length || 0) - 1;
                     }
                     if (rangeEnd - nextKey < 0) {
@@ -2301,21 +2350,23 @@ function groupCacheArguments(args) {
 /* 40 */
 /***/ function(module, exports, __webpack_require__) {
 
-module.exports = function insertNode(node, parent, key, version, optimizedPath) {
-    node["ƒ_key"] = key;
-    node["ƒ_parent"] = parent;
+module.exports = insertNode;
+
+function insertNode(node, parent, key, version, optimizedPath) {
+    node["f_key"] = key;
+    node["f_parent"] = parent;
 
     if (version !== undefined) {
-        node["ƒ_version"] = version;
+        node["f_version"] = version;
     }
-    if (!node["ƒ_abs_path"]) {
-        node["ƒ_abs_path"] = optimizedPath.slice(0, optimizedPath.index).concat(key);
+    if (!node["f_abs_path"]) {
+        node["f_abs_path"] = optimizedPath.slice(0, optimizedPath.index).concat(key);
     }
 
     parent[key] = node;
 
     return node;
-};
+}
 
 /***/ },
 /* 41 */
@@ -2323,12 +2374,12 @@ module.exports = function insertNode(node, parent, key, version, optimizedPath) 
 
 var arr = new Array(2);
 var isExpired = __webpack_require__(0);
-var expireNode = __webpack_require__(1);
+var expireNode = __webpack_require__(2);
 var lruPromote = __webpack_require__(12);
 var getSize = __webpack_require__(8);
 var createHardlink = __webpack_require__(7);
 var getBoundCacheNode = __webpack_require__(16);
-var isInternalKey = __webpack_require__(19);
+var isInternalKey = __webpack_require__(29);
 var updateNodeAncestors = __webpack_require__(10);
 
 /**
@@ -2355,7 +2406,7 @@ function invalidatePathMaps(model, pathMapEnvelopes, expireImmediate) {
     }
 
     var pathMapIndex = -1;
-    var parent = node["ƒ_parent"] || cache;
+    var parent = node["f_parent"] || cache;
     var pathMapCount = pathMapEnvelopes.length;
 
     while (++pathMapIndex < pathMapCount) {
@@ -2368,7 +2419,7 @@ function invalidatePathMaps(model, pathMapEnvelopes, expireImmediate) {
     arr[0] = undefined;
     arr[1] = undefined;
 
-    if (cache["ƒ_version"] === version) {
+    if (cache["f_version"] === version) {
         modelRoot.version = version;
         return true;
     }
@@ -2386,7 +2437,7 @@ function invalidatePathMap(pathMap, depth, root, parent, node, version, expired,
         if (!isInternalKey(key)) {
             var child = pathMap[key];
             var branch = !(!child || typeof child !== 'object') && !child.$type;
-            arr = invalidateNode(root, parent, node, key, child, branch, false, version, expired, lru, comparator, expireImmediate);
+            invalidateNode(root, parent, node, key, child, branch, false, version, expired, lru, comparator, expireImmediate);
             var nextNode = arr[0];
             var nextParent = arr[1];
             if (nextNode) {
@@ -2400,13 +2451,15 @@ function invalidatePathMap(pathMap, depth, root, parent, node, version, expired,
     }
 }
 
-function invalidateReference(value, root, node, version, expired, lru, comparator, expireImmediate) {
+function invalidateReference(value, root, nodeArg, version, expired, lru, comparator, expireImmediate) {
+
+    var node = nodeArg;
 
     if (isExpired(node, expireImmediate)) {
         expireNode(node, expired, lru);
         arr[0] = undefined;
         arr[1] = root;
-        return arr;
+        return;
     }
 
     lruPromote(lru, node);
@@ -2415,10 +2468,10 @@ function invalidateReference(value, root, node, version, expired, lru, comparato
     var reference = node.value;
     var parent = root;
 
-    node = node["ƒ_context"];
+    node = node["f_context"];
 
     if (node != null) {
-        parent = node["ƒ_parent"] || root;
+        parent = node["f_parent"] || root;
     } else {
 
         var index = 0;
@@ -2429,37 +2482,37 @@ function invalidateReference(value, root, node, version, expired, lru, comparato
         do {
             var key = reference[index];
             var branch = index < count;
-            arr = invalidateNode(root, parent, node, key, value, branch, true, version, expired, lru, comparator, expireImmediate);
+            invalidateNode(root, parent, node, key, value, branch, true, version, expired, lru, comparator, expireImmediate);
             node = arr[0];
             if (!node && typeof node !== 'object') {
-                return arr;
+                return;
             }
             parent = arr[1];
         } while (index++ < count);
 
-        if (container["ƒ_context"] !== node) {
+        if (container["f_context"] !== node) {
             createHardlink(container, node);
         }
     }
 
     arr[0] = node;
     arr[1] = parent;
-
-    return arr;
 }
 
-function invalidateNode(root, parent, node, key, value, branch, reference, version, expired, lru, comparator, expireImmediate) {
+function invalidateNode(root, parentArg, nodeArg, key, value, branch, reference, version, expired, lru, comparator, expireImmediate) {
 
+    var node = nodeArg;
+    var parent = parentArg;
     var type = node.$type;
 
     while (type === "ref") {
 
-        arr = invalidateReference(value, root, node, version, expired, lru, comparator, expireImmediate);
+        invalidateReference(value, root, node, version, expired, lru, comparator, expireImmediate);
 
         node = arr[0];
 
         if (!node && typeof node !== 'object') {
-            return arr;
+            return;
         }
 
         parent = arr[1];
@@ -2471,7 +2524,7 @@ function invalidateNode(root, parent, node, key, value, branch, reference, versi
             if (branch) {
                 throw new Error('`null` is not allowed in branch key positions.');
             } else if (node) {
-                key = node["ƒ_key"];
+                key = node["f_key"];
             }
         } else {
             parent = node;
@@ -2481,30 +2534,32 @@ function invalidateNode(root, parent, node, key, value, branch, reference, versi
 
     arr[0] = node;
     arr[1] = parent;
-
-    return arr;
 }
 
 /***/ },
 /* 42 */
 /***/ function(module, exports, __webpack_require__) {
 
-var $now = __webpack_require__(31);
+var $now = __webpack_require__(30);
 var getType = __webpack_require__(92);
 var getSize = __webpack_require__(8);
-var getTimestamp = __webpack_require__(30);
+var getTimestamp = __webpack_require__(28);
 
 var wrapNode = __webpack_require__(45);
 var isExpired = __webpack_require__(0);
-var expireNode = __webpack_require__(1);
+var expireNode = __webpack_require__(2);
 var insertNode = __webpack_require__(40);
 var replaceNode = __webpack_require__(44);
 var reconstructPath = __webpack_require__(43);
 var updateNodeAncestors = __webpack_require__(10);
-var removeNodeAndDescendants = __webpack_require__(26);
+var removeNodeAndDescendants = __webpack_require__(25);
 
-module.exports = function mergeValueOrInsertBranch(parent, node, key, value, branch, reference, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector, expireImmediate) {
+module.exports = mergeValueOrInsertBranch;
 
+function mergeValueOrInsertBranch(parentArg, nodeArg, key, value, branch, reference, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector, expireImmediate) {
+
+    var node = nodeArg;
+    var parent = parentArg;
     var cType = getType(node, reference);
 
     if (branch || reference) {
@@ -2576,23 +2631,27 @@ module.exports = function mergeValueOrInsertBranch(parent, node, key, value, bra
  * @return {Array} A new array, with the path which represents the node we're about
  * to insert
  */
-module.exports = function reconstructPath(currentPath, key) {
+module.exports = reconstructPath;
+
+function reconstructPath(currentPath, key) {
 
   var path = currentPath.slice(0, currentPath.depth);
   path[path.length] = key;
 
   return path;
-};
+}
 
 /***/ },
 /* 44 */
 /***/ function(module, exports, __webpack_require__) {
 
 var transferBackReferences = __webpack_require__(74);
-var removeNodeAndDescendants = __webpack_require__(26);
-var updateBackReferenceVersions = __webpack_require__(28);
+var removeNodeAndDescendants = __webpack_require__(25);
+var updateBackReferenceVersions = __webpack_require__(27);
 
-module.exports = function replaceNode(node, replacement, parent, key, lru, version) {
+module.exports = replaceNode;
+
+function replaceNode(node, replacement, parent, key, lru, version) {
     if (node === replacement) {
         return node;
     } else if (!(!node || typeof node !== 'object')) {
@@ -2603,7 +2662,7 @@ module.exports = function replaceNode(node, replacement, parent, key, lru, versi
 
     parent[key] = replacement;
     return replacement;
-};
+}
 
 /***/ },
 /* 45 */
@@ -2614,29 +2673,31 @@ var now = __webpack_require__(53);
 var clone = __webpack_require__(90);
 var getSize = __webpack_require__(8);
 var getExpires = __webpack_require__(91);
-var expiresNow = __webpack_require__(31);
+var expiresNow = __webpack_require__(30);
 
 var atomSize = 50;
 
-module.exports = function wrapNode(nodeArg, typeArg, value) {
+module.exports = wrapNode;
+
+function wrapNode(nodeArg, typeArg, value) {
 
     var size = 0;
     var node = nodeArg;
     var type = typeArg;
 
     if (type) {
-        var modelCreated = node["ƒ_wrapped_value"];
+        var modelCreated = node["f_wrapped_value"];
         node = clone(node);
         size = getSize(node);
         node.$type = type;
-        node["ƒ_prev"] = undefined;
-        node["ƒ_next"] = undefined;
-        node["ƒ_wrapped_value"] = modelCreated || false;
+        node["f_prev"] = undefined;
+        node["f_next"] = undefined;
+        node["f_wrapped_value"] = modelCreated || false;
     } else {
         node = { $type: "atom", value: value };
-        node["ƒ_prev"] = undefined;
-        node["ƒ_next"] = undefined;
-        node["ƒ_wrapped_value"] = true;
+        node["f_prev"] = undefined;
+        node["f_next"] = undefined;
+        node["f_wrapped_value"] = true;
     }
 
     if (value == null) {
@@ -2674,7 +2735,7 @@ module.exports = function wrapNode(nodeArg, typeArg, value) {
 /* 46 */
 /***/ function(module, exports, __webpack_require__) {
 
-var createErrorClass = __webpack_require__(4);
+var createErrorClass = __webpack_require__(5);
 
 module.exports = createErrorClass('CircularReferenceError', function (referencePath) {
     this.message = 'Encountered circular reference ' + JSON.stringify(referencePath);
@@ -2684,7 +2745,7 @@ module.exports = createErrorClass('CircularReferenceError', function (referenceP
 /* 47 */
 /***/ function(module, exports, __webpack_require__) {
 
-var createErrorClass = __webpack_require__(4);
+var createErrorClass = __webpack_require__(5);
 var MESSAGE = 'An exception was thrown when making a request';
 
 /**
@@ -2702,26 +2763,28 @@ module.exports = createErrorClass('InvalidSourceError', function (error) {
 /* 48 */
 /***/ function(module, exports, __webpack_require__) {
 
-module.exports = function lruSplice(root, object) {
+module.exports = lruSplice;
+
+function lruSplice(lru, node) {
 
     // Its in the cache.  Splice out.
-    var prev = object["ƒ_prev"];
-    var next = object["ƒ_next"];
+    var prev = node["f_prev"];
+    var next = node["f_next"];
     if (next) {
-        next["ƒ_prev"] = prev;
+        next["f_prev"] = prev;
     }
     if (prev) {
-        prev["ƒ_next"] = next;
+        prev["f_next"] = next;
     }
-    object["ƒ_prev"] = object["ƒ_next"] = undefined;
+    node["f_prev"] = node["f_next"] = undefined;
 
-    if (object === root["ƒ_head"]) {
-        root["ƒ_head"] = next;
+    if (node === lru["f_head"]) {
+        lru["f_head"] = next;
     }
-    if (object === root["ƒ_tail"]) {
-        root["ƒ_tail"] = prev;
+    if (node === lru["f_tail"]) {
+        lru["f_tail"] = prev;
     }
-};
+}
 
 /***/ },
 /* 49 */
@@ -2789,7 +2852,7 @@ Source.prototype.then = function then(onNext, onError) {
     }
     return this._promise.then(onNext, onError);
 };
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(32)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(31)))
 
 /***/ },
 /* 50 */
@@ -2813,22 +2876,26 @@ module.exports = ImmediateScheduler;
 /* 51 */
 /***/ function(module, exports, __webpack_require__) {
 
-var isObject = __webpack_require__(5);
+var isObject = __webpack_require__(6);
 
-module.exports = function isJSONEnvelope(envelope) {
+module.exports = isJSONEnvelope;
+
+function isJSONEnvelope(envelope) {
     return isObject(envelope) && 'json' in envelope;
-};
+}
 
 /***/ },
 /* 52 */
 /***/ function(module, exports, __webpack_require__) {
 
 var isArray = Array.isArray;
-var isObject = __webpack_require__(5);
+var isObject = __webpack_require__(6);
 
-module.exports = function isJSONGraphEnvelope(envelope) {
+module.exports = isJSONGraphEnvelope;
+
+function isJSONGraphEnvelope(envelope) {
     return isObject(envelope) && isArray(envelope.paths) && (isObject(envelope.jsonGraph) || isObject(envelope.jsong) || isObject(envelope.json) || isObject(envelope.values) || isObject(envelope.value));
-};
+}
 
 /***/ },
 /* 53 */
@@ -2853,7 +2920,7 @@ module.exports = require("@graphistry/falcor-path-utils/lib/collapse");
 /***/ function(module, exports, __webpack_require__) {
 
 var Model = __webpack_require__(57);
-var FalcorJSON = __webpack_require__(2);
+var FalcorJSON = __webpack_require__(3);
 
 function falcor(opts) {
     if (!(this instanceof Model)) {
@@ -2876,14 +2943,14 @@ module.exports = falcor;
 
 var Call = __webpack_require__(85);
 var ModelRoot = __webpack_require__(59);
-var FalcorJSON = __webpack_require__(2);
+var FalcorJSON = __webpack_require__(3);
 var ModelDataSourceAdapter = __webpack_require__(58);
 var TimeoutScheduler = __webpack_require__(89);
 var ImmediateScheduler = __webpack_require__(50);
 var collapse = __webpack_require__(55);
 
 var getSize = __webpack_require__(8);
-var isObject = __webpack_require__(5);
+var isObject = __webpack_require__(6);
 var isJSONEnvelope = __webpack_require__(51);
 var getCachePosition = __webpack_require__(9);
 var isJSONGraphEnvelope = __webpack_require__(52);
@@ -2891,9 +2958,9 @@ var isJSONGraphEnvelope = __webpack_require__(52);
 var setCache = __webpack_require__(18);
 var setJSONGraphs = __webpack_require__(17);
 
-var getJSON = __webpack_require__(21);
+var getJSON = __webpack_require__(20);
 var getCache = __webpack_require__(69);
-var getJSONGraph = __webpack_require__(22);
+var getJSONGraph = __webpack_require__(21);
 
 module.exports = Model;
 
@@ -3095,9 +3162,9 @@ Model.prototype.deref = __webpack_require__(78);
 
 /**
  * A dereferenced model can become invalid when the reference from which it was
- * built has been removed/collected/expired/etc etc.  To fix the issue, a from
- * the parent request should be made (no parent, then from the root) for a valid
- * path and re-dereference performed to update what the model is bound too.
+ * built has been removed/collected/expired/etc etc.  To fix the issue, a request
+ * from the parent should be made (no parent, then from the root) for a valid
+ * path and re-dereference performed to update where the model is bound.
  *
  * @method
  * @private
@@ -3198,8 +3265,8 @@ Model.prototype.setCache = function modelSetCache(cacheOrJSONGraphEnvelope) {
 
         if (typeof cache !== 'undefined') {
             modelRoot.expired = [];
-            modelRoot["ƒ_head"] = undefined;
-            modelRoot["ƒ_tail"] = undefined;
+            modelRoot["f_head"] = undefined;
+            modelRoot["f_tail"] = undefined;
             if (this._recycleJSON) {
                 this._seed = {};
                 this._seed.__proto__ = FalcorJSON.prototype;
@@ -3221,7 +3288,7 @@ Model.prototype.setCache = function modelSetCache(cacheOrJSONGraphEnvelope) {
                 getJSON(options, results[0], null, false, false);
             }
             if (results[2] && (rootOnChangeHandler = modelRoot.onChange)) {
-                rootOnChangeHandler();
+                rootOnChangeHandler.call(modelRoot.topLevelModel);
             }
         }
     } else if (typeof cache === 'undefined') {
@@ -3239,11 +3306,12 @@ Model.prototype.setCache = function modelSetCache(cacheOrJSONGraphEnvelope) {
  localStorage.setItem('cache', JSON.stringify(model.getCache('genreLists[0...10][0...10].boxshot')));
  */
 Model.prototype.getCache = function _getCache() {
-
-    var paths = Array.prototype.slice.call(arguments, 0);
+    for (var _len6 = arguments.length, paths = Array(_len6), _key6 = 0; _key6 < _len6; _key6++) {
+        paths[_key6] = arguments[_key6];
+    }
 
     if (paths.length === 0) {
-        return getCache(this._root.cache);
+        return getCache(this, this._root.cache);
     }
 
     var seed = {};
@@ -3472,7 +3540,7 @@ Model.prototype._fromWhenceYouCame = function fromWhenceYouCame(allow) {
 
 Model.prototype._optimizePath = function _optimizePath(path) {
     var node = getCachePosition(this._root.cache, path);
-    var abs_path = node && node["ƒ_abs_path"] || [];
+    var abs_path = node && node["f_abs_path"] || [];
     return abs_path.slice(0);
 };
 
@@ -3480,12 +3548,12 @@ Model.prototype._getVersion = __webpack_require__(70);
 Model.prototype._getPathValuesAsPathMap = getJSON;
 Model.prototype._getPathValuesAsJSONG = getJSONGraph;
 
-Model.prototype._setPathValues = __webpack_require__(27);
+Model.prototype._setPathValues = __webpack_require__(26);
 Model.prototype._setPathMaps = __webpack_require__(18);
 Model.prototype._setJSONGs = __webpack_require__(17);
 Model.prototype._setCache = __webpack_require__(18);
 
-Model.prototype._invalidatePathValues = __webpack_require__(25);
+Model.prototype._invalidatePathValues = __webpack_require__(24);
 Model.prototype._invalidatePathMaps = __webpack_require__(41);
 
 /***/ },
@@ -3518,7 +3586,7 @@ module.exports = ModelDataSourceAdapter;
 
 var functionTypeof = 'function';
 var Requests = __webpack_require__(86);
-var getTimestamp = __webpack_require__(30);
+var getTimestamp = __webpack_require__(28);
 
 function ModelRoot(o, model) {
 
@@ -3601,8 +3669,8 @@ module.exports = ModelRoot;
 /* 60 */
 /***/ function(module, exports, __webpack_require__) {
 
-var getJSON = __webpack_require__(21);
-var getJSONGraph = __webpack_require__(22);
+var getJSON = __webpack_require__(20);
+var getJSONGraph = __webpack_require__(21);
 
 module.exports = { json: json, jsonGraph: jsonGraph };
 
@@ -3664,7 +3732,7 @@ module.exports = {
 /* 62 */
 /***/ function(module, exports, __webpack_require__) {
 
-var clone = __webpack_require__(6);
+var clone = __webpack_require__(1);
 
 module.exports = onError;
 
@@ -3690,16 +3758,14 @@ function onError(node, depth, results, requestedPath, fromReference, boxValues) 
 /***/ function(module, exports, __webpack_require__) {
 
 var arr = new Array(2);
-var typeofNumber = 'number';
-var typeofObject = 'object';
 var onValue = __webpack_require__(36);
-var FalcorJSON = __webpack_require__(2);
+var FalcorJSON = __webpack_require__(3);
 var isExpired = __webpack_require__(0);
 var onValueType = __webpack_require__(15);
-var originalOnMissing = __webpack_require__(24);
+var originalOnMissing = __webpack_require__(23);
 var getReferenceTarget = __webpack_require__(35);
 var onMaterialize = __webpack_require__(68);
-var NullInPathError = __webpack_require__(3);
+var NullInPathError = __webpack_require__(4);
 var InvalidKeySetError = __webpack_require__(11);
 var getHashCode = __webpack_require__(100);
 var flatBufferToPaths = __webpack_require__(99);
@@ -3709,9 +3775,12 @@ module.exports = walkPathAndBuildOutput;
 /* eslint-disable camelcase */
 /* eslint-disable no-cond-assign */
 /* eslint-disable no-constant-condition */
-function walkPathAndBuildOutput(root, node, json, path, depth, seed, results, requestedPath, optimizedPath, optimizedLength, fromReference, referenceContainer, modelRoot, expired, expireImmediate, branchSelector, boxValues, materialized, hasDataSource, treatErrorsAsValues, allowFromWhenceYouCame) {
+function walkPathAndBuildOutput(root, node, jsonArg, path, depth, seed, results, requestedPath, optimizedPath, optimizedLength, fromReferenceArg, referenceContainer, modelRoot, expired, expireImmediate, branchSelector, boxValues, materialized, hasDataSource, treatErrorsAsValues, allowFromWhenceYouCame) {
 
-    var type, refTarget;
+    var json = jsonArg,
+        type,
+        refTarget;
+    var fromReference = fromReferenceArg;
 
     // ============ Check for base cases ================
 
@@ -3747,19 +3816,19 @@ function walkPathAndBuildOutput(root, node, json, path, depth, seed, results, re
 
     if (allowFromWhenceYouCame && referenceContainer) {
         refContainerRefPath = referenceContainer.value;
-        refContainerAbsPath = referenceContainer["ƒ_abs_path"];
+        refContainerAbsPath = referenceContainer["f_abs_path"];
     }
 
-    if (!json || typeofObject !== typeof json) {
+    if (!json || 'object' !== typeof json) {
         json = undefined;
-    } else if (f_meta = json["ƒ_meta"]) {
+    } else if (f_meta = json["f_meta"]) {
 
-        nodeAbsPath = node["ƒ_abs_path"];
+        nodeAbsPath = node["f_abs_path"];
         jsonAbsPath = f_meta["abs_path"];
 
         if (!branchSelector && !(json instanceof FalcorJSON)) {
             json.__proto__ = {};
-            json.__proto__["ƒ_meta"] = f_meta;
+            json.__proto__["f_meta"] = f_meta;
             json.__proto__.__proto__ = FalcorJSON.prototype;
         }
 
@@ -3767,7 +3836,7 @@ function walkPathAndBuildOutput(root, node, json, path, depth, seed, results, re
             f_meta['$code'] = '';
             f_meta["status"] = 'pending';
             f_meta["abs_path"] = nodeAbsPath;
-            f_meta["version"] = node["ƒ_version"];
+            f_meta["version"] = node["f_version"];
             refContainerRefPath && (f_meta["deref_to"] = refContainerRefPath);
             refContainerAbsPath && (f_meta["deref_from"] = refContainerAbsPath);
             if (f_old_keys = f_meta["keys"]) {
@@ -3781,7 +3850,7 @@ function walkPathAndBuildOutput(root, node, json, path, depth, seed, results, re
             arr[0] = json;
             arr[1] = true;
             return arr;
-        } else if (!(f_meta["version"] !== node["ƒ_version"] || f_meta['$code'] !== path['$code'])) {
+        } else if (!(f_meta["version"] !== node["f_version"] || f_meta['$code'] !== path['$code'])) {
             results.hasValue = true;
             arr[0] = json;
             arr[1] = false;
@@ -3790,7 +3859,7 @@ function walkPathAndBuildOutput(root, node, json, path, depth, seed, results, re
 
         f_old_keys = f_meta["keys"];
         f_meta["abs_path"] = nodeAbsPath;
-        f_meta["version"] = node["ƒ_version"];
+        f_meta["version"] = node["f_version"];
         refContainerRefPath && (f_meta["deref_to"] = refContainerRefPath);
         refContainerAbsPath && (f_meta["deref_from"] = refContainerAbsPath);
     }
@@ -3824,7 +3893,7 @@ function walkPathAndBuildOutput(root, node, json, path, depth, seed, results, re
             continue;
         }
         // If the keyset is a primitive value, we've found our `nextKey`.
-        else if (typeofObject !== typeof keyset) {
+        else if ('object' !== typeof keyset) {
                 nextKey = keyset;
                 rangeEnd = undefined;
                 keyIsRange = false;
@@ -3834,7 +3903,7 @@ function walkPathAndBuildOutput(root, node, json, path, depth, seed, results, re
             else {
                     rangeEnd = keyset.to;
                     nextKey = keyset.from || 0;
-                    if (typeofNumber !== typeof rangeEnd) {
+                    if ('number' !== typeof rangeEnd) {
                         rangeEnd = nextKey + (keyset.length || 0) - 1;
                     }
                     if (rangeEnd - nextKey < 0) {
@@ -3858,7 +3927,7 @@ function walkPathAndBuildOutput(root, node, json, path, depth, seed, results, re
 
             if (nextPath === undefined) {
 
-                arr = walkPathAndBuildOutput(root, next, nextJSON, nextPath, nextDepth, seed, results, requestedPath, nextOptimizedPath, nextOptimizedLength, fromReference, nextReferenceContainer, modelRoot, expired, expireImmediate, branchSelector, boxValues, materialized, hasDataSource, treatErrorsAsValues, allowFromWhenceYouCame);
+                walkPathAndBuildOutput(root, next, nextJSON, nextPath, nextDepth, seed, results, requestedPath, nextOptimizedPath, nextOptimizedLength, fromReference, nextReferenceContainer, modelRoot, expired, expireImmediate, branchSelector, boxValues, materialized, hasDataSource, treatErrorsAsValues, allowFromWhenceYouCame);
 
                 if (arr[1] === true) {
                     hasMissingPath = true;
@@ -3909,7 +3978,7 @@ function walkPathAndBuildOutput(root, node, json, path, depth, seed, results, re
                 // cache hit. Otherwise, don't waste the cycles creating a branch
                 // if everything underneath is a cache miss.
 
-                arr = walkPathAndBuildOutput(root, next, nextJSON, nextPath, nextDepth, seed, results, requestedPath, nextOptimizedPath, nextOptimizedLength, fromReference, nextReferenceContainer, modelRoot, expired, expireImmediate, branchSelector, boxValues, materialized, hasDataSource, treatErrorsAsValues, allowFromWhenceYouCame);
+                walkPathAndBuildOutput(root, next, nextJSON, nextPath, nextDepth, seed, results, requestedPath, nextOptimizedPath, nextOptimizedLength, fromReference, nextReferenceContainer, modelRoot, expired, expireImmediate, branchSelector, boxValues, materialized, hasDataSource, treatErrorsAsValues, allowFromWhenceYouCame);
 
                 if (arr[1] === true) {
                     hasMissingPath = true;
@@ -3928,12 +3997,12 @@ function walkPathAndBuildOutput(root, node, json, path, depth, seed, results, re
             // branch to contain it.
             if (f_meta === undefined) {
                 f_meta = {};
-                f_meta["version"] = node["ƒ_version"];
-                f_meta["abs_path"] = node["ƒ_abs_path"];
+                f_meta["version"] = node["f_version"];
+                f_meta["abs_path"] = node["f_abs_path"];
                 refContainerRefPath && (f_meta["deref_to"] = refContainerRefPath);
                 refContainerAbsPath && (f_meta["deref_from"] = refContainerAbsPath);
                 json = {};
-                json["ƒ_meta"] = f_meta;
+                json["f_meta"] = f_meta;
                 json.__proto__ = FalcorJSON.prototype;
                 // Empower developers to instrument branch node creation by
                 // providing a custom function. If they do, delegate branch
@@ -4022,27 +4091,27 @@ function arrayEqual(xs, ys) {
 
 var arr = new Array(2);
 var isArray = Array.isArray;
-var typeofNumber = 'number';
-var typeofObject = 'object';
 var onValue = __webpack_require__(36);
-var onMissing = __webpack_require__(24);
-var FalcorJSON = __webpack_require__(2);
+var onMissing = __webpack_require__(23);
+var FalcorJSON = __webpack_require__(3);
 var onValueType = __webpack_require__(15);
 var isExpired = __webpack_require__(0);
 var onMaterialize = __webpack_require__(38);
 var getReferenceTarget = __webpack_require__(35);
-var NullInPathError = __webpack_require__(3);
+var NullInPathError = __webpack_require__(4);
 var InvalidKeySetError = __webpack_require__(11);
-var materializedAtom = __webpack_require__(20);
 
 module.exports = walkPathAndBuildOutput;
 
 /* eslint-disable camelcase */
 /* eslint-disable no-cond-assign */
 /* eslint-disable no-constant-condition */
-function walkPathAndBuildOutput(root, node, json, path, depth, seed, results, requestedPath, requestedLength, optimizedPath, optimizedLength, fromReference, referenceContainer, modelRoot, expired, expireImmediate, branchSelector, boxValues, materialized, hasDataSource, treatErrorsAsValues, allowFromWhenceYouCame) {
+function walkPathAndBuildOutput(root, node, jsonArg, path, depth, seed, results, requestedPath, requestedLength, optimizedPath, optimizedLength, fromReferenceArg, referenceContainer, modelRoot, expired, expireImmediate, branchSelector, boxValues, materialized, hasDataSource, treatErrorsAsValues, allowFromWhenceYouCame) {
 
-    var type, refTarget;
+    var json = jsonArg,
+        type,
+        refTarget;
+    var fromReference = fromReferenceArg;
 
     // ============ Check for base cases ================
 
@@ -4094,14 +4163,14 @@ function walkPathAndBuildOutput(root, node, json, path, depth, seed, results, re
 
     if (allowFromWhenceYouCame && referenceContainer) {
         refContainerRefPath = referenceContainer.value;
-        refContainerAbsPath = referenceContainer["ƒ_abs_path"];
+        refContainerAbsPath = referenceContainer["f_abs_path"];
     }
 
-    if (!json || typeofObject !== typeof json) {
+    if (!json || 'object' !== typeof json) {
         json = undefined;
-    } else if (f_meta = json["ƒ_meta"]) {
-        f_meta["version"] = node["ƒ_version"];
-        f_meta["abs_path"] = node["ƒ_abs_path"];
+    } else if (f_meta = json["f_meta"]) {
+        f_meta["version"] = node["f_version"];
+        f_meta["abs_path"] = node["f_abs_path"];
         refContainerRefPath && (f_meta["deref_to"] = refContainerRefPath);
         refContainerAbsPath && (f_meta["deref_from"] = refContainerAbsPath);
     }
@@ -4134,7 +4203,7 @@ function walkPathAndBuildOutput(root, node, json, path, depth, seed, results, re
     iteratingKeyset: do {
 
         // If the keyset is a primitive value, we've found our `nextKey`.
-        if (typeofObject !== typeof keyset) {
+        if ('object' !== typeof keyset) {
             nextKey = keyset;
             rangeEnd = undefined;
             keyIsRange = false;
@@ -4166,7 +4235,7 @@ function walkPathAndBuildOutput(root, node, json, path, depth, seed, results, re
             else {
                     rangeEnd = keyset.to;
                     nextKey = keyset.from || 0;
-                    if (typeofNumber !== typeof rangeEnd) {
+                    if ('number' !== typeof rangeEnd) {
                         rangeEnd = nextKey + (keyset.length || 0) - 1;
                     }
                     if (rangeEnd - nextKey < 0) {
@@ -4189,7 +4258,7 @@ function walkPathAndBuildOutput(root, node, json, path, depth, seed, results, re
 
             if (nextDepth === requestedLength) {
 
-                arr = walkPathAndBuildOutput(root, next, nextJSON, path, nextDepth, seed, results, requestedPath, requestedLength, nextOptimizedPath, nextOptimizedLength, fromReference, nextReferenceContainer, modelRoot, expired, expireImmediate, branchSelector, boxValues, materialized, hasDataSource, treatErrorsAsValues, allowFromWhenceYouCame);
+                walkPathAndBuildOutput(root, next, nextJSON, path, nextDepth, seed, results, requestedPath, requestedLength, nextOptimizedPath, nextOptimizedLength, fromReference, nextReferenceContainer, modelRoot, expired, expireImmediate, branchSelector, boxValues, materialized, hasDataSource, treatErrorsAsValues, allowFromWhenceYouCame);
 
                 if (arr[1] === true) {
                     hasMissingPath = true;
@@ -4237,7 +4306,7 @@ function walkPathAndBuildOutput(root, node, json, path, depth, seed, results, re
                 // cache hit. Otherwise, don't waste the cycles creating a branch
                 // if everything underneath is a cache miss.
 
-                arr = walkPathAndBuildOutput(root, next, nextJSON, path, nextDepth, seed, results, requestedPath, requestedLength, nextOptimizedPath, nextOptimizedLength, fromReference, nextReferenceContainer, modelRoot, expired, expireImmediate, branchSelector, boxValues, materialized, hasDataSource, treatErrorsAsValues, allowFromWhenceYouCame);
+                walkPathAndBuildOutput(root, next, nextJSON, path, nextDepth, seed, results, requestedPath, requestedLength, nextOptimizedPath, nextOptimizedLength, fromReference, nextReferenceContainer, modelRoot, expired, expireImmediate, branchSelector, boxValues, materialized, hasDataSource, treatErrorsAsValues, allowFromWhenceYouCame);
 
                 if (arr[1] === true) {
                     hasMissingPath = true;
@@ -4253,12 +4322,12 @@ function walkPathAndBuildOutput(root, node, json, path, depth, seed, results, re
             // branch to contain it.
             if (f_meta === undefined) {
                 f_meta = {};
-                f_meta["version"] = node["ƒ_version"];
-                f_meta["abs_path"] = node["ƒ_abs_path"];
+                f_meta["version"] = node["f_version"];
+                f_meta["abs_path"] = node["f_abs_path"];
                 refContainerRefPath && (f_meta["deref_to"] = refContainerRefPath);
                 refContainerAbsPath && (f_meta["deref_from"] = refContainerAbsPath);
                 json = {};
-                json["ƒ_meta"] = f_meta;
+                json["f_meta"] = f_meta;
                 json.__proto__ = FalcorJSON.prototype;
                 // Empower developers to instrument branch node creation by
                 // providing a custom function. If they do, delegate branch
@@ -4303,8 +4372,8 @@ function walkPathAndBuildOutput(root, node, json, path, depth, seed, results, re
 /***/ function(module, exports, __webpack_require__) {
 
 var arr = new Array(2);
-var clone = __webpack_require__(6);
-var inlineValue = __webpack_require__(23);
+var clone = __webpack_require__(1);
+var inlineValue = __webpack_require__(22);
 var promote = __webpack_require__(12);
 var isExpired = __webpack_require__(0);
 var createHardlink = __webpack_require__(7);
@@ -4316,11 +4385,12 @@ module.exports = getReferenceTarget;
 /* eslint-disable no-console */
 /* eslint-disable no-cond-assign */
 /* eslint-disable no-constant-condition */
-function getReferenceTarget(root, ref, modelRoot, seed, expireImmediate) {
+function getReferenceTarget(root, refArg, modelRoot, seed, expireImmediate) {
 
-    promote(modelRoot, ref);
+    promote(modelRoot, refArg);
 
     var context,
+        ref = refArg,
         key,
         type,
         depth = 0,
@@ -4330,7 +4400,7 @@ function getReferenceTarget(root, ref, modelRoot, seed, expireImmediate) {
         length = path.length;
 
     do {
-        if (depth === 0 && undefined !== (context = ref["ƒ_context"])) {
+        if (depth === 0 && undefined !== (context = ref["f_context"])) {
             node = context;
             depth = length;
         } else {
@@ -4401,9 +4471,8 @@ function getReferenceTarget(root, ref, modelRoot, seed, expireImmediate) {
 /* 66 */
 /***/ function(module, exports, __webpack_require__) {
 
-var typeofObject = 'object';
-var clone = __webpack_require__(6);
-var inlineValue = __webpack_require__(23);
+var clone = __webpack_require__(1);
+var inlineValue = __webpack_require__(22);
 
 module.exports = onJSONGraphValue;
 
@@ -4420,7 +4489,7 @@ function onJSONGraphValue(node, type, depth, seed, results, requestedPath, optim
      * - atoms we didn't create
      * - atoms we created to wrap Objects
      **/
-    "ref" !== type && "error" !== type && node["ƒ_wrapped_value"] && typeofObject !== typeof value)) {
+    "ref" !== type && "error" !== type && node["f_wrapped_value"] && 'object' !== typeof value)) {
         value = clone(node);
     }
 
@@ -4437,25 +4506,26 @@ function onJSONGraphValue(node, type, depth, seed, results, requestedPath, optim
 /***/ function(module, exports, __webpack_require__) {
 
 var isArray = Array.isArray;
-var clone = __webpack_require__(6);
+var clone = __webpack_require__(1);
 var onValue = __webpack_require__(66);
-var inlineValue = __webpack_require__(23);
+var inlineValue = __webpack_require__(22);
 var isExpired = __webpack_require__(0);
 var onValueType = __webpack_require__(15);
 var onMaterialize = __webpack_require__(38);
-var originalOnMissing = __webpack_require__(24);
+var originalOnMissing = __webpack_require__(23);
 var getReferenceTarget = __webpack_require__(65);
-var NullInPathError = __webpack_require__(3);
+var NullInPathError = __webpack_require__(4);
 var InvalidKeySetError = __webpack_require__(11);
-var materializedAtom = __webpack_require__(20);
+var materializedAtom = __webpack_require__(33);
 
 module.exports = walkPathAndBuildOutput;
 
 /* eslint-disable no-cond-assign */
 /* eslint-disable no-constant-condition */
-function walkPathAndBuildOutput(root, node, path, depth, seed, results, requestedPath, requestedLength, optimizedPath, optimizedLength, fromReference, modelRoot, expired, expireImmediate, boxValues, materialized, hasDataSource, treatErrorsAsValues) {
+function walkPathAndBuildOutput(root, node, path, depth, seed, results, requestedPath, requestedLength, optimizedPath, optimizedLength, fromReferenceArg, modelRoot, expired, expireImmediate, boxValues, materialized, hasDataSource, treatErrorsAsValues) {
 
     var type, refTarget;
+    var fromReference = fromReferenceArg;
 
     // ============ Check for base cases ================
 
@@ -4638,23 +4708,23 @@ function onMissing(path, depth, results, requestedPath, requestedLength, fromRef
 /* 68 */
 /***/ function(module, exports, __webpack_require__) {
 
-var typeofNumber = 'number';
-var typeofObject = 'object';
-var clone = __webpack_require__(6);
+var clone = __webpack_require__(1);
 var onValueType = __webpack_require__(15);
-var FalcorJSON = __webpack_require__(2);
-var NullInPathError = __webpack_require__(3);
+var FalcorJSON = __webpack_require__(3);
+var NullInPathError = __webpack_require__(4);
 var InvalidKeySetError = __webpack_require__(11);
-var materializedAtom = __webpack_require__(20);
+var materializedAtom = __webpack_require__(33);
 
 module.exports = onMaterializeFlatBuffer;
 
 /* eslint-disable camelcase */
 /* eslint-disable no-cond-assign */
 /* eslint-disable no-constant-condition */
-function onMaterializeFlatBuffer(json, path, depth, length, branchSelector, boxValues, modelRoot, results, requestedPath, optimizedPath, optimizedLength, fromReference, reportMissing, onMissing) {
+function onMaterializeFlatBuffer(jsonArg, path, depth, length, branchSelector, boxValues, modelRoot, results, requestedPath, optimizedPath, optimizedLength, fromReference, reportMissing, onMissing) {
 
-    var type, refTarget;
+    var json = jsonArg,
+        type,
+        refTarget;
 
     // ============ Check for base cases ================
 
@@ -4675,10 +4745,10 @@ function onMaterializeFlatBuffer(json, path, depth, length, branchSelector, boxV
         rangeEnd,
         nextOptimizedLength = optimizedLength + 1;
 
-    if (!json || typeofObject !== typeof json) {
+    if (!json || 'object' !== typeof json) {
         json = {};
         json.__proto__ = FalcorJSON.prototype;
-        json["ƒ_meta"] = f_meta = {};
+        json["f_meta"] = f_meta = {};
         f_meta['$code'] = '';
         f_meta["status"] = 'resolved';
         f_meta["version"] = modelRoot.version;
@@ -4686,8 +4756,8 @@ function onMaterializeFlatBuffer(json, path, depth, length, branchSelector, boxV
         if (branchSelector) {
             json = branchSelector(json);
         }
-    } else if (!(f_meta = json["ƒ_meta"])) {
-        json["ƒ_meta"] = f_meta = {};
+    } else if (!(f_meta = json["f_meta"])) {
+        json["f_meta"] = f_meta = {};
         f_meta['$code'] = '';
         f_meta["status"] = 'resolved';
         f_meta["version"] = modelRoot.version;
@@ -4726,7 +4796,7 @@ function onMaterializeFlatBuffer(json, path, depth, length, branchSelector, boxV
             continue;
         }
         // If the keyset is a primitive value, we've found our `nextKey`.
-        else if (typeofObject !== typeof keyset) {
+        else if ('object' !== typeof keyset) {
                 nextKey = keyset;
                 rangeEnd = undefined;
                 keyIsRange = false;
@@ -4735,7 +4805,7 @@ function onMaterializeFlatBuffer(json, path, depth, length, branchSelector, boxV
             else {
                     rangeEnd = keyset.to;
                     nextKey = keyset.from || 0;
-                    if (typeofNumber !== typeof rangeEnd) {
+                    if ('number' !== typeof rangeEnd) {
                         rangeEnd = nextKey + (keyset.length || 0) - 1;
                     }
                     if (rangeEnd - nextKey < 0) {
@@ -4780,78 +4850,62 @@ function onMaterializeFlatBuffer(json, path, depth, length, branchSelector, boxV
 /* 69 */
 /***/ function(module, exports, __webpack_require__) {
 
-var isInternalKey = __webpack_require__(19);
+var clone = __webpack_require__(1);
+var isInternal = __webpack_require__(19);
 
-/**
- * decends and copies the cache.
- */
-module.exports = function getCache(cache) {
-    var out = {};
-    _copyCache(cache, out);
+module.exports = getCache;
 
-    return out;
-};
-
-function cloneBoxedValue(boxedValue) {
-    var clonedValue = {};
-
-    var keys = Object.keys(boxedValue);
-    var key;
-    var i;
-    var l;
-
-    for (i = 0, l = keys.length; i < l; i++) {
-        key = keys[i];
-
-        if (key === '$type' || !isInternalKey(key)) {
-            clonedValue[key] = boxedValue[key];
-        }
-    }
-
-    return clonedValue;
+function getCache(model, cache) {
+    return getCacheInternal(cache, {}, model._boxed, model._materialized);
 }
 
-function _copyCache(node, out, fromKey) {
-    // copy and return
+function getCacheInternal(node, jsonArg, boxValues, materialized) {
 
-    // only copy objects
+    var json = jsonArg,
+        type,
+        value;
+
     if (!node || typeof node !== 'object') {
-        return;
+        return node;
+    } else if (type = node.$type) {
+
+        if (undefined === (value = node.value)) {
+            if (materialized) {
+                value = { $type: "atom" };
+            } else if (node["f_wrapped_value"]) {
+                value = clone(node);
+            }
+        }
+        // boxValues always clones the node
+        else if (boxValues || !(
+            /**
+             * getCache should always clone:
+             * - refs
+             * - errors
+             * - atoms we didn't create
+             * - atoms we created to wrap Objects
+             **/
+            "ref" !== type && "error" !== type && node["f_wrapped_value"] && typeof value !== 'object')) {
+                value = clone(node);
+            }
+        return value;
     }
 
-    Object.keys(node).filter(function (key) {
-        // Its not an internal key and the node has a value.  In the cache
-        // there are 3 possibilities for values.
-        // 1: A branch node.
-        // 2: A $type-value node.
-        // 3: undefined
-        // We will strip out 3
-        return (key === '$type' || !isInternalKey(key)) && node[key] !== undefined;
-    }).forEach(function (key) {
-        var cacheNext = node[key];
-        var outNext = out[key];
+    var keys = Object.keys(node);
+    var keysLen = keys.length,
+        keyIndex = -1;
 
-        if (!outNext) {
-            outNext = out[key] = {};
-        }
-
-        // Paste the node into the out cache.
-        if (cacheNext.$type) {
-            var isObject = cacheNext.value && typeof cacheNext.value === 'object';
-            var isUserCreatedcacheNext = !cacheNext["ƒ_wrapped_value"];
-            var value;
-            if (isObject || isUserCreatedcacheNext) {
-                value = cloneBoxedValue(cacheNext);
-            } else {
-                value = cacheNext.value;
+    while (++keyIndex < keysLen) {
+        var key = keys[keyIndex];
+        if (key !== '$size' && !isInternal(key) && undefined !== (value = getCacheInternal(node[key], json && json[key], boxValues, materialized))) {
+            if (json === undefined) {
+                json = {};
             }
-
-            out[key] = value;
-            return;
+            json[key] = value;
         }
+    }
 
-        _copyCache(cacheNext, outNext, key);
-    });
+    return json;
 }
 
 /***/ },
@@ -4860,11 +4914,13 @@ function _copyCache(node, out, fromKey) {
 
 var getBoundCacheNode = __webpack_require__(16);
 
-module.exports = function _getVersion(model, path) {
+module.exports = getVersion;
+
+function getVersion(model, path) {
     var node = getBoundCacheNode(model, path);
-    var version = node && node["ƒ_version"];
+    var version = node && node["f_version"];
     return version == null ? -1 : version;
-};
+}
 
 /***/ },
 /* 71 */
@@ -4876,13 +4932,13 @@ module.exports = {
     json: invalidate,
     jsonGraph: invalidate,
     invalidatePathMaps: __webpack_require__(41),
-    invalidatePathValues: __webpack_require__(25)
+    invalidatePathValues: __webpack_require__(24)
 };
 
 function invalidate(model, args, seed, progressive, expireImmediate) {
     if (invalidateArgumentGroups(model, groupCacheArguments(args), expireImmediate)) {
         var rootChangeHandler = model._root.onChange;
-        rootChangeHandler && rootChangeHandler();
+        rootChangeHandler && rootChangeHandler.call(model._root.topLevelModel);
     }
     return {};
 }
@@ -4925,16 +4981,21 @@ function pluckPaths(x) {
 var wrapNode = __webpack_require__(45);
 var isExpired = __webpack_require__(0);
 var insertNode = __webpack_require__(40);
-var expireNode = __webpack_require__(1);
+var expireNode = __webpack_require__(2);
 var replaceNode = __webpack_require__(44);
 var getSize = __webpack_require__(8);
 var reconstructPath = __webpack_require__(43);
-var getTimestamp = __webpack_require__(30);
+var getTimestamp = __webpack_require__(28);
 var updateNodeAncestors = __webpack_require__(10);
 
-module.exports = function mergeJSONGraphNode(parent, node, message, key, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector, expireImmediate) {
+module.exports = mergeJSONGraphNode;
+
+function mergeJSONGraphNode(parentArg, nodeArg, messageArg, key, requestedPath, optimizedPath, version, expired, lru, comparator, errorSelector, expireImmediate) {
 
     var sizeOffset;
+    var node = nodeArg;
+    var parent = parentArg;
+    var message = messageArg;
 
     var cType, mType, cIsObject, mIsObject, cTimestamp, mTimestamp;
 
@@ -4964,7 +5025,7 @@ module.exports = function mergeJSONGraphNode(parent, node, message, key, request
             else if ((cIsObject = !(!node || typeof node !== 'object')) && (cType = node.$type) === undefined) {
                     // Has the branch been introduced to the cache yet? If not,
                     // give it a parent, key, and absolute path.
-                    if (node["ƒ_parent"] === undefined) {
+                    if (node["f_parent"] === undefined) {
                         insertNode(node, parent, key, version, optimizedPath);
                     }
                     return node;
@@ -5012,7 +5073,7 @@ module.exports = function mergeJSONGraphNode(parent, node, message, key, request
                         // grandparents. If we've previously graphed this
                         // reference, break early. Otherwise, continue to
                         // leaf insertion below.
-                        if (node["ƒ_parent"] != null) {
+                        if (node["f_parent"] != null) {
                             return node;
                         }
                     } else {
@@ -5053,7 +5114,7 @@ module.exports = function mergeJSONGraphNode(parent, node, message, key, request
             // leaf, give the message a $size and $type, attach its graph pointers,
             // and update the cache sizes and versions.
             if (mType && node === message) {
-                if (!node["ƒ_parent"]) {
+                if (!node["f_parent"]) {
                     node = wrapNode(node, cType, node.value);
                     parent = updateNodeAncestors(parent, -node.$size, lru, version);
                     node = insertNode(node, parent, key, version, optimizedPath);
@@ -5112,15 +5173,15 @@ module.exports = function mergeJSONGraphNode(parent, node, message, key, request
 /* 73 */
 /***/ function(module, exports, __webpack_require__) {
 
-var getJSON = __webpack_require__(21);
-var getJSONGraph = __webpack_require__(22);
+var getJSON = __webpack_require__(20);
+var getJSONGraph = __webpack_require__(21);
 var groupCacheArguments = __webpack_require__(39);
 
 module.exports = {
     json: json,
     jsonGraph: jsonGraph,
     setPathMaps: __webpack_require__(18),
-    setPathValues: __webpack_require__(27),
+    setPathValues: __webpack_require__(26),
     setJSONGraphs: __webpack_require__(17)
 };
 
@@ -5158,7 +5219,7 @@ function json(model, _args, data, progressive, expireImmediate) {
             requested = jsong.requested;
 
             var rootChangeHandler = model._root.onChange;
-            rootChangeHandler && rootChangeHandler();
+            rootChangeHandler && rootChangeHandler.call(model._root.topLevelModel);
         }
     }
 
@@ -5203,7 +5264,7 @@ function jsonGraph(model, _args, data, progressive, expireImmediate) {
 
         if (changed) {
             var rootChangeHandler = model._root.onChange;
-            rootChangeHandler && rootChangeHandler();
+            rootChangeHandler && rootChangeHandler.call(model._root.topLevelModel);
         }
     }
 
@@ -5219,7 +5280,7 @@ function jsonGraph(model, _args, data, progressive, expireImmediate) {
     };
 }
 
-function setGroupsIntoCache(model, xs, expireImmediate) {
+function setGroupsIntoCache(model, xs, expireImmediate_) {
 
     var changed = false;
     var groupIndex = -1;
@@ -5229,7 +5290,7 @@ function setGroupsIntoCache(model, xs, expireImmediate) {
     var modelRoot = model._root;
     var errorSelector = modelRoot.errorSelector;
 
-    expireImmediate = expireImmediate && !Boolean(model._source);
+    var expireImmediate = expireImmediate_ && !Boolean(model._source);
     var comparator = Boolean(model._source) ? null : modelRoot.comparator;
 
     // Takes each of the groups and normalizes their input into
@@ -5286,57 +5347,63 @@ function arrayFlatMap(array, selector) {
 /* 74 */
 /***/ function(module, exports, __webpack_require__) {
 
-module.exports = function transferBackReferences(fromNode, destNode) {
-    var fromNodeRefsLength = fromNode["ƒ_refs_length"] || 0,
-        destNodeRefsLength = destNode["ƒ_refs_length"] || 0,
+module.exports = transferBackReferences;
+
+function transferBackReferences(fromNode, destNode) {
+    var fromNodeRefsLength = fromNode["f_refs_length"] || 0,
+        destNodeRefsLength = destNode["f_refs_length"] || 0,
         i = -1;
     while (++i < fromNodeRefsLength) {
-        var ref = fromNode["ƒ_ref" + i];
+        var ref = fromNode["f_ref" + i];
         if (ref !== undefined) {
-            ref["ƒ_context"] = destNode;
-            destNode["ƒ_ref" + (destNodeRefsLength + i)] = ref;
-            fromNode["ƒ_ref" + i] = undefined;
+            ref["f_context"] = destNode;
+            destNode["f_ref" + (destNodeRefsLength + i)] = ref;
+            fromNode["f_ref" + i] = undefined;
         }
     }
-    destNode["ƒ_refs_length"] = fromNodeRefsLength + destNodeRefsLength;
-    fromNode["ƒ_refs_length"] = undefined;
+    destNode["f_refs_length"] = fromNodeRefsLength + destNodeRefsLength;
+    fromNode["f_refs_length"] = undefined;
     return destNode;
-};
+}
 
 /***/ },
 /* 75 */
 /***/ function(module, exports, __webpack_require__) {
 
-module.exports = function unlinkBackReferences(node) {
+module.exports = unlinkBackReferences;
+
+function unlinkBackReferences(node) {
     var i = -1,
-        n = node["ƒ_refs_length"] || 0;
+        n = node["f_refs_length"] || 0;
     while (++i < n) {
-        var ref = node["ƒ_ref" + i];
+        var ref = node["f_ref" + i];
         if (ref != null) {
-            ref["ƒ_context"] = ref["ƒ_ref_index"] = node["ƒ_ref" + i] = void 0;
+            ref["f_context"] = ref["f_ref_index"] = node["f_ref" + i] = void 0;
         }
     }
-    node["ƒ_refs_length"] = void 0;
+    node["f_refs_length"] = void 0;
     return node;
-};
+}
 
 /***/ },
 /* 76 */
 /***/ function(module, exports, __webpack_require__) {
 
-module.exports = function unlinkForwardReference(reference) {
-    var destination = reference["ƒ_context"];
+module.exports = unlinkForwardReference;
+
+function unlinkForwardReference(reference) {
+    var destination = reference["f_context"];
     if (destination) {
-        var i = (reference["ƒ_ref_index"] || 0) - 1,
-            n = (destination["ƒ_refs_length"] || 0) - 1;
+        var i = (reference["f_ref_index"] || 0) - 1,
+            n = (destination["f_refs_length"] || 0) - 1;
         while (++i <= n) {
-            destination["ƒ_ref" + i] = destination["ƒ_ref" + (i + 1)];
+            destination["f_ref" + i] = destination["f_ref" + (i + 1)];
         }
-        destination["ƒ_refs_length"] = n;
-        reference["ƒ_ref_index"] = reference["ƒ_context"] = destination = void 0;
+        destination["f_refs_length"] = n;
+        reference["f_ref_index"] = reference["f_context"] = destination = void 0;
     }
     return reference;
-};
+}
 
 /***/ },
 /* 77 */
@@ -5364,12 +5431,12 @@ function hasValidParentReference() {
     }
 
     // Its been disconnected (set over or collected) from the graph.
-    if (reference && reference["ƒ_parent"] === undefined) {
+    if (reference && reference["f_parent"] === undefined) {
         return false;
     }
 
     // The reference has expired but has not been collected from the graph.
-    if (reference && reference["ƒ_invalidated"]) {
+    if (reference && reference["f_invalidated"]) {
         return false;
     }
 
@@ -5381,15 +5448,17 @@ function hasValidParentReference() {
 /***/ function(module, exports, __webpack_require__) {
 
 var CONTAINER_DOES_NOT_EXIST = 'e';
-var FalcorJSON = __webpack_require__(2);
+var FalcorJSON = __webpack_require__(3);
 var getCachePosition = __webpack_require__(9);
 var InvalidDerefInputError = __webpack_require__(80);
 
-module.exports = function deref(json) {
+module.exports = deref;
+
+function deref(json) {
 
     var seed, f_meta;
 
-    if (!json || 'object' !== typeof json || !(f_meta = json["ƒ_meta"]) || 'object' !== typeof f_meta) {
+    if (!json || 'object' !== typeof json || !(f_meta = json["f_meta"]) || 'object' !== typeof f_meta) {
         return null;
     }
 
@@ -5488,7 +5557,7 @@ module.exports = function deref(json) {
 /* 79 */
 /***/ function(module, exports, __webpack_require__) {
 
-var createErrorClass = __webpack_require__(4);
+var createErrorClass = __webpack_require__(5);
 var MESSAGE = 'It is not legal to use the JSON Graph ' + 'format from a bound Model. JSON Graph format' + ' can only be used from a root model.';
 
 /**
@@ -5505,7 +5574,7 @@ module.exports = createErrorClass('BoundJSONGraphModelError', function () {
 /* 80 */
 /***/ function(module, exports, __webpack_require__) {
 
-var createErrorClass = __webpack_require__(4);
+var createErrorClass = __webpack_require__(5);
 var MESSAGE = 'Deref can only be used with a non-primitive object from get, set, or call.';
 
 /**
@@ -5523,7 +5592,7 @@ module.exports = createErrorClass('InvalidDerefInputError', function () {
 /* 81 */
 /***/ function(module, exports, __webpack_require__) {
 
-var createErrorClass = __webpack_require__(4);
+var createErrorClass = __webpack_require__(5);
 var MESSAGE = 'The boundPath of the model is not valid since a value or error was found before the path end.';
 
 /**
@@ -5543,7 +5612,7 @@ module.exports = createErrorClass('InvalidModelError', function (boundPath, shor
 /* 82 */
 /***/ function(module, exports, __webpack_require__) {
 
-var createErrorClass = __webpack_require__(4);
+var createErrorClass = __webpack_require__(5);
 
 /**
  * A request can only be retried up to a specified limit.  Once that
@@ -5565,7 +5634,7 @@ function printPaths(paths) {
 /* 83 */
 /***/ function(module, exports) {
 
-module.exports = String.fromCharCode(30) + 'ƒ_';
+module.exports = String.fromCharCode(30) + 'f_';
 
 /***/ },
 /* 84 */
@@ -5573,7 +5642,9 @@ module.exports = String.fromCharCode(30) + 'ƒ_';
 
 var updateNodeAncestors = __webpack_require__(10);
 
-module.exports = function collect(lru, expired, totalArg, max, ratioArg, version) {
+module.exports = collect;
+
+function collect(lru, expired, totalArg, max, ratioArg, version) {
 
     var total = totalArg;
     var ratio = ratioArg;
@@ -5592,21 +5663,21 @@ module.exports = function collect(lru, expired, totalArg, max, ratioArg, version
     }
 
     if (total >= max) {
-        var prev = lru["ƒ_tail"];
+        var prev = lru["f_tail"];
         while (total >= targetSize && (node = prev)) {
-            prev = prev["ƒ_prev"];
+            prev = prev["f_prev"];
             total -= size = node.$size || 0;
             updateNodeAncestors(node, size, lru, version);
         }
 
-        lru["ƒ_tail"] = node;
+        lru["f_tail"] = node;
         if (node == null) {
-            lru["ƒ_head"] = undefined;
+            lru["f_head"] = undefined;
         } else {
-            node["ƒ_next"] = undefined;
+            node["f_next"] = undefined;
         }
     }
-};
+}
 
 /***/ },
 /* 85 */
@@ -5615,7 +5686,7 @@ module.exports = function collect(lru, expired, totalArg, max, ratioArg, version
 var Source = __webpack_require__(49);
 var Subscriber = __webpack_require__(13);
 var lruCollect = __webpack_require__(84);
-var FalcorJSON = __webpack_require__(2);
+var FalcorJSON = __webpack_require__(3);
 var collapse = __webpack_require__(55);
 var InvalidSourceError = __webpack_require__(47);
 var MaxRetryExceededError = __webpack_require__(82);
@@ -5663,7 +5734,8 @@ Call.prototype._subscribe = function (subscriber) {
     return subscriber;
 };
 
-Call.prototype._toJSON = function (data, errors) {
+Call.prototype._toJSON = function (dataArg, errors) {
+    var data = dataArg;
     if (data === undefined) {
         data = {};
         data.__proto__ = FalcorJSON.prototype;
@@ -5671,7 +5743,8 @@ Call.prototype._toJSON = function (data, errors) {
     return this.lift(new CallOperator(data, errors || this.operator.errors, 'json', this.operator.progressive, this.operator.maxRetryCount), this.source);
 };
 
-Call.prototype._toJSONG = function (data, errors) {
+Call.prototype._toJSONG = function (dataArg, errors) {
+    var data = dataArg;
     if (data === undefined) {
         data = {};
         data.__proto__ = FalcorJSON.prototype;
@@ -5702,9 +5775,16 @@ CallOperator.prototype.call = function (source, destination) {
 function CallSubscriber(destination, data, errors, operation, progressive, maxRetryCount) {
     Subscriber.call(this, destination);
     this.data = data;
+    this.missing = null;
+    this.request = null;
+    this.started = false;
     this.retryCount = -1;
     this.errors = errors;
+    this.errored = false;
+    this.relative = null;
     this.hasValue = false;
+    this.fragments = null;
+    this.requested = null;
     this.completed = false;
     this.operation = operation;
     this.progressive = progressive;
@@ -5917,8 +5997,8 @@ function mergeInto(dest, node) {
 
         key = keys[index];
 
-        if (key === "ƒ_meta") {
-            dest["ƒ_meta"] = node["ƒ_meta"];
+        if (key === "f_meta") {
+            dest["f_meta"] = node["f_meta"];
         } else {
 
             nodeValue = node[key];
@@ -6061,8 +6141,8 @@ var Subscription = __webpack_require__(14);
 var InvalidSourceError = __webpack_require__(47);
 
 var setJSONGraphs = __webpack_require__(17);
-var setPathValues = __webpack_require__(27);
-var invalidatePaths = __webpack_require__(25);
+var setPathValues = __webpack_require__(26);
+var invalidatePaths = __webpack_require__(24);
 
 var toPaths = __webpack_require__(105);
 var toCollapseMap = __webpack_require__(102);
@@ -6111,6 +6191,7 @@ Request.prototype.next = Request.prototype.onNext = function (env) {
     var invalidated = env.invalidated;
     var paths = env.paths || this.paths;
     var requested = this.requested.slice(0);
+    var observers = this.observers.slice(0);
     var rootChangeHandler = modelRoot.onChange;
 
     // Run invalidations first.
@@ -6125,10 +6206,10 @@ Request.prototype.next = Request.prototype.onNext = function (env) {
     }
 
     if (changed && rootChangeHandler) {
-        rootChangeHandler();
+        rootChangeHandler.call(modelRoot.topLevelModel);
     }
 
-    this.observers.slice(0).forEach(function (observer, index) {
+    observers.forEach(function (observer, index) {
         observer.onNext({
             type: 'get', paths: requested[index] || filterPathsBoundTo(boundPath, paths)
         });
@@ -6281,7 +6362,9 @@ function findIntersections(tree, requested, optimized, requestedComplements, opt
 
     var index = -1;
     var complementIndex = -1;
+    var reqComplementsIdx = -1;
     var intersectionIndex = -1;
+    var reqIntersectionIdx = -1;
     var optTotal = optimized.length;
     var reqTotal = requested.length - 1;
 
@@ -6291,10 +6374,14 @@ function findIntersections(tree, requested, optimized, requestedComplements, opt
         var subTree = tree[pathLen];
         if (subTree && hasIntersection(subTree, path, 0, pathLen)) {
             optimizedIntersection[++intersectionIndex] = path;
-            requestedIntersection[intersectionIndex] = requested[index < reqTotal ? index : reqTotal];
+            if (reqIntersectionIdx < reqTotal) {
+                requestedIntersection[++reqIntersectionIdx] = requested[index < reqTotal ? index : reqTotal];
+            }
         } else {
             optimizedComplements[++complementIndex] = path;
-            requestedComplements[complementIndex] = requested[index < reqTotal ? index : reqTotal];
+            if (reqComplementsIdx < reqTotal) {
+                requestedComplements[++reqComplementsIdx] = requested[index < reqTotal ? index : reqTotal];
+            }
         }
     }
 
@@ -6413,7 +6500,7 @@ module.exports = TimeoutScheduler;
 /***/ function(module, exports, __webpack_require__) {
 
 var isArray = Array.isArray;
-var isInternal = __webpack_require__(29);
+var isInternal = __webpack_require__(19);
 
 module.exports = clone;
 
@@ -6435,35 +6522,41 @@ function clone(source) {
 /* 91 */
 /***/ function(module, exports, __webpack_require__) {
 
-var isObject = __webpack_require__(5);
-module.exports = function getSize(node) {
+var isObject = __webpack_require__(6);
+module.exports = getSize;
+
+function getSize(node) {
     return isObject(node) && node.$expires || undefined;
-};
+}
 
 /***/ },
 /* 92 */
 /***/ function(module, exports, __webpack_require__) {
 
-var isObject = __webpack_require__(5);
+var isObject = __webpack_require__(6);
 
-module.exports = function getType(node, anyType) {
+module.exports = getType;
+
+function getType(node, anyType) {
     var type = isObject(node) && node.$type || void 0;
     if (anyType && type) {
         return 'branch';
     }
     return type;
-};
+}
 
 /***/ },
 /* 93 */
 /***/ function(module, exports, __webpack_require__) {
 
 var isArray = Array.isArray;
-var isObject = __webpack_require__(5);
+var isObject = __webpack_require__(6);
 
-module.exports = function isPathValue(pathValue) {
+module.exports = isPathValue;
+
+function isPathValue(pathValue) {
     return isObject(pathValue) && (isArray(pathValue.path) || typeof pathValue.path === 'string');
-};
+}
 
 /***/ },
 /* 94 */
@@ -6506,7 +6599,7 @@ if (typeof self !== 'undefined') {
 
 var result = (0, _ponyfill2['default'])(root);
 exports['default'] = result;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(32), __webpack_require__(97)(module)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(31), __webpack_require__(97)(module)))
 
 /***/ },
 /* 96 */

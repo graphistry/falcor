@@ -2,7 +2,9 @@ var now = require('../support/now');
 var $now = require('../values/expires-now');
 var $never = require('../values/expires-never');
 
-module.exports = function isExpired(node, expireImmediate) {
+module.exports = isExpired;
+
+function isExpired(node, expireImmediate) {
     var exp = node.$expires;
     if (exp === undefined || exp === null || exp === $never) {
         return false;
@@ -10,4 +12,4 @@ module.exports = function isExpired(node, expireImmediate) {
         return expireImmediate;
     }
     return exp < now();
-};
+}

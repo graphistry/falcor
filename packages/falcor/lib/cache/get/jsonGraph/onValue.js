@@ -1,4 +1,3 @@
-var typeofObject = 'object';
 var clone = require('../../clone');
 var inlineValue = require('./inlineValue');
 
@@ -22,7 +21,7 @@ function onJSONGraphValue(node, type, depth, seed, results,
         $ref !== type &&
         $error !== type &&
         node[f_wrapped_value] &&
-        typeofObject !== typeof value)) {
+        'object' !== typeof value)) {
         value = clone(node);
     }
 

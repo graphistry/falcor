@@ -1,7 +1,9 @@
 var isArray = Array.isArray;
 var isObject = require('./../support/isObject');
 
-module.exports = function isJSONGraphEnvelope(envelope) {
+module.exports = isJSONGraphEnvelope;
+
+function isJSONGraphEnvelope(envelope) {
     return isObject(envelope) && isArray(envelope.paths) && (
         isObject(envelope.jsonGraph) ||
         isObject(envelope.jsong) ||
@@ -9,4 +11,4 @@ module.exports = function isJSONGraphEnvelope(envelope) {
         isObject(envelope.values) ||
         isObject(envelope.value)
     );
-};
+}

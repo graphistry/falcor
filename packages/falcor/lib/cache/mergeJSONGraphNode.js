@@ -8,11 +8,16 @@ var reconstructPath = require('./reconstructPath');
 var getTimestamp = require('../support/getTimestamp');
 var updateNodeAncestors = require('./updateNodeAncestors');
 
-module.exports = function mergeJSONGraphNode(
-    parent, node, message, key, requestedPath, optimizedPath,
+module.exports = mergeJSONGraphNode;
+
+function mergeJSONGraphNode(
+    parentArg, nodeArg, messageArg, key, requestedPath, optimizedPath,
     version, expired, lru, comparator, errorSelector, expireImmediate) {
 
     var sizeOffset;
+    var node = nodeArg;
+    var parent = parentArg;
+    var message = messageArg;
 
     var cType, mType,
         cIsObject, mIsObject,

@@ -1,4 +1,6 @@
 var isObject = require('./isObject');
-module.exports = function getSize(node) {
+module.exports = getSize;
+
+function getSize(node) {
     return isObject(node) && node.$expires || undefined;
-};
+}

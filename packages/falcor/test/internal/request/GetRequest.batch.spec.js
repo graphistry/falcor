@@ -14,9 +14,39 @@ var noOp = function() {};
 function throwError(e) { throw e; }
 var Cache = function() { return cacheGenerator(0, 2); };
 
+var toFlatBuffer = require('@graphistry/falcor-path-utils/lib/toFlatBuffer');
+var flatBufferToPaths = require('@graphistry/falcor-path-utils/lib/flatBufferToPaths');
+
 describe('#batch', function() {
+    describe('with Paths', function() {
+        runTestsWithOptions(false);
+    });
+    describe('with FlatBuffers', function() {
+        runTestsWithOptions(true);
+    });
+});
+
+function runTestsWithOptions(recycleJSON) {
+
     var videos0 = ['videos', 0, 'title'];
     var videos1 = ['videos', 1, 'title'];
+    var videos0Path = ['videos', 0, 'title'];
+    var videos1Path = ['videos', 1, 'title'];
+
+    function toPaths(maybePaths) {
+        return flatBufferToPaths(toFlatBuffer(maybePaths, {}));
+    }
+
+    function toPathsOrFB(maybePaths) {
+        return !recycleJSON ?
+            toPaths(maybePaths) : [
+            toFlatBuffer(maybePaths, {})];
+    }
+
+    if (recycleJSON) {
+        videos0 = toFlatBuffer([videos0], {});
+        videos1 = toFlatBuffer([videos1], {});
+    }
 
     it('should make a request to the dataSource with an immediate scheduler', function(done) {
         var inlineBoolean = true;
@@ -25,13 +55,16 @@ describe('#batch', function() {
         var source = new LocalDataSource(Cache(), {
             onGet: getSpy
         });
-        var model = new Model({source: source});
+        var model = new Model({ source: source, recycleJSON: recycleJSON });
         var request = new Request('get', {
             remove: function() { },
             modelRoot: model._root
         }, model._source, scheduler);
 
-        var disposable = request.batch([videos0], [videos0]).subscribe({
+        var disposable = request.batch(
+            toPathsOrFB([videos0]),
+            toPaths([videos0])
+        ).subscribe({
             onCompleted: noOp,
             onError: throwError,
             onNext: function() {
@@ -42,7 +75,7 @@ describe('#batch', function() {
                     doAction(onNext, noOp, function() {
                         expect(inlineBoolean).to.be.ok;
                         expect(getSpy.calledOnce).to.be.ok;
-                        expect(getSpy.getCall(0).args[1]).to.deep.equals([videos0]);
+                        expect(getSpy.getCall(0).args[1]).to.deep.equals([videos0Path]);
                         expect(onNext.calledOnce).to.be.ok;
                         expect(strip(onNext.getCall(0).args[0])).to.deep.equals({
                             json: {
@@ -68,7 +101,7 @@ describe('#batch', function() {
         var source = new LocalDataSource(Cache(), {
             onGet: getSpy
         });
-        var model = new Model({source: source});
+        var model = new Model({ source: source, recycleJSON: recycleJSON });
         var request = new Request('get', {
             remove: function() { },
             modelRoot: model._root
@@ -81,7 +114,7 @@ describe('#batch', function() {
                 doAction(onNext, noOp, function() {
                     expect(inlineBoolean).to.not.be.ok;
                     expect(getSpy.calledOnce).to.be.ok;
-                    expect(getSpy.getCall(0).args[1]).to.deep.equals([videos0]);
+                    expect(getSpy.getCall(0).args[1]).to.deep.equals([videos0Path]);
                     expect(onNext.calledOnce).to.be.ok;
                     expect(strip(onNext.getCall(0).args[0])).to.deep.equals({
                         json: {
@@ -96,7 +129,10 @@ describe('#batch', function() {
                 subscribe(noOp, done, done);
         });
 
-        var disposable = request.batch([videos0], [videos0]).subscribe({
+        var disposable = request.batch(
+            toPathsOrFB([videos0]),
+            toPaths([videos0])
+        ).subscribe({
             onNext: callback,
             onError: throwError,
             onCompleted: noOp
@@ -111,7 +147,7 @@ describe('#batch', function() {
         var source = new LocalDataSource(Cache(), {
             onGet: getSpy
         });
-        var model = new Model({source: source});
+        var model = new Model({ source: source, recycleJSON: recycleJSON });
         var request = new Request('get', {
             remove: function() { },
             modelRoot: model._root
@@ -143,8 +179,14 @@ describe('#batch', function() {
             onError: throwError,
             onCompleted: noOp
         };
-        var disposable1 = request.batch([videos0], [videos0]).subscribe(zipObserver);
-        var disposable2 = request.batch([videos1], [videos1]).subscribe(zipObserver);
+        var disposable1 = request.batch(
+            toPathsOrFB([videos0]),
+            toPaths([videos0])
+        ).subscribe(zipObserver);
+        var disposable2 = request.batch(
+            toPathsOrFB([videos1]),
+            toPaths([videos1])
+        ).subscribe(zipObserver);
         request.connect();
     });
 
@@ -154,7 +196,7 @@ describe('#batch', function() {
         var source = new LocalDataSource(Cache(), {
             onGet: getSpy
         });
-        var model = new Model({source: source});
+        var model = new Model({ source: source, recycleJSON: recycleJSON });
         var request = new Request('get', {
             remove: function() { },
             modelRoot: model._root
@@ -184,8 +226,14 @@ describe('#batch', function() {
             onError: throwError,
             onCompleted: noOp
         };
-        var disposable1 = request.batch([videos0], [videos0]).subscribe(zipObserver);
-        var disposable2 = request.batch([videos1], [videos1]).subscribe(zipObserver);
+        var disposable1 = request.batch(
+            toPathsOrFB([videos0]),
+            toPaths([videos0])
+        ).subscribe(zipObserver);
+        var disposable2 = request.batch(
+            toPathsOrFB([videos1]),
+            toPaths([videos1])
+        ).subscribe(zipObserver);
         request.connect();
         disposable1.dispose();
     });
@@ -196,7 +244,7 @@ describe('#batch', function() {
         var source = new LocalDataSource(Cache(), {
             onGet: getSpy
         });
-        var model = new Model({source: source});
+        var model = new Model({ source: source, recycleJSON: recycleJSON });
         var request = new Request('get', {
             remove: function() { },
             modelRoot: model._root
@@ -226,10 +274,18 @@ describe('#batch', function() {
             onError: throwError,
             onCompleted: noOp
         };
-        var disposable1 = request.batch([videos0], [videos0]).subscribe(zipObserver);
-        var disposable2 = request.batch([videos1], [videos1]).subscribe(zipObserver);
+        var disposable1 = request.batch(
+            toPathsOrFB([videos0]),
+            toPaths([videos0])
+        ).subscribe(zipObserver);
+
+        var disposable2 = request.batch(
+            toPathsOrFB([videos1]),
+            toPaths([videos1])
+        ).subscribe(zipObserver);
+
         request.connect();
 
         disposable2.dispose();
     });
-});
+}

@@ -4,7 +4,7 @@ var updateBackReferenceVersions = require('./updateBackReferenceVersions');
 module.exports = updateNodeAncestors;
 
 function updateNodeAncestors(node, offset, lru, version) {
-    var curr = node, next = curr[f_parent];
+    var curr = node, next;
     do {
         if ((curr.$size = (curr.$size || 0) - offset) > 0) {
             if (!(next = curr[f_parent])) {

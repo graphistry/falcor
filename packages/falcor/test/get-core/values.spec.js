@@ -318,11 +318,11 @@ describe('Values', function() {
         expect(rhs[f_refs_length]).to.equal(undefined);
 
         var results = model._getPathValuesAsPathMap(
-            model, [['lolomo', 0, 0, 'title']], null
+            model, [['lolomo', 0, 0, 'title']], null, false, true
         );
 
         expect(results.data).to.equal(null);
-        expect(results.hasValue).to.equal(undefined);
+        expect(results.hasValue).to.equal(false);
 
         expect(lhs[f_context]).to.equal(rhs);
         expect(lhs[f_ref_index]).to.equal(0);
@@ -350,11 +350,11 @@ describe('Values', function() {
                 ['lolomo', 0, 0, 'title']]),
                 ['lolomo', 0, 0, 'title']
             ],
-            null
+            null, false, true
         );
 
         expect(results.data).to.equal(null);
-        expect(results.hasValue).to.equal(undefined);
+        expect(results.hasValue).to.equal(false);
 
         expect(lhs[f_context]).to.equal(rhs);
         expect(lhs[f_ref_index]).to.equal(0);
@@ -377,7 +377,7 @@ describe('Values', function() {
                 ['videos', [0, { from: 1, length: 1 }], 'title']]),
                 ['videos', [0, { from: 1, length: 1 }], 'title']
             ],
-            seed
+            seed, false, true
         );
 
         expect(JSON.parse(seed.toString(true, true))).to.deep.equals({
@@ -430,13 +430,13 @@ describe('Values', function() {
         model._getPathValuesAsPathMap(
             model,
             [['videos', [0, {from: 1, length: 1}], 'title']],
-            seed
+            seed, false, true
         );
 
         model._getPathValuesAsPathMap(
             model,
             [['videos', 0, 'title']],
-            seed
+            seed, false, true
         );
 
         expect(seed.json.videos[0]).to.be.ok;

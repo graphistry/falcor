@@ -2,7 +2,9 @@ var transferBackReferences = require('./transferBackReferences');
 var removeNodeAndDescendants = require('./removeNodeAndDescendants');
 var updateBackReferenceVersions = require('./updateBackReferenceVersions');
 
-module.exports = function replaceNode(node, replacement, parent, key, lru, version) {
+module.exports = replaceNode;
+
+function replaceNode(node, replacement, parent, key, lru, version) {
     if (node === replacement) {
         return node;
     } else if (!(!node || typeof node !== 'object')) {
@@ -13,4 +15,4 @@ module.exports = function replaceNode(node, replacement, parent, key, lru, versi
 
     parent[key] = replacement;
     return replacement;
-};
+}

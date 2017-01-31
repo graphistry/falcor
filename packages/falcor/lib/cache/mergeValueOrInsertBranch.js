@@ -12,11 +12,15 @@ var reconstructPath = require('./reconstructPath');
 var updateNodeAncestors = require('./updateNodeAncestors');
 var removeNodeAndDescendants = require('./removeNodeAndDescendants');
 
-module.exports = function mergeValueOrInsertBranch(
-    parent, node, key, value,
+module.exports = mergeValueOrInsertBranch;
+
+function mergeValueOrInsertBranch(
+    parentArg, nodeArg, key, value,
     branch, reference, requestedPath, optimizedPath, version,
     expired, lru, comparator, errorSelector, expireImmediate) {
 
+    var node = nodeArg;
+    var parent = parentArg;
     var cType = getType(node, reference);
 
     if (branch || reference) {

@@ -1,4 +1,6 @@
-module.exports = function transferBackReferences(fromNode, destNode) {
+module.exports = transferBackReferences;
+
+function transferBackReferences(fromNode, destNode) {
     var fromNodeRefsLength = fromNode[f_refs_length] || 0,
         destNodeRefsLength = destNode[f_refs_length] || 0,
         i = -1;
@@ -13,4 +15,4 @@ module.exports = function transferBackReferences(fromNode, destNode) {
     destNode[f_refs_length] = fromNodeRefsLength + destNodeRefsLength;
     fromNode[f_refs_length] = undefined;
     return destNode;
-};
+}

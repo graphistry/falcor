@@ -11,9 +11,49 @@ var noOp = function() {};
 function throwError(e) { throw e; }
 
 var Cache = function() { return cacheGenerator(0, 2); };
+
+var toFlatBuffer = require('@graphistry/falcor-path-utils/lib/toFlatBuffer');
+var flatBufferToPaths = require('@graphistry/falcor-path-utils/lib/flatBufferToPaths');
+
 describe('#add', function() {
+    describe('with Paths', function() {
+        runTestsWithOptions(false);
+    });
+    describe('with FlatBuffers', function() {
+        runTestsWithOptions(true);
+    });
+});
+
+function runTestsWithOptions(recycleJSON) {
+
+    function zipSpy(count, cb) {
+        return sinon.spy(function() {
+            --count;
+            if (count === 0) {
+                cb();
+            }
+        });
+    }
+
     var videos0 = ['videos', 0, 'title'];
     var videos1 = ['videos', 1, 'title'];
+    var videos0Path = ['videos', 0, 'title'];
+    var videos1Path = ['videos', 1, 'title'];
+
+    function toPaths(maybePaths) {
+        return flatBufferToPaths(toFlatBuffer(maybePaths, {}));
+    }
+
+    function toPathsOrFB(maybePaths) {
+        return !recycleJSON ?
+            toPaths(maybePaths) : [
+            toFlatBuffer(maybePaths, {})];
+    }
+
+    if (recycleJSON) {
+        videos0 = toFlatBuffer([videos0], {});
+        videos1 = toFlatBuffer([videos1], {});
+    }
 
     it('should send a request and dedupe another.', function(done) {
         var scheduler = new ImmediateScheduler();
@@ -22,7 +62,7 @@ describe('#add', function() {
             onGet: getSpy,
             wait: 100
         });
-        var model = new Model({source: source});
+        var model = new Model({ source: source, recycleJSON: recycleJSON });
 
         var request = new Request('get', {
             remove: function() { },
@@ -31,6 +71,7 @@ describe('#add', function() {
 
         var requested = [videos0];
         var optimized = [videos0];
+        var requestedExpected = !recycleJSON ? [videos1Path] : toPathsOrFB([videos0, videos1]);
 
         var zip = zipSpy(1, function() {
             var onNext = sinon.spy();
@@ -39,7 +80,7 @@ describe('#add', function() {
                 get(videos0, videos1)).
                 doAction(onNext, noOp, function() {
                     expect(getSpy.calledOnce).to.be.ok;
-                    expect(getSpy.getCall(0).args[1]).to.deep.equals([videos0]);
+                    expect(getSpy.getCall(0).args[1]).to.deep.equals([videos0Path]);
                     expect(onNext.calledOnce).to.be.ok;
                     expect(strip(onNext.getCall(0).args[0])).to.deep.equals({
                         json: {
@@ -51,8 +92,8 @@ describe('#add', function() {
                         }
                     });
 
-                    expect(requested).to.deep.equals([videos1]);
-                    expect(optimized).to.deep.equals([videos1]);
+                    expect(optimized).to.deep.equals([videos1Path]);
+                    expect(requested).to.deep.equals(requestedExpected);
                 }).
                 subscribe(noOp, done, done);
         });
@@ -63,14 +104,19 @@ describe('#add', function() {
             onCompleted: noOp
         };
 
-        var disposable1 = request.batch(requested, optimized).subscribe(zipObserver);
+        var disposable1 = request.batch(
+            toPathsOrFB(requested),
+            toPaths(optimized)
+        ).subscribe(zipObserver);
 
         request.connect();
 
         expect(request.active, 'request should be active').to.be.ok;
 
         if (!request.batch(
-            [videos0, videos1], [videos0, videos1], requested = [], optimized = []
+            toPathsOrFB([videos0, videos1]),
+            toPaths([videos0, videos1]),
+            requested = [], optimized = []
         )) {
             throw new Error('Batch complement failed');
         } else {
@@ -85,7 +131,7 @@ describe('#add', function() {
             onGet: getSpy,
             wait: 100
         });
-        var model = new Model({source: source});
+        var model = new Model({ source: source, recycleJSON: recycleJSON });
         var request = new Request('get', {
             remove: function() { },
             modelRoot: model._root
@@ -93,6 +139,7 @@ describe('#add', function() {
 
         var requested = [videos0];
         var optimized = [videos0];
+        var requestedExpected = !recycleJSON ? [videos1Path] : toPathsOrFB([videos1, videos0]);
 
         var zip = zipSpy(2, function() {
             var onNext = sinon.spy();
@@ -101,7 +148,7 @@ describe('#add', function() {
                 get(videos0, videos1)).
                 doAction(onNext, noOp, function() {
                     expect(getSpy.calledOnce).to.be.ok;
-                    expect(getSpy.getCall(0).args[1]).to.deep.equals([videos0]);
+                    expect(getSpy.getCall(0).args[1]).to.deep.equals([videos0Path]);
                     expect(onNext.calledOnce).to.be.ok;
                     expect(strip(onNext.getCall(0).args[0])).to.deep.equals({
                         json: {
@@ -113,8 +160,8 @@ describe('#add', function() {
                         }
                     });
 
-                    expect(requested, 'the requested complement should be 553').to.deep.equals([videos1]);
-                    expect(optimized, 'the optimized complement should be 553').to.deep.equals([videos1]);
+                    expect(requested).to.deep.equals(requestedExpected);
+                    expect(optimized).to.deep.equals([videos1Path]);
                 }).
                 subscribe(noOp, done, done);
         });
@@ -125,21 +172,25 @@ describe('#add', function() {
             onCompleted: noOp
         };
 
-        var disposable1 = request.batch([videos0], [videos0]).subscribe(zipObserver);
+        var disposable1 = request.batch(
+            toPathsOrFB([videos0]),
+            toPaths([videos0])
+        ).subscribe(zipObserver);
 
         request.connect();
 
         expect(request.active, 'request should be active').to.be.ok;
 
         if (!request.batch(
-            [videos1, videos0], [videos1, videos0], requested = [], optimized = []
+            toPathsOrFB([videos1, videos0]),
+            toPaths([videos1, videos0]),
+            requested = [], optimized = []
         )) {
             throw new Error('Batch complement failed');
         } else {
             request.subscribe(zipObserver);
         }
     });
-
 
     it('should send a request and dedupe another and dispose of original.', function(done) {
         var scheduler = new ImmediateScheduler();
@@ -148,7 +199,7 @@ describe('#add', function() {
             onGet: getSpy,
             wait: 100
         });
-        var model = new Model({source: source});
+        var model = new Model({ source: source, recycleJSON: recycleJSON });
         var request = new Request('get', {
             remove: function() { },
             modelRoot: model._root
@@ -156,6 +207,7 @@ describe('#add', function() {
 
         var requested = [videos0];
         var optimized = [videos0];
+        var requestedExpected = !recycleJSON ? [videos1Path] : toPathsOrFB([videos1, videos0]);
 
         var zip = zipSpy(2, function() {
             var onNext = sinon.spy();
@@ -164,7 +216,7 @@ describe('#add', function() {
                 get(videos0, videos1)).
                 doAction(onNext, noOp, function() {
                     expect(getSpy.calledOnce, 'dataSource get').to.be.ok;
-                    expect(getSpy.getCall(0).args[1]).to.deep.equals([videos0]);
+                    expect(getSpy.getCall(0).args[1]).to.deep.equals([videos0Path]);
                     expect(onNext.calledOnce, 'onNext get').to.be.ok;
                     expect(strip(onNext.getCall(0).args[0])).to.deep.equals({
                         json: {
@@ -176,8 +228,8 @@ describe('#add', function() {
                         }
                     });
 
-                    expect(requested, 'the requested complement should be 553').to.deep.equals([videos1]);
-                    expect(optimized, 'the optimized complement should be 553').to.deep.equals([videos1]);
+                    expect(requested).to.deep.equals(requestedExpected);
+                    expect(optimized).to.deep.equals([videos1Path]);
                 }).
                 subscribe(noOp, done, done);
         });
@@ -188,14 +240,19 @@ describe('#add', function() {
             onCompleted: noOp
         };
 
-        var disposable1 = request.batch([videos0], [videos0]).subscribe(zipObserver);
+        var disposable1 = request.batch(
+            toPathsOrFB([videos0]),
+            toPaths([videos0])
+        ).subscribe(zipObserver);
 
         request.connect();
 
         expect(request.active, 'request should be active').to.be.ok;
 
         if (!request.batch(
-            [videos1, videos0], [videos1, videos0], requested = [], optimized = []
+            toPathsOrFB([videos1, videos0]),
+            toPaths([videos1, videos0]),
+            requested = [], optimized = []
         )) {
             throw new Error('Batch complement failed');
         } else {
@@ -212,7 +269,7 @@ describe('#add', function() {
             onGet: getSpy,
             wait: 100
         });
-        var model = new Model({source: source});
+        var model = new Model({ source: source, recycleJSON: recycleJSON });
         var request = new Request('get', {
             remove: function() { },
             modelRoot: model._root
@@ -220,6 +277,7 @@ describe('#add', function() {
 
         var requested = [videos0];
         var optimized = [videos0];
+        var requestedExpected = !recycleJSON ? [videos1Path] : toPathsOrFB([videos1, videos0]);
 
         var zip = zipSpy(2, function() {
             var onNext = sinon.spy();
@@ -228,7 +286,7 @@ describe('#add', function() {
                 get(videos0, videos1)).
                 doAction(onNext, noOp, function() {
                     expect(getSpy.calledOnce, 'dataSource get').to.be.ok;
-                    expect(getSpy.getCall(0).args[1]).to.deep.equals([videos0]);
+                    expect(getSpy.getCall(0).args[1]).to.deep.equals([videos0Path]);
                     expect(onNext.calledOnce, 'onNext get').to.be.ok;
                     expect(strip(onNext.getCall(0).args[0])).to.deep.equals({
                         json: {
@@ -240,8 +298,8 @@ describe('#add', function() {
                         }
                     });
 
-                    expect(requested, 'the requested complement should be 553').to.deep.equals([videos1]);
-                    expect(optimized, 'the optimized complement should be 553').to.deep.equals([videos1]);
+                    expect(requested).to.deep.equals(requestedExpected);
+                    expect(optimized).to.deep.equals([videos1Path]);
                 }).
                 subscribe(noOp, done, done);
         });
@@ -252,27 +310,24 @@ describe('#add', function() {
             onCompleted: noOp
         };
 
-        var disposable1 = request.batch([videos0], [videos0]).subscribe(zipObserver);
+        var disposable1 = request.batch(
+            toPathsOrFB([videos0]),
+            toPaths([videos0])
+        ).subscribe(zipObserver);
 
         request.connect();
 
         expect(request.active, 'request should be active').to.be.ok;
 
         if (!request.batch(
-            [videos1, videos0], [videos1, videos0], requested = [], optimized = []
+            toPathsOrFB([videos1, videos0]),
+            toPaths([videos1, videos0]),
+            requested = [], optimized = []
         )) {
             throw new Error('Batch complement failed');
         } else {
             request.subscribe(zipObserver).dispose();
             zip();
-        }
-    });
-});
-function zipSpy(count, cb) {
-    return sinon.spy(function() {
-        --count;
-        if (count === 0) {
-            cb();
         }
     });
 }

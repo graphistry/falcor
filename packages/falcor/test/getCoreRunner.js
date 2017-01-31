@@ -15,8 +15,8 @@ module.exports = function(testConfig) {
     if (typeof expectedOutput === 'function') {
         expectedOutput = expectedOutput();
     }
-    var requestedMissingPaths = testConfig.requestedMissingPaths;
-    var optimizedMissingPaths = testConfig.optimizedMissingPaths;
+    var requestedMissingPaths = testConfig.requestedMissingPaths || null;
+    var optimizedMissingPaths = testConfig.optimizedMissingPaths || null;
     var errors = testConfig.errors;
     var type = testConfig.input && testConfig.input[0] ||
         testConfig.inputs[0][0];

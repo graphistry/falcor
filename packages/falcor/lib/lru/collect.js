@@ -1,6 +1,8 @@
 var updateNodeAncestors = require('../cache/updateNodeAncestors');
 
-module.exports = function collect(lru, expired, totalArg, max, ratioArg, version) {
+module.exports = collect;
+
+function collect(lru, expired, totalArg, max, ratioArg, version) {
 
     var total = totalArg;
     var ratio = ratioArg;
@@ -31,4 +33,4 @@ module.exports = function collect(lru, expired, totalArg, max, ratioArg, version
             node[f_next] = undefined;
         }
     }
-};
+}

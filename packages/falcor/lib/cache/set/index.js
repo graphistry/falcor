@@ -38,7 +38,7 @@ function json(model, _args, data, progressive, expireImmediate) {
             requested = jsong.requested;
 
             var rootChangeHandler = model._root.onChange;
-            rootChangeHandler && rootChangeHandler();
+            rootChangeHandler && rootChangeHandler.call(model._root.topLevelModel);
         }
     }
 
@@ -79,7 +79,7 @@ function jsonGraph(model, _args, data, progressive, expireImmediate) {
 
         if (changed) {
             var rootChangeHandler = model._root.onChange;
-            rootChangeHandler && rootChangeHandler();
+            rootChangeHandler && rootChangeHandler.call(model._root.topLevelModel);
         }
     }
 
@@ -95,7 +95,7 @@ function jsonGraph(model, _args, data, progressive, expireImmediate) {
     };
 }
 
-function setGroupsIntoCache(model, xs, expireImmediate) {
+function setGroupsIntoCache(model, xs, expireImmediate_) {
 
     var changed = false;
     var groupIndex = -1;
@@ -105,7 +105,7 @@ function setGroupsIntoCache(model, xs, expireImmediate) {
     var modelRoot = model._root;
     var errorSelector = modelRoot.errorSelector;
 
-    expireImmediate = expireImmediate && !Boolean(model._source);
+    var expireImmediate = expireImmediate_ && !Boolean(model._source);
     var comparator = Boolean(model._source) ? null : modelRoot.comparator;
 
     // Takes each of the groups and normalizes their input into

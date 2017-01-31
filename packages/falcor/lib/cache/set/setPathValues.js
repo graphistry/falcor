@@ -15,7 +15,9 @@ var mergeValueOrInsertBranch = require('../mergeValueOrInsertBranch');
  * @return {Array.<Array.<Path>>} - an Array of Arrays where each inner Array is a list of requested and optimized paths (respectively) for the successfully set values.
  */
 
-module.exports = function setPathValues(model, pathValues, errorSelector, comparator, expireImmediate) {
+module.exports = setPathValues;
+
+function setPathValues(model, pathValues, errorSelector, comparator, expireImmediate) {
 
     var modelRoot = model._root;
     var expired = modelRoot.expired;
@@ -62,7 +64,7 @@ module.exports = function setPathValues(model, pathValues, errorSelector, compar
     }
 
     return [requestedPaths, optimizedPaths, false];
-};
+}
 
 /* eslint-disable no-constant-condition */
 function setPathSet(
@@ -82,7 +84,7 @@ function setPathSet(
         requestedPath[depth] = key;
         requestedPath.index = depth;
 
-        var results = setNode(
+        setNode(
             root, parent, node, key, value,
             branch, false, requestedPath, optimizedPath, version,
             expired, lru, comparator, errorSelector, expireImmediate
@@ -91,9 +93,9 @@ function setPathSet(
         requestedPath[depth] = key;
         requestedPath.index = depth;
 
-        var nextNode = results[0];
-        var nextParent = results[1];
-        var nextOptimizedPath = results[2];
+        var nextNode = arr[0];
+        var nextParent = arr[1];
+        var nextOptimizedPath = arr[2];
         nextOptimizedPath[nextOptimizedPath.index++] = key;
 
         if (nextNode) {
@@ -119,12 +121,13 @@ function setPathSet(
 /* eslint-enable */
 
 function setReference(
-    value, root, node, requestedPath, optimizedPath, version,
+    value, root, nodeArg, requestedPath, optimizedPathArg, version,
     expired, lru, comparator, errorSelector, expireImmediate) {
 
     var parent;
+    var node = nodeArg;
     var reference = node.value;
-    optimizedPath = reference.slice(0);
+    var optimizedPath = reference.slice(0);
 
     if (isExpired(node, expireImmediate)) {
         expireNode(node, expired, lru);
@@ -153,18 +156,18 @@ function setReference(
                 var branch = index < count;
                 optimizedPath.index = index;
 
-                var results = setNode(
+                setNode(
                     root, parent, node, key, value,
                     branch, true, requestedPath, optimizedPath, version,
                     expired, lru, comparator, errorSelector, expireImmediate
                 );
-                node = results[0];
-                optimizedPath = results[2];
+                node = arr[0];
+                optimizedPath = arr[2];
                 if (!node || typeof node !== 'object') {
                     optimizedPath.index = index;
-                    return results;
+                    return;
                 }
-                parent = results[1];
+                parent = arr[1];
             } while (index++ < count);
 
             optimizedPath.index = index;
@@ -178,32 +181,33 @@ function setReference(
     arr[0] = node;
     arr[1] = parent;
     arr[2] = optimizedPath;
-
-    return arr;
 }
 
 function setNode(
-    root, parent, node, key, value,
-    branch, reference, requestedPath, optimizedPath, version,
+    root, parentArg, nodeArg, key, value,
+    branch, reference, requestedPath, optimizedPathArg, version,
     expired, lru, comparator, errorSelector, expireImmediate) {
 
+    var node = nodeArg;
     var type = node.$type;
+    var parent = parentArg;
+    var optimizedPath = optimizedPathArg;
 
     while (type === $ref) {
 
-        var results = setReference(
+        setReference(
             value, root, node, requestedPath, optimizedPath, version,
             expired, lru, comparator, errorSelector, expireImmediate
         );
 
-        node = results[0];
+        node = arr[0];
 
         if (!node || typeof node !== 'object') {
-            return results;
+            return;
         }
 
-        parent = results[1];
-        optimizedPath = results[2];
+        parent = arr[1];
+        optimizedPath = arr[2];
         type = node.$type;
     }
 
@@ -229,6 +233,4 @@ function setNode(
     arr[0] = node;
     arr[1] = parent;
     arr[2] = optimizedPath;
-
-    return arr;
 }

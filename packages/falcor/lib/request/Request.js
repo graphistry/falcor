@@ -75,7 +75,7 @@ Request.prototype.onNext = function(env) {
     }
 
     if (changed && rootChangeHandler) {
-        rootChangeHandler();
+        rootChangeHandler.call(modelRoot.topLevelModel);
     }
 
     observers.forEach(function(observer, index) {

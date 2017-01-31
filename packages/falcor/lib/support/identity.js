@@ -1,3 +1,5 @@
-module.exports = function identity(x) {
+module.exports = identity;
+
+function identity(x) {
     return x;
-};
+}

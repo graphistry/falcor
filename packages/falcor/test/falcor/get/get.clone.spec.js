@@ -19,7 +19,7 @@ describe('Caching Issues', function() {
         expect(model.batch().setCache);
     });
 
-    it('should ensure that cache remains consistent amoung its clones.', function() {
+    it('should ensure that cache remains consistent among its clones.', function() {
         var source = new Model({
             cache: {
                 lolomo: {
@@ -28,8 +28,8 @@ describe('Caching Issues', function() {
             }
         });
         var clone = source._clone({});
-        var resSource = source._getPathValuesAsPathMap(source, [['lolomo', 'summary']], {});
-        var resClone = clone._getPathValuesAsPathMap(clone, [['lolomo', 'summary']], {});
+        var resSource = source._getPathValuesAsPathMap(source, [['lolomo', 'summary']], {}, false, true);
+        var resClone = clone._getPathValuesAsPathMap(clone, [['lolomo', 'summary']], {}, false, true);
         expect(resClone).to.deep.equals(resSource);
 
         source.setCache({
@@ -37,8 +37,8 @@ describe('Caching Issues', function() {
                 name: 'Terminator 2'
             }
         });
-        resSource = source._getPathValuesAsPathMap(source, [['lolomo', 'name']], {});
-        resClone = clone._getPathValuesAsPathMap(clone, [['lolomo', 'name']], {});
+        resSource = source._getPathValuesAsPathMap(source, [['lolomo', 'name']], {}, false, true);
+        resClone = clone._getPathValuesAsPathMap(clone, [['lolomo', 'name']], {}, false, true);
         expect(resClone).to.deep.equals(resSource);
     });
 });

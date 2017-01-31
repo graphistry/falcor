@@ -7,7 +7,9 @@ var expiresNow = require('../values/expires-now');
 
 var atomSize = 50;
 
-module.exports = function wrapNode(nodeArg, typeArg, value) {
+module.exports = wrapNode;
+
+function wrapNode(nodeArg, typeArg, value) {
 
     var size = 0;
     var node = nodeArg;

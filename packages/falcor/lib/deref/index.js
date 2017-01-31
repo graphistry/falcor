@@ -3,7 +3,9 @@ var FalcorJSON = require('../cache/get/json/FalcorJSON');
 var getCachePosition = require('../cache/getCachePosition');
 var InvalidDerefInputError = require('../errors/InvalidDerefInputError');
 
-module.exports = function deref(json) {
+module.exports = deref;
+
+function deref(json) {
 
     var seed, f_meta;
 

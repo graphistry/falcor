@@ -68,7 +68,7 @@ function invalidatePathMap(
         if (!isInternalKey(key)) {
             var child = pathMap[key];
             var branch = !(!child || typeof child !== 'object') && !child.$type;
-            arr = invalidateNode(
+            invalidateNode(
                 root, parent, node,
                 key, child, branch, false, version, expired,
                 lru, comparator, expireImmediate
@@ -91,14 +91,16 @@ function invalidatePathMap(
 }
 
 function invalidateReference(
-    value, root, node, version,
+    value, root, nodeArg, version,
     expired, lru, comparator, expireImmediate) {
+
+    var node = nodeArg;
 
     if (isExpired(node, expireImmediate)) {
         expireNode(node, expired, lru);
         arr[0] = undefined;
         arr[1] = root;
-        return arr;
+        return;
     }
 
     lruPromote(lru, node);
@@ -121,14 +123,14 @@ function invalidateReference(
         do {
             var key = reference[index];
             var branch = index < count;
-            arr = invalidateNode(
+            invalidateNode(
                 root, parent, node,
                 key, value, branch, true, version,
                 expired, lru, comparator, expireImmediate
             );
             node = arr[0];
             if (!node && typeof node !== 'object') {
-                return arr;
+                return;
             }
             parent = arr[1];
         } while (index++ < count);
@@ -140,20 +142,20 @@ function invalidateReference(
 
     arr[0] = node;
     arr[1] = parent;
-
-    return arr;
 }
 
 function invalidateNode(
-    root, parent, node,
+    root, parentArg, nodeArg,
     key, value, branch, reference, version,
     expired, lru, comparator, expireImmediate) {
 
+    var node = nodeArg;
+    var parent = parentArg;
     var type = node.$type;
 
     while (type === $ref) {
 
-        arr = invalidateReference(
+        invalidateReference(
             value, root, node, version, expired,
             lru, comparator, expireImmediate
         );
@@ -161,7 +163,7 @@ function invalidateNode(
         node = arr[0];
 
         if (!node && typeof node !== 'object') {
-            return arr;
+            return;
         }
 
         parent = arr[1];
@@ -183,6 +185,4 @@ function invalidateNode(
 
     arr[0] = node;
     arr[1] = parent;
-
-    return arr;
 }

@@ -10,11 +10,12 @@ module.exports = getReferenceTarget;
 /* eslint-disable no-console */
 /* eslint-disable no-cond-assign */
 /* eslint-disable no-constant-condition */
-function getReferenceTarget(root, ref, modelRoot, expireImmediate) {
+function getReferenceTarget(root, refArg, modelRoot, expireImmediate) {
 
-    promote(modelRoot, ref);
+    promote(modelRoot, refArg);
 
     var context,
+        ref = refArg,
         key, type, depth = 0,
         node = root, path = ref.value,
         copy = path, length = path.length;

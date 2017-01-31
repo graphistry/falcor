@@ -11,10 +11,12 @@
  * @return {Array} A new array, with the path which represents the node we're about
  * to insert
  */
-module.exports = function reconstructPath(currentPath, key) {
+module.exports = reconstructPath;
+
+function reconstructPath(currentPath, key) {
 
     var path = currentPath.slice(0, currentPath.depth);
     path[path.length] = key;
 
     return path;
-};
+}

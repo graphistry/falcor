@@ -1,4 +1,6 @@
-module.exports = function unlinkForwardReference(reference) {
+module.exports = unlinkForwardReference;
+
+function unlinkForwardReference(reference) {
     var destination = reference[f_context];
     if (destination) {
         var i = (reference[f_ref_index] || 0) - 1,
@@ -10,4 +12,4 @@ module.exports = function unlinkForwardReference(reference) {
         reference[f_ref_index] = reference[f_context] = destination = void 0;
     }
     return reference;
-};
+}
