@@ -15,11 +15,10 @@ import { connect as connectRedux } from 'react-redux';
 import { Observable } from 'rxjs/Observable';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Model, FalcorJSON } from '@graphistry/falcor';
-import { animationFrame } from 'rxjs/scheduler/animationFrame';
-// import { asap as asapScheduler } from 'rxjs/scheduler/asap';
+import * as Scheduler from 'rxjs/scheduler/async';
 
-import 'rxjs/add/operator/auditTime';
 import 'rxjs/add/operator/switchMap';
+import 'rxjs/add/operator/sampleTime';
 import 'rxjs/add/operator/distinctUntilKeyChanged';
 
 if (!Model.prototype.changes) {
@@ -28,13 +27,15 @@ if (!Model.prototype.changes) {
         let { changes } = _root;
         if (!changes) {
             changes = _root.changes = new BehaviorSubject(this);
-            const { onChange } = _root;
-            _root.onChange = () => {
-                if (onChange) {
-                    onChange.call(this);
+            ['onChange', 'onChangesCompleted'].forEach((name) => {
+                const handler = _root[name];
+                _root[name] = function() {
+                    if (handler) {
+                        handler.call(this);
+                    }
+                    changes.next(this);
                 }
-                changes.next(this);
-            }
+            });
         }
         return changes;
     }
@@ -42,14 +43,10 @@ if (!Model.prototype.changes) {
 
 setObservableConfig(rxjsObservableConfig);
 
-const typeofObject = 'object';
 const reduxOptions = { pure: false };
-const contextTypes = {
-    falcor: PropTypes.object,
-    dispatch: PropTypes.func
-};
+const contextTypes = { falcor: PropTypes.object, dispatch: PropTypes.func };
 
-const connect = (BaseComponent, scheduler = animationFrame) => hoistStatics(compose(
+const connect = (BaseComponent, scheduler = Scheduler.async) => hoistStatics(compose(
     connectRedux(mapReduxStoreToProps, null, null, reduxOptions),
     setDisplayName(wrapDisplayName(BaseComponent, 'Falcor')),
     mapPropsStream(mapPropsToDistinctChanges(scheduler)),
@@ -92,8 +89,8 @@ function mapPropsToDistinctChanges(scheduler) {
         return prop$.switchMap(
             mapPropsToChanges, mapChangeToProps
         )
-        .distinctUntilKeyChanged('version')
-        .auditTime(0, scheduler);
+        .sampleTime(0, scheduler)
+        .distinctUntilKeyChanged('version');
     }
 }
 

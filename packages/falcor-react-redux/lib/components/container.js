@@ -17,10 +17,6 @@ var _keys = require('babel-runtime/core-js/object/keys');
 
 var _keys2 = _interopRequireDefault(_keys);
 
-var _from = require('babel-runtime/core-js/array/from');
-
-var _from2 = _interopRequireDefault(_from);
-
 var _getPrototypeOf = require('babel-runtime/core-js/object/get-prototype-of');
 
 var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
@@ -81,9 +77,6 @@ var _Observable = require('rxjs/Observable');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var typeofNumber = 'number';
-var typeofObject = 'object';
-var typeofFunction = 'function';
 var defaultMapFragmentToProps = function defaultMapFragmentToProps(data) {
     return data;
 };
@@ -100,7 +93,7 @@ exports.default = container;
 
 function container(fragmentDesc) {
 
-    (0, _invariant2.default)(fragmentDesc && (typeofFunction === (typeof fragmentDesc === 'undefined' ? 'undefined' : (0, _typeof3.default)(fragmentDesc)) || typeofObject === (typeof fragmentDesc === 'undefined' ? 'undefined' : (0, _typeof3.default)(fragmentDesc)) && typeofFunction === (0, _typeof3.default)(fragmentDesc.fragment)), 'Attempted to create a Falcor container component without a fragment.\nFalcor containers must be created with a fragment function, or an Object with a "fragment" function.');
+    (0, _invariant2.default)(fragmentDesc && ('function' === typeof fragmentDesc || 'object' === (typeof fragmentDesc === 'undefined' ? 'undefined' : (0, _typeof3.default)(fragmentDesc)) && 'function' === typeof fragmentDesc.fragment), 'Attempted to create a Falcor container component without a fragment.\nFalcor containers must be created with a fragment function, or an Object with a "fragment" function.');
 
     var renderErrors = false,
         renderLoading = false,
@@ -109,7 +102,7 @@ function container(fragmentDesc) {
         mapDispatch = void 0,
         mapFragmentAndProps = void 0;
 
-    if (typeofObject !== (typeof fragmentDesc === 'undefined' ? 'undefined' : (0, _typeof3.default)(fragmentDesc))) {
+    if ('object' !== (typeof fragmentDesc === 'undefined' ? 'undefined' : (0, _typeof3.default)(fragmentDesc))) {
         fragment = fragmentDesc;
         mapFragment = arguments.length <= 1 ? undefined : arguments[1];
         mapDispatch = arguments.length <= 2 ? undefined : arguments[2];
@@ -127,8 +120,8 @@ function container(fragmentDesc) {
     mapDispatch = mapDispatch || defaultMapDispatchToProps;
     mapFragmentAndProps = mapFragmentAndProps || defaultMergeProps;
 
-    if (typeofFunction !== (typeof mapDispatch === 'undefined' ? 'undefined' : (0, _typeof3.default)(mapDispatch))) {
-        if (mapDispatch && typeofObject !== (typeof mapDispatch === 'undefined' ? 'undefined' : (0, _typeof3.default)(mapDispatch))) {
+    if ('function' !== typeof mapDispatch) {
+        if (mapDispatch && 'object' !== (typeof mapDispatch === 'undefined' ? 'undefined' : (0, _typeof3.default)(mapDispatch))) {
             mapDispatch = defaultMapDispatchToProps;
         } else {
             mapDispatch = bindActionCreators(mapDispatch);
@@ -161,19 +154,17 @@ function container(fragmentDesc) {
     });
 }
 
-var fragments = function fragments() {
-    var _this2 = this;
-
-    var items = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-
-    if (!items || typeofObject !== (typeof items === 'undefined' ? 'undefined' : (0, _typeof3.default)(items)) || !items.hasOwnProperty('length')) {
+var fragments = function fragments(items) {
+    if (!items || 'object' !== (typeof items === 'undefined' ? 'undefined' : (0, _typeof3.default)(items))) {
         return '{ length }';
     }
-    return '{ length ' + (0, _from2.default)(items, function (x, i) {
-        return x;
-    }).reduce(function (xs, x, i) {
-        return xs + ', ' + i + ': ' + _this2.fragment(x);
-    }, '') + '}';
+    var index = -1,
+        query = 'length';
+    var length = Math.max(0, items.length) || 0;
+    while (++index < length) {
+        query = query + ',\n ' + index + ': ' + this.fragment(items[index]);
+    }
+    return '{ ' + query + ' }';
 };
 
 function bindActionCreators(actionCreators) {
@@ -198,7 +189,7 @@ function tryDeref(_ref) {
     var data = _ref.data,
         falcor = _ref.falcor;
 
-    return !data || !falcor ? falcor : falcor.deref(data);
+    return !data || !falcor ? falcor : falcor._hasValidParentReference() ? falcor.deref(data) : null;
 }
 
 function fetchEachPropUpdate(update) {
@@ -221,7 +212,7 @@ function mergeEachPropUpdate(_ref2, _ref3) {
 
     var hash = data && data.$__hash;
     var status = data && data.$__status;
-    loading = loading || status === 'pending';
+    loading = status === 'pending';
     return {
         hash: hash, props: props, falcor: falcor, dispatch: dispatch,
         data: data, error: error, loading: loading, version: version
@@ -239,22 +230,22 @@ var FalcorContainer = function (_React$Component) {
     function FalcorContainer(componentProps, context) {
         (0, _classCallCheck3.default)(this, FalcorContainer);
 
-        var _this3 = (0, _possibleConstructorReturn3.default)(this, (FalcorContainer.__proto__ || (0, _getPrototypeOf2.default)(FalcorContainer)).call(this, componentProps, context));
+        var _this2 = (0, _possibleConstructorReturn3.default)(this, (FalcorContainer.__proto__ || (0, _getPrototypeOf2.default)(FalcorContainer)).call(this, componentProps, context));
 
         var falcor = context.falcor;
         var data = componentProps.data,
             props = (0, _objectWithoutProperties3.default)(componentProps, ['data']);
 
 
-        _this3.propsStream = new _Subject.Subject();
-        _this3.propsAction = _this3.propsStream.switchMap(fetchEachPropUpdate, mergeEachPropUpdate);
+        _this2.propsStream = new _Subject.Subject();
+        _this2.propsAction = _this2.propsStream.switchMap(fetchEachPropUpdate, mergeEachPropUpdate);
 
-        _this3.state = {
+        _this2.state = {
             data: data, props: props,
             dispatch: context.dispatch,
             falcor: tryDeref({ data: data, falcor: falcor })
         };
-        return _this3;
+        return _this2;
     }
 
     (0, _createClass3.default)(FalcorContainer, [{
@@ -334,7 +325,7 @@ var FalcorContainer = function (_React$Component) {
     }, {
         key: 'componentWillMount',
         value: function componentWillMount() {
-            var _this4 = this;
+            var _this3 = this;
 
             var _props2 = this.props,
                 data = _props2.data,
@@ -342,7 +333,7 @@ var FalcorContainer = function (_React$Component) {
             // Subscribe to child prop changes so we know when to re-render
 
             this.propsSubscription = this.propsAction.subscribe(function (nextState) {
-                _this4.setState(nextState);
+                _this3.setState(nextState);
             });
             this.propsStream.next({
                 data: data, props: props,

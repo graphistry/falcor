@@ -61,52 +61,48 @@ var _BehaviorSubject = require('rxjs/BehaviorSubject');
 
 var _falcor = require('@graphistry/falcor');
 
-var _animationFrame = require('rxjs/scheduler/animationFrame');
+var _async = require('rxjs/scheduler/async');
 
-require('rxjs/add/operator/auditTime');
+var Scheduler = _interopRequireWildcard(_async);
 
 require('rxjs/add/operator/switchMap');
 
+require('rxjs/add/operator/sampleTime');
+
 require('rxjs/add/operator/distinctUntilKeyChanged');
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 if (!_falcor.Model.prototype.changes) {
     _falcor.Model.prototype.changes = function () {
-        var _this = this;
-
         var _root = this._root;
         var changes = _root.changes;
 
         if (!changes) {
-            (function () {
-                changes = _root.changes = new _BehaviorSubject.BehaviorSubject(_this);
-                var onChange = _root.onChange;
-
-                _root.onChange = function () {
-                    if (onChange) {
-                        onChange.call(_this);
+            changes = _root.changes = new _BehaviorSubject.BehaviorSubject(this);
+            ['onChange', 'onChangesCompleted'].forEach(function (name) {
+                var handler = _root[name];
+                _root[name] = function () {
+                    if (handler) {
+                        handler.call(this);
                     }
-                    changes.next(_this);
+                    changes.next(this);
                 };
-            })();
+            });
         }
         return changes;
     };
 }
-// import { asap as asapScheduler } from 'rxjs/scheduler/asap';
 
 (0, _setObservableConfig2.default)(_rxjsObservableConfig2.default);
 
-var typeofObject = 'object';
 var reduxOptions = { pure: false };
-var contextTypes = {
-    falcor: _react.PropTypes.object,
-    dispatch: _react.PropTypes.func
-};
+var contextTypes = { falcor: _react.PropTypes.object, dispatch: _react.PropTypes.func };
 
 var connect = function connect(BaseComponent) {
-    var scheduler = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _animationFrame.animationFrame;
+    var scheduler = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : Scheduler.async;
     return (0, _hoistStatics2.default)((0, _compose2.default)((0, _reactRedux.connect)(mapReduxStoreToProps, null, null, reduxOptions), (0, _setDisplayName2.default)((0, _wrapDisplayName2.default)(BaseComponent, 'Falcor')), (0, _mapPropsStream2.default)(mapPropsToDistinctChanges(scheduler)), (0, _withContext2.default)(contextTypes, function (_ref) {
         var falcor = _ref.falcor,
             dispatch = _ref.dispatch;
@@ -149,7 +145,7 @@ function mapReduxStoreToProps(data, _ref2) {
 
 function mapPropsToDistinctChanges(scheduler) {
     return function innerMapPropsToDistinctChanges(prop$) {
-        return prop$.switchMap(mapPropsToChanges, mapChangeToProps).distinctUntilKeyChanged('version').auditTime(0, scheduler);
+        return prop$.switchMap(mapPropsToChanges, mapChangeToProps).sampleTime(0, scheduler).distinctUntilKeyChanged('version');
     };
 }
 

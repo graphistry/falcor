@@ -11,9 +11,6 @@ import 'rxjs/add/operator/switchMap';
 import { Subject } from 'rxjs/Subject';
 import { Observable } from 'rxjs/Observable';
 
-const typeofNumber = 'number';
-const typeofObject = 'object';
-const typeofFunction = 'function';
 const defaultMapFragmentToProps = (data) => data;
 const defaultMapDispatchToProps = (dispatch, props, falcor) => ({});
 const defaultMergeProps = (stateProps, dispatchProps, parentProps) => ({
@@ -26,9 +23,9 @@ export default container;
 function container(fragmentDesc, ...rest) {
 
     invariant(fragmentDesc && (
-              typeofFunction === typeof fragmentDesc || (
-              typeofObject   === typeof fragmentDesc &&
-              typeofFunction === typeof fragmentDesc.fragment)),
+              'function' === typeof fragmentDesc || (
+              'object'   === typeof fragmentDesc &&
+              'function' === typeof fragmentDesc.fragment)),
 `Attempted to create a Falcor container component without a fragment.
 Falcor containers must be created with a fragment function, or an Object with a "fragment" function.`);
 
@@ -37,7 +34,7 @@ Falcor containers must be created with a fragment function, or an Object with a 
         fragment, mapFragment,
         mapDispatch, mapFragmentAndProps;
 
-    if (typeofObject !== typeof fragmentDesc) {
+    if ('object' !== typeof fragmentDesc) {
         fragment = fragmentDesc;
         mapFragment = rest[0];
         mapDispatch = rest[1];
@@ -55,8 +52,8 @@ Falcor containers must be created with a fragment function, or an Object with a 
     mapDispatch = mapDispatch || defaultMapDispatchToProps;
     mapFragmentAndProps = mapFragmentAndProps || defaultMergeProps;
 
-    if (typeofFunction !== typeof mapDispatch) {
-        if (mapDispatch && typeofObject !== typeof mapDispatch) {
+    if ('function' !== typeof mapDispatch) {
+        if (mapDispatch && 'object' !== typeof mapDispatch) {
             mapDispatch = defaultMapDispatchToProps;
         } else {
             mapDispatch = bindActionCreators(mapDispatch);
@@ -82,17 +79,18 @@ Falcor containers must be created with a fragment function, or an Object with a 
     });
 }
 
-const fragments = function(items = []) {
-    if (!items ||
-        typeofObject !== typeof items ||
-        !items.hasOwnProperty('length')) {
+const fragments = function(items) {
+    if (!items || 'object' !== typeof items) {
         return `{ length }`;
     }
-    return `{ length ${Array
-        .from(items, (x, i) => x)
-        .reduce((xs, x, i) =>`${xs}, ${
-            i}: ${this.fragment(x)}`, '')
-    }}`;
+    let index = -1, query = 'length';
+    const length = Math.max(0, items.length) || 0;
+    while (++index < length) {
+        query = `${
+        query},
+ ${     index}: ${this.fragment(items[index])}`;
+    }
+    return `{ ${query} }`;
 }
 
 function bindActionCreators(actionCreators) {
@@ -112,7 +110,9 @@ function bindActionCreators(actionCreators) {
 
 function tryDeref({ data, falcor }) {
     return !data || !falcor ?
-        falcor : falcor.deref(data);
+        falcor :
+        falcor._hasValidParentReference() ?
+        falcor.deref(data) : null;
 }
 
 function fetchEachPropUpdate(update) {
@@ -130,7 +130,7 @@ function mergeEachPropUpdate(
 ) {
     const hash = data && data.$__hash;
     const status = data && data.$__status;
-    loading = loading || status === 'pending';
+    loading = status === 'pending';
     return {
         hash, props, falcor, dispatch,
         data, error, loading, version
