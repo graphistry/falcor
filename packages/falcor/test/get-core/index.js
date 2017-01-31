@@ -7,4 +7,5 @@ describe('Get Core', function() {
     require('./edges.spec');
     require('./null.spec');
     require('./get.cache.spec');
+    require('./falcor-json.spec');
 });

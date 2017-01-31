@@ -55,7 +55,7 @@ Object.defineProperties(FalcorJSON.prototype, Object
             var fn = Array.prototype[name];
             if (typeof fn === 'function') {
                 descriptors[name] = {
-                    value: bindArrayMethod(name, fn),
+                    value: bindArrayMethod(fn),
                     writable: true, enumerable: false
                 };
             }
@@ -64,25 +64,46 @@ Object.defineProperties(FalcorJSON.prototype, Object
     }, protoDescriptors)
 );
 
-function bindArrayMethod(name, fn) {
-    return new Function('fn',
-        'return function ' + name + ' () {' +
-            'return fn.apply(this, arguments);' +
-        '};'
-    )(fn);
+function bindArrayMethod(fn) {
+    return function() {
+        var node = this, json = node, atom = node.length, length = atom, type;
+        // If length isn't a number, an $atom with a numeric `value`, or if the
+        // unboxed length isn't a valid Array length, bail early.
+        // If we're still waiting on pending updates, return an empty Array.
+        // Otherwise, throw a RangeError.
+        if ((type = typeof atom) !== 'number' && (!atom ||
+              type !== 'object' || atom.$type !== $atom ||
+              typeof (length = atom.value) !== 'number')||
+            length < 0 || length !== (length | 0)) {
+            if (node.$__status === 'pending') {
+                return [];
+            }
+            throw new RangeError('Invalid FalcorJSON length');
+        }
+        // Temporarily set length to the unboxed length, call the bound Array
+        // method, then reset the length back to the boxed value. This is
+        // necessary because a few Array methods (like sort) operate on the
+        // Array in-place, so we can't pass a sliced copy of this instance to
+        // the bound Array method. Do this even when the length isn't boxed, so
+        // if calling the bound Array method writes to length, it's reset to the
+        // value in the cache.
+        node.length = length;
+        json = fn.apply(node, arguments);
+        node.length = atom;
+        return json;
+    }
 }
 
 var isArray = Array.isArray;
-var typeofObject = 'object';
-var typeofString = 'string';
 
-function getInst(inst) {
+function getInst(x) {
+    var inst = x;
     var typeofInst = typeof inst;
     var argsLen = arguments.length;
     if (argsLen === 0) {
         inst = this;
-    } else if (typeofInst !== typeofString) {
-        if (!inst || typeofInst !== typeofObject) {
+    } else if (typeofInst !== 'string') {
+        if (!inst || typeofInst !== 'object') {
             return inst;
         }
     } else if (argsLen !== 1) {
@@ -106,10 +127,9 @@ function toString(includeMetadata, includeStatus) {
     ));
 }
 
-function toProps(inst) {
+function toProps(x) {
 
-    inst = getInst.apply(this, arguments);
-
+    var inst = getInst.apply(this, arguments);
     var f_meta_inst, f_meta_json, version = 0;
     var json = serialize(inst, toProps, true, true);
 
@@ -117,7 +137,7 @@ function toProps(inst) {
         version = f_meta_inst[f_meta_version];
     }
 
-    if (!(!json || typeof json !== typeofObject)) {
+    if (!(!json || typeof json !== 'object')) {
         if (f_meta_json = json[f_meta_data]) {
             f_meta_json[f_meta_version] = version;
         }
@@ -128,7 +148,7 @@ function toProps(inst) {
 
 function serialize(inst, serializer, includeMetadata, createWithProto, includeStatus) {
 
-    if (!inst || typeof inst !== typeofObject) {
+    if (!inst || typeof inst !== 'object') {
         return inst;
     }
 
