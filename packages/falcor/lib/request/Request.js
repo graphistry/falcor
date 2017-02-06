@@ -17,12 +17,12 @@ module.exports = Request;
 
 function Request(type, queue, source, scheduler) {
     Subject.call(this, [], queue);
-    this.tree = {};
-    this.paths = [];
+    this.trees = [];
     this.type = type;
     this.data = null;
     this.active = false;
     this.responded = false;
+    this.paths = null;
     this.requested = [];
     this.optimized = [];
     this.disposable = null;
@@ -41,6 +41,8 @@ Request.prototype.onNext = function(env) {
         return;
     }
 
+    this.responded = true;
+    /*
     if (this.responded === false) {
         this.responded = true;
         // Remove this request from the request queue as soon as we get
@@ -48,6 +50,7 @@ Request.prototype.onNext = function(env) {
         // of in-flight batch requests.
         queue.remove(this);
     }
+    */
 
     var changed = false;
     var jsonGraph = env.jsonGraph;
@@ -147,6 +150,7 @@ Request.prototype.onCompleted = function() {
 Request.prototype.remove = function(subscription) {
     var index = this.subscriptions.indexOf(subscription);
     if (~index) {
+        this.trees.splice(index, 1);
         this.requested.splice(index, 1);
         this.optimized.splice(index, 1);
         this.observers.splice(index, 1);
@@ -160,7 +164,7 @@ Request.prototype.remove = function(subscription) {
 
 Request.prototype.dispose =
 Request.prototype.unsubscribe = function () {
-    this.tree = {};
+    this.trees = [];
     this.data = null;
     this.paths = null;
     this.active = false;
@@ -200,7 +204,7 @@ Request.prototype.batch = function(requested, optimized,
     if (this.active) {
         var requestedIntersection = [];
         var optimizedIntersection = [];
-        if (findIntersections(this.tree,
+        if (findIntersections(this.trees,
                               requested, optimized,
                               requestedComplements,
                               optimizedComplements,
@@ -208,10 +212,14 @@ Request.prototype.batch = function(requested, optimized,
                               optimizedIntersection)) {
             this.requested.push(requestedIntersection);
             this.optimized.push(optimizedIntersection);
+            this.trees.push(toCollapseTrees(toCollapseMap(
+                optimizedIntersection
+            )));
             return this;
         }
         return null;
     }
+    this.trees.push({});
     this.requested.push(requested);
     this.optimized.push(optimized);
     return this;
@@ -219,13 +227,17 @@ Request.prototype.batch = function(requested, optimized,
 
 function flush() {
 
-    this.active = true;
-
-    var obs, paths = this.paths = toPaths(this.tree = toCollapseTrees(
+    var obs, paths = this.paths = toPaths(toCollapseTrees(
         this.optimized.reduce(function(collapseMap, paths) {
             return toCollapseMap(paths, collapseMap);
         }, {})
     ));
+
+    this.trees = this.optimized.map(function(paths) {
+        return toCollapseTrees(toCollapseMap(paths));
+    });
+
+    this.active = true;
 
     try {
         switch (this.type) {
@@ -245,8 +257,7 @@ function flush() {
         Subject.prototype.onError.call(this, new InvalidSourceError(e));
     }
 }
-
-function findIntersections(tree,
+function findIntersections(trees,
                            requested, optimized,
                            requestedComplements,
                            optimizedComplements,
@@ -258,27 +269,36 @@ function findIntersections(tree,
     var reqComplementsIdx = -1;
     var intersectionIndex = -1;
     var reqIntersectionIdx = -1;
+    var treesLength = trees.length;
     var optTotal = optimized.length;
     var reqTotal = requested.length - 1;
 
+    toNextPath:
     while (++index < optTotal) {
+
+        var treesIndex = -1;
         var path = optimized[index];
         var pathLen = path.length;
-        var subTree = tree[pathLen];
-        if (subTree && hasIntersection(subTree, path, 0, pathLen)) {
-            optimizedIntersection[++intersectionIndex] = path;
-            if (reqIntersectionIdx < reqTotal) {
-                requestedIntersection[++reqIntersectionIdx] = requested[
-                    index < reqTotal ? index : reqTotal
-                ];
+
+        while (++treesIndex < treesLength) {
+            var tree = trees[treesIndex];
+            var subTree = tree[pathLen];
+            if (subTree && hasIntersection(subTree, path, 0, pathLen)) {
+                optimizedIntersection[++intersectionIndex] = path;
+                if (reqIntersectionIdx < reqTotal) {
+                    requestedIntersection[++reqIntersectionIdx] = requested[
+                        index < reqTotal ? index : reqTotal
+                    ];
+                }
+                continue toNextPath;
             }
-        } else {
-            optimizedComplements[++complementIndex] = path;
-            if (reqComplementsIdx < reqTotal) {
-                requestedComplements[++reqComplementsIdx] = requested[
-                    index < reqTotal ? index : reqTotal
-                ];
-            }
+        }
+
+        optimizedComplements[++complementIndex] = path;
+        if (reqComplementsIdx < reqTotal) {
+            requestedComplements[++reqComplementsIdx] = requested[
+                index < reqTotal ? index : reqTotal
+            ];
         }
     }
 

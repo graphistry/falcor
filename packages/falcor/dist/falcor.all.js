@@ -2052,22 +2052,25 @@ var flatBufferToPaths = __webpack_require__(21);
 
 module.exports = toCollapseMap;
 
-function toCollapseMap(paths, collapseMap) {
+function toCollapseMap(pathsArg, collapseMapArg) {
+    var paths = pathsArg,
+        collapseMap = collapseMapArg;
+    if (!collapseMap || typeof collapseMap !== 'object') {
+        collapseMap = {};
+    }
     if (!paths) {
         return collapseMap;
-    } else if (!isArray(paths)) {
-        if (isArray(paths.$keys)) {
-            paths = flatBufferToPaths(paths);
-        }
+    } else if (!isArray(paths) && isArray(paths.$keys)) {
+        paths = flatBufferToPaths(paths);
     }
-    return paths.reduce(function (acc, path) {
-        var len = path.length;
-        if (!acc[len]) {
-            acc[len] = [];
-        }
-        acc[len].push(path);
-        return acc;
-    }, collapseMap || {});
+    return paths.reduce(partitionPathsByLength, collapseMap);
+}
+
+function partitionPathsByLength(collapseMap, path) {
+    var length = path.length;
+    var paths = collapseMap[length] || (collapseMap[length] = []);
+    paths[paths.length] = path;
+    return collapseMap;
 }
 
 /***/ },
@@ -2078,11 +2081,24 @@ var toTree = __webpack_require__(65);
 
 module.exports = toCollapseTrees;
 
-function toCollapseTrees(collapseMap, collapseTrees) {
-    return Object.keys(collapseMap).reduce(function (collapseTrees, collapseKey) {
-        collapseTrees[collapseKey] = toTree(collapseMap[collapseKey], collapseTrees[collapseKey]);
-        return collapseTrees;
-    }, collapseTrees || {});
+function toCollapseTrees(pathsByLength, treesByPathLengthArg) {
+
+    var pathLengths = Object.keys(pathsByLength);
+    var pathLength,
+        pathLengthsIndex = -1;
+    var pathLengthsCount = pathLengths.length;
+    var treesByPathLength = treesByPathLengthArg;
+
+    if (!treesByPathLength || typeof treesByPathLength !== 'object') {
+        treesByPathLength = {};
+    }
+
+    while (++pathLengthsIndex < pathLengthsCount) {
+        pathLength = pathLengths[pathLengthsIndex];
+        treesByPathLength[pathLength] = toTree(pathsByLength[pathLength], treesByPathLength[pathLength]);
+    }
+
+    return treesByPathLength;
 }
 
 /***/ },
@@ -7013,12 +7029,12 @@ module.exports = Request;
 
 function Request(type, queue, source, scheduler) {
     Subject.call(this, [], queue);
-    this.tree = {};
-    this.paths = [];
+    this.trees = [];
     this.type = type;
     this.data = null;
     this.active = false;
     this.responded = false;
+    this.paths = null;
     this.requested = [];
     this.optimized = [];
     this.disposable = null;
@@ -7036,6 +7052,8 @@ Request.prototype.next = Request.prototype.onNext = function (env) {
         return;
     }
 
+    this.responded = true;
+    /*
     if (this.responded === false) {
         this.responded = true;
         // Remove this request from the request queue as soon as we get
@@ -7043,6 +7061,7 @@ Request.prototype.next = Request.prototype.onNext = function (env) {
         // of in-flight batch requests.
         queue.remove(this);
     }
+    */
 
     var changed = false;
     var jsonGraph = env.jsonGraph;
@@ -7128,6 +7147,7 @@ Request.prototype.complete = Request.prototype.onCompleted = function () {
 Request.prototype.remove = function (subscription) {
     var index = this.subscriptions.indexOf(subscription);
     if (~index) {
+        this.trees.splice(index, 1);
         this.requested.splice(index, 1);
         this.optimized.splice(index, 1);
         this.observers.splice(index, 1);
@@ -7140,7 +7160,7 @@ Request.prototype.remove = function (subscription) {
 };
 
 Request.prototype.dispose = Request.prototype.unsubscribe = function () {
-    this.tree = {};
+    this.trees = [];
     this.data = null;
     this.paths = null;
     this.active = false;
@@ -7178,13 +7198,15 @@ Request.prototype.batch = function (requested, optimized, requestedComplements, 
     if (this.active) {
         var requestedIntersection = [];
         var optimizedIntersection = [];
-        if (findIntersections(this.tree, requested, optimized, requestedComplements, optimizedComplements, requestedIntersection, optimizedIntersection)) {
+        if (findIntersections(this.trees, requested, optimized, requestedComplements, optimizedComplements, requestedIntersection, optimizedIntersection)) {
             this.requested.push(requestedIntersection);
             this.optimized.push(optimizedIntersection);
+            this.trees.push(toCollapseTrees(toCollapseMap(optimizedIntersection)));
             return this;
         }
         return null;
     }
+    this.trees.push({});
     this.requested.push(requested);
     this.optimized.push(optimized);
     return this;
@@ -7192,12 +7214,16 @@ Request.prototype.batch = function (requested, optimized, requestedComplements, 
 
 function flush() {
 
-    this.active = true;
-
     var obs,
-        paths = this.paths = toPaths(this.tree = toCollapseTrees(this.optimized.reduce(function (collapseMap, paths) {
+        paths = this.paths = toPaths(toCollapseTrees(this.optimized.reduce(function (collapseMap, paths) {
         return toCollapseMap(paths, collapseMap);
     }, {})));
+
+    this.trees = this.optimized.map(function (paths) {
+        return toCollapseTrees(toCollapseMap(paths));
+    });
+
+    this.active = true;
 
     try {
         switch (this.type) {
@@ -7217,31 +7243,38 @@ function flush() {
         Subject.prototype.onError.call(this, new InvalidSourceError(e));
     }
 }
-
-function findIntersections(tree, requested, optimized, requestedComplements, optimizedComplements, requestedIntersection, optimizedIntersection) {
+function findIntersections(trees, requested, optimized, requestedComplements, optimizedComplements, requestedIntersection, optimizedIntersection) {
 
     var index = -1;
     var complementIndex = -1;
     var reqComplementsIdx = -1;
     var intersectionIndex = -1;
     var reqIntersectionIdx = -1;
+    var treesLength = trees.length;
     var optTotal = optimized.length;
     var reqTotal = requested.length - 1;
 
-    while (++index < optTotal) {
+    toNextPath: while (++index < optTotal) {
+
+        var treesIndex = -1;
         var path = optimized[index];
         var pathLen = path.length;
-        var subTree = tree[pathLen];
-        if (subTree && hasIntersection(subTree, path, 0, pathLen)) {
-            optimizedIntersection[++intersectionIndex] = path;
-            if (reqIntersectionIdx < reqTotal) {
-                requestedIntersection[++reqIntersectionIdx] = requested[index < reqTotal ? index : reqTotal];
+
+        while (++treesIndex < treesLength) {
+            var tree = trees[treesIndex];
+            var subTree = tree[pathLen];
+            if (subTree && hasIntersection(subTree, path, 0, pathLen)) {
+                optimizedIntersection[++intersectionIndex] = path;
+                if (reqIntersectionIdx < reqTotal) {
+                    requestedIntersection[++reqIntersectionIdx] = requested[index < reqTotal ? index : reqTotal];
+                }
+                continue toNextPath;
             }
-        } else {
-            optimizedComplements[++complementIndex] = path;
-            if (reqComplementsIdx < reqTotal) {
-                requestedComplements[++reqComplementsIdx] = requested[index < reqTotal ? index : reqTotal];
-            }
+        }
+
+        optimizedComplements[++complementIndex] = path;
+        if (reqComplementsIdx < reqTotal) {
+            requestedComplements[++reqComplementsIdx] = requested[index < reqTotal ? index : reqTotal];
         }
     }
 
