@@ -100,7 +100,7 @@ function keysetToKeysList(keys) {
     if (!keys || 'object' !== typeof keys) {
         return [keys];
     } else if (isArray(keys)) {
-        return keys;
+        return mergeMapArray(keys, keysetToKeysList);
     }
     let rangeEnd = keys.to;
     let rangeStart = keys.from || 0;
@@ -111,6 +111,16 @@ function keysetToKeysList(keys) {
         {length: rangeEnd - rangeStart},
         (x, index) => index + rangeStart
     );
+}
+
+function mergeMapArray(xs, fn) {
+    let ix = -1;
+    const list = [];
+    const { length } = xs;
+    while (++ix < length) {
+        list.push.apply(list, fn(xs[ix]));
+    }
+    return list;
 }
 
 function defaultGetInitialState(routerInstance) {

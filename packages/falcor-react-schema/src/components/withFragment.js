@@ -7,14 +7,15 @@ import fetchDataUntilSettled from '../fetchDataUntilSettled';
 
 import 'rxjs/add/operator/map';
 import 'rxjs/add/observable/of';
+import 'rxjs/add/operator/takeLast';
 import 'rxjs/add/operator/switchMap';
 import { Subject } from 'rxjs/Subject';
 import { Observable } from 'rxjs/Observable';
 
 const contextTypes = {
-    'falcor-data': PropTypes.object,
-    'falcor-model': PropTypes.object,
-    'falcor-render-loading': PropTypes.bool
+    'falcorData': PropTypes.object,
+    'falcorModel': PropTypes.object,
+    'renderFalcorLoading': PropTypes.bool
 };
 
 export default function withFragment(fragmentDesc, ...rest) {
@@ -62,7 +63,7 @@ Fragment containers must be created with a fragment function, or an Object with 
 class FragmentContainer extends React.Component {
     constructor(props, context) {
         super(props, context);
-        this.state = { hash: '', version: 0 };
+        this.state = {};
         this.propsStream = new Subject();
         this.propsAction = this.propsStream.switchMap(
             fetchEachPropUpdate, mergeEachPropUpdate
@@ -71,8 +72,8 @@ class FragmentContainer extends React.Component {
     getChildContext() {
         const { data, model } = this.state;
         return {
-            'falcor-data': data, 'falcor-model': model,
-            'falcor-render-loading': this.shouldRenderLoading()
+            'falcorData': data, 'falcorModel': model,
+            'renderFalcorLoading': this.shouldRenderLoading()
         };
     }
     componentWillMount() {
@@ -86,12 +87,14 @@ class FragmentContainer extends React.Component {
         this.checkCacheAndUpdate(nextProps, nextContext);
     }
     componentWillUnmount() {
+        this.config = undefined;
+        this.fragment = undefined;
+        this.Component = undefined;
+        this.propsAction = undefined;
+        this.propsStream = undefined;
         // Clean-up subscription before un-mounting
         this.propsSubscription.unsubscribe();
         this.propsSubscription = undefined;
-        this.config = null;
-        this.fragment = null;
-        this.Component = null;
     }
     shouldRenderLoading(props = this.props, context = this.context) {
         if (props.hasOwnProperty('renderLoading')) {
@@ -99,18 +102,19 @@ class FragmentContainer extends React.Component {
         } else if (this.config.hasOwnProperty('renderLoading')) {
             return this.config.renderLoading;
         }
-        return context['falcor-render-loading'] || false;
+        return context['renderFalcorLoading'] || false;
     }
     checkCacheAndUpdate(props, context) {
 
-        const { fragment } = this;
+        const { state, fragment } = this;
+        const { query } = state;
 
-        // if (props.hasOwnProperty('falcor-data') || props.hasOwnProperty('falcor-model')) {
+        // if (props.hasOwnProperty('falcorData') || props.hasOwnProperty('falcorModel')) {
         this.propsStream.next({
-            props, fragment, loading: false,
-            data: props['falcor-data'] || context['falcor-data'],
-            model: props['falcor-model'] || context['falcor-model'],
+            query, props, fragment, loading: true,
             renderLoading: this.shouldRenderLoading(props, context),
+            data: props['falcorData'] || context['falcorData'] || state.data,
+            model: props['falcorModel'] || context['falcorModel'] || state.model,
         });
         // }
     }
@@ -130,8 +134,8 @@ class FragmentContainer extends React.Component {
             return true;
         }
 
-        const currData = currProps['falcor-data'];
-        const nextData = nextProps['falcor-data'];
+        const currData = currProps['falcorData'];
+        const nextData = nextProps['falcorData'];
         const { style: currStyle = {}, ...restCurrProps } = currProps;
         const { style: nextStyle = currStyle, ...restNextProps } = nextProps;
 
@@ -155,8 +159,8 @@ class FragmentContainer extends React.Component {
 
         const { data, error, loading } = state;
         const { mergeProps, mapFragment } = config;
-        const mappedFragment = data ? mapFragment(data, props) : {};
-        const mergedProps = mergeProps(mappedFragment, props);
+        const mappedFragment = data && mapFragment(data, props);
+        const mergedProps = mergeProps(mappedFragment || {}, props);
 
         if (error) {
             mergedProps.error = error;
@@ -170,25 +174,37 @@ class FragmentContainer extends React.Component {
     }
 }
 
-function fragments(items = []) {
-    if (!items ||
-        'object' !== typeof items ||
-        !items.hasOwnProperty('length')) {
+function fragments(items = [], start = 0, end = items && items.length) {
+    if (!items || 'object' !== typeof items) {
         return `{ length }`;
     }
-    return `{ length ${Array
-        .from(items, (x, i) => x)
-        .reduce((xs, x, i) =>`${xs}, ${
-            i}: ${this.fragment(x)}`, '')
-    }}`;
+    let index = -1, query = 'length', length = items.length;
+    if (length && typeof length === 'object' && typeof length.value === 'number') {
+        length = length.value;
+    }
+    length = Math.min(Math.max(0, end - start), length) | 0;
+    while (++index < length) {
+        query = `${
+        query},
+ ${     index}: ${this.fragment(items[index])}`;
+    }
+    return `{ ${query} }`;
 }
 
 function tryDeref({ data, model }) {
     return !data || !model ?
-        model : model.deref(data);
+        model :
+        model._hasValidParentReference() ?
+        model.deref(data) : null;
 }
 
 function fetchEachPropUpdate(update) {
+
+    invariant(
+        update.fragment || (update.fragment = this.fragment),
+        `Attempted to fetch without a fragment definition`
+    );
+
     if (!(update.model = tryDeref(update))) {
         return Observable.of(update);
     } else if (update.renderLoading === true) {
@@ -199,18 +215,21 @@ function fetchEachPropUpdate(update) {
 
 function mergeEachPropUpdate(
     { props, model },
-    { data, error, version, loading }
+    { data, query, error, version }
 ) {
-    const hash = data && data.$__hash;
-    const status = data && data.$__status;
-    loading = loading || status === 'pending';
-    return { hash, data, props, model, error, loading, version };
+    const hash = data && data.$__hash || '';
+    const loading = error === undefined && data &&
+                    data.$__status === 'pending' || false;
+    return {
+        hash, data, query, props,
+        model, error, loading, version
+    };
 }
 
-function defaultMapFragment(fragmentProps) {
-    return fragmentProps;
+function defaultMapFragment(remoteProps) {
+    return remoteProps;
 }
 
-function defaultMergeProps(fragmentProps, componentProps) {
-    return { ...componentProps, ...fragmentProps };
+function defaultMergeProps(remoteProps, localProps) {
+    return { ...localProps, ...remoteProps };
 }

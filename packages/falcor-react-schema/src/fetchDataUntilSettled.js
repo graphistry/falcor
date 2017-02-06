@@ -7,51 +7,58 @@ import 'rxjs/add/operator/expand';
 import 'rxjs/add/observable/of';
 import 'rxjs/add/observable/from';
 import 'rxjs/add/observable/empty';
+import 'rxjs/add/observable/empty';
 
 const memoizedQuerySyntax = memoizeQueryies(100);
 
 export default function fetchDataUntilSettled({
-    data, props, model, version, fragment
+    data, query, props, model, version, fragment, renderLoading
 }) {
 
     const memo = {
-        query: null, loading: true,
-        data, props, model, version, fragment,
+        data, query, props, model,
+        version, fragment, renderLoading
     };
+
     memo.mapNext = handleNext(memo, model);
     memo.catchError = handleError(memo, model);
 
-    return Observable.of(memo).expand(_fetchDataUntilSettled);
+    return (data && data.$__status !== 'pending' ?
+        Observable.of(memo) : fetchData(memo)).expand(fetchData);
 }
 
-function _fetchDataUntilSettled(memo) {
-    if (memo.loading === false) {
+function fetchData(memo) {
+
+    let { data, props, query, model, fragment } = memo;
+
+    if (memo.error !== undefined || (
+        data && data.$__status === 'pending') || (
+        query === (memo.query = fragment(data, props)))) {
         return Observable.empty();
     }
-    const { query, model, fragment } = memo;
-    if (query !== (memo.query = fragment(memo.data || {}, memo.props || {}))) {
-        const { ast, error } = memoizedQuerySyntax(memo.query);
-        if (error) {
-            if (typeof console !== 'undefined' && typeof console.error === 'function') {
-                console.error(errorMessage(error));
-                console.error(`Error parsing query: ${memo.query}`);
-            }
-            memo.error = error;
-            memo.version = model.getVersion();
-        } else {
-            return Observable
-                .from(model.get(ast).progressively())
-                .map(memo.mapNext).catch(memo.catchError);
+
+    const { ast, error } = memoizedQuerySyntax(memo.query);
+
+    if (error) {
+        if (typeof console !== 'undefined' && typeof console.error === 'function') {
+            console.error(errorMessage(error));
+            console.error(`Error parsing query: ${memo.query}`);
         }
+        memo.error = error;
+        memo.version = model.getVersion();
+        return Observable.of(memo);
     }
-    memo.loading = false;
-    return Observable.of(memo);
+
+    return Observable
+        .from(!memo.renderLoading ?
+            model.get(ast) :
+            model.get(ast).progressively()
+        ).map(memo.mapNext).catch(memo.catchError);
 }
 
 function handleNext(memo, model) {
     return function mapNext({ json: data }) {
         memo.data = data;
-        memo.loading = true;
         memo.version = model.getVersion();
         return memo;
     }
@@ -60,7 +67,6 @@ function handleNext(memo, model) {
 function handleError(memo, model) {
     return function catchError(error) {
         memo.error = error;
-        memo.loading = false;
         memo.version = model.getVersion();
         return Observable.of(memo);
     };

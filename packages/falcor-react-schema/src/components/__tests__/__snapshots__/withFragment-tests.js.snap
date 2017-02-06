@@ -1,0 +1,250 @@
+exports[`withFragment Should render the full component tree without batching 1`] = `
+<div>
+  <h1>
+    Genres
+  </h1>
+  <ul>
+    <li>
+      <div>
+        <h3 />
+        <ul>
+          <li>
+            <div>
+              <h6>
+                True Lies
+                 - 
+                25
+                /100
+              </h6>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </li>
+    <li>
+      <div>
+        <h3 />
+        <ul>
+          <li>
+            <div>
+              <h6>
+                Kindergarten Cop
+                 - 
+                15
+                /100
+              </h6>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </li>
+    <li>
+      <div>
+        <h3 />
+        <ul>
+          <li>
+            <div>
+              <h6>
+                True Lies
+                 - 
+                25
+                /100
+              </h6>
+            </div>
+          </li>
+          <li>
+            <div>
+              <h6>
+                Kindergarten Cop
+                 - 
+                15
+                /100
+              </h6>
+            </div>
+          </li>
+          <li>
+            <div>
+              <h6>
+                The Terminator
+                 - 
+                75
+                /100
+              </h6>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </li>
+  </ul>
+</div>
+`;
+
+exports[`withFragment should fetch all the data for a container 1`] = `
+Object {
+  "genres": Object {
+    "0": Object {
+      "id": 123,
+      "titles": Object {
+        "0": Object {
+          "id": "abc",
+          "name": "True Lies",
+          "rating": 25,
+        },
+        "length": 1,
+      },
+    },
+    "1": Object {
+      "id": 456,
+      "titles": Object {
+        "0": Object {
+          "id": "def",
+          "name": "Kindergarten Cop",
+          "rating": 15,
+        },
+        "length": 1,
+      },
+    },
+    "2": Object {
+      "id": 789,
+      "titles": Object {
+        "0": Object {
+          "id": "abc",
+          "name": "True Lies",
+          "rating": 25,
+        },
+        "1": Object {
+          "id": "def",
+          "name": "Kindergarten Cop",
+          "rating": 15,
+        },
+        "2": Object {
+          "id": "ghi",
+          "name": "The Terminator",
+          "rating": 75,
+        },
+        "length": 3,
+      },
+    },
+    "length": 3,
+  },
+}
+`;
+
+exports[`withFragment should fetch all the data for a container and emit intermediate states when renderLoading is true 1`] = `
+Object {
+  "genres": Object {
+    "length": 3,
+  },
+}
+`;
+
+exports[`withFragment should fetch all the data for a container and emit intermediate states when renderLoading is true 2`] = `
+Object {
+  "genres": Object {
+    "length": 3,
+  },
+}
+`;
+
+exports[`withFragment should fetch all the data for a container and emit intermediate states when renderLoading is true 3`] = `
+Object {
+  "genres": Object {
+    "0": Object {
+      "id": 123,
+      "titles": Object {
+        "length": 1,
+      },
+    },
+    "1": Object {
+      "id": 456,
+      "titles": Object {
+        "length": 1,
+      },
+    },
+    "2": Object {
+      "id": 789,
+      "titles": Object {
+        "length": 3,
+      },
+    },
+    "length": 3,
+  },
+}
+`;
+
+exports[`withFragment should fetch all the data for a container and emit intermediate states when renderLoading is true 4`] = `
+Object {
+  "genres": Object {
+    "0": Object {
+      "id": 123,
+      "titles": Object {
+        "length": 1,
+      },
+    },
+    "1": Object {
+      "id": 456,
+      "titles": Object {
+        "length": 1,
+      },
+    },
+    "2": Object {
+      "id": 789,
+      "titles": Object {
+        "length": 3,
+      },
+    },
+    "length": 3,
+  },
+}
+`;
+
+exports[`withFragment should fetch all the data for a container and emit intermediate states when renderLoading is true 5`] = `
+Object {
+  "genres": Object {
+    "0": Object {
+      "id": 123,
+      "titles": Object {
+        "0": Object {
+          "id": "abc",
+          "name": "True Lies",
+          "rating": 25,
+        },
+        "length": 1,
+      },
+    },
+    "1": Object {
+      "id": 456,
+      "titles": Object {
+        "0": Object {
+          "id": "def",
+          "name": "Kindergarten Cop",
+          "rating": 15,
+        },
+        "length": 1,
+      },
+    },
+    "2": Object {
+      "id": 789,
+      "titles": Object {
+        "0": Object {
+          "id": "abc",
+          "name": "True Lies",
+          "rating": 25,
+        },
+        "1": Object {
+          "id": "def",
+          "name": "Kindergarten Cop",
+          "rating": 15,
+        },
+        "2": Object {
+          "id": "ghi",
+          "name": "The Terminator",
+          "rating": 75,
+        },
+        "length": 3,
+      },
+    },
+    "length": 3,
+  },
+}
+`;

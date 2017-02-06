@@ -1,0 +1,119 @@
+exports[`withSchema get should traverse the JSON tree and return the data 1`] = `
+Object {
+  "jsonGraph": Object {
+    "genres": Object {
+      "0": Object {
+        "$type": "ref",
+        "value": Array [
+          "listsById",
+          123,
+        ],
+      },
+      "length": 3,
+    },
+    "listsById": Object {
+      "123": Object {
+        "titles": Object {
+          "0": Object {
+            "$type": "ref",
+            "value": Array [
+              "titlesById",
+              "abc",
+            ],
+          },
+        },
+      },
+    },
+    "titlesById": Object {
+      "abc": Object {
+        "name": "True Lies",
+      },
+    },
+  },
+  "paths": Array [
+    Array [
+      "genres",
+      "length",
+    ],
+    Array [
+      "genres",
+      0,
+      "titles",
+      0,
+      "name",
+    ],
+  ],
+}
+`;
+
+exports[`withSchema set should traverse the JSON tree and set the data 1`] = `
+Object {
+  "jsonGraph": Object {
+    "genres": Object {
+      "0": Object {
+        "$type": "ref",
+        "value": Array [
+          "listsById",
+          123,
+        ],
+      },
+      "1": Object {
+        "$type": "ref",
+        "value": Array [
+          "listsById",
+          456,
+        ],
+      },
+    },
+    "listsById": Object {
+      "123": Object {
+        "titles": Object {
+          "0": Object {
+            "$type": "ref",
+            "value": Array [
+              "titlesById",
+              "abc",
+            ],
+          },
+        },
+      },
+      "456": Object {
+        "titles": Object {
+          "0": Object {
+            "$type": "ref",
+            "value": Array [
+              "titlesById",
+              "def",
+            ],
+          },
+        },
+      },
+    },
+    "titlesById": Object {
+      "abc": Object {
+        "name": "True Lies",
+        "rating": 75,
+      },
+      "def": Object {
+        "name": "Kindergarten Cop",
+        "rating": 50,
+      },
+    },
+  },
+  "paths": Array [
+    Array [
+      "genres",
+      Object {
+        "from": 0,
+        "to": 1,
+      },
+      "titles",
+      0,
+      Array [
+        "name",
+        "rating",
+      ],
+    ],
+  ],
+}
+`;

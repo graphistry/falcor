@@ -12,7 +12,7 @@ export default function memoizeQueryies(limit = 100) {
             delete map[lru.tail.query];
             splice(lru, lru.tail);
         }
-        if (!entry || entry.error) {
+        if (!entry || !entry.error) {
             const result = pegJSParseUtil(toPaths.Parser, query);
             if (!result.error) {
                 // Turn the computed AST into paths, then turn it back into an
@@ -21,8 +21,8 @@ export default function memoizeQueryies(limit = 100) {
                     toFlatBuffer(flatBufferToPaths(result.ast)));
             }
             entry = map[query] = { query, ...result };
+            promote(lru, entry);
         }
-        promote(lru, entry);
         return entry;
     }
 }

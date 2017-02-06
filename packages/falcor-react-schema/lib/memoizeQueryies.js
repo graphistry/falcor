@@ -42,7 +42,7 @@ function memoizeQueryies() {
             delete map[lru.tail.query];
             splice(lru, lru.tail);
         }
-        if (!entry || entry.error) {
+        if (!entry || !entry.error) {
             var result = (0, _pegjsUtil.parse)(_falcorQuerySyntax.paths.Parser, query);
             if (!result.error) {
                 // Turn the computed AST into paths, then turn it back into an
@@ -50,8 +50,8 @@ function memoizeQueryies() {
                 result.ast = (0, _computeFlatBufferHash2.default)((0, _toFlatBuffer2.default)((0, _flatBufferToPaths2.default)(result.ast)));
             }
             entry = map[query] = _extends({ query: query }, result);
+            promote(lru, entry);
         }
-        promote(lru, entry);
         return entry;
     };
 }

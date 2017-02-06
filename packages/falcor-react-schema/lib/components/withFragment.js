@@ -1,9 +1,5 @@
 'use strict';
 
-var _from = require('babel-runtime/core-js/array/from');
-
-var _from2 = _interopRequireDefault(_from);
-
 var _getPrototypeOf = require('babel-runtime/core-js/object/get-prototype-of');
 
 var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
@@ -72,6 +68,8 @@ require('rxjs/add/operator/map');
 
 require('rxjs/add/observable/of');
 
+require('rxjs/add/operator/takeLast');
+
 require('rxjs/add/operator/switchMap');
 
 var _Subject = require('rxjs/Subject');
@@ -89,9 +87,9 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = (0, _create2.default)(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) _setPrototypeOf2.default ? (0, _setPrototypeOf2.default)(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var contextTypes = {
-    'falcor-data': _react.PropTypes.object,
-    'falcor-model': _react.PropTypes.object,
-    'falcor-render-loading': _react.PropTypes.bool
+    'falcorData': _react.PropTypes.object,
+    'falcorModel': _react.PropTypes.object,
+    'renderFalcorLoading': _react.PropTypes.bool
 };
 
 function withFragment(fragmentDesc) {
@@ -143,7 +141,7 @@ var FragmentContainer = function (_React$Component) {
 
         var _this2 = _possibleConstructorReturn(this, (FragmentContainer.__proto__ || (0, _getPrototypeOf2.default)(FragmentContainer)).call(this, props, context));
 
-        _this2.state = { hash: '', version: 0 };
+        _this2.state = {};
         _this2.propsStream = new _Subject.Subject();
         _this2.propsAction = _this2.propsStream.switchMap(fetchEachPropUpdate, mergeEachPropUpdate);
         return _this2;
@@ -157,8 +155,8 @@ var FragmentContainer = function (_React$Component) {
                 model = _state.model;
 
             return {
-                'falcor-data': data, 'falcor-model': model,
-                'falcor-render-loading': this.shouldRenderLoading()
+                'falcorData': data, 'falcorModel': model,
+                'renderFalcorLoading': this.shouldRenderLoading()
             };
         }
     }, {
@@ -180,12 +178,14 @@ var FragmentContainer = function (_React$Component) {
     }, {
         key: 'componentWillUnmount',
         value: function componentWillUnmount() {
+            this.config = undefined;
+            this.fragment = undefined;
+            this.Component = undefined;
+            this.propsAction = undefined;
+            this.propsStream = undefined;
             // Clean-up subscription before un-mounting
             this.propsSubscription.unsubscribe();
             this.propsSubscription = undefined;
-            this.config = null;
-            this.fragment = null;
-            this.Component = null;
         }
     }, {
         key: 'shouldRenderLoading',
@@ -198,20 +198,22 @@ var FragmentContainer = function (_React$Component) {
             } else if (this.config.hasOwnProperty('renderLoading')) {
                 return this.config.renderLoading;
             }
-            return context['falcor-render-loading'] || false;
+            return context['renderFalcorLoading'] || false;
         }
     }, {
         key: 'checkCacheAndUpdate',
         value: function checkCacheAndUpdate(props, context) {
-            var fragment = this.fragment;
+            var state = this.state,
+                fragment = this.fragment;
+            var query = state.query;
 
-            // if (props.hasOwnProperty('falcor-data') || props.hasOwnProperty('falcor-model')) {
+            // if (props.hasOwnProperty('falcorData') || props.hasOwnProperty('falcorModel')) {
 
             this.propsStream.next({
-                props: props, fragment: fragment, loading: false,
-                data: props['falcor-data'] || context['falcor-data'],
-                model: props['falcor-model'] || context['falcor-model'],
-                renderLoading: this.shouldRenderLoading(props, context)
+                query: query, props: props, fragment: fragment, loading: true,
+                renderLoading: this.shouldRenderLoading(props, context),
+                data: props['falcorData'] || context['falcorData'] || state.data,
+                model: props['falcorModel'] || context['falcorModel'] || state.model
             });
             // }
         }
@@ -234,8 +236,8 @@ var FragmentContainer = function (_React$Component) {
                 return true;
             }
 
-            var currData = currProps['falcor-data'];
-            var nextData = nextProps['falcor-data'];
+            var currData = currProps['falcorData'];
+            var nextData = nextProps['falcorData'];
 
             var _currProps$style = currProps.style,
                 currStyle = _currProps$style === undefined ? {} : _currProps$style,
@@ -274,8 +276,8 @@ var FragmentContainer = function (_React$Component) {
             var mergeProps = config.mergeProps,
                 mapFragment = config.mapFragment;
 
-            var mappedFragment = data ? mapFragment(data, props) : {};
-            var mergedProps = mergeProps(mappedFragment, props);
+            var mappedFragment = data && mapFragment(data, props);
+            var mergedProps = mergeProps(mappedFragment || {}, props);
 
             if (error) {
                 mergedProps.error = error;
@@ -293,28 +295,37 @@ var FragmentContainer = function (_React$Component) {
 }(_react2.default.Component);
 
 function fragments() {
-    var _this4 = this;
-
     var items = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+    var start = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+    var end = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : items && items.length;
 
-    if (!items || 'object' !== (typeof items === 'undefined' ? 'undefined' : _typeof(items)) || !items.hasOwnProperty('length')) {
+    if (!items || 'object' !== (typeof items === 'undefined' ? 'undefined' : _typeof(items))) {
         return '{ length }';
     }
-    return '{ length ' + (0, _from2.default)(items, function (x, i) {
-        return x;
-    }).reduce(function (xs, x, i) {
-        return xs + ', ' + i + ': ' + _this4.fragment(x);
-    }, '') + '}';
+    var index = -1,
+        query = 'length',
+        length = items.length;
+    if (length && (typeof length === 'undefined' ? 'undefined' : _typeof(length)) === 'object' && typeof length.value === 'number') {
+        length = length.value;
+    }
+    length = Math.min(Math.max(0, end - start), length) | 0;
+    while (++index < length) {
+        query = query + ',\n ' + index + ': ' + this.fragment(items[index]);
+    }
+    return '{ ' + query + ' }';
 }
 
 function tryDeref(_ref) {
     var data = _ref.data,
         model = _ref.model;
 
-    return !data || !model ? model : model.deref(data);
+    return !data || !model ? model : model._hasValidParentReference() ? model.deref(data) : null;
 }
 
 function fetchEachPropUpdate(update) {
+
+    (0, _invariant2.default)(update.fragment || (update.fragment = this.fragment), 'Attempted to fetch without a fragment definition');
+
     if (!(update.model = tryDeref(update))) {
         return _Observable.Observable.of(update);
     } else if (update.renderLoading === true) {
@@ -327,21 +338,23 @@ function mergeEachPropUpdate(_ref2, _ref3) {
     var props = _ref2.props,
         model = _ref2.model;
     var data = _ref3.data,
+        query = _ref3.query,
         error = _ref3.error,
-        version = _ref3.version,
-        loading = _ref3.loading;
+        version = _ref3.version;
 
-    var hash = data && data.$__hash;
-    var status = data && data.$__status;
-    loading = loading || status === 'pending';
-    return { hash: hash, data: data, props: props, model: model, error: error, loading: loading, version: version };
+    var hash = data && data.$__hash || '';
+    var loading = error === undefined && data && data.$__status === 'pending' || false;
+    return {
+        hash: hash, data: data, query: query, props: props,
+        model: model, error: error, loading: loading, version: version
+    };
 }
 
-function defaultMapFragment(fragmentProps) {
-    return fragmentProps;
+function defaultMapFragment(remoteProps) {
+    return remoteProps;
 }
 
-function defaultMergeProps(fragmentProps, componentProps) {
-    return _extends({}, componentProps, fragmentProps);
+function defaultMergeProps(remoteProps, localProps) {
+    return _extends({}, localProps, remoteProps);
 }
 //# sourceMappingURL=withFragment.js.map
