@@ -39,7 +39,7 @@
   "dependencies": {
     "@graphistry/falcor-path-syntax": "^2.5.3",
     "@graphistry/falcor-path-utils": "^2.7.1",
-    "rxjs": "^5.0.2"
+    "rxjs": "~5.1.0"
   },
   "devDependencies": {
     "@graphistry/falcor": "^2.7.1",

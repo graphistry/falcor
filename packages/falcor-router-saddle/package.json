@@ -27,7 +27,7 @@
   "author": "Graphistry",
   "license": "ISC",
   "dependencies": {
-    "rxjs": "~5.0.2"
+    "rxjs": "~5.1.0"
   },
   "devDependencies": {
     "@graphistry/falcor-json-graph": "^2.6.16",
