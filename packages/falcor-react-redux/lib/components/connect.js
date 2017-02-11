@@ -67,7 +67,7 @@ var Scheduler = _interopRequireWildcard(_async);
 
 require('rxjs/add/operator/switchMap');
 
-require('rxjs/add/operator/sampleTime');
+require('rxjs/add/operator/debounceTime');
 
 require('rxjs/add/operator/distinctUntilKeyChanged');
 
@@ -145,7 +145,7 @@ function mapReduxStoreToProps(data, _ref2) {
 
 function mapPropsToDistinctChanges(scheduler) {
     return function innerMapPropsToDistinctChanges(prop$) {
-        return prop$.switchMap(mapPropsToChanges, mapChangeToProps).sampleTime(0, scheduler).distinctUntilKeyChanged('version');
+        return prop$.switchMap(mapPropsToChanges, mapChangeToProps).distinctUntilKeyChanged('version').debounceTime(0, scheduler);
     };
 }
 

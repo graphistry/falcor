@@ -18,7 +18,7 @@ import { Model, FalcorJSON } from '@graphistry/falcor';
 import * as Scheduler from 'rxjs/scheduler/async';
 
 import 'rxjs/add/operator/switchMap';
-import 'rxjs/add/operator/sampleTime';
+import 'rxjs/add/operator/debounceTime';
 import 'rxjs/add/operator/distinctUntilKeyChanged';
 
 if (!Model.prototype.changes) {
@@ -89,8 +89,8 @@ function mapPropsToDistinctChanges(scheduler) {
         return prop$.switchMap(
             mapPropsToChanges, mapChangeToProps
         )
-        .sampleTime(0, scheduler)
-        .distinctUntilKeyChanged('version');
+        .distinctUntilKeyChanged('version')
+        .debounceTime(0, scheduler);
     }
 }
 
