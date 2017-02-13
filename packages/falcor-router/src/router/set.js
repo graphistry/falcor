@@ -1,4 +1,3 @@
-var set = 'set';
 var Observable = require('../rx').Observable;
 var getPathsCount = require('./getPathsCount');
 var runAggregate = require('../run/aggregate');
@@ -32,7 +31,7 @@ function routerSet(incomingJsonGraphEnvelope) {
         var run = router._streaming ? runStreaming : runAggregate;
 
         return run(router._matcher,
-                   action, normPS, set,
+                   action, normPS, 'set',
                    router, jsonGraph,
                    router._unhandled &&
                    router._unhandled.set &&

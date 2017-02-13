@@ -8,44 +8,44 @@
   dependencies:
     "@graphistry/falcor-path-syntax" "^2.5.3"
 
-"@graphistry/falcor-model-rxjs@^2.7.0":
-  version "2.7.0"
-  resolved "https://registry.yarnpkg.com/@graphistry/falcor-model-rxjs/-/falcor-model-rxjs-2.7.0.tgz#37e4c67619e2c3741b44c82dae2051bed6819b6d"
+"@graphistry/falcor-model-rxjs@^2.7.3":
+  version "2.7.3"
+  resolved "https://registry.yarnpkg.com/@graphistry/falcor-model-rxjs/-/falcor-model-rxjs-2.7.3.tgz#b7a59d4bd85b049299b0cdb5d71f161a6b1ca55c"
   dependencies:
-    "@graphistry/falcor" "^2.7.0"
+    "@graphistry/falcor" "^2.7.3"
     "@graphistry/falcor-path-syntax" "^2.5.3"
     babel-plugin-transform-runtime "~6.15.0"
-    rxjs "~5.0.2"
+    rxjs "~5.1.0"
 
 "@graphistry/falcor-path-syntax@^2.5.3":
   version "2.5.3"
   resolved "https://registry.yarnpkg.com/@graphistry/falcor-path-syntax/-/falcor-path-syntax-2.5.3.tgz#830a2e6076d83e38fd6a7d9cb96b02d5d1fe458f"
 
-"@graphistry/falcor-path-utils@^2.6.16":
-  version "2.6.16"
-  resolved "https://registry.yarnpkg.com/@graphistry/falcor-path-utils/-/falcor-path-utils-2.6.16.tgz#2802001f34efb29bc993650c11ad1f4db21cdd95"
+"@graphistry/falcor-path-utils@^2.7.1":
+  version "2.7.1"
+  resolved "https://registry.yarnpkg.com/@graphistry/falcor-path-utils/-/falcor-path-utils-2.7.1.tgz#c66356dd6d6a8cf468286ac532f6470edd9f3597"
 
-"@graphistry/falcor-query-syntax@^2.7.0":
-  version "2.7.0"
-  resolved "https://registry.yarnpkg.com/@graphistry/falcor-query-syntax/-/falcor-query-syntax-2.7.0.tgz#0fb5437862f263e8c857b06cffcb894a6eeb3ef5"
+"@graphistry/falcor-query-syntax@^2.7.3":
+  version "2.7.3"
+  resolved "https://registry.yarnpkg.com/@graphistry/falcor-query-syntax/-/falcor-query-syntax-2.7.3.tgz#3c9e2108a400e7b5b7ede4bc80e0c10d99320e29"
   dependencies:
-    "@graphistry/falcor-path-utils" "^2.6.16"
+    "@graphistry/falcor-path-utils" "^2.7.1"
     babel-plugin-transform-runtime "~6.15.0"
     pegjs "0.10.0"
 
-"@graphistry/falcor-router@^2.7.0":
-  version "2.7.0"
-  resolved "https://registry.yarnpkg.com/@graphistry/falcor-router/-/falcor-router-2.7.0.tgz#9c8e694fc73c3764055c1e877937cf2d8ef17781"
+"@graphistry/falcor-router@^2.7.3":
+  version "2.7.3"
+  resolved "https://registry.yarnpkg.com/@graphistry/falcor-router/-/falcor-router-2.7.3.tgz#aebf960f685be4be9fa31830bb44bc8bfea8eb83"
   dependencies:
     "@graphistry/falcor-path-syntax" "^2.5.3"
-    "@graphistry/falcor-path-utils" "^2.6.16"
-    rxjs "^5.0.2"
+    "@graphistry/falcor-path-utils" "^2.7.1"
+    rxjs "~5.1.0"
 
-"@graphistry/falcor@^2.7.0":
-  version "2.7.0"
-  resolved "https://registry.yarnpkg.com/@graphistry/falcor/-/falcor-2.7.0.tgz#47a63e780b8e1484a33802f2ccbdb9f5192c61b5"
+"@graphistry/falcor@^2.7.3":
+  version "2.7.3"
+  resolved "https://registry.yarnpkg.com/@graphistry/falcor/-/falcor-2.7.3.tgz#c94a43d77db47eb1bf7c9063c77eb8123d3cbe32"
   dependencies:
-    "@graphistry/falcor-path-utils" "^2.6.16"
+    "@graphistry/falcor-path-utils" "^2.7.1"
     symbol-observable "1.0.4"
 
 abab@^1.0.3:
@@ -221,7 +221,7 @@ babel-code-frame@^6.22.0:
     esutils "^2.0.2"
     js-tokens "^3.0.0"
 
-babel-core@^6.0.0, babel-core@^6.18.0, babel-core@^6.22.0, babel-core@^6.22.1:
+babel-core@^6.0.0, babel-core@^6.22.0, babel-core@^6.22.1:
   version "6.22.1"
   resolved "https://registry.yarnpkg.com/babel-core/-/babel-core-6.22.1.tgz#9c5fd658ba1772d28d721f6d25d968fc7ae21648"
   dependencies:
@@ -882,19 +882,7 @@ babel-register@^6.22.0:
     mkdirp "^0.5.1"
     source-map-support "^0.4.2"
 
-babel-register@~6.18.0:
-  version "6.18.0"
-  resolved "https://registry.yarnpkg.com/babel-register/-/babel-register-6.18.0.tgz#892e2e03865078dd90ad2c715111ec4449b32a68"
-  dependencies:
-    babel-core "^6.18.0"
-    babel-runtime "^6.11.6"
-    core-js "^2.4.0"
-    home-or-tmp "^2.0.0"
-    lodash "^4.2.0"
-    mkdirp "^0.5.1"
-    source-map-support "^0.4.2"
-
-babel-runtime@^6.11.6, babel-runtime@^6.18.0, babel-runtime@^6.22.0, babel-runtime@^6.9.0:
+babel-runtime@^6.18.0, babel-runtime@^6.22.0, babel-runtime@^6.9.0:
   version "6.22.0"
   resolved "https://registry.yarnpkg.com/babel-runtime/-/babel-runtime-6.22.0.tgz#1cf8b4ac67c77a4ddb0db2ae1f74de52ac4ca611"
   dependencies:
@@ -3032,15 +3020,9 @@ rimraf@2, rimraf@^2.4.3, rimraf@^2.4.4, rimraf@~2.5.1, rimraf@~2.5.4:
   dependencies:
     glob "^7.0.5"
 
-rxjs@^5.0.2, rxjs@~5.1.0:
-  version "5.1.0"
-  resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-5.1.0.tgz#0aa9018b7f440b505fa42bd742b6738be550e720"
-  dependencies:
-    symbol-observable "^1.0.1"
-
-rxjs@~5.0.2:
-  version "5.0.3"
-  resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-5.0.3.tgz#fc8bdf464ebf938812748e4196788f392fef9754"
+rxjs@5.1.1, rxjs@~5.1.0:
+  version "5.1.1"
+  resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-5.1.1.tgz#fc48922965bc6c5efbcc0fe46e90a3af64137a7b"
   dependencies:
     symbol-observable "^1.0.1"
 

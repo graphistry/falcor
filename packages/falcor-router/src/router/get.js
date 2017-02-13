@@ -1,4 +1,3 @@
-var get = 'get';
 var Observable = require('../rx').Observable;
 var getPathsCount = require('./getPathsCount');
 var runAggregate = require('../run/aggregate');
@@ -29,7 +28,7 @@ module.exports = function routerGet(paths) {
         var run = router._streaming ? runStreaming : runAggregate;
 
         return run(router._matcher,
-                   action, normPS, get,
+                   action, normPS, 'get',
                    router, jsonGraph,
                    router._unhandled &&
                    router._unhandled.get &&

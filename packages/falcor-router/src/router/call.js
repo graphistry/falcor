@@ -1,4 +1,3 @@
-var call = 'call';
 var Observable = require('../rx').Observable;
 var getPathsCount = require('./getPathsCount');
 var runAggregate = require('../run/aggregate');
@@ -34,7 +33,7 @@ module.exports = function routerCall(callPath, args,
 
         var run = router._streaming ? runStreaming : runAggregate;
 
-        return run(router._matcher, action, callPaths, call,
+        return run(router._matcher, action, callPaths, 'call',
                    router, jsonGraph)
             // Catch CallNotFoundError in order to chain call requests.
             .catch(function catchException(e) {
