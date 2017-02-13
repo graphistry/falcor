@@ -254,6 +254,8 @@ class FalcorContainer extends React.Component {
         // Clean-up subscription before un-mounting
         this.propsSubscription.unsubscribe();
         this.propsSubscription = undefined;
+        this.propsStream = undefined;
+        this.propsAction = undefined;
         this.fragment = null;
         this.Component = null;
         this.dispatchers = null;
@@ -284,6 +286,6 @@ class FalcorContainer extends React.Component {
             allMergedProps.loading = state.loading || false;
         }
 
-        return <Component { ...allMergedProps }/>;
+        return React.createElement(Component, allMergedProps);
     }
 }

@@ -394,6 +394,8 @@ var FalcorContainer = function (_React$Component) {
             // Clean-up subscription before un-mounting
             this.propsSubscription.unsubscribe();
             this.propsSubscription = undefined;
+            this.propsStream = undefined;
+            this.propsAction = undefined;
             this.fragment = null;
             this.Component = null;
             this.dispatchers = null;
