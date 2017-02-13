@@ -17,8 +17,15 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Model, FalcorJSON } from '@graphistry/falcor';
 import * as Scheduler from 'rxjs/scheduler/async';
 
+import 'rxjs/add/observable/empty';
+import 'rxjs/add/operator/let';
+import 'rxjs/add/operator/merge';
+import 'rxjs/add/operator/publish';
+import 'rxjs/add/operator/takeLast';
 import 'rxjs/add/operator/switchMap';
-import 'rxjs/add/operator/debounceTime';
+import 'rxjs/add/operator/switchMapTo';
+import 'rxjs/add/operator/timeoutWith';
+import 'rxjs/add/operator/throttleTime';
 import 'rxjs/add/operator/distinctUntilKeyChanged';
 
 if (!Model.prototype.changes) {
@@ -90,7 +97,7 @@ function mapPropsToDistinctChanges(scheduler) {
             mapPropsToChanges, mapChangeToProps
         )
         .distinctUntilKeyChanged('version')
-        .debounceTime(0, scheduler);
+        .let(throttleTrailing(16, scheduler));
     }
 }
 
@@ -100,4 +107,17 @@ function mapPropsToChanges({ falcor }) {
 
 function mapChangeToProps(props, falcor) {
     return { ...props, falcor, version: falcor.getVersion() };
+}
+
+function throttleTrailing(due, scheduler) {
+    return function throttleTrailing(source) {
+        return source
+            .throttleTime(due, scheduler)
+            .publish(shared => shared
+                .merge(shared.switchMapTo(shared
+                    .timeoutWith(due, Observable.empty(), scheduler)
+                    .takeLast(1))
+                )
+            );
+    }
 }

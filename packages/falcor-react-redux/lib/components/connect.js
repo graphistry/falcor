@@ -65,9 +65,23 @@ var _async = require('rxjs/scheduler/async');
 
 var Scheduler = _interopRequireWildcard(_async);
 
+require('rxjs/add/observable/empty');
+
+require('rxjs/add/operator/let');
+
+require('rxjs/add/operator/merge');
+
+require('rxjs/add/operator/publish');
+
+require('rxjs/add/operator/takeLast');
+
 require('rxjs/add/operator/switchMap');
 
-require('rxjs/add/operator/debounceTime');
+require('rxjs/add/operator/switchMapTo');
+
+require('rxjs/add/operator/timeoutWith');
+
+require('rxjs/add/operator/throttleTime');
 
 require('rxjs/add/operator/distinctUntilKeyChanged');
 
@@ -145,7 +159,7 @@ function mapReduxStoreToProps(data, _ref2) {
 
 function mapPropsToDistinctChanges(scheduler) {
     return function innerMapPropsToDistinctChanges(prop$) {
-        return prop$.switchMap(mapPropsToChanges, mapChangeToProps).distinctUntilKeyChanged('version').debounceTime(0, scheduler);
+        return prop$.switchMap(mapPropsToChanges, mapChangeToProps).distinctUntilKeyChanged('version').let(throttleTrailing(16, scheduler));
     };
 }
 
@@ -157,5 +171,13 @@ function mapPropsToChanges(_ref3) {
 
 function mapChangeToProps(props, falcor) {
     return (0, _extends3.default)({}, props, { falcor: falcor, version: falcor.getVersion() });
+}
+
+function throttleTrailing(due, scheduler) {
+    return function throttleTrailing(source) {
+        return source.throttleTime(due, scheduler).publish(function (shared) {
+            return shared.merge(shared.switchMapTo(shared.timeoutWith(due, _Observable.Observable.empty(), scheduler).takeLast(1)));
+        });
+    };
 }
 //# sourceMappingURL=connect.js.map
