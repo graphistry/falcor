@@ -373,7 +373,7 @@ var FalcorContainer = function (_React$Component) {
                 props = (0, _objectWithoutProperties3.default)(_props2, ['data']);
             // Subscribe to child prop changes so we know when to re-render
 
-            this.propsSubscription = this.propsAction.subscribe();
+            this.propsSubscription = this.propsAction.subscribe({});
             this.propsStream.next({
                 inst: this, data: data, props: props,
                 fragment: this.fragment,

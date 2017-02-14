@@ -248,7 +248,7 @@ class FalcorContainer extends React.Component {
     componentWillMount() {
         const { data, ...props } = this.props;
         // Subscribe to child prop changes so we know when to re-render
-        this.propsSubscription = this.propsAction.subscribe();
+        this.propsSubscription = this.propsAction.subscribe({});
         this.propsStream.next({
             inst: this, data, props,
             fragment: this.fragment,
