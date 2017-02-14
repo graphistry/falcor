@@ -159,7 +159,7 @@ function mapReduxStoreToProps(data, _ref2) {
 
 function mapPropsToDistinctChanges(scheduler) {
     return function innerMapPropsToDistinctChanges(prop$) {
-        return prop$.switchMap(mapPropsToChanges, mapChangeToProps).distinctUntilKeyChanged('version').let(throttleTrailing(16, scheduler));
+        return prop$.switchMap(mapPropsToChanges, mapChangeToProps).let(throttleTrailing(16, scheduler)).distinctUntilKeyChanged('version');
     };
 }
 

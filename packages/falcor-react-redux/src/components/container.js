@@ -5,11 +5,20 @@ import shallowEqual from 'recompose/shallowEqual';
 import wrapDisplayName from 'recompose/wrapDisplayName';
 import fetchDataUntilSettled from '../utils/fetchDataUntilSettled';
 
-import 'rxjs/add/operator/map';
-import 'rxjs/add/observable/of';
-import 'rxjs/add/operator/switchMap';
 import { Subject } from 'rxjs/Subject';
 import { Observable } from 'rxjs/Observable';
+import { ReplaySubject } from 'rxjs/ReplaySubject';
+
+import 'rxjs/add/operator/map';
+import 'rxjs/add/observable/of';
+import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/take';
+import 'rxjs/add/operator/filter';
+import 'rxjs/add/operator/repeat';
+import 'rxjs/add/operator/multicast';
+import 'rxjs/add/operator/switchMap';
+import 'rxjs/add/operator/exhaustMap';
+import 'rxjs/add/observable/bindCallback';
 
 const defaultMapFragmentToProps = (data) => data;
 const defaultMapDispatchToProps = (dispatch, props, falcor) => ({});
@@ -116,12 +125,35 @@ function tryDeref({ data, falcor }) {
 }
 
 function fetchEachPropUpdate(update) {
+
+    let nextStateObs, inst = update.inst;
+
     if (!(update.falcor = tryDeref(update))) {
-        return Observable.of(update);
-    } else if (update.renderLoading === true) {
-        return fetchDataUntilSettled(update);
+        nextStateObs = Observable.of(update)
+            .do((results) => inst.setState(mergeEachPropUpdate(update, results)));
+    } else if (update.renderLoading === false) {
+        nextStateObs = fetchDataUntilSettled(update).takeLast(1)
+            .do((results) => inst.setState(mergeEachPropUpdate(update, results)));
+    } else {
+        const setStateAsync = Observable.bindCallback((results, callback) =>
+            inst.setState(mergeEachPropUpdate(update, results), callback)
+        );
+        nextStateObs = fetchDataUntilSettled(update)
+            .map((results) => ({ results, pending: true }))
+            .multicast(
+                () => new ReplaySubject(1),
+                (updates) => updates
+                    .filter(({ pending }) => pending)
+                    .exhaustMap(
+                        (update) => setStateAsync(update.results),
+                        (update) => { update.pending = false; }
+                    )
+                    .take(1)
+                    .repeat()
+            );
     }
-    return fetchDataUntilSettled(update).takeLast(1);
+
+    return nextStateObs;
 }
 
 function mergeEachPropUpdate(
@@ -151,9 +183,7 @@ class FalcorContainer extends React.Component {
         const { data, ...props } = componentProps;
 
         this.propsStream = new Subject();
-        this.propsAction = this.propsStream.switchMap(
-            fetchEachPropUpdate, mergeEachPropUpdate
-        );
+        this.propsAction = this.propsStream.switchMap(fetchEachPropUpdate);
 
         this.state = {
             data, props,
@@ -207,7 +237,7 @@ class FalcorContainer extends React.Component {
         // Receive new props from the owner
         const { data, ...props } = nextProps;
         this.propsStream.next({
-            data, props,
+            inst: this, data, props,
             fragment: this.fragment,
             falcor: nextContext.falcor,
             version: this.state.version,
@@ -218,11 +248,9 @@ class FalcorContainer extends React.Component {
     componentWillMount() {
         const { data, ...props } = this.props;
         // Subscribe to child prop changes so we know when to re-render
-        this.propsSubscription = this.propsAction.subscribe((nextState) => {
-            this.setState(nextState);
-        });
+        this.propsSubscription = this.propsAction.subscribe();
         this.propsStream.next({
-            data, props,
+            inst: this, data, props,
             fragment: this.fragment,
             falcor: this.context.falcor,
             version: this.state.version,

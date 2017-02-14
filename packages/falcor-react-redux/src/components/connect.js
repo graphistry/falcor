@@ -96,8 +96,8 @@ function mapPropsToDistinctChanges(scheduler) {
         return prop$.switchMap(
             mapPropsToChanges, mapChangeToProps
         )
-        .distinctUntilKeyChanged('version')
-        .let(throttleTrailing(16, scheduler));
+        .let(throttleTrailing(16, scheduler))
+        .distinctUntilKeyChanged('version');
     }
 }
 
