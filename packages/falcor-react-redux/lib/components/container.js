@@ -69,25 +69,11 @@ var _Subject = require('rxjs/Subject');
 
 var _Observable = require('rxjs/Observable');
 
-var _ReplaySubject = require('rxjs/ReplaySubject');
-
-require('rxjs/add/operator/map');
-
 require('rxjs/add/observable/of');
 
-require('rxjs/add/operator/take');
-
-require('rxjs/add/operator/filter');
-
-require('rxjs/add/operator/repeat');
-
-require('rxjs/add/operator/multicast');
+require('rxjs/add/operator/takeLast');
 
 require('rxjs/add/operator/switchMap');
-
-require('rxjs/add/operator/exhaustMap');
-
-require('rxjs/add/observable/bindCallback');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -207,51 +193,23 @@ function tryDeref(_ref) {
 }
 
 function fetchEachPropUpdate(update) {
-
-    var nextStateObs = void 0,
-        inst = update.inst;
-
     if (!(update.falcor = tryDeref(update))) {
-        nextStateObs = _Observable.Observable.of(update).do(function (results) {
-            return inst.setState(mergeEachPropUpdate(update, results));
-        });
-    } else if (update.renderLoading === false) {
-        nextStateObs = (0, _fetchDataUntilSettled2.default)(update).takeLast(1).do(function (results) {
-            return inst.setState(mergeEachPropUpdate(update, results));
-        });
+        return _Observable.Observable.of(update);
+    } else if (update.renderLoading === true) {
+        return (0, _fetchDataUntilSettled2.default)(update);
     } else {
-        (function () {
-            var setStateAsync = _Observable.Observable.bindCallback(function (results, callback) {
-                return inst.setState(mergeEachPropUpdate(update, results), callback);
-            });
-            nextStateObs = (0, _fetchDataUntilSettled2.default)(update).map(function (results) {
-                return { results: results, pending: true };
-            }).multicast(function () {
-                return new _ReplaySubject.ReplaySubject(1);
-            }, function (updates) {
-                return updates.filter(function (_ref2) {
-                    var pending = _ref2.pending;
-                    return pending;
-                }).exhaustMap(function (update) {
-                    return setStateAsync(update.results);
-                }, function (update) {
-                    update.pending = false;
-                }).take(1).repeat();
-            });
-        })();
+        return (0, _fetchDataUntilSettled2.default)(update).takeLast(1);
     }
-
-    return nextStateObs;
 }
 
-function mergeEachPropUpdate(_ref3, _ref4) {
-    var props = _ref3.props,
-        falcor = _ref3.falcor,
-        dispatch = _ref3.dispatch;
-    var data = _ref4.data,
-        error = _ref4.error,
-        version = _ref4.version,
-        loading = _ref4.loading;
+function mergeEachPropUpdate(_ref2, _ref3) {
+    var props = _ref2.props,
+        falcor = _ref2.falcor,
+        dispatch = _ref2.dispatch;
+    var data = _ref3.data,
+        error = _ref3.error,
+        version = _ref3.version,
+        loading = _ref3.loading;
 
     var hash = data && data.$__hash;
     var status = data && data.$__status;
@@ -281,7 +239,7 @@ var FalcorContainer = function (_React$Component) {
 
 
         _this2.propsStream = new _Subject.Subject();
-        _this2.propsAction = _this2.propsStream.switchMap(fetchEachPropUpdate);
+        _this2.propsAction = _this2.propsStream.switchMap(fetchEachPropUpdate, mergeEachPropUpdate);
 
         _this2.state = {
             data: data, props: props,
@@ -357,7 +315,7 @@ var FalcorContainer = function (_React$Component) {
                 props = (0, _objectWithoutProperties3.default)(nextProps, ['data']);
 
             this.propsStream.next({
-                inst: this, data: data, props: props,
+                data: data, props: props,
                 fragment: this.fragment,
                 falcor: nextContext.falcor,
                 version: this.state.version,
@@ -373,9 +331,9 @@ var FalcorContainer = function (_React$Component) {
                 props = (0, _objectWithoutProperties3.default)(_props2, ['data']);
             // Subscribe to child prop changes so we know when to re-render
 
-            this.propsSubscription = this.propsAction.subscribe({});
+            this.propsSubscription = this.propsAction.subscribe(this.setState.bind(this));
             this.propsStream.next({
-                inst: this, data: data, props: props,
+                data: data, props: props,
                 fragment: this.fragment,
                 falcor: this.context.falcor,
                 version: this.state.version,
