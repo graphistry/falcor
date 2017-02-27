@@ -64,6 +64,7 @@ Falcor containers must be created with a fragment function, or an Object with a 
     return hoistStatics((Component) => class Container extends FalcorContainer {
         static fragment = fragment;
         static fragments = fragments;
+        static load = fetchEachPropUpdate;
         static contextTypes = contextTypes;
         static childContextTypes = contextTypes;
         static displayName = wrapDisplayName(Component, 'Container');
@@ -117,6 +118,12 @@ function tryDeref({ data, falcor }) {
 }
 
 function fetchEachPropUpdate(update) {
+
+    invariant(
+        update.fragment || (update.fragment = this.fragment),
+        `Attempted to fetch without a fragment definition`
+    );
+
     if (!(update.falcor = tryDeref(update))) {
         return Observable.of(update);
     } else if (update.renderLoading === true) {

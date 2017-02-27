@@ -44,19 +44,19 @@
   "devDependencies": {
     "@graphistry/falcor": "^2.7.5",
     "@graphistry/falcor-json-graph": "^2.6.16",
-    "babel-plugin-transform-runtime": "~6.15.0",
-    "babel-preset-es2016": "6.16.0",
-    "babel-preset-stage-0": "6.16.0",
-    "babel-register": "6.18.0",
+    "babel-plugin-transform-runtime": "~6.23.0",
+    "babel-preset-es2016": "~6.22.0",
+    "babel-preset-stage-0": "~6.22.0",
+    "babel-register": "~6.23.0",
     "chai": "3.5.0",
-    "coveralls": "2.11.15",
-    "cross-env": "3.1.3",
-    "gulp": "3.9.1",
+    "coveralls": "~2.11.16",
+    "cross-env": "~3.1.4",
+    "gulp": "~3.9.1",
     "gulp-eslint": "~3.0.1",
-    "gulp-istanbul": "1.1.1",
-    "gulp-mocha": "3.0.1",
-    "lodash": "4.17.2",
-    "promise": "7.1.1",
-    "sinon": "1.17.6"
+    "gulp-istanbul": "~1.1.1",
+    "gulp-mocha": "~3.0.1",
+    "lodash": "~4.17.4",
+    "promise": "~7.1.1",
+    "sinon": "~1.17.7"
   }
 }

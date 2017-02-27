@@ -47,7 +47,7 @@ export default function get(route, displayName, options = {}) {
                 })
             ),
             Observable
-                .defer(() => service(context))
+                .defer(() => service(context, suffix))
                 .map((context) => ({ context, rest: { length: 0 } }))
         );
 

@@ -150,7 +150,7 @@ function container(fragmentDesc) {
             }
 
             return Container;
-        }(FalcorContainer), _class.fragment = fragment, _class.fragments = fragments, _class.contextTypes = contextTypes, _class.childContextTypes = contextTypes, _class.displayName = (0, _wrapDisplayName2.default)(Component, 'Container'), _temp;
+        }(FalcorContainer), _class.fragment = fragment, _class.fragments = fragments, _class.load = fetchEachPropUpdate, _class.contextTypes = contextTypes, _class.childContextTypes = contextTypes, _class.displayName = (0, _wrapDisplayName2.default)(Component, 'Container'), _temp;
     });
 }
 
@@ -193,6 +193,9 @@ function tryDeref(_ref) {
 }
 
 function fetchEachPropUpdate(update) {
+
+    (0, _invariant2.default)(update.fragment || (update.fragment = this.fragment), 'Attempted to fetch without a fragment definition');
+
     if (!(update.falcor = tryDeref(update))) {
         return _Observable.Observable.of(update);
     } else if (update.renderLoading === true) {

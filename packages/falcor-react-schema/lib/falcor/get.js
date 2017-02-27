@@ -97,7 +97,7 @@ function get(route, displayName) {
                 };
             });
         }, _Observable.Observable.defer(function () {
-            return service(context);
+            return service(context, suffix);
         }).map(function (context) {
             return { context: context, rest: { length: 0 } };
         }));

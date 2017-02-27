@@ -50,16 +50,18 @@ module.exports =
 /******/ 	// expose the module cache
 /******/ 	__webpack_require__.c = installedModules;
 /******/
-/******/ 	// identity function for calling harmory imports with the correct context
+/******/ 	// identity function for calling harmony imports with the correct context
 /******/ 	__webpack_require__.i = function(value) { return value; };
 /******/
-/******/ 	// define getter function for harmory exports
+/******/ 	// define getter function for harmony exports
 /******/ 	__webpack_require__.d = function(exports, name, getter) {
-/******/ 		Object.defineProperty(exports, name, {
-/******/ 			configurable: false,
-/******/ 			enumerable: true,
-/******/ 			get: getter
-/******/ 		});
+/******/ 		if(!__webpack_require__.o(exports, name)) {
+/******/ 			Object.defineProperty(exports, name, {
+/******/ 				configurable: false,
+/******/ 				enumerable: true,
+/******/ 				get: getter
+/******/ 			});
+/******/ 		}
 /******/ 	};
 /******/
 /******/ 	// getDefaultExport function for compatibility with non-harmony modules
@@ -83,7 +85,7 @@ module.exports =
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var now = __webpack_require__(53);
 var $now = __webpack_require__(30);
@@ -101,9 +103,9 @@ function isExpired(node, expireImmediate) {
     return exp < now();
 }
 
-/***/ },
+/***/ }),
 /* 1 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var isInternal = __webpack_require__(19);
 
@@ -127,9 +129,9 @@ function clone(node) {
     return json;
 }
 
-/***/ },
+/***/ }),
 /* 2 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var splice = __webpack_require__(48);
 
@@ -144,9 +146,9 @@ function expireNode(node, expired, lru) {
     return node;
 }
 
-/***/ },
+/***/ }),
 /* 3 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {function FalcorJSON(f_meta) {
     if (!f_meta) {
@@ -349,9 +351,9 @@ function serialize(inst, serializer, includeMetadata, createWithProto, includeSt
 module.exports = FalcorJSON;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(31)))
 
-/***/ },
+/***/ }),
 /* 4 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var createErrorClass = __webpack_require__(5);
 var MESSAGE = '`null` is not allowed in branch key positions.';
@@ -363,9 +365,9 @@ module.exports = createErrorClass('NullInPathError', function () {
   this.message = MESSAGE;
 });
 
-/***/ },
+/***/ }),
 /* 5 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 module.exports = createErrorClass;
 
@@ -388,9 +390,9 @@ function createErrorClass(name, init) {
     return E;
 }
 
-/***/ },
+/***/ }),
 /* 6 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 module.exports = isObject;
 
@@ -398,9 +400,9 @@ function isObject(value) {
     return value !== null && typeof value === 'object';
 }
 
-/***/ },
+/***/ }),
 /* 7 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 module.exports = createHardlink;
 
@@ -416,9 +418,9 @@ function createHardlink(from, to) {
     from["f_context"] = to;
 }
 
-/***/ },
+/***/ }),
 /* 8 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var isObject = __webpack_require__(6);
 module.exports = getSize;
@@ -427,9 +429,9 @@ function getSize(node) {
     return isObject(node) && node.$size || 0;
 }
 
-/***/ },
+/***/ }),
 /* 9 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 /**
  * getCachePosition makes a fast walk to the bound value since all bound
@@ -462,9 +464,9 @@ function getCachePosition(cache, path) {
     return node;
 };
 
-/***/ },
+/***/ }),
 /* 10 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var removeNodeAndDescendants = __webpack_require__(25);
 var updateBackReferenceVersions = __webpack_require__(27);
@@ -488,9 +490,9 @@ function updateNodeAncestors(node, offset, lru, version) {
     return node;
 }
 
-/***/ },
+/***/ }),
 /* 11 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var createErrorClass = __webpack_require__(5);
 
@@ -505,9 +507,9 @@ module.exports = createErrorClass('InvalidKeySetError', function (path, keysOrRa
   this.mesage = '' + 'The KeySet ' + JSON.stringify(keysOrRanges) + ' in path ' + JSON.stringify(path) + ' contains a KeySet. ' + 'Keysets can only contain Keys or Ranges';
 });
 
-/***/ },
+/***/ }),
 /* 12 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var EXPIRES_NEVER = __webpack_require__(54);
 
@@ -556,9 +558,9 @@ function lruPromote(lru, node) {
     }
 };
 
-/***/ },
+/***/ }),
 /* 13 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var Subscription = __webpack_require__(14);
 
@@ -630,9 +632,9 @@ Subscriber.prototype.dispose = Subscriber.prototype.unsubscribe = function () {
     Subscription.prototype.dispose.call(this);
 };
 
-/***/ },
+/***/ }),
 /* 14 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 module.exports = Subscription;
 
@@ -666,9 +668,9 @@ Subscription.prototype.dispose = Subscription.prototype.unsubscribe = function (
     }
 };
 
-/***/ },
+/***/ }),
 /* 15 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var isExpired = __webpack_require__(0);
 var expireNode = __webpack_require__(2);
@@ -712,9 +714,9 @@ function onValueType(node, type, json, path, depth, seed, results, requestedPath
     return onMissing(path, depth, results, requestedPath, requestedLength, fromReference, optimizedPath, optimizedLength, _reportMissing, materialized, json, branchSelector, boxValues, onMaterialize, modelRoot);
 }
 
-/***/ },
+/***/ }),
 /* 16 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var getCachePosition = __webpack_require__(9);
 
@@ -737,9 +739,9 @@ function getBoundCacheNode(model, path) {
     return node;
 }
 
-/***/ },
+/***/ }),
 /* 17 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var arr = new Array(5);
 var isExpired = __webpack_require__(0);
@@ -949,9 +951,9 @@ function setNode(root, parentArg, nodeArg, messageRoot, messageParentArg, messag
     arr[4] = optimizedPath;
 }
 
-/***/ },
+/***/ }),
 /* 18 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var arr = new Array(3);
 var isArray = Array.isArray;
@@ -1178,9 +1180,9 @@ function getKeys(pathMap) {
     return undefined;
 }
 
-/***/ },
+/***/ }),
 /* 19 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 /**
  * Determined if the key passed in is an f_ internal key.
@@ -1195,21 +1197,21 @@ var regexp = new RegExp('^' + f_, 'i', 'g');
 
 module.exports = regexp.test.bind(regexp);
 
-/***/ },
+/***/ }),
 /* 20 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__(34);
 
-/***/ },
+/***/ }),
 /* 21 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__(37);
 
-/***/ },
+/***/ }),
 /* 22 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 module.exports = inlineJSONGraphValue;
 
@@ -1239,9 +1241,9 @@ function inlineJSONGraphValue(node, path, length, seed, branch) {
 }
 /* eslint-enable */
 
-/***/ },
+/***/ }),
 /* 23 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 var isArray = Array.isArray;
 
@@ -1344,9 +1346,9 @@ function isEmptyKeySet(keyset) {
     return from >= rangeEnd;
 }
 
-/***/ },
+/***/ }),
 /* 24 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var arr = new Array(2);
 var isExpired = __webpack_require__(0);
@@ -1509,9 +1511,9 @@ function invalidateNode(root, parentArg, nodeArg, key, branch, reference, versio
     arr[1] = parent;
 }
 
-/***/ },
+/***/ }),
 /* 25 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var lruSplice = __webpack_require__(48);
 var isInternalKey = __webpack_require__(29);
@@ -1543,9 +1545,9 @@ function removeNodeAndDescendants(node, parent, key, lru, version) {
     return false;
 }
 
-/***/ },
+/***/ }),
 /* 26 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var arr = new Array(3);
 var isExpired = __webpack_require__(0);
@@ -1752,9 +1754,9 @@ function setNode(root, parentArg, nodeArg, key, value, branch, reference, reques
     arr[2] = optimizedPath;
 }
 
-/***/ },
+/***/ }),
 /* 27 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 module.exports = updateBackReferenceVersions;
 
@@ -1784,9 +1786,9 @@ function updateBackReferenceVersions(nodeArg, version) {
     return nodeArg;
 }
 
-/***/ },
+/***/ }),
 /* 28 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var isObject = __webpack_require__(6);
 module.exports = getTimestamp;
@@ -1795,9 +1797,9 @@ function getTimestamp(node) {
     return isObject(node) && node.$timestamp || undefined;
 }
 
-/***/ },
+/***/ }),
 /* 29 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 /**
  * Determined if the key passed in is an internal key.
@@ -1815,20 +1817,22 @@ function isInternalKey(key) {
   return key && key[0] === '$' || isInternal(key);
 }
 
-/***/ },
+/***/ }),
 /* 30 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 module.exports = 0;
 
-/***/ },
+/***/ }),
 /* 31 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 var g;
 
 // This works in non-strict mode
-g = (function() { return this; })();
+g = (function() {
+	return this;
+})();
 
 try {
 	// This works if eval is allowed (see CSP)
@@ -1846,21 +1850,21 @@ try {
 module.exports = g;
 
 
-/***/ },
+/***/ }),
 /* 32 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 module.exports = require("@graphistry/falcor-path-utils/lib/iterateKeySet");
 
-/***/ },
+/***/ }),
 /* 33 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 module.exports = require("@graphistry/falcor-path-utils/lib/support/materializedAtom");
 
-/***/ },
+/***/ }),
 /* 34 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var isArray = Array.isArray;
 var walkPathAndBuildOutput = __webpack_require__(64);
@@ -1973,9 +1977,9 @@ function getJSON(model, pathsArg, seed, progressive, expireImmediate) {
     return results;
 }
 
-/***/ },
+/***/ }),
 /* 35 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var arr = new Array(3);
 var promote = __webpack_require__(12);
@@ -2070,9 +2074,9 @@ function getReferenceTarget(root, refArg, modelRoot, expireImmediate) {
 }
 /* eslint-enable */
 
-/***/ },
+/***/ }),
 /* 36 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var clone = __webpack_require__(1);
 var onError = __webpack_require__(62);
@@ -2091,9 +2095,9 @@ function onJSONValue(node, type, depth, seed, results, requestedPath, optimizedP
     return !boxValues ? node.value : clone(node);
 }
 
-/***/ },
+/***/ }),
 /* 37 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var walkPathAndBuildOutput = __webpack_require__(67);
 var BoundJSONGraphModelError = __webpack_require__(79);
@@ -2146,9 +2150,9 @@ function getJSONGraph(model, paths, seed, progressive, expireImmediate) {
     return results;
 }
 
-/***/ },
+/***/ }),
 /* 38 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var isArray = Array.isArray;
 var clone = __webpack_require__(1);
@@ -2301,9 +2305,9 @@ function onMaterialize(jsonArg, path, depth, length, branchSelector, boxValues, 
     return json;
 }
 
-/***/ },
+/***/ }),
 /* 39 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var isArray = Array.isArray;
 var isPathValue = __webpack_require__(93);
@@ -2346,9 +2350,9 @@ function groupCacheArguments(args) {
     return groups;
 }
 
-/***/ },
+/***/ }),
 /* 40 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 module.exports = insertNode;
 
@@ -2368,9 +2372,9 @@ function insertNode(node, parent, key, version, optimizedPath) {
     return node;
 }
 
-/***/ },
+/***/ }),
 /* 41 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var arr = new Array(2);
 var isExpired = __webpack_require__(0);
@@ -2536,9 +2540,9 @@ function invalidateNode(root, parentArg, nodeArg, key, value, branch, reference,
     arr[1] = parent;
 }
 
-/***/ },
+/***/ }),
 /* 42 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var $now = __webpack_require__(30);
 var getType = __webpack_require__(92);
@@ -2614,9 +2618,9 @@ function mergeValueOrInsertBranch(parentArg, nodeArg, key, value, branch, refere
     return node;
 };
 
-/***/ },
+/***/ }),
 /* 43 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 /**
  * Reconstructs the path for the current key, from currentPath (requestedPath)
@@ -2641,9 +2645,9 @@ function reconstructPath(currentPath, key) {
   return path;
 }
 
-/***/ },
+/***/ }),
 /* 44 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var transferBackReferences = __webpack_require__(74);
 var removeNodeAndDescendants = __webpack_require__(25);
@@ -2664,9 +2668,9 @@ function replaceNode(node, replacement, parent, key, lru, version) {
     return replacement;
 }
 
-/***/ },
+/***/ }),
 /* 45 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var isArray = Array.isArray;
 var now = __webpack_require__(53);
@@ -2731,9 +2735,9 @@ function wrapNode(nodeArg, typeArg, value) {
     return node;
 };
 
-/***/ },
+/***/ }),
 /* 46 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var createErrorClass = __webpack_require__(5);
 
@@ -2741,9 +2745,9 @@ module.exports = createErrorClass('CircularReferenceError', function (referenceP
     this.message = 'Encountered circular reference ' + JSON.stringify(referencePath);
 });
 
-/***/ },
+/***/ }),
 /* 47 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var createErrorClass = __webpack_require__(5);
 var MESSAGE = 'An exception was thrown when making a request';
@@ -2759,9 +2763,9 @@ module.exports = createErrorClass('InvalidSourceError', function (error) {
   this.message = MESSAGE + ':\n\t' + error;
 });
 
-/***/ },
+/***/ }),
 /* 48 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 module.exports = lruSplice;
 
@@ -2786,9 +2790,9 @@ function lruSplice(lru, node) {
     }
 }
 
-/***/ },
+/***/ }),
 /* 49 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {var Subscriber = __webpack_require__(13);
 var Subscription = __webpack_require__(14);
@@ -2854,9 +2858,9 @@ Source.prototype.then = function then(onNext, onError) {
 };
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(31)))
 
-/***/ },
+/***/ }),
 /* 50 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 var empty = {
     dispose: function () {},
@@ -2872,9 +2876,9 @@ ImmediateScheduler.prototype.schedule = function schedule(action) {
 
 module.exports = ImmediateScheduler;
 
-/***/ },
+/***/ }),
 /* 51 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var isObject = __webpack_require__(6);
 
@@ -2884,9 +2888,9 @@ function isJSONEnvelope(envelope) {
     return isObject(envelope) && 'json' in envelope;
 }
 
-/***/ },
+/***/ }),
 /* 52 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var isArray = Array.isArray;
 var isObject = __webpack_require__(6);
@@ -2897,27 +2901,27 @@ function isJSONGraphEnvelope(envelope) {
     return isObject(envelope) && isArray(envelope.paths) && (isObject(envelope.jsonGraph) || isObject(envelope.jsong) || isObject(envelope.json) || isObject(envelope.values) || isObject(envelope.value));
 }
 
-/***/ },
+/***/ }),
 /* 53 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 module.exports = Date.now;
 
-/***/ },
+/***/ }),
 /* 54 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 module.exports = 1;
 
-/***/ },
+/***/ }),
 /* 55 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 module.exports = require("@graphistry/falcor-path-utils/lib/collapse");
 
-/***/ },
+/***/ }),
 /* 56 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var Model = __webpack_require__(57);
 var FalcorJSON = __webpack_require__(3);
@@ -2937,9 +2941,9 @@ falcor['toProps'] = FalcorJSON.prototype.toProps;
 
 module.exports = falcor;
 
-/***/ },
+/***/ }),
 /* 57 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var Call = __webpack_require__(85);
 var ModelRoot = __webpack_require__(59);
@@ -3556,9 +3560,9 @@ Model.prototype._setCache = __webpack_require__(18);
 Model.prototype._invalidatePathValues = __webpack_require__(24);
 Model.prototype._invalidatePathMaps = __webpack_require__(41);
 
-/***/ },
+/***/ }),
 /* 58 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 function ModelDataSourceAdapter(model) {
     this._model = model
@@ -3580,9 +3584,9 @@ ModelDataSourceAdapter.prototype.call = function call(path, args, suffixes, path
 
 module.exports = ModelDataSourceAdapter;
 
-/***/ },
+/***/ }),
 /* 59 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var functionTypeof = 'function';
 var Requests = __webpack_require__(86);
@@ -3665,9 +3669,9 @@ ModelRoot.comparator = ModelRoot.prototype.comparator = defaultCompare;
 
 module.exports = ModelRoot;
 
-/***/ },
+/***/ }),
 /* 60 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var getJSON = __webpack_require__(20);
 var getJSONGraph = __webpack_require__(21);
@@ -3719,18 +3723,18 @@ function jsonGraph(model, _args, data, progressive) {
     };
 }
 
-/***/ },
+/***/ }),
 /* 61 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 module.exports = {
     json: __webpack_require__(34),
     jsonGraph: __webpack_require__(37)
 };
 
-/***/ },
+/***/ }),
 /* 62 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var clone = __webpack_require__(1);
 
@@ -3753,9 +3757,9 @@ function onError(node, depth, results, requestedPath, fromReference, boxValues) 
     });
 }
 
-/***/ },
+/***/ }),
 /* 63 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var arr = new Array(2);
 var onValue = __webpack_require__(36);
@@ -4085,9 +4089,9 @@ function arrayEqual(xs, ys) {
     return true;
 }
 
-/***/ },
+/***/ }),
 /* 64 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var arr = new Array(2);
 var isArray = Array.isArray;
@@ -4367,9 +4371,9 @@ function walkPathAndBuildOutput(root, node, jsonArg, path, depth, seed, results,
 }
 /* eslint-enable */
 
-/***/ },
+/***/ }),
 /* 65 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var arr = new Array(2);
 var clone = __webpack_require__(1);
@@ -4467,9 +4471,9 @@ function getReferenceTarget(root, refArg, modelRoot, seed, expireImmediate) {
 }
 /* eslint-enable */
 
-/***/ },
+/***/ }),
 /* 66 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var clone = __webpack_require__(1);
 var inlineValue = __webpack_require__(22);
@@ -4501,9 +4505,9 @@ function onJSONGraphValue(node, type, depth, seed, results, requestedPath, optim
     return value;
 }
 
-/***/ },
+/***/ }),
 /* 67 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var isArray = Array.isArray;
 var clone = __webpack_require__(1);
@@ -4704,9 +4708,9 @@ function onMissing(path, depth, results, requestedPath, requestedLength, fromRef
     return originalOnMissing(path, depth, results, requestedPath, requestedLength, fromReference, optimizedPath, optimizedLength, reportMissing, !isLeaf && reportMaterialized, json, branchSelector, true, onMaterialize, modelRoot);
 }
 
-/***/ },
+/***/ }),
 /* 68 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var clone = __webpack_require__(1);
 var onValueType = __webpack_require__(15);
@@ -4846,9 +4850,9 @@ function onMaterializeFlatBuffer(jsonArg, path, depth, length, branchSelector, b
     return json;
 }
 
-/***/ },
+/***/ }),
 /* 69 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var clone = __webpack_require__(1);
 var isInternal = __webpack_require__(19);
@@ -4908,9 +4912,9 @@ function getCacheInternal(node, jsonArg, boxValues, materialized) {
     return json;
 }
 
-/***/ },
+/***/ }),
 /* 70 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var getBoundCacheNode = __webpack_require__(16);
 
@@ -4922,9 +4926,9 @@ function getVersion(model, path) {
     return version == null ? -1 : version;
 }
 
-/***/ },
+/***/ }),
 /* 71 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var groupCacheArguments = __webpack_require__(39);
 
@@ -4974,9 +4978,9 @@ function pluckPaths(x) {
     return x.path || x.paths;
 }
 
-/***/ },
+/***/ }),
 /* 72 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var wrapNode = __webpack_require__(45);
 var isExpired = __webpack_require__(0);
@@ -5169,9 +5173,9 @@ function mergeJSONGraphNode(parentArg, nodeArg, messageArg, key, requestedPath, 
     return node;
 };
 
-/***/ },
+/***/ }),
 /* 73 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var getJSON = __webpack_require__(20);
 var getJSONGraph = __webpack_require__(21);
@@ -5343,9 +5347,9 @@ function arrayFlatMap(array, selector) {
     return array2;
 }
 
-/***/ },
+/***/ }),
 /* 74 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 module.exports = transferBackReferences;
 
@@ -5366,9 +5370,9 @@ function transferBackReferences(fromNode, destNode) {
     return destNode;
 }
 
-/***/ },
+/***/ }),
 /* 75 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 module.exports = unlinkBackReferences;
 
@@ -5385,9 +5389,9 @@ function unlinkBackReferences(node) {
     return node;
 }
 
-/***/ },
+/***/ }),
 /* 76 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 module.exports = unlinkForwardReference;
 
@@ -5405,9 +5409,9 @@ function unlinkForwardReference(reference) {
     return reference;
 }
 
-/***/ },
+/***/ }),
 /* 77 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 module.exports = hasValidParentReference;
 
@@ -5443,9 +5447,9 @@ function hasValidParentReference() {
     return true;
 }
 
-/***/ },
+/***/ }),
 /* 78 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var CONTAINER_DOES_NOT_EXIST = 'e';
 var FalcorJSON = __webpack_require__(3);
@@ -5553,9 +5557,9 @@ function deref(json) {
     });
 };
 
-/***/ },
+/***/ }),
 /* 79 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var createErrorClass = __webpack_require__(5);
 var MESSAGE = 'It is not legal to use the JSON Graph ' + 'format from a bound Model. JSON Graph format' + ' can only be used from a root model.';
@@ -5570,9 +5574,9 @@ module.exports = createErrorClass('BoundJSONGraphModelError', function () {
     this.message = MESSAGE;
 });
 
-/***/ },
+/***/ }),
 /* 80 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var createErrorClass = __webpack_require__(5);
 var MESSAGE = 'Deref can only be used with a non-primitive object from get, set, or call.';
@@ -5588,9 +5592,9 @@ module.exports = createErrorClass('InvalidDerefInputError', function () {
   this.message = MESSAGE;
 });
 
-/***/ },
+/***/ }),
 /* 81 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var createErrorClass = __webpack_require__(5);
 var MESSAGE = 'The boundPath of the model is not valid since a value or error was found before the path end.';
@@ -5608,9 +5612,9 @@ module.exports = createErrorClass('InvalidModelError', function (boundPath, shor
   this.shortedPath = shortedPath;
 });
 
-/***/ },
+/***/ }),
 /* 82 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var createErrorClass = __webpack_require__(5);
 
@@ -5630,15 +5634,15 @@ function printPaths(paths) {
     }).join(',\n\t');
 }
 
-/***/ },
+/***/ }),
 /* 83 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 module.exports = String.fromCharCode(30) + 'f_';
 
-/***/ },
+/***/ }),
 /* 84 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var updateNodeAncestors = __webpack_require__(10);
 
@@ -5679,9 +5683,9 @@ function collect(lru, expired, totalArg, max, ratioArg, version) {
     }
 }
 
-/***/ },
+/***/ }),
 /* 85 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var Source = __webpack_require__(49);
 var Subscriber = __webpack_require__(13);
@@ -6021,9 +6025,9 @@ function mergeInto(dest, node) {
     return dest;
 }
 
-/***/ },
+/***/ }),
 /* 86 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var Source = __webpack_require__(49);
 var Request = __webpack_require__(87);
@@ -6130,9 +6134,9 @@ Dedupe.prototype.subscribe = function (destination) {
     return subscription;
 };
 
-/***/ },
+/***/ }),
 /* 87 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var isArray = Array.isArray;
 var Subject = __webpack_require__(88);
@@ -6436,9 +6440,9 @@ function filterPathsBoundTo(boundPath, paths) {
     return filtered;
 }
 
-/***/ },
+/***/ }),
 /* 88 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var Subscriber = __webpack_require__(13);
 var Subscription = __webpack_require__(14);
@@ -6485,9 +6489,9 @@ Subject.prototype.dispose = Subject.prototype.unsubscribe = function () {
     this.observers = [];
 };
 
-/***/ },
+/***/ }),
 /* 89 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 function TimeoutScheduler(delay) {
     this.delay = delay;
@@ -6512,9 +6516,9 @@ TimerDisposable.prototype.dispose = TimerDisposable.prototype.unsubscribe = func
 
 module.exports = TimeoutScheduler;
 
-/***/ },
+/***/ }),
 /* 90 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var isArray = Array.isArray;
 var isInternal = __webpack_require__(19);
@@ -6535,9 +6539,9 @@ function clone(source) {
     return dest;
 }
 
-/***/ },
+/***/ }),
 /* 91 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var isObject = __webpack_require__(6);
 module.exports = getSize;
@@ -6546,9 +6550,9 @@ function getSize(node) {
     return isObject(node) && node.$expires || undefined;
 }
 
-/***/ },
+/***/ }),
 /* 92 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var isObject = __webpack_require__(6);
 
@@ -6562,9 +6566,9 @@ function getType(node, anyType) {
     return type;
 }
 
-/***/ },
+/***/ }),
 /* 93 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 var isArray = Array.isArray;
 var isObject = __webpack_require__(6);
@@ -6575,19 +6579,19 @@ function isPathValue(pathValue) {
     return isObject(pathValue) && (isArray(pathValue.path) || typeof pathValue.path === 'string');
 }
 
-/***/ },
+/***/ }),
 /* 94 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__(95);
 
 
-/***/ },
+/***/ }),
 /* 95 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function(global, module) {'use strict';
+/* WEBPACK VAR INJECTION */(function(global, module) {
 
 Object.defineProperty(exports, "__esModule", {
   value: true
@@ -6618,12 +6622,12 @@ var result = (0, _ponyfill2['default'])(root);
 exports['default'] = result;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(31), __webpack_require__(97)(module)))
 
-/***/ },
+/***/ }),
 /* 96 */
-/***/ function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-'use strict';
+
 
 Object.defineProperty(exports, "__esModule", {
 	value: true
@@ -6647,9 +6651,9 @@ function symbolObservablePonyfill(root) {
 	return result;
 };
 
-/***/ },
+/***/ }),
 /* 97 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 module.exports = function(module) {
 	if(!module.webpackPolyfill) {
@@ -6659,75 +6663,77 @@ module.exports = function(module) {
 		if(!module.children) module.children = [];
 		Object.defineProperty(module, "loaded", {
 			enumerable: true,
-			configurable: false,
-			get: function() { return module.l; }
+			get: function() {
+				return module.l;
+			}
 		});
 		Object.defineProperty(module, "id", {
 			enumerable: true,
-			configurable: false,
-			get: function() { return module.i; }
+			get: function() {
+				return module.i;
+			}
 		});
 		module.webpackPolyfill = 1;
 	}
 	return module;
-}
+};
 
 
-/***/ },
+/***/ }),
 /* 98 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 module.exports = require("@graphistry/falcor-path-utils/lib/computeFlatBufferHash");
 
-/***/ },
+/***/ }),
 /* 99 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 module.exports = require("@graphistry/falcor-path-utils/lib/flatBufferToPaths");
 
-/***/ },
+/***/ }),
 /* 100 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 module.exports = require("@graphistry/falcor-path-utils/lib/getHashCode");
 
-/***/ },
+/***/ }),
 /* 101 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 module.exports = require("@graphistry/falcor-path-utils/lib/hasIntersection");
 
-/***/ },
+/***/ }),
 /* 102 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 module.exports = require("@graphistry/falcor-path-utils/lib/toCollapseMap");
 
-/***/ },
+/***/ }),
 /* 103 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 module.exports = require("@graphistry/falcor-path-utils/lib/toCollapseTrees");
 
-/***/ },
+/***/ }),
 /* 104 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 module.exports = require("@graphistry/falcor-path-utils/lib/toFlatBuffer");
 
-/***/ },
+/***/ }),
 /* 105 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 module.exports = require("@graphistry/falcor-path-utils/lib/toPaths");
 
-/***/ },
+/***/ }),
 /* 106 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__(56);
 
 
-/***/ }
+/***/ })
 /******/ ]);
 //# sourceMappingURL=falcor.node.js.map
