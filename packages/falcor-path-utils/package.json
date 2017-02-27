@@ -1,6 +1,6 @@
 {
   "name": "@graphistry/falcor-path-utils",
-  "version": "2.7.1",
+  "version": "2.8.0",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
@@ -29,7 +29,7 @@
   },
   "homepage": "https://github.com/graphistry/falcor/blob/master/packages/falcor-path-utils/README.md",
   "devDependencies": {
-    "@graphistry/falcor-json-graph": "^2.6.16",
+    "@graphistry/falcor-json-graph": "^2.8.0",
     "babel-plugin-istanbul": "~4.0.0",
     "babel-register": "~6.23.0",
     "chai": "3.5.0",
