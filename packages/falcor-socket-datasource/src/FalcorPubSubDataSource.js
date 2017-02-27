@@ -35,7 +35,9 @@ function request(method, parameters, observer, ...rest) {
 
     const { event, cancel, model, emitter } = this;
 
-    if (emitter && emitter.connected !== false) {
+    if (emitter &&
+        emitter.readyState !== 'closed' &&
+        emitter.readyState !== 'closing') {
 
         let disposed = false;
         const id = simpleflake().toJSON();
@@ -56,28 +58,31 @@ function request(method, parameters, observer, ...rest) {
             }
         };
 
-        function handleResponse({ kind, value, error }) {
-            if (disposed) {
-                return;
-            }
-            switch (kind) {
-                case 'N':
-                    observer.onNext && observer.onNext(value);
-                    break;
-                case 'E':
-                    disposed = true;
-                    emitter.removeListener(responseToken, handleResponse);
-                    observer.onError && observer.onError(error);
-                    break;
-                case 'C':
-                    disposed = true;
-                    emitter.removeListener(responseToken, handleResponse);
-                    if (value) {
+        function handleResponse({ kind, value, error }, handshake) {
+            if (!disposed) {
+                switch (kind) {
+                    case 'N':
                         observer.onNext && observer.onNext(value);
-                    }
-                    observer.onCompleted && observer.onCompleted();
-                    break;
+                        break;
+                    case 'E':
+                        disposed = true;
+                        emitter.removeListener(responseToken, handleResponse);
+                        if (value !== undefined && observer.onNext) {
+                            observer.onNext(value);
+                        }
+                        observer.onError && observer.onError(error);
+                        break;
+                    case 'C':
+                        disposed = true;
+                        emitter.removeListener(responseToken, handleResponse);
+                        if (value !== undefined && observer.onNext) {
+                            observer.onNext(value);
+                        }
+                        observer.onCompleted && observer.onCompleted();
+                        break;
+                }
             }
+            typeof handshake === 'function' && handshake();
         }
     }
 

@@ -5,7 +5,6 @@ export class PostMessageEmitter {
         this.cancel = cancel;
         this.source = source;
         this.listeners = {};
-        this.connected = true;
         this.onPostMessage = this.onPostMessage.bind(this);
         source.addEventListener('message', this.onPostMessage);
     }

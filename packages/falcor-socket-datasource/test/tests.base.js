@@ -113,7 +113,7 @@ export default function tests({ Observable }, context, runBefore, runAfter) {
     });
     it('should get data from the local model when disconnected', function(done) {
         const { model } = context;
-        model._source.emitter.connected = false;
+        model._source.emitter.readyState = 'closed';
         Observable
             .defer(() => model.get(['foo', 'bar']))
             .do((data) => {
@@ -129,7 +129,7 @@ export default function tests({ Observable }, context, runBefore, runAfter) {
     });
     it('should set data on the local model when disconnected', (done) => {
         const { model } = context;
-        model._source.emitter.connected = false;
+        model._source.emitter.readyState = 'closed';
         Observable
             .defer(() => model.set({ path: ['foo', 'bar'], value: 'bar' }))
             .do((data) => {
@@ -145,7 +145,7 @@ export default function tests({ Observable }, context, runBefore, runAfter) {
     });
     it('should call a function on the local model when disconnected', (done) => {
         const { model } = context;
-        model._source.emitter.connected = false;
+        model._source.emitter.readyState = 'closed';
         Observable
             .defer(() => model.call('bar', ['foo'], [], ['foo', 'bar']))
             .do((data) => {

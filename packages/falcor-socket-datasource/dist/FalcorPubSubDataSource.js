@@ -8,20 +8,10 @@ var _assign = require('babel-runtime/core-js/object/assign');
 
 var _assign2 = _interopRequireDefault(_assign);
 
-var _iterator = require('babel-runtime/core-js/symbol/iterator');
-
-var _iterator2 = _interopRequireDefault(_iterator);
-
-var _symbol = require('babel-runtime/core-js/symbol');
-
-var _symbol2 = _interopRequireDefault(_symbol);
-
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
 exports.FalcorPubSubDataSource = undefined;
-
-var _typeof = typeof _symbol2.default === "function" && typeof _iterator2.default === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof _symbol2.default === "function" && obj.constructor === _symbol2.default && obj !== _symbol2.default.prototype ? "symbol" : typeof obj; };
 
 var _extends = _assign2.default || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
@@ -97,16 +87,13 @@ function request(method, parameters, observer) {
         emitter = this.emitter;
 
 
-    if (emitter && emitter.connected !== false) {
-        var _ret = function () {
-            var handleResponse = function handleResponse(_ref) {
-                var kind = _ref.kind,
-                    value = _ref.value,
-                    error = _ref.error;
+    if (emitter && emitter.readyState !== 'closed' && emitter.readyState !== 'closing') {
+        var handleResponse = function handleResponse(_ref, handshake) {
+            var kind = _ref.kind,
+                value = _ref.value,
+                error = _ref.error;
 
-                if (disposed) {
-                    return;
-                }
+            if (!disposed) {
                 switch (kind) {
                     case 'N':
                         observer.onNext && observer.onNext(value);
@@ -114,74 +101,72 @@ function request(method, parameters, observer) {
                     case 'E':
                         disposed = true;
                         emitter.removeListener(responseToken, handleResponse);
+                        if (value !== undefined && observer.onNext) {
+                            observer.onNext(value);
+                        }
                         observer.onError && observer.onError(error);
                         break;
                     case 'C':
                         disposed = true;
                         emitter.removeListener(responseToken, handleResponse);
-                        if (value) {
-                            observer.onNext && observer.onNext(value);
+                        if (value !== undefined && observer.onNext) {
+                            observer.onNext(value);
                         }
                         observer.onCompleted && observer.onCompleted();
                         break;
                 }
-            };
+            }
+            typeof handshake === 'function' && handshake();
+        };
 
-            var disposed = false;
-            var id = (0, _simpleflakes.simpleflake)().toJSON();
-            var responseToken = event + '-' + id;
-            var cancellationToken = cancel + '-' + id;
+        var disposed = false;
+        var id = (0, _simpleflakes.simpleflake)().toJSON();
+        var responseToken = event + '-' + id;
+        var cancellationToken = cancel + '-' + id;
 
-            emitter.on(responseToken, handleResponse);
-            emitter.emit(event, _extends({ id: id, method: method }, parameters));
+        emitter.on(responseToken, handleResponse);
+        emitter.emit(event, _extends({ id: id, method: method }, parameters));
 
-            return {
-                v: {
-                    unsubscribe: function unsubscribe() {
-                        this.dispose();
-                    },
-                    dispose: function dispose() {
-                        if (!disposed) {
-                            disposed = true;
-                            emitter.removeListener(responseToken, handleResponse);
-                            emitter.emit(cancellationToken);
-                        }
-                    }
+        return {
+            unsubscribe: function unsubscribe() {
+                this.dispose();
+            },
+            dispose: function dispose() {
+                if (!disposed) {
+                    disposed = true;
+                    emitter.removeListener(responseToken, handleResponse);
+                    emitter.emit(cancellationToken);
                 }
-            };
-        }();
-
-        if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
+            }
+        };
     }
 
     if (model) {
-        (function () {
 
-            var thisPath = void 0,
-                callPath = void 0,
-                pathSets = void 0,
-                jsonGraphEnvelope = void 0;
+        var thisPath = void 0,
+            callPath = void 0,
+            pathSets = void 0,
+            jsonGraphEnvelope = void 0;
 
-            if (method === 'set') {
-                jsonGraphEnvelope = parameters.jsonGraphEnvelope;
-            } else if (method === 'get' || method === 'call') {
+        if (method === 'set') {
+            jsonGraphEnvelope = parameters.jsonGraphEnvelope;
+        } else if (method === 'get' || method === 'call') {
 
-                jsonGraphEnvelope = {};
-                pathSets = parameters.pathSets;
+            jsonGraphEnvelope = {};
+            pathSets = parameters.pathSets;
 
-                if (method === 'call') {
-                    callPath = parameters.callPath;
-                    thisPath = callPath.slice(0, -1);
-                    pathSets = parameters.thisPaths || [];
-                    pathSets = pathSets.map(function (path) {
-                        return thisPath.concat(path);
-                    });
-                }
-
-                model._getPathValuesAsJSONG(model._materialize().withoutDataSource().treatErrorsAsValues(), pathSets, jsonGraphEnvelope, false, false);
+            if (method === 'call') {
+                callPath = parameters.callPath;
+                thisPath = callPath.slice(0, -1);
+                pathSets = parameters.thisPaths || [];
+                pathSets = pathSets.map(function (path) {
+                    return thisPath.concat(path);
+                });
             }
-            observer.onNext && observer.onNext(jsonGraphEnvelope);
-        })();
+
+            model._getPathValuesAsJSONG(model._materialize().withoutDataSource().treatErrorsAsValues(), pathSets, jsonGraphEnvelope, false, false);
+        }
+        observer.onNext && observer.onNext(jsonGraphEnvelope);
     }
 
     observer.onCompleted && observer.onCompleted();
