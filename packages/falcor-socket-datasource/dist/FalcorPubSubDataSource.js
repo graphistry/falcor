@@ -100,6 +100,9 @@ function request(method, parameters, observer) {
                         break;
                     case 'E':
                         disposed = true;
+                        try {
+                            emitter.removeListener(responseToken);
+                        } catch (e) {}
                         emitter.removeListener(responseToken, handleResponse);
                         if (value !== undefined && observer.onNext) {
                             observer.onNext(value);
@@ -108,6 +111,9 @@ function request(method, parameters, observer) {
                         break;
                     case 'C':
                         disposed = true;
+                        try {
+                            emitter.removeListener(responseToken);
+                        } catch (e) {}
                         emitter.removeListener(responseToken, handleResponse);
                         if (value !== undefined && observer.onNext) {
                             observer.onNext(value);
@@ -134,6 +140,9 @@ function request(method, parameters, observer) {
             dispose: function dispose() {
                 if (!disposed) {
                     disposed = true;
+                    try {
+                        emitter.removeListener(responseToken);
+                    } catch (e) {}
                     emitter.removeListener(responseToken, handleResponse);
                     emitter.emit(cancellationToken);
                 }

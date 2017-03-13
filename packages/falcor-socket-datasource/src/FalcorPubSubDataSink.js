@@ -67,6 +67,7 @@ function response({ id, callPath, callArgs,
             return false;
         }
         disposed = true;
+        try { emitter.removeListener(cancellationToken); } catch(e) {}
         emitter.removeListener(cancellationToken, dispose);
         if (!operation) {
             return false;

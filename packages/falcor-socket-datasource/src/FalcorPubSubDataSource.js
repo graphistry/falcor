@@ -52,6 +52,7 @@ function request(method, parameters, observer, ...rest) {
             dispose() {
                 if (!disposed) {
                     disposed = true;
+                    try { emitter.removeListener(responseToken); } catch(e) {}
                     emitter.removeListener(responseToken, handleResponse);
                     emitter.emit(cancellationToken);
                 }
@@ -66,6 +67,7 @@ function request(method, parameters, observer, ...rest) {
                         break;
                     case 'E':
                         disposed = true;
+                        try { emitter.removeListener(responseToken); } catch(e) {}
                         emitter.removeListener(responseToken, handleResponse);
                         if (value !== undefined && observer.onNext) {
                             observer.onNext(value);
@@ -74,6 +76,7 @@ function request(method, parameters, observer, ...rest) {
                         break;
                     case 'C':
                         disposed = true;
+                        try { emitter.removeListener(responseToken); } catch(e) {}
                         emitter.removeListener(responseToken, handleResponse);
                         if (value !== undefined && observer.onNext) {
                             observer.onNext(value);
