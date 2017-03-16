@@ -17,9 +17,11 @@ var _extends = _assign2.default || function (target) { for (var i = 1; i < argum
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; (0, _defineProperty2.default)(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _v = require('uuid/v4');
 
-var _simpleflakes = require('simpleflakes');
+var _v2 = _interopRequireDefault(_v);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -126,7 +128,7 @@ function request(method, parameters, observer) {
         };
 
         var disposed = false;
-        var id = (0, _simpleflakes.simpleflake)().toJSON();
+        var id = (0, _v2.default)();
         var responseToken = event + '-' + id;
         var cancellationToken = cancel + '-' + id;
 

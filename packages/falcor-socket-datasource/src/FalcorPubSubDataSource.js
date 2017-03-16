@@ -1,4 +1,4 @@
-import { simpleflake } from 'simpleflakes';
+import uuidV4 from 'uuid/v4';
 
 export class FalcorPubSubDataSource {
     constructor(emitter, model, event = 'falcor-operation', cancel = 'cancel-falcor-operation') {
@@ -40,7 +40,7 @@ function request(method, parameters, observer, ...rest) {
         emitter.readyState !== 'closing') {
 
         let disposed = false;
-        const id = simpleflake().toJSON();
+        const id = uuidV4();
         const responseToken = `${event}-${id}`;
         const cancellationToken = `${cancel}-${id}`;
 
