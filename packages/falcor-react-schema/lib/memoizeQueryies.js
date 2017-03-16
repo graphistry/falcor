@@ -14,7 +14,9 @@ exports.default = memoizeQueryies;
 
 var _pegjsUtil = require('pegjs-util');
 
-var _falcorQuerySyntax = require('@graphistry/falcor-query-syntax');
+var _toPaths = require('@graphistry/falcor-query-syntax/lib/toPaths');
+
+var _toPaths2 = _interopRequireDefault(_toPaths);
 
 var _toFlatBuffer = require('@graphistry/falcor-path-utils/lib/toFlatBuffer');
 
@@ -43,7 +45,7 @@ function memoizeQueryies() {
             splice(lru, lru.tail);
         }
         if (!entry || !entry.error) {
-            var result = (0, _pegjsUtil.parse)(_falcorQuerySyntax.paths.Parser, query);
+            var result = (0, _pegjsUtil.parse)(_toPaths2.default.Parser, query);
             if (!result.error) {
                 // Turn the computed AST into paths, then turn it back into an
                 // AST so we collapse adjacent nodes.

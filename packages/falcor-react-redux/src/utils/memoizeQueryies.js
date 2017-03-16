@@ -1,5 +1,5 @@
 import { parse as pegJSParseUtil } from 'pegjs-util';
-import { paths as toPaths } from '@graphistry/falcor-query-syntax';
+import toPaths from '@graphistry/falcor-query-syntax/lib/toPaths';
 import toFlatBuffer from '@graphistry/falcor-path-utils/lib/toFlatBuffer';
 import flatBufferToPaths from '@graphistry/falcor-path-utils/lib/flatBufferToPaths';
 import computeFlatBufferHash from '@graphistry/falcor-path-utils/lib/computeFlatBufferHash';
