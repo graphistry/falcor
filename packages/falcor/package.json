@@ -1,6 +1,6 @@
 {
   "name": "@graphistry/falcor",
-  "version": "2.8.1",
+  "version": "2.8.4",
   "description": "A JavaScript library for efficient data fetching.",
   "main": "./dist/falcor.node.min.js",
   "browser": "./dist/falcor.all.min.js",
@@ -69,7 +69,7 @@
   "devDependencies": {
     "@graphistry/falcor-json-graph": "^2.8.0",
     "@graphistry/falcor-path-syntax": "^2.8.0",
-    "@graphistry/falcor-router": "^2.8.1",
+    "@graphistry/falcor-router": "^2.8.4",
     "babel-loader": "~6.3.2",
     "babel-plugin-check-es2015-constants": "~6.22.0",
     "babel-plugin-istanbul": "~4.0.0",
