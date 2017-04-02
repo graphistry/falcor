@@ -175,8 +175,8 @@ function mapChangeToProps(props, falcor) {
 
 function throttleTrailing(due, scheduler) {
     return function throttleTrailing(source) {
-        return source.throttleTime(due, scheduler).publish(function (shared) {
-            return shared.merge(shared.switchMapTo(shared.timeoutWith(due, _Observable.Observable.empty(), scheduler).takeLast(1)));
+        return source.publish(function (shared) {
+            return _Observable.Observable.merge(shared.throttleTime(due, scheduler), shared.auditTime(due, scheduler));
         });
     };
 }

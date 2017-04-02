@@ -362,7 +362,7 @@ var FalcorContainer = function (_React$Component) {
                 message[_key] = arguments[_key];
             }
 
-            (_console = console).log.apply(_console, [this.inspect()].concat(message));
+            (_console = console).log.apply(_console, ['should update:', this.inspect()].concat(message));
         }
     }, {
         key: 'traceWillUpdate',
@@ -377,7 +377,7 @@ var FalcorContainer = function (_React$Component) {
                 message[_key2] = arguments[_key2];
             }
 
-            (_console2 = console).log.apply(_console2, [this.inspect()].concat(message));
+            (_console2 = console).log.apply(_console2, ['  will update:', this.inspect()].concat(message));
         }
     }, {
         key: 'inspect',

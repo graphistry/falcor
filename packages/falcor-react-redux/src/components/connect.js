@@ -111,13 +111,9 @@ function mapChangeToProps(props, falcor) {
 
 function throttleTrailing(due, scheduler) {
     return function throttleTrailing(source) {
-        return source
-            .throttleTime(due, scheduler)
-            .publish(shared => shared
-                .merge(shared.switchMapTo(shared
-                    .timeoutWith(due, Observable.empty(), scheduler)
-                    .takeLast(1))
-                )
-            );
+        return source.publish((shared) => Observable.merge(
+            shared.throttleTime(due, scheduler),
+               shared.auditTime(due, scheduler)
+        ));
     }
 }

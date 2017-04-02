@@ -10,9 +10,7 @@ var matchPathsAndExecute = require('./matchPathsAndExecute');
  */
 module.exports = recurseMatchAndExecute;
 
-function recurseMatchAndExecute(
-        match, actionRunner, requestedPaths, method,
-        router, jsonGraph, optimizeRunner, unhandledRunner) {
+function recurseMatchAndExecute(match, actionRunner, requestedPaths, method, optimizeRunner) {
 
     var runMatchAndExecute = matchPathsAndExecute(
         match, actionRunner, optimizeRunner

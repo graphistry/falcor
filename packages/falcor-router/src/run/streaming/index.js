@@ -1,6 +1,7 @@
 var Subject = require('./../../rx').Subject;
 var Observable = require('./../../rx').Observable;
 var jsongMerge = require('./../../cache/jsongMerge');
+var pluckPath = require('./../../support/pluckPath');
 var optimizePathsToExpand = require('./optimizePathsToExpand');
 var recurseMatchAndExecute = require('./../recurseMatchAndExecute');
 var toJSONGraphEnvelope = require('./../conversion/toJSONGraphEnvelope');
@@ -42,8 +43,7 @@ function runStreaming(match, actionRunner, requestedPaths, method,
     );
 
     var matchAllPathsAndRun = recurseMatchAndExecute(
-        match, actionRunner, requestedPaths, method,
-        router, jsonGraph, optimizeRunner, unhandledRunner
+        match, actionRunner, requestedPaths, method, optimizeRunner
     );
 
     return matchAllPathsAndRun
@@ -72,12 +72,12 @@ function runStreaming(match, actionRunner, requestedPaths, method,
 
     function aggregateStreamingValues(memo, next) {
 
-        var graph, paths, invalidated;
         var _paths = memo._paths;
         var nextPaths = next.paths;
         var emitValues = next.emitValues;
         var _invalidated = memo._invalidated;
         var nextInvalidated = next.invalidated;
+        var res, graph, paths, references, invalidated;
 
         if (nextPaths && nextPaths.length) {
             _paths.push.apply(_paths, nextPaths);
@@ -90,14 +90,16 @@ function runStreaming(match, actionRunner, requestedPaths, method,
 
         if (emitValues) {
             if (_paths.length) {
-                paths = jsongMerge(graph = {}, {
+                res = jsongMerge(graph = {}, {
                     paths: _paths, jsonGraph: jsonGraph
-                }).paths;
-                if (paths.length) {
+                });
+                paths = res.paths;
+                references = res.references;
+                if (paths.length || references.length) {
                     _paths = [];
+                    paths = paths.concat(references.map(pluckPath));
                 } else {
-                    paths = undefined;
-                    graph = undefined;
+                    paths = graph = undefined;
                     emitValues = _invalidated.length > 0;
                 }
             }

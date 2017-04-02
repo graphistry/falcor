@@ -244,13 +244,13 @@ class FalcorContainer extends React.Component {
         if (!global['__trace_container_diffs__']) {
             return;
         }
-        console.log(this.inspect(), ...message);
+        console.log('should update:', this.inspect(), ...message);
     }
     traceWillUpdate(...message) {
         if (!global['__trace_container_updates__']) {
             return;
         }
-        console.log(this.inspect(), ...message);
+        console.log('  will update:', this.inspect(), ...message);
     }
     inspect(...message) {
         const { state = {} } = this;

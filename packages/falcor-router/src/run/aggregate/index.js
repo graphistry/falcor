@@ -30,8 +30,7 @@ function runAggregate(match, actionRunner, requestedPaths, method,
     );
 
     var matchAllPathsAndRun = recurseMatchAndExecute(
-        match, actionRunner, requestedPaths, method,
-        router, jsonGraph, optimizeRunner, unhandledRunner
+        match, actionRunner, requestedPaths, method, optimizeRunner
     );
 
     return matchAllPathsAndRun
