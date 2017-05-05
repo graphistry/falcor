@@ -39,7 +39,7 @@
   "dependencies": {
     "@graphistry/falcor-path-syntax": "^2.8.0",
     "@graphistry/falcor-path-utils": "^2.8.0",
-    "rxjs": "~5.3.0"
+    "rxjs": "~5.3.1"
   },
   "devDependencies": {
     "@graphistry/falcor": "^2.9.0",
@@ -50,7 +50,7 @@
     "babel-register": "~6.23.0",
     "chai": "3.5.0",
     "coveralls": "~2.11.16",
-    "cross-env": "~3.1.4",
+    "cross-env": "4.0.0",
     "gulp": "~3.9.1",
     "gulp-eslint": "~3.0.1",
     "gulp-istanbul": "~1.1.1",

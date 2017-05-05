@@ -275,16 +275,18 @@ class FalcorContainer extends React.Component {
 
         const { renderErrors, renderLoading,
                 mapFragment, mapFragmentAndProps,
-                Component, dispatchers, state, context } = this;
+                Component, dispatchers, state } = this;
 
         if (!Component) {
             return null;
         }
 
-        const { data, props, error } = state;
+        const { data, props, error, falcor } = state;
         const mappedFragment = mapFragment(data || [], props);
         const allMergedProps = mapFragmentAndProps(mappedFragment, dispatchers, props);
 
+        allMergedProps.$data = data;
+        allMergedProps.$falcor = falcor;
         if (error && renderErrors === true) {
             allMergedProps.error = error;
         }

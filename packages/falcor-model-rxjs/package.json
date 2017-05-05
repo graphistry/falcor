@@ -18,7 +18,7 @@
     "@graphistry/falcor": "^2.9.0",
     "@graphistry/falcor-path-syntax": "^2.8.0",
     "babel-plugin-transform-runtime": "~6.23.0",
-    "rxjs": "~5.3.0"
+    "rxjs": "~5.3.1"
   },
   "devDependencies": {
     "babel-cli": "~6.23.0",

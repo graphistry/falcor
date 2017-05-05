@@ -413,8 +413,7 @@ var FalcorContainer = function (_React$Component) {
                 mapFragmentAndProps = this.mapFragmentAndProps,
                 Component = this.Component,
                 dispatchers = this.dispatchers,
-                state = this.state,
-                context = this.context;
+                state = this.state;
 
 
             if (!Component) {
@@ -423,11 +422,14 @@ var FalcorContainer = function (_React$Component) {
 
             var data = state.data,
                 props = state.props,
-                error = state.error;
+                error = state.error,
+                falcor = state.falcor;
 
             var mappedFragment = mapFragment(data || [], props);
             var allMergedProps = mapFragmentAndProps(mappedFragment, dispatchers, props);
 
+            allMergedProps.$data = data;
+            allMergedProps.$falcor = falcor;
             if (error && renderErrors === true) {
                 allMergedProps.error = error;
             }
