@@ -13,30 +13,46 @@ export default function postMessageDataSourceTests(Rx, recycleJSON) {
     let model = null, source = null, sink = null;
 
     tests(Rx, context,
-        function before() {
-            fakeWindow = new ContentWindow();
-            fakeIFrame = new ContentWindow(fakeWindow);
-            model = context.model = new Falcor.Model({ recycleJSON });
-            source = model._source = new PostMessageDataSource(
-                fakeWindow, fakeIFrame, model, eventName, cancelName
-            );
-            sink = context.sink = new PostMessageDataSink(
-                () => new Router(),
-                fakeIFrame, eventName, cancelName);
-        },
+        beforeWithOrigin('*', '*'),
         function after() {
             sink.dispose();
         });
+
+    tests(Rx, context,
+        beforeWithOrigin(
+            'http://localhost:3000',
+            'http://localhost:9000'
+        ),
+        function after() {
+            sink.dispose();
+        });
+
+    function beforeWithOrigin(windowOrigin = '*', iFrameOrigin = '*') {
+        return function before() {
+            fakeWindow = new ContentWindow(windowOrigin);
+            fakeIFrame = new ContentWindow(iFrameOrigin, fakeWindow);
+            model = context.model = new Falcor.Model({ recycleJSON });
+            source = model._source = new PostMessageDataSource(
+                fakeWindow, fakeIFrame, model, windowOrigin, eventName, cancelName
+            );
+            sink = context.sink = new PostMessageDataSink(
+                () => new Router(),
+                fakeIFrame, iFrameOrigin, eventName, cancelName);
+        }
+    }
 }
 
 class ContentWindow extends EventEmitter {
-    constructor(source) {
+    constructor(origin, source) {
         super();
+        this.origin = origin;
         this.source = source || this;
     }
     postMessage(data, targetOrigin) {
         this.emit('message', {
-            data: data, source: this.source
+            data: data,
+            source: this.source,
+            origin: this.origin
         });
     }
     addEventListener(...args) {

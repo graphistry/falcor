@@ -33,12 +33,13 @@ var PostMessageDataSource = exports.PostMessageDataSource = function (_FalcorPub
     _inherits(PostMessageDataSource, _FalcorPubSubDataSour);
 
     function PostMessageDataSource(source, target, model) {
-        var event = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'falcor-operation';
-        var cancel = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 'cancel-falcor-operation';
+        var targetOrigin = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : '*';
+        var event = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 'falcor-operation';
+        var cancel = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 'cancel-falcor-operation';
 
         _classCallCheck(this, PostMessageDataSource);
 
-        return _possibleConstructorReturn(this, (PostMessageDataSource.__proto__ || (0, _getPrototypeOf2.default)(PostMessageDataSource)).call(this, new _PostMessageEmitter.PostMessageEmitter(source, target, event, cancel), model, event, cancel));
+        return _possibleConstructorReturn(this, (PostMessageDataSource.__proto__ || (0, _getPrototypeOf2.default)(PostMessageDataSource)).call(this, new _PostMessageEmitter.PostMessageEmitter(source, target, targetOrigin, event, cancel), model, event, cancel));
     }
 
     return PostMessageDataSource;

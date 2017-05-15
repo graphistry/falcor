@@ -24,8 +24,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var PostMessageEmitter = exports.PostMessageEmitter = function () {
     function PostMessageEmitter(source, sink) {
-        var event = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'falcor-operation';
-        var cancel = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'cancel-falcor-operation';
+        var targetOrigin = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '*';
+        var event = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'falcor-operation';
+        var cancel = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 'cancel-falcor-operation';
 
         _classCallCheck(this, PostMessageEmitter);
 
@@ -34,6 +35,7 @@ var PostMessageEmitter = exports.PostMessageEmitter = function () {
         this.cancel = cancel;
         this.source = source;
         this.listeners = {};
+        this.targetOrigin = targetOrigin;
         this.onPostMessage = this.onPostMessage.bind(this);
         source.addEventListener('message', this.onPostMessage);
     }
@@ -42,13 +44,14 @@ var PostMessageEmitter = exports.PostMessageEmitter = function () {
         key: 'onPostMessage',
         value: function onPostMessage() {
             var event = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
             var _event$data = event.data,
-                data = _event$data === undefined ? {} : _event$data,
-                type = data.type,
+                data = _event$data === undefined ? {} : _event$data;
+            var targetOrigin = this.targetOrigin;
+
+            var type = data.type,
                 rest = _objectWithoutProperties(data, ['type']);
 
-            if (!type) {
+            if (!type || targetOrigin !== '*' && targetOrigin !== event.origin) {
                 return;
             }
             if (~type.indexOf(this.event) || ~type.indexOf(this.cancel)) {
@@ -71,6 +74,11 @@ var PostMessageEmitter = exports.PostMessageEmitter = function () {
             }
         }
     }, {
+        key: 'off',
+        value: function off() {
+            return this.removeListener.apply(this, arguments);
+        }
+    }, {
         key: 'removeListener',
         value: function removeListener(eventName, handler) {
             var listeners = this.listeners;
@@ -86,7 +94,7 @@ var PostMessageEmitter = exports.PostMessageEmitter = function () {
         key: 'emit',
         value: function emit(eventName, data) {
             this.sink && this.sink.postMessage(_extends({
-                type: eventName }, data), '*');
+                type: eventName }, data), this.targetOrigin || '*');
         }
     }, {
         key: 'dispose',

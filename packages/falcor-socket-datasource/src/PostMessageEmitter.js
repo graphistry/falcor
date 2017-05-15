@@ -1,16 +1,24 @@
 export class PostMessageEmitter {
-    constructor(source, sink, event = 'falcor-operation', cancel = 'cancel-falcor-operation') {
+    constructor(source, sink,
+                targetOrigin = '*',
+                event = 'falcor-operation',
+                cancel = 'cancel-falcor-operation') {
         this.sink = sink;
         this.event = event;
         this.cancel = cancel;
         this.source = source;
         this.listeners = {};
+        this.targetOrigin = targetOrigin;
         this.onPostMessage = this.onPostMessage.bind(this);
         source.addEventListener('message', this.onPostMessage);
     }
     onPostMessage(event = {}) {
-        const { data = {} } = event, { type, ...rest } = data;
-        if (!type) {
+        const { data = {} } = event;
+        const { targetOrigin } = this;
+        const { type, ...rest } = data;
+        if (!type || (
+            targetOrigin !== '*' &&
+            targetOrigin !== event.origin)) {
             return;
         }
         if (~type.indexOf(this.event) || ~type.indexOf(this.cancel)) {
@@ -28,6 +36,9 @@ export class PostMessageEmitter {
             handlers.push(handler);
         }
     }
+    off(...args) {
+        return this.removeListener(...args);
+    }
     removeListener(eventName, handler) {
         const { listeners } = this;
         const handlers = listeners[eventName];
@@ -41,7 +52,7 @@ export class PostMessageEmitter {
     emit(eventName, data) {
         this.sink && this.sink.postMessage({
             type: eventName, ...data
-        }, '*');
+        }, this.targetOrigin || '*');
     }
     dispose() {
         const { source } = this;
