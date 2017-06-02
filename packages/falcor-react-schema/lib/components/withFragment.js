@@ -12,6 +12,10 @@ var _create = require('babel-runtime/core-js/object/create');
 
 var _create2 = _interopRequireDefault(_create);
 
+var _assign = require('babel-runtime/core-js/object/assign');
+
+var _assign2 = _interopRequireDefault(_assign);
+
 var _iterator = require('babel-runtime/core-js/symbol/iterator');
 
 var _iterator2 = _interopRequireDefault(_iterator);
@@ -24,19 +28,15 @@ var _defineProperty = require('babel-runtime/core-js/object/define-property');
 
 var _defineProperty2 = _interopRequireDefault(_defineProperty);
 
-var _assign = require('babel-runtime/core-js/object/assign');
-
-var _assign2 = _interopRequireDefault(_assign);
-
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _extends = _assign2.default || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; (0, _defineProperty2.default)(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _typeof = typeof _symbol2.default === "function" && typeof _iterator2.default === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof _symbol2.default === "function" && obj.constructor === _symbol2.default && obj !== _symbol2.default.prototype ? "symbol" : typeof obj; };
+
+var _extends = _assign2.default || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 exports.default = withFragment;
 
@@ -92,6 +92,13 @@ var contextTypes = {
     'renderFalcorLoading': _react.PropTypes.bool
 };
 
+function defaultMapFragment(remoteProps) {
+    return remoteProps;
+}
+function defaultMergeProps(remoteProps, localProps) {
+    return _extends({}, localProps, remoteProps);
+}
+
 function withFragment(fragmentDesc) {
 
     (0, _invariant2.default)(fragmentDesc && ('function' === typeof fragmentDesc || 'object' === (typeof fragmentDesc === 'undefined' ? 'undefined' : _typeof(fragmentDesc)) && 'function' === typeof fragmentDesc.fragment), 'Attempted to create a Fragment container component without a fragment definition.\nFragment containers must be created with a fragment function, or an Object with a "fragment" function.');
@@ -131,6 +138,62 @@ function withFragment(fragmentDesc) {
             return Container;
         }(FragmentContainer), _class.fragments = fragments, _class.load = fetchEachPropUpdate, _class.contextTypes = contextTypes, _class.childContextTypes = contextTypes, _class.fragment = fragmentDesc.fragment, _class.displayName = (0, _wrapDisplayName2.default)(Component, 'Container'), _temp;
     });
+}
+
+function fragments() {
+    var items = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+    var start = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+    var end = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : items && items.length;
+
+    var index = -1,
+        query = 'length';
+    if (items && 'object' === (typeof items === 'undefined' ? 'undefined' : _typeof(items))) {
+        var length = items.length;
+        if (length && (typeof length === 'undefined' ? 'undefined' : _typeof(length)) === 'object' && typeof length.value === 'number') {
+            length = length.value;
+        }
+        length = Math.min(Math.max(0, end - start), length) | 0;
+        while (++index < length) {
+            query = query + ',\n     ' + index + ': ' + this.fragment(items[index]);
+        }
+    }
+    return '{ ' + query + ' }';
+}
+
+function tryDeref(_ref) {
+    var data = _ref.data,
+        model = _ref.model;
+
+    return !data || !model ? model : model._hasValidParentReference() ? model.deref(data) : null;
+}
+
+function fetchEachPropUpdate(update) {
+
+    (0, _invariant2.default)(update.fragment || (update.fragment = this.fragment), 'Attempted to fetch without a fragment definition');
+
+    if (!(update.model = tryDeref(update))) {
+        return _Observable.Observable.of(update);
+    } else if (update.renderLoading === true) {
+        return (0, _fetchDataUntilSettled2.default)(update);
+    }
+    return (0, _fetchDataUntilSettled2.default)(update).takeLast(1);
+}
+
+function mergeEachPropUpdate(_ref2, _ref3) {
+    var props = _ref2.props,
+        model = _ref2.model;
+    var data = _ref3.data,
+        query = _ref3.query,
+        error = _ref3.error,
+        version = _ref3.version;
+
+    var hash = data && data.$__hash;
+    var status = data && data.$__status;
+    var loading = status === 'pending';
+    return {
+        hash: hash, data: data, query: query, props: props,
+        model: model, error: error, loading: loading, version: version
+    };
 }
 
 var FragmentContainer = function (_React$Component) {
@@ -293,68 +356,4 @@ var FragmentContainer = function (_React$Component) {
 
     return FragmentContainer;
 }(_react2.default.Component);
-
-function fragments() {
-    var items = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-    var start = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
-    var end = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : items && items.length;
-
-    if (!items || 'object' !== (typeof items === 'undefined' ? 'undefined' : _typeof(items))) {
-        return '{ length }';
-    }
-    var index = -1,
-        query = 'length',
-        length = items.length;
-    if (length && (typeof length === 'undefined' ? 'undefined' : _typeof(length)) === 'object' && typeof length.value === 'number') {
-        length = length.value;
-    }
-    length = Math.min(Math.max(0, end - start), length) | 0;
-    while (++index < length) {
-        query = query + ',\n ' + index + ': ' + this.fragment(items[index]);
-    }
-    return '{ ' + query + ' }';
-}
-
-function tryDeref(_ref) {
-    var data = _ref.data,
-        model = _ref.model;
-
-    return !data || !model ? model : model._hasValidParentReference() ? model.deref(data) : null;
-}
-
-function fetchEachPropUpdate(update) {
-
-    (0, _invariant2.default)(update.fragment || (update.fragment = this.fragment), 'Attempted to fetch without a fragment definition');
-
-    if (!(update.model = tryDeref(update))) {
-        return _Observable.Observable.of(update);
-    } else if (update.renderLoading === true) {
-        return (0, _fetchDataUntilSettled2.default)(update);
-    }
-    return (0, _fetchDataUntilSettled2.default)(update).takeLast(1);
-}
-
-function mergeEachPropUpdate(_ref2, _ref3) {
-    var props = _ref2.props,
-        model = _ref2.model;
-    var data = _ref3.data,
-        query = _ref3.query,
-        error = _ref3.error,
-        version = _ref3.version;
-
-    var hash = data && data.$__hash || '';
-    var loading = error === undefined && data && data.$__status === 'pending' || false;
-    return {
-        hash: hash, data: data, query: query, props: props,
-        model: model, error: error, loading: loading, version: version
-    };
-}
-
-function defaultMapFragment(remoteProps) {
-    return remoteProps;
-}
-
-function defaultMergeProps(remoteProps, localProps) {
-    return _extends({}, localProps, remoteProps);
-}
 //# sourceMappingURL=withFragment.js.map

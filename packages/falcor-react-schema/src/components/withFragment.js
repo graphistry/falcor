@@ -18,6 +18,11 @@ const contextTypes = {
     'renderFalcorLoading': PropTypes.bool
 };
 
+function defaultMapFragment(remoteProps) { return remoteProps; }
+function defaultMergeProps(remoteProps, localProps) {
+    return { ...localProps, ...remoteProps };
+}
+
 export default function withFragment(fragmentDesc, ...rest) {
 
     invariant(fragmentDesc && (
@@ -58,6 +63,58 @@ Fragment containers must be created with a fragment function, or an Object with 
             }
         };
     });
+}
+
+function fragments(items = [], start = 0, end = items && items.length) {
+    let index = -1, query = 'length';
+    if (items && 'object' === typeof items) {
+        let length = items.length;
+        if (length && typeof length === 'object' && typeof length.value === 'number') {
+            length = length.value;
+        }
+        length = Math.min(Math.max(0, end - start), length) | 0;
+        while (++index < length) {
+            query = `${
+            query},
+     ${     index}: ${this.fragment(items[index])}`;
+        }
+    }
+    return `{ ${query} }`;
+}
+
+function tryDeref({ data, model }) {
+    return !data || !model ?
+        model :
+        model._hasValidParentReference() ?
+        model.deref(data) : null;
+}
+
+function fetchEachPropUpdate(update) {
+
+    invariant(
+        update.fragment || (update.fragment = this.fragment),
+        `Attempted to fetch without a fragment definition`
+    );
+
+    if (!(update.model = tryDeref(update))) {
+        return Observable.of(update);
+    } else if (update.renderLoading === true) {
+        return fetchDataUntilSettled(update);
+    }
+    return fetchDataUntilSettled(update).takeLast(1);
+}
+
+function mergeEachPropUpdate(
+    { props, model },
+    { data, query, error, version }
+) {
+    const hash = data && data.$__hash;
+    const status = data && data.$__status;
+    const loading = status === 'pending';
+    return {
+        hash, data, query, props,
+        model, error, loading, version
+    };
 }
 
 class FragmentContainer extends React.Component {
@@ -172,64 +229,4 @@ class FragmentContainer extends React.Component {
 
         return <Component { ...mergedProps }/>;
     }
-}
-
-function fragments(items = [], start = 0, end = items && items.length) {
-    if (!items || 'object' !== typeof items) {
-        return `{ length }`;
-    }
-    let index = -1, query = 'length', length = items.length;
-    if (length && typeof length === 'object' && typeof length.value === 'number') {
-        length = length.value;
-    }
-    length = Math.min(Math.max(0, end - start), length) | 0;
-    while (++index < length) {
-        query = `${
-        query},
- ${     index}: ${this.fragment(items[index])}`;
-    }
-    return `{ ${query} }`;
-}
-
-function tryDeref({ data, model }) {
-    return !data || !model ?
-        model :
-        model._hasValidParentReference() ?
-        model.deref(data) : null;
-}
-
-function fetchEachPropUpdate(update) {
-
-    invariant(
-        update.fragment || (update.fragment = this.fragment),
-        `Attempted to fetch without a fragment definition`
-    );
-
-    if (!(update.model = tryDeref(update))) {
-        return Observable.of(update);
-    } else if (update.renderLoading === true) {
-        return fetchDataUntilSettled(update);
-    }
-    return fetchDataUntilSettled(update).takeLast(1);
-}
-
-function mergeEachPropUpdate(
-    { props, model },
-    { data, query, error, version }
-) {
-    const hash = data && data.$__hash || '';
-    const loading = error === undefined && data &&
-                    data.$__status === 'pending' || false;
-    return {
-        hash, data, query, props,
-        model, error, loading, version
-    };
-}
-
-function defaultMapFragment(remoteProps) {
-    return remoteProps;
-}
-
-function defaultMergeProps(remoteProps, localProps) {
-    return { ...localProps, ...remoteProps };
 }

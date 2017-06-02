@@ -1,3 +1,5 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
 exports[`withSchema get should traverse the JSON tree and return the data 1`] = `
 Object {
   "jsonGraph": Object {

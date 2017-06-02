@@ -23,9 +23,9 @@ module.exports =
 /******/ 	function __webpack_require__(moduleId) {
 /******/
 /******/ 		// Check if module is in cache
-/******/ 		if(installedModules[moduleId])
+/******/ 		if(installedModules[moduleId]) {
 /******/ 			return installedModules[moduleId].exports;
-/******/
+/******/ 		}
 /******/ 		// Create a new module (and put it into the cache)
 /******/ 		var module = installedModules[moduleId] = {
 /******/ 			i: moduleId,
@@ -4499,8 +4499,8 @@ function onJSONGraphValue(node, type, depth, seed, results, requestedPath, optim
 
     results.hasValue = true;
     inlineValue(value, optimizedPath, optimizedLength, seed);
-    (seed.paths || (seed.paths = [])).push(requestedPath.slice(0, depth + !!fromReference) // depth + 1 if fromReference === true
-    );
+    (seed.paths || (seed.paths = [])).push(requestedPath.slice(0, depth + !!fromReference // depth + 1 if fromReference === true
+    ));
 
     return value;
 }

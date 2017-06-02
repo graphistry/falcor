@@ -1,3 +1,5 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
 exports[`withFragment Should render the full component tree without batching 1`] = `
 <div>
   <h1>
