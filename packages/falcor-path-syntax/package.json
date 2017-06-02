@@ -1,6 +1,6 @@
 {
   "name": "@graphistry/falcor-path-syntax",
-  "version": "2.8.0",
+  "version": "2.9.4",
   "description": "Parser for Falcor Path Syntax",
   "main": "src/index.js",
   "directories": {
@@ -28,6 +28,5 @@
   "devDependencies": {
     "chai": "~4.0.1",
     "mocha": "~3.4.2"
-  },
-  "dependencies": {}
+  }
 }
