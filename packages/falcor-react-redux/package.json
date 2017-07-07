@@ -46,13 +46,13 @@
     "@graphistry/falcor-path-utils": "^2.9.5",
     "@graphistry/falcor-query-syntax": "^2.9.5",
     "babel-runtime": "~6.23.0",
-    "hoist-non-react-statics": "~1.2.0",
+    "hoist-non-react-statics": "~2.0.0",
     "invariant": "~2.2.2",
     "pegjs-util": "~1.4.1",
-    "react": "~15.5.4",
+    "react": "~15.6.1",
     "react-redux": "~5.0.1",
     "recompose": "~0.23.4",
-    "redux": "~3.6.0",
+    "redux": "~3.7.1",
     "warning": "~3.0.0"
   }
 }

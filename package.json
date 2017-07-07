@@ -5,6 +5,7 @@
   "description": "Graphistry's FalcorJS mono repo",
   "main": "index.js",
   "scripts": {
+    "commit": "git-cz",
     "lerna": "lerna",
     "bootstrap": "lerna bootstrap --concurrency=1",
     "test": "cross-env NODE_ENV=production MOCHA_COLORS=true lerna run test --concurrency=1",
