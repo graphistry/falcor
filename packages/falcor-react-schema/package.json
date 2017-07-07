@@ -34,7 +34,7 @@
     "pegjs-util": "~1.4.1",
     "react": "~15.5.4",
     "recompose": "~0.23.4",
-    "rxjs": "~5.4.0"
+    "rxjs": "~5.4.2"
   },
   "devDependencies": {
     "@graphistry/falcor-model-rxjs": "^2.9.4",

@@ -9,7 +9,7 @@
     "bootstrap": "lerna bootstrap --concurrency=1",
     "test": "cross-env NODE_ENV=production MOCHA_COLORS=true lerna run test --concurrency=1",
     "build": "cross-env NODE_ENV=production MOCHA_COLORS=true lerna run build --concurrency=1",
-    "deploy": "cross-env NODE_ENV=production MOCHA_COLORS=true lerna publish --concurrency=1",
+    "deploy": "cross-env NODE_ENV=production MOCHA_COLORS=true lerna publish --concurrency=1 --conventional-commits",
     "dry-run": "cross-env NODE_ENV=production MOCHA_COLORS=true lerna run prepublish --concurrency=1",
     "test-coverage": "cross-env NODE_ENV=test MOCHA_COLORS=true lerna run test-coverage --concurrency=1"
   },
@@ -24,7 +24,15 @@
   },
   "homepage": "https://github.com/graphistry/falcor/blob/master/README.md",
   "devDependencies": {
+    "commitizen": "~2.9.6",
     "cross-env": "~5.0.0",
-    "lerna": "^2.0.0-rc.5"
+    "cz-conventional-changelog": "~2.0.0",
+    "lerna": "~2.0.0",
+    "validate-commit-msg": "~2.12.2"
+  },
+  "config": {
+    "commitizen": {
+      "path": "cz-conventional-changelog"
+    }
   }
 }

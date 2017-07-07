@@ -2266,10 +2266,10 @@ function collapseIndex(keyset) {
 
         var key = keyset[keyIndex];
 
-        if (!isSafeNumber(key /* || hash[key] === true*/)) {
-            isSparseRange = false;
-            break;
-        }
+        if (!isSafeNumber(key) /* || hash[key] === true*/) {
+                isSparseRange = false;
+                break;
+            }
         // hash[key] = true;
         // Cast number indexes to integers.
         keyset[keyIndex] = parseInt(key, 10);
@@ -5375,8 +5375,8 @@ function onJSONGraphValue(node, type, depth, seed, results, requestedPath, optim
 
     results.hasValue = true;
     inlineValue(value, optimizedPath, optimizedLength, seed);
-    (seed.paths || (seed.paths = [])).push(requestedPath.slice(0, depth + !!fromReference // depth + 1 if fromReference === true
-    ));
+    (seed.paths || (seed.paths = [])).push(requestedPath.slice(0, depth + !!fromReference) // depth + 1 if fromReference === true
+    );
 
     return value;
 }
