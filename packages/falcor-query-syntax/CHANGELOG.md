@@ -173,33 +173,8 @@ See [standard-version](https://github.com/conventional-changelog/standard-versio
 
 
 
-<a name="2.5.10"></a>
-## 2.5.10 (2016-12-06)
-
-
-
 <a name="2.5.9"></a>
 ## 2.5.9 (2016-12-05)
-
-
-
-<a name="2.5.8"></a>
-## 2.5.8 (2016-12-03)
-
-
-
-<a name="2.5.7"></a>
-## 2.5.7 (2016-12-02)
-
-
-
-<a name="2.5.6"></a>
-## 2.5.6 (2016-12-02)
-
-
-
-<a name="2.5.4"></a>
-## 2.5.4 (2016-12-02)
 
 
 
@@ -208,53 +183,8 @@ See [standard-version](https://github.com/conventional-changelog/standard-versio
 
 
 
-<a name="2.5.2"></a>
-## 2.5.2 (2016-11-28)
-
-
-
-<a name="2.5.1"></a>
-## 2.5.1 (2016-11-28)
-
-
-
 <a name="2.5.0"></a>
 # 2.5.0 (2016-11-28)
-
-
-
-<a name="2.4.0"></a>
-# 2.4.0 (2016-11-11)
-
-
-
-<a name="2.3.3"></a>
-## 2.3.3 (2016-11-05)
-
-
-
-<a name="2.3.0"></a>
-# 2.3.0 (2016-11-05)
-
-
-
-<a name="2.2.1"></a>
-## 2.2.1 (2016-11-01)
-
-
-
-<a name="2.2.0"></a>
-# 2.2.0 (2016-10-28)
-
-
-
-<a name="2.1.10"></a>
-## 2.1.10 (2016-10-26)
-
-
-
-<a name="2.1.8"></a>
-## 2.1.8 (2016-10-19)
 
 
 
@@ -273,28 +203,8 @@ See [standard-version](https://github.com/conventional-changelog/standard-versio
 
 
 
-<a name="2.1.3"></a>
-## 2.1.3 (2016-10-01)
-
-
-
-<a name="2.1.2"></a>
-## 2.1.2 (2016-09-29)
-
-
-
 <a name="2.1.0"></a>
 # 2.1.0 (2016-09-29)
-
-
-
-<a name="2.0.10"></a>
-## 2.0.10 (2016-09-16)
-
-
-
-<a name="2.0.6"></a>
-## 2.0.6 (2016-09-14)
 
 
 
@@ -308,28 +218,5 @@ See [standard-version](https://github.com/conventional-changelog/standard-versio
 
 
 
-<a name="2.0.1"></a>
-## 2.0.1 (2016-09-08)
-
-
-
 <a name="2.0.0"></a>
 # 2.0.0 (2016-09-08)
-
-
-
-
-<a name="0.3.0"></a>
-# [0.3.0](https://github.com/Netflix/falcor-router/compare/v0.2.12...v0.3.0) (2016-01-28)
-
-
-### Bug Fixes
-
-* **empty-call:** Call could not return nothing ([ac3f206](https://github.com/Netflix/falcor-router/commit/ac3f206)), closes [#166](https://github.com/Netflix/falcor-router/issues/166)
-
-### Features
-
-* **onUnhandled*:** decided on the name of the API. ([0895ad5](https://github.com/Netflix/falcor-router/commit/0895ad5))
-* **onUnhandled*:** The call feature for unhandled paths. ([2532999](https://github.com/Netflix/falcor-router/commit/2532999))
-* **onUnhandled*:** The set feature for unhandled paths. ([d48bbb1](https://github.com/Netflix/falcor-router/commit/d48bbb1))
-* **onUnhandled*:** UnhandledGet works as specced. ([ed15ff2](https://github.com/Netflix/falcor-router/commit/ed15ff2))

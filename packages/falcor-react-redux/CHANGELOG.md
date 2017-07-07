@@ -18,6 +18,11 @@ See [standard-version](https://github.com/conventional-changelog/standard-versio
 
 
 
+<a name="2.9.2"></a>
+## 2.9.2 (2017-05-06)
+
+
+
 <a name="2.9.1"></a>
 ## 2.9.1 (2017-05-05)
 
@@ -45,6 +50,21 @@ See [standard-version](https://github.com/conventional-changelog/standard-versio
 
 <a name="2.8.0"></a>
 # 2.8.0 (2017-02-27)
+
+
+
+<a name="2.7.8"></a>
+## 2.7.8 (2017-02-16)
+
+
+
+<a name="2.7.7"></a>
+## 2.7.7 (2017-02-14)
+
+
+
+<a name="2.7.6"></a>
+## 2.7.6 (2017-02-14)
 
 
 
@@ -223,8 +243,18 @@ See [standard-version](https://github.com/conventional-changelog/standard-versio
 
 
 
+<a name="2.4.1"></a>
+## 2.4.1 (2016-11-14)
+
+
+
 <a name="2.4.0"></a>
 # 2.4.0 (2016-11-11)
+
+
+
+<a name="2.3.4"></a>
+## 2.3.4 (2016-11-08)
 
 
 
@@ -233,8 +263,28 @@ See [standard-version](https://github.com/conventional-changelog/standard-versio
 
 
 
+<a name="2.3.2"></a>
+## 2.3.2 (2016-11-05)
+
+
+
+<a name="2.3.1"></a>
+## 2.3.1 (2016-11-05)
+
+
+
 <a name="2.3.0"></a>
 # 2.3.0 (2016-11-05)
+
+
+
+<a name="2.2.3"></a>
+## 2.2.3 (2016-11-04)
+
+
+
+<a name="2.2.2"></a>
+## 2.2.2 (2016-11-03)
 
 
 
@@ -253,6 +303,11 @@ See [standard-version](https://github.com/conventional-changelog/standard-versio
 
 
 
+<a name="2.1.9"></a>
+## 2.1.9 (2016-10-25)
+
+
+
 <a name="2.1.8"></a>
 ## 2.1.8 (2016-10-19)
 
@@ -260,6 +315,11 @@ See [standard-version](https://github.com/conventional-changelog/standard-versio
 
 <a name="2.1.7"></a>
 ## 2.1.7 (2016-10-18)
+
+
+
+<a name="2.1.6"></a>
+## 2.1.6 (2016-10-15)
 
 
 
@@ -293,13 +353,38 @@ See [standard-version](https://github.com/conventional-changelog/standard-versio
 
 
 
+<a name="2.0.9"></a>
+## 2.0.9 (2016-09-15)
+
+
+
+<a name="2.0.8"></a>
+## 2.0.8 (2016-09-15)
+
+
+
+<a name="2.0.7"></a>
+## 2.0.7 (2016-09-14)
+
+
+
 <a name="2.0.6"></a>
 ## 2.0.6 (2016-09-14)
 
 
 
+<a name="2.0.5"></a>
+## 2.0.5 (2016-09-13)
+
+
+
 <a name="2.0.4"></a>
 ## 2.0.4 (2016-09-13)
+
+
+
+<a name="2.0.3"></a>
+## 2.0.3 (2016-09-13)
 
 
 
@@ -315,21 +400,3 @@ See [standard-version](https://github.com/conventional-changelog/standard-versio
 
 <a name="2.0.0"></a>
 # 2.0.0 (2016-09-08)
-
-
-
-
-<a name="0.3.0"></a>
-# [0.3.0](https://github.com/Netflix/falcor-router/compare/v0.2.12...v0.3.0) (2016-01-28)
-
-
-### Bug Fixes
-
-* **empty-call:** Call could not return nothing ([ac3f206](https://github.com/Netflix/falcor-router/commit/ac3f206)), closes [#166](https://github.com/Netflix/falcor-router/issues/166)
-
-### Features
-
-* **onUnhandled*:** decided on the name of the API. ([0895ad5](https://github.com/Netflix/falcor-router/commit/0895ad5))
-* **onUnhandled*:** The call feature for unhandled paths. ([2532999](https://github.com/Netflix/falcor-router/commit/2532999))
-* **onUnhandled*:** The set feature for unhandled paths. ([d48bbb1](https://github.com/Netflix/falcor-router/commit/d48bbb1))
-* **onUnhandled*:** UnhandledGet works as specced. ([ed15ff2](https://github.com/Netflix/falcor-router/commit/ed15ff2))

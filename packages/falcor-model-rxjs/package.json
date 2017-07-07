@@ -1,6 +1,6 @@
 {
   "name": "@graphistry/falcor-model-rxjs",
-  "version": "2.9.4",
+  "version": "2.9.5",
   "description": "",
   "main": "lib/Model.js",
   "browser": "lib/Model.js",
@@ -17,8 +17,8 @@
     "lib"
   ],
   "dependencies": {
-    "@graphistry/falcor": "^2.9.4",
-    "@graphistry/falcor-path-syntax": "^2.9.4",
+    "@graphistry/falcor": "^2.9.5",
+    "@graphistry/falcor-path-syntax": "^2.9.5",
     "babel-runtime": "~6.23.0",
     "rxjs": "~5.4.2"
   },
