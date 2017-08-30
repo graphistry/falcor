@@ -14,14 +14,14 @@
     "prepublish": "npm run test-coverage && npm run build && npm test",
     "doc": "echo 'if you want to generate tests, install jsdoc first and edit this script in package.json' && exit 0 && jsdoc lib -r -d doc -c ./build/jsdoc.json --verbose",
     "perf": "cross-env NODE_ENV=production node ./perf/index.js",
-    "perf-debug": "node --inspect --debug-brk  ./perf/index.js",
+    "perf-debug": "node --inspect-brk  ./perf/index.js",
     "d": "npm run test-debug",
     "td": "npm run test-detail",
     "test-coverage": "cross-env NODE_ENV=test nyc npm run test-lib",
     "test": "cross-env NODE_ENV=production _mocha --full-trace --reporter dot --timeout 5000 --require babel-register ./test/index.js",
     "test-lib": "cross-env NODE_ENV=test _mocha --full-trace --reporter dot --timeout 5000 --require babel-register ./test/index.js",
     "test-detail": "cross-env NODE_ENV=test _mocha --bail --full-trace --reporter nyan --timeout 5000 --require babel-register ./test/index.js",
-    "test-debug": "cross-env NODE_ENV=test node --inspect --debug-brk ./node_modules/.bin/_mocha --bail --full-trace --reporter nyan --timeout 0 --require babel-register ./test/index.js"
+    "test-debug": "cross-env NODE_ENV=test node --inspect-brk ./node_modules/.bin/_mocha --bail --full-trace --reporter nyan --timeout 0 --require babel-register ./test/index.js"
   },
   "author": {
     "name": "Netflix",

@@ -350,6 +350,11 @@ describe('DataSource and Cache', function() {
                 doAction(function(x) {
                     count++;
                     if (count === 1) {
+                        expect(x.json.$__status).to.equal('pending');
+                        expect(x.json.lolomo.$__status).to.equal('pending');
+                        expect(x.json.lolomo[0].$__status).to.equal('pending');
+                        expect(x.json.lolomo[0][0].$__status).to.equal('resolved');
+                        expect(x.json.lolomo[0][0].item.$__status).to.equal('resolved');
                         expect(strip(x)).to.deep.equals({
                             json: {
                                 lolomo: {
@@ -364,6 +369,13 @@ describe('DataSource and Cache', function() {
                             }
                         });
                     } else {
+                        expect(x.json.$__status).to.equal('resolved');
+                        expect(x.json.lolomo.$__status).to.equal('resolved');
+                        expect(x.json.lolomo[0].$__status).to.equal('resolved');
+                        expect(x.json.lolomo[0][0].$__status).to.equal('resolved');
+                        expect(x.json.lolomo[0][1].$__status).to.equal('resolved');
+                        expect(x.json.lolomo[0][0].item.$__status).to.equal('resolved');
+                        expect(x.json.lolomo[0][1].item.$__status).to.equal('resolved');
                         expect(strip(x)).to.deep.equals({
                             json: {
                                 lolomo: {
