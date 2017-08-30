@@ -6001,9 +6001,7 @@ function mergeInto(dest, node) {
 
         key = keys[index];
 
-        if (key === "f_meta") {
-            dest["f_meta"] = node["f_meta"];
-        } else {
+        if (key !== "f_meta") {
 
             nodeValue = node[key];
             destValue = dest[key];
