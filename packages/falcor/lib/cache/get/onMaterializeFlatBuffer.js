@@ -11,9 +11,9 @@ module.exports = onMaterializeFlatBuffer;
 /* eslint-disable no-cond-assign */
 /* eslint-disable no-constant-condition */
 function onMaterializeFlatBuffer(jsonArg, path, depth, length,
-                                 branchSelector, boxValues, modelRoot, results,
-                                 requestedPath, optimizedPath, optimizedLength,
-                                 fromReference, reportMissing, onMissing) {
+                                 branchSelector, boxValues, modelRoot, reportMissing,
+                                 results, requestedPath, optimizedPath, optimizedLength,
+                                 fromReference, onMissing) {
 
     var json = jsonArg, type, refTarget;
 
@@ -44,7 +44,7 @@ function onMaterializeFlatBuffer(jsonArg, path, depth, length,
         json.__proto__ = FalcorJSON.prototype;
         json[f_meta_data] = f_meta = {};
         f_meta['$code'] = '';
-        f_meta[f_meta_status] = 'resolved';
+        f_meta[f_meta_status] = reportMissing ? 'pending' : 'resolved';
         f_meta[f_meta_version] = modelRoot.version;
         f_meta[f_meta_abs_path] = optimizedPath.slice(
             0, optimizedLength
@@ -55,7 +55,7 @@ function onMaterializeFlatBuffer(jsonArg, path, depth, length,
     } else if (!(f_meta = json[f_meta_data])) {
         json[f_meta_data] = f_meta = {};
         f_meta['$code'] = '';
-        f_meta[f_meta_status] = 'resolved';
+        f_meta[f_meta_status] = reportMissing ? 'pending' : 'resolved';
         f_meta[f_meta_version] = modelRoot.version;
         f_meta[f_meta_abs_path] = optimizedPath.slice(
             0, optimizedLength
@@ -63,7 +63,7 @@ function onMaterializeFlatBuffer(jsonArg, path, depth, length,
     } else {
         f_old_keys = f_meta[f_meta_keys];
         f_meta['$code'] = '';
-        f_meta[f_meta_status] = 'resolved';
+        f_meta[f_meta_status] = reportMissing ? 'pending' : 'resolved';
         f_meta[f_meta_version] = modelRoot.version;
         f_meta[f_meta_abs_path] = optimizedPath.slice(
             0, optimizedLength
@@ -129,9 +129,9 @@ function onMaterializeFlatBuffer(jsonArg, path, depth, length,
             // insert the materialized branch
             json[nextKey] = onMaterializeFlatBuffer(
                 json[nextKey], nextPath, nextDepth,
-                nextDepth, branchSelector, boxValues, modelRoot, results,
-                requestedPath, optimizedPath, nextOptimizedLength,
-                fromReference, reportMissing, onMissing
+                nextDepth, branchSelector, boxValues, modelRoot, reportMissing,
+                results, requestedPath, optimizedPath, nextOptimizedLength,
+                fromReference, onMissing
             );
         }
         // Re-enter the inner loop and continue iterating the Range, or exit

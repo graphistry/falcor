@@ -322,9 +322,10 @@ function onMissing(path, depth, results,
                    boxValues, onMaterialize, modelRoot) {
 
     if (reportMaterialized) {
-        return onMaterialize(json, path, depth, depth, branchSelector,
-                             boxValues, modelRoot, results, requestedPath, optimizedPath,
-                             optimizedLength, fromReference, reportMissing, onMissing);
+        return onMaterialize(json, path, depth, depth,
+                             branchSelector, boxValues, modelRoot, reportMissing,
+                             results, requestedPath, optimizedPath, optimizedLength,
+                             fromReference, onMissing);
     }
 
     var paths = path ? flatBufferToPaths(path) : [[]];

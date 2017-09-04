@@ -66,7 +66,7 @@ describe('Values', function() {
                             [f_meta_data]: {
                                 [f_meta_abs_path]: ['videos', 2],
                                 [f_meta_version]: 0,
-                                [f_meta_status]: 'resolved'
+                                [f_meta_status]: 'pending'
                             },
                             title: undefined
                         }
@@ -129,7 +129,7 @@ describe('Values', function() {
                             [f_meta_data]: {
                                 [f_meta_abs_path]: ['videos', 2],
                                 [f_meta_version]: 0,
-                                [f_meta_status]: 'resolved'
+                                [f_meta_status]: 'pending'
                             },
                             title: {$type: 'atom'}
                         }

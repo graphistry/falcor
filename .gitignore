@@ -4,6 +4,7 @@ bin/
 bin2
 out/
 tmp/
+dist
 performance/bin/
 performance/device/
 !tasks/bin

@@ -40,7 +40,7 @@ function baseConfig(isDev) {
     return {
         amd: false,
         // Create Sourcemaps for the bundle
-        devtool: isDev ? 'source-map' : 'hidden-source-map',
+        devtool: 'source-map',
         resolve: {
             unsafeCache: true,
             alias: {

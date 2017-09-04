@@ -285,7 +285,11 @@ function walkPathAndBuildOutput(root, node, jsonArg, path,
     } while (true);
 
     if (f_meta) {
-        f_meta[f_meta_status] = hasMissingPath && 'pending' || 'resolved';
+        if (hasMissingPath) {
+            f_meta[f_meta_status] = 'pending';
+        } else if (f_meta[f_meta_status] !== 'pending') {
+            f_meta[f_meta_status] = 'resolved';
+        }
     }
 
     // `json` will be a branch if any cache hits, or undefined if all cache misses

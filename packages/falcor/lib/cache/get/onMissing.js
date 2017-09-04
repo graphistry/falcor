@@ -73,7 +73,7 @@ function onMissing(path, depth, results,
     } while (true);
 
     if (reportMaterialized) {
-        return onMaterialize(json, mPath, missDepth, missTotal, branchSelector, boxValues, modelRoot);
+        return onMaterialize(json, mPath, missDepth, missTotal, branchSelector, boxValues, modelRoot, reportMissing);
     }
 }
 /* eslint-enable */
