@@ -121,7 +121,11 @@ Request.prototype.onError = function(error) {
 
     var errorPathValues = toPaths(toCollapseTrees(
         this.requested.reduce(function(collapseMap, paths) {
-            return toCollapseMap(paths, collapseMap);
+            return toCollapseMap(
+                !isArray(paths[0]) && isArray(paths[0].$keys)
+                    ? paths[0] : paths,
+                collapseMap
+            );
         }, {})
     ))
     .map(function(path) { return { path: path, value: error }; });

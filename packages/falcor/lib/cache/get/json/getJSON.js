@@ -69,7 +69,7 @@ function getJSON(model, pathsArg, seed, progressive, expireImmediate) {
         do {
             path = paths[pathsIndex];
             if (isFlatBuffer) {
-                arr = walkFlatBufferAndBuildOutput(cache, node, json, paths[0], 0, seed, results,
+                arr = walkFlatBufferAndBuildOutput(cache, node, json, path, 0, seed, results,
                                                    requestedPath, optimizedPath, optimizedLength,
                                                    /* fromReference = */ false, referenceContainer,
                                                    modelRoot, expired, expireImmediate, branchSelector,

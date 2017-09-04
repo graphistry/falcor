@@ -67,11 +67,15 @@ function Model(opts) {
     if (options._seed) {
         this._recycleJSON = true;
         this._seed = options._seed;
-        this._treatErrorsAsValues = true;
+        if (typeof options.treatErrorsAsValues === 'undefined') {
+            options.treatErrorsAsValues = true;
+        }
     } else if (this._recycleJSON) {
-        this._treatErrorsAsValues = true;
         this._seed = {};
         this._seed.__proto__ = FalcorJSON.prototype;
+        if (typeof options.treatErrorsAsValues === 'undefined') {
+            options.treatErrorsAsValues = true;
+        }
     }
 
     this._boxed = options.boxed === true || options._boxed || false;
