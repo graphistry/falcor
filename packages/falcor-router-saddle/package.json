@@ -1,6 +1,6 @@
 {
   "name": "@graphistry/falcor-router-saddle",
-  "version": "2.9.9",
+  "version": "2.9.10",
   "description": "",
   "main": "lib/index.js",
   "browser": "lib/index.js",
@@ -32,9 +32,9 @@
     "rxjs": "~5.4.2"
   },
   "devDependencies": {
-    "@graphistry/falcor-json-graph": "^2.9.6",
-    "@graphistry/falcor-query-syntax": "^2.9.9",
-    "@graphistry/falcor-router": "^2.9.9",
+    "@graphistry/falcor-json-graph": "^2.9.10",
+    "@graphistry/falcor-query-syntax": "^2.9.10",
+    "@graphistry/falcor-router": "^2.9.10",
     "babel-cli": "^6.26.0",
     "babel-plugin-istanbul": "~4.1.4",
     "babel-plugin-transform-runtime": "~6.23.0",

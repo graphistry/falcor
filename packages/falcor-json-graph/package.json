@@ -1,6 +1,6 @@
 {
   "name": "@graphistry/falcor-json-graph",
-  "version": "2.9.6",
+  "version": "2.9.10",
   "description": "A set of factory functions for creating JSON Graph values.",
   "main": "src/index.js",
   "scripts": {},
@@ -21,6 +21,6 @@
   ],
   "homepage": "https://github.com/graphistry/falcor/blob/master/packages/falcor-json-graph/README.md",
   "dependencies": {
-    "@graphistry/falcor-path-syntax": "^2.9.6"
+    "@graphistry/falcor-path-syntax": "^2.9.10"
   }
 }
