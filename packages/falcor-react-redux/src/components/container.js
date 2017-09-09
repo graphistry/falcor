@@ -1,5 +1,6 @@
+import React from 'react';
 import invariant from 'invariant';
-import React, { PropTypes, Children } from 'react';
+import PropTypes from 'prop-types';
 import hoistStatics from 'recompose/hoistStatics';
 import shallowEqual from 'recompose/shallowEqual';
 import wrapDisplayName from 'recompose/wrapDisplayName';

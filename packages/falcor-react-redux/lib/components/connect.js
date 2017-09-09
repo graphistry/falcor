@@ -49,9 +49,9 @@ var _invariant = require('invariant');
 
 var _invariant2 = _interopRequireDefault(_invariant);
 
-var _react = require('react');
+var _propTypes = require('prop-types');
 
-var _react2 = _interopRequireDefault(_react);
+var _propTypes2 = _interopRequireDefault(_propTypes);
 
 var _reactRedux = require('react-redux');
 
@@ -113,7 +113,7 @@ if (!_falcor.Model.prototype.changes) {
 (0, _setObservableConfig2.default)(_rxjsObservableConfig2.default);
 
 var reduxOptions = { pure: false };
-var contextTypes = { falcor: _react.PropTypes.object, dispatch: _react.PropTypes.func };
+var contextTypes = { falcor: _propTypes2.default.object, dispatch: _propTypes2.default.func };
 
 var connect = function connect(BaseComponent) {
     var scheduler = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : Scheduler.async;

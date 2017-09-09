@@ -41,13 +41,17 @@ var _extends2 = require('babel-runtime/helpers/extends');
 
 var _extends3 = _interopRequireDefault(_extends2);
 
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
 var _invariant = require('invariant');
 
 var _invariant2 = _interopRequireDefault(_invariant);
 
-var _react = require('react');
+var _propTypes = require('prop-types');
 
-var _react2 = _interopRequireDefault(_react);
+var _propTypes2 = _interopRequireDefault(_propTypes);
 
 var _hoistStatics = require('recompose/hoistStatics');
 
@@ -224,8 +228,8 @@ function mergeEachPropUpdate(_ref2, _ref3) {
 }
 
 var contextTypes = {
-    falcor: _react.PropTypes.object,
-    dispatch: _react.PropTypes.func
+    falcor: _propTypes2.default.object,
+    dispatch: _propTypes2.default.func
 };
 
 var FalcorContainer = function (_React$Component) {

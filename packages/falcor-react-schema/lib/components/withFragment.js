@@ -40,13 +40,17 @@ var _extends = _assign2.default || function (target) { for (var i = 1; i < argum
 
 exports.default = withFragment;
 
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
 var _invariant = require('invariant');
 
 var _invariant2 = _interopRequireDefault(_invariant);
 
-var _react = require('react');
+var _propTypes = require('prop-types');
 
-var _react2 = _interopRequireDefault(_react);
+var _propTypes2 = _interopRequireDefault(_propTypes);
 
 var _hoistStatics = require('recompose/hoistStatics');
 
@@ -87,9 +91,9 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = (0, _create2.default)(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) _setPrototypeOf2.default ? (0, _setPrototypeOf2.default)(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var contextTypes = {
-    'falcorData': _react.PropTypes.object,
-    'falcorModel': _react.PropTypes.object,
-    'renderFalcorLoading': _react.PropTypes.bool
+    'falcorData': _propTypes2.default.object,
+    'falcorModel': _propTypes2.default.object,
+    'renderFalcorLoading': _propTypes2.default.bool
 };
 
 function defaultMapFragment(remoteProps) {

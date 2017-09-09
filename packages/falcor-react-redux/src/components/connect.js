@@ -9,7 +9,7 @@ import setObservableConfig from 'recompose/setObservableConfig';
 import rxjsObservableConfig from 'recompose/rxjsObservableConfig';
 
 import invariant from 'invariant';
-import React, { PropTypes, Children } from 'react';
+import PropTypes from 'prop-types';
 import { connect as connectRedux } from 'react-redux';
 
 import { Observable } from 'rxjs/Observable';

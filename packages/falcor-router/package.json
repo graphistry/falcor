@@ -39,7 +39,7 @@
   "dependencies": {
     "@graphistry/falcor-path-syntax": "^2.9.6",
     "@graphistry/falcor-path-utils": "^2.9.6",
-    "babel-runtime": "~6.23.0",
+    "babel-runtime": "^6.26.0",
     "rxjs": "~5.4.2"
   },
   "devDependencies": {
@@ -48,8 +48,8 @@
     "babel-plugin-transform-runtime": "~6.23.0",
     "babel-preset-es2016": "~6.24.1",
     "babel-preset-stage-0": "~6.24.1",
-    "babel-register": "~6.24.1",
-    "chai": "~4.0.1",
+    "babel-register": "^6.26.0",
+    "chai": "^4.1.2",
     "coveralls": "~2.13.1",
     "cross-env": "~5.0.0",
     "gulp": "~3.9.1",

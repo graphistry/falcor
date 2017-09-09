@@ -24,9 +24,9 @@ var _react2 = _interopRequireDefault(_react);
 
 var _enzyme = require('enzyme');
 
-var _reactAddonsTestUtils = require('react-addons-test-utils');
+var _testUtils = require('react-dom/test-utils');
 
-var _reactAddonsTestUtils2 = _interopRequireDefault(_reactAddonsTestUtils);
+var _testUtils2 = _interopRequireDefault(_testUtils);
 
 var _Provider = require('../Provider');
 
@@ -83,12 +83,12 @@ describe('Provider', function () {
             App = _testInit2.App,
             model = _testInit2.model;
 
-        var tree = _reactAddonsTestUtils2.default.renderIntoDocument(_react2.default.createElement(
+        var tree = _testUtils2.default.renderIntoDocument(_react2.default.createElement(
             _Provider2.default,
             { falcorModel: model },
             _react2.default.createElement(Child, null)
         ));
-        var child = _reactAddonsTestUtils2.default.findRenderedComponentWithType(tree, Child);
+        var child = _testUtils2.default.findRenderedComponentWithType(tree, Child);
         expect(child.context.falcorModel).toBe(model);
     });
 });

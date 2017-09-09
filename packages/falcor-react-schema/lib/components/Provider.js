@@ -32,11 +32,15 @@ var _invariant = require('invariant');
 
 var _invariant2 = _interopRequireDefault(_invariant);
 
-var _falcor = require('@graphistry/falcor');
+var _propTypes = require('prop-types');
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
 
 var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
+
+var _falcor = require('@graphistry/falcor');
 
 var _Subject = require('rxjs/Subject');
 
@@ -155,16 +159,16 @@ var Provider = function (_React$Component) {
 
 Provider.displayName = 'FalcorProvider';
 Provider.propTypes = {
-    renderFalcorErrors: _react.PropTypes.bool,
-    renderFalcorLoading: _react.PropTypes.bool,
-    children: _react.PropTypes.element.isRequired,
-    falcorModel: _react.PropTypes.object.isRequired
+    renderFalcorErrors: _propTypes2.default.bool,
+    renderFalcorLoading: _propTypes2.default.bool,
+    children: _propTypes2.default.element.isRequired,
+    falcorModel: _propTypes2.default.object.isRequired
 };
 Provider.childContextTypes = {
-    falcorData: _react.PropTypes.object,
-    falcorModel: _react.PropTypes.object,
-    renderFalcorErrors: _react.PropTypes.bool,
-    renderFalcorLoading: _react.PropTypes.bool
+    falcorData: _propTypes2.default.object,
+    falcorModel: _propTypes2.default.object,
+    renderFalcorErrors: _propTypes2.default.bool,
+    renderFalcorLoading: _propTypes2.default.bool
 };
 exports.default = Provider;
 

@@ -1,6 +1,7 @@
 import invariant from 'invariant';
+import PropTypes from 'prop-types';
+import React, { Children } from 'react';
 import { Model } from '@graphistry/falcor';
-import React, { PropTypes, Children } from 'react';
 
 import { Subject } from 'rxjs/Subject';
 import { Observable } from 'rxjs/Observable';

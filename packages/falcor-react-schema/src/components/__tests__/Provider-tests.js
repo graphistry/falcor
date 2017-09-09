@@ -1,6 +1,6 @@
 import React from 'react';
 import { mount } from 'enzyme';
-import TestUtils from 'react-addons-test-utils';
+import TestUtils from 'react-dom/test-utils';
 
 import Provider from '../Provider';
 import { testInit } from './test-init';
