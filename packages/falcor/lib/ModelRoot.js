@@ -51,32 +51,41 @@ function ModelRoot(o, model) {
 }
 
 function defaultCompare(node, message) {
-    var cType = node && node.$type;
-    var mType = message && message.$type;
+    var cTime, cType = node && node.$type;
+    var mTime, mType = message && message.$type;
     if (cType) {
         // If the cache has a type, but the message is a primitive,
         // the message might be the primitive response from the datasource.
         // If so, return true, so we don't update the back-reference versions.
-        if (!mType) {
-            return node.value === message;
-        }
+        if (!mType) { return node.value === message; }
+        // If their types are different, then isDistinct = true
+        if (cType !== mType) { return false; }
         // If the message is older than the cache node, then isDistinct = false
-        else if (getTimestamp(message) < getTimestamp(node) === true) {
-            return true; // isDistinct = false
+        if ((mTime = message.$timestamp) < (cTime = node.$timestamp)) { return true; }
+        // If the message has a timestamp but the cache doesn't, then isDistinct = true
+        if (mTime !== undefined && cTime === undefined) { return false; }
+        // If $expires is different, then isDistinct = true
+        if (node.$expires !== message.$expires) { return false; }
+        // If they're both refs, compare their paths
+        if (cType === $ref) {
+            var nRef = node.value;
+            var nLen = nRef.length;
+            var mRef = message.value;
+            // If their lengths are different, then isDistinct = true
+            if (nLen !== mRef.length) { return false; }
+            while (~--nLen) {
+                // If their paths are different, then isDistinct = true
+                if (nRef[nLen] !== mRef[nLen]) { return false; }
+            }
+            // The refs are equal, so isDistinct = false
+            return true;
         }
-        // Otherwise they are the same if all the following fields are the same.
-        return !(
-            cType !== mType ||
-            node.value !== message.value ||
-            node.$expires !== message.$expires
-        );
+        // If everything else matches, compare their values
+        return node.value === message.value;
     }
-    // If cache doesn't have a type but the message
-    // does, they must be different.
-    else if (mType) {
-        return false;
-    }
-    return node === message;
+    // If cache doesn't have a type but the message does, they must be different.
+    // If neither have a type, they must be primitives, so compare the raw values.
+    return mType ? false : node === message;
 }
 
 ModelRoot.comparator = ModelRoot.prototype.comparator = defaultCompare;
