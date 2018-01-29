@@ -1,6 +1,6 @@
 {
   "name": "@graphistry/falcor-router-saddle",
-  "version": "2.9.11",
+  "version": "2.9.12",
   "description": "",
   "main": "lib/index.js",
   "browser": "lib/index.js",
