@@ -99,7 +99,7 @@ function get() {
                 };
             });
         }, _Observable.Observable.defer(function () {
-            return loader(context);
+            return loader(context, suffix);
         }).map(function (context) {
             return { context: context, rest: { length: 0 } };
         }));

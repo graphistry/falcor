@@ -50,7 +50,7 @@ export function get(options = {}) {
                 })
             ),
             Observable
-                .defer(() => loader(context))
+                .defer(() => loader(context, suffix))
                 .map((context) => ({ context, rest: { length: 0 } }))
         );
 
