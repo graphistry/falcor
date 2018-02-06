@@ -158,15 +158,26 @@ function keysetToKeysList(keys) {
     if (!keys || typeofObject !== (typeof keys === 'undefined' ? 'undefined' : _typeof(keys))) {
         return [keys];
     } else if (isArray(keys)) {
-        return keys;
+        return mergeMapArray(keys, keysetToKeysList);
     }
     var rangeEnd = keys.to;
     var rangeStart = keys.from || 0;
     if (typeofNumber !== (typeof rangeEnd === 'undefined' ? 'undefined' : _typeof(rangeEnd))) {
         rangeEnd = rangeStart + (keys.length || 0) - 1;
     }
-    return (0, _from2.default)({ length: rangeEnd - rangeStart }, function (x, index) {
+    return (0, _from2.default)({ length: 1 + (rangeEnd - rangeStart) }, function (x, index) {
         return index + rangeStart;
     });
+}
+
+function mergeMapArray(xs, fn) {
+    var ix = -1;
+    var list = [];
+    var length = xs.length;
+
+    while (++ix < length) {
+        list.push.apply(list, fn(xs[ix]));
+    }
+    return list;
 }
 //# sourceMappingURL=get.js.map

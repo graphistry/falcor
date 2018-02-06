@@ -86,7 +86,7 @@ function getRoutes() {
         },
         listsById: {
             [{ keys: listIds }]: {
-                [{ integers: videoIndexes }]: ${{
+                [{ ranges: videoIndexes }]: ${{
                     get: get({
                         lists: ['list'],
                         loader: loadListsById

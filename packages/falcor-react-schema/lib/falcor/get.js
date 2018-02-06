@@ -164,7 +164,7 @@ function keysetToKeysList(keys) {
     if ('number' !== typeof rangeEnd) {
         rangeEnd = rangeStart + (keys.length || 0) - 1;
     }
-    return (0, _from2.default)({ length: rangeEnd - rangeStart }, function (x, index) {
+    return (0, _from2.default)({ length: 1 + (rangeEnd - rangeStart) }, function (x, index) {
         return index + rangeStart;
     });
 }

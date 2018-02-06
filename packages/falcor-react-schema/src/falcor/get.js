@@ -108,7 +108,7 @@ function keysetToKeysList(keys) {
         rangeEnd = rangeStart + (keys.length || 0) - 1;
     }
     return Array.from(
-        {length: rangeEnd - rangeStart},
+        { length: 1 + (rangeEnd - rangeStart) },
         (x, index) => index + rangeStart
     );
 }
