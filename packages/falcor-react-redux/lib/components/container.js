@@ -95,6 +95,9 @@ exports.container = container;
 exports.default = container;
 
 
+container.globalDisposeDelay = 0;
+container.globalDisposeScheduler = null;
+
 function container(fragmentDesc) {
 
     (0, _invariant2.default)(fragmentDesc && ('function' === typeof fragmentDesc || 'object' === (typeof fragmentDesc === 'undefined' ? 'undefined' : (0, _typeof3.default)(fragmentDesc)) && 'function' === typeof fragmentDesc.fragment), 'Attempted to create a Falcor container component without a fragment.\nFalcor containers must be created with a fragment function, or an Object with a "fragment" function.');
@@ -103,6 +106,8 @@ function container(fragmentDesc) {
         renderLoading = false,
         fragment = void 0,
         mapFragment = void 0,
+        disposeScheduler = void 0,
+        disposeDelay = void 0,
         mapDispatch = void 0,
         mapFragmentAndProps = void 0;
 
@@ -116,6 +121,8 @@ function container(fragmentDesc) {
         mapFragment = fragmentDesc.mapFragment;
         renderErrors = fragmentDesc.renderErrors;
         renderLoading = fragmentDesc.renderLoading;
+        disposeDelay = fragmentDesc.disposeDelay;
+        disposeScheduler = fragmentDesc.disposeScheduler;
         mapFragmentAndProps = fragmentDesc.mapFragmentAndProps;
         mapDispatch = fragmentDesc.mapDispatch || fragmentDesc.dispatchers;
     }
@@ -123,6 +130,9 @@ function container(fragmentDesc) {
     mapFragment = mapFragment || defaultMapFragmentToProps;
     mapDispatch = mapDispatch || defaultMapDispatchToProps;
     mapFragmentAndProps = mapFragmentAndProps || defaultMergeProps;
+
+    disposeDelay = disposeDelay || container.globalDisposeDelay;
+    disposeScheduler = disposeScheduler || container.globalDisposeScheduler;
 
     if ('function' !== typeof mapDispatch) {
         if (mapDispatch && 'object' !== (typeof mapDispatch === 'undefined' ? 'undefined' : (0, _typeof3.default)(mapDispatch))) {
@@ -150,6 +160,8 @@ function container(fragmentDesc) {
                 _this.renderLoading = renderLoading;
                 _this.dispatchers = mapDispatch(_this);
                 _this.mapFragmentAndProps = mapFragmentAndProps;
+                _this.disposeDelay = disposeDelay;
+                _this.disposeScheduler = disposeScheduler;
                 return _this;
             }
 
@@ -345,7 +357,9 @@ var FalcorContainer = function (_React$Component) {
                 falcor: this.context.falcor,
                 version: this.state.version,
                 dispatch: this.context.dispatch,
-                renderLoading: this.renderLoading
+                renderLoading: this.renderLoading,
+                disposeDelay: this.disposeDelay,
+                disposeScheduler: this.disposeScheduler
             });
         }
     }, {

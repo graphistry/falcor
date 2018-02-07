@@ -1,6 +1,7 @@
 import { errorMessage } from 'pegjs-util';
 import memoizeQueryies from './memoizeQueryies';
 import { Observable } from 'rxjs/Observable';
+import { Subscriber } from 'rxjs/Subscriber';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/expand';
@@ -11,12 +12,14 @@ import 'rxjs/add/observable/empty';
 const memoizedQuerySyntax = memoizeQueryies(100);
 
 export default function fetchDataUntilSettled({
-    data, props, falcor, version, fragment
+    data, props, falcor, version, fragment,
+    disposeDelay = 0, disposeScheduler
 }) {
 
     const memo = {
         query: null, loading: true,
         data, props, falcor, version, fragment,
+        disposeDelay, disposeScheduler
     };
     memo.mapNext = handleNext(memo, falcor);
     memo.catchError = handleError(memo, falcor);
@@ -41,7 +44,8 @@ function _fetchDataUntilSettled(memo) {
         } else {
             return Observable
                 .from(falcor.get(ast).progressively())
-                .map(memo.mapNext).catch(memo.catchError);
+                .map(memo.mapNext).catch(memo.catchError)
+                .let(delayDispose.bind(null, memo.disposeScheduler, memo.disposeDelay));
         }
     }
     memo.loading = false;
@@ -64,4 +68,51 @@ function handleError(memo, falcor) {
         memo.version = falcor.getVersion();
         return Observable.of(memo);
     };
+}
+
+function delayDispose(scheduler, delay, source) {
+    return !scheduler ? source : source.lift(new DelayDisposeOperator(scheduler, delay));
+}
+
+class DelayDisposeOperator {
+    constructor(scheduler, delay) {
+        this.delay = delay;
+        this.scheduler = scheduler;
+    }
+    call(sink, source) {
+        return source._subscribe(new DelayDisposeSubscriber(sink, this.scheduler, this.delay));
+    }
+}
+
+class DelayDisposeSubscriber extends Subscriber {
+    constructor(sink, scheduler, delay) {
+        super(sink);
+        this.delay = delay;
+        this.scheduler = scheduler;
+        this.unsubscriptionDisposable = null;
+    }
+    superUnsubscribe() { return super.unsubscribe(); }
+    unsubscribe() {
+        if (!this.closed && !this.isStopped && !this.unsubscriptionDisposable) {
+            this.isStopped = true;
+            this.unsubscriptionDisposable = this.scheduler.schedule(() => {
+                super.unsubscribe();
+            }, this.delay);
+        }
+    }
+    _unsubscribe() {
+        const { unsubscriptionDisposable } = this;
+        if (unsubscriptionDisposable) {
+            this.unsubscriptionDisposable = null;
+            unsubscriptionDisposable.unsubscribe();
+        }
+    }
+    _error(err) {
+        this.destination.error(err);
+        super.unsubscribe();
+    }
+    _complete() {
+        this.destination.complete();
+        super.unsubscribe();
+    }
 }

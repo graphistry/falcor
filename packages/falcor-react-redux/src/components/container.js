@@ -22,6 +22,9 @@ const defaultMergeProps = (stateProps, dispatchProps, parentProps) => ({
 export { container };
 export default container;
 
+container.globalDisposeDelay = 0;
+container.globalDisposeScheduler = null;
+
 function container(fragmentDesc, ...rest) {
 
     invariant(fragmentDesc && (
@@ -34,6 +37,7 @@ Falcor containers must be created with a fragment function, or an Object with a 
     let renderErrors = false,
         renderLoading = false,
         fragment, mapFragment,
+        disposeScheduler, disposeDelay,
         mapDispatch, mapFragmentAndProps;
 
     if ('object' !== typeof fragmentDesc) {
@@ -46,6 +50,8 @@ Falcor containers must be created with a fragment function, or an Object with a 
         mapFragment = fragmentDesc.mapFragment;
         renderErrors = fragmentDesc.renderErrors;
         renderLoading = fragmentDesc.renderLoading;
+        disposeDelay = fragmentDesc.disposeDelay;
+        disposeScheduler = fragmentDesc.disposeScheduler;
         mapFragmentAndProps = fragmentDesc.mapFragmentAndProps;
         mapDispatch = fragmentDesc.mapDispatch || fragmentDesc.dispatchers;
     }
@@ -53,6 +59,9 @@ Falcor containers must be created with a fragment function, or an Object with a 
     mapFragment = mapFragment || defaultMapFragmentToProps;
     mapDispatch = mapDispatch || defaultMapDispatchToProps;
     mapFragmentAndProps = mapFragmentAndProps || defaultMergeProps;
+
+    disposeDelay = disposeDelay || container.globalDisposeDelay;
+    disposeScheduler = disposeScheduler || container.globalDisposeScheduler;
 
     if ('function' !== typeof mapDispatch) {
         if (mapDispatch && 'object' !== typeof mapDispatch) {
@@ -78,6 +87,8 @@ Falcor containers must be created with a fragment function, or an Object with a 
             this.renderLoading = renderLoading;
             this.dispatchers = mapDispatch(this);
             this.mapFragmentAndProps = mapFragmentAndProps;
+            this.disposeDelay = disposeDelay;
+            this.disposeScheduler = disposeScheduler;
         }
     });
 }
@@ -235,7 +246,9 @@ class FalcorContainer extends React.Component {
             falcor: this.context.falcor,
             version: this.state.version,
             dispatch: this.context.dispatch,
-            renderLoading: this.renderLoading
+            renderLoading: this.renderLoading,
+            disposeDelay: this.disposeDelay,
+            disposeScheduler: this.disposeScheduler,
         });
     }
     componentWillUpdate(nextProps, nextState) {
