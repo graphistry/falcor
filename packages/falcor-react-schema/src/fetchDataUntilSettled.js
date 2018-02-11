@@ -29,11 +29,23 @@ export default function fetchDataUntilSettled({
 
 function fetchData(memo) {
 
+    let nextQuery;
     let { data, props, query, model, fragment } = memo;
 
-    if (memo.error !== undefined || (
-        data && data.$__status === 'pending') || (
-        query === (memo.query = fragment(data, props)))) {
+    if (memo.error !== undefined) {
+        return Observable.empty();
+    }
+    if (data && data.$__status === 'pending') {
+        return Observable.empty();
+    }
+
+    try {
+        nextQuery = fragment(data, props);
+    } catch (e) {
+        return memo.catchError(e);
+    }
+
+    if (query === (memo.query = nextQuery)) {
         return Observable.empty();
     }
 

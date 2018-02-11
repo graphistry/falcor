@@ -82,11 +82,17 @@ function _fetchDataUntilSettled(memo) {
     if (memo.loading === false) {
         return _Observable.Observable.empty();
     }
+    var nextQuery = void 0;
     var query = memo.query,
         falcor = memo.falcor,
         fragment = memo.fragment;
 
-    if (query !== (memo.query = fragment(memo.data || {}, memo.props))) {
+    try {
+        nextQuery = fragment(memo.data || {}, memo.props || {});
+    } catch (e) {
+        return memo.catchError(e);
+    }
+    if (query !== (memo.query = nextQuery)) {
         var _memoizedQuerySyntax = memoizedQuerySyntax(memo.query),
             ast = _memoizedQuerySyntax.ast,
             error = _memoizedQuerySyntax.error;

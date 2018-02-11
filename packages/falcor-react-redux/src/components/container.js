@@ -93,16 +93,17 @@ Falcor containers must be created with a fragment function, or an Object with a 
     });
 }
 
-const fragments = function(items) {
+const fragments = function(items, itemsProps) {
     if (!items || 'object' !== typeof items) {
         return `{ length }`;
     }
+    itemsProps = !itemsProps || 'object' !== typeof itemsProps ? [] : itemsProps;
     let index = -1, query = 'length';
     const length = Math.max(0, items.length) || 0;
     while (++index < length) {
         query = `${
         query},
- ${     index}: ${this.fragment(items[index])}`;
+ ${     index}: ${this.fragment(items[index], itemsProps[index])}`;
     }
     return `{ ${query} }`;
 }

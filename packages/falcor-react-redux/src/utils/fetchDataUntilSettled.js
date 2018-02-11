@@ -31,8 +31,14 @@ function _fetchDataUntilSettled(memo) {
     if (memo.loading === false) {
         return Observable.empty();
     }
+    let nextQuery;
     const { query, falcor, fragment } = memo;
-    if (query !== (memo.query = fragment(memo.data || {}, memo.props))) {
+    try {
+        nextQuery = fragment(memo.data || {}, memo.props || {});
+    } catch (e) {
+        return memo.catchError(e);
+    }
+    if (query !== (memo.query = nextQuery)) {
         const { ast, error } = memoizedQuerySyntax(memo.query);
         if (error) {
             if (typeof console !== 'undefined' && typeof console.error === 'function') {

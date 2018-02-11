@@ -170,15 +170,16 @@ function container(fragmentDesc) {
     });
 }
 
-var fragments = function fragments(items) {
+var fragments = function fragments(items, itemsProps) {
     if (!items || 'object' !== (typeof items === 'undefined' ? 'undefined' : (0, _typeof3.default)(items))) {
         return '{ length }';
     }
+    itemsProps = !itemsProps || 'object' !== (typeof itemsProps === 'undefined' ? 'undefined' : (0, _typeof3.default)(itemsProps)) ? [] : itemsProps;
     var index = -1,
         query = 'length';
     var length = Math.max(0, items.length) || 0;
     while (++index < length) {
-        query = query + ',\n ' + index + ': ' + this.fragment(items[index]);
+        query = query + ',\n ' + index + ': ' + this.fragment(items[index], itemsProps[index]);
     }
     return '{ ' + query + ' }';
 };
