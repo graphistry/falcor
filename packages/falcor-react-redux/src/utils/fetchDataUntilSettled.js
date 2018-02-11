@@ -12,19 +12,32 @@ import 'rxjs/add/observable/empty';
 const memoizedQuerySyntax = memoizeQueryies(100);
 
 export default function fetchDataUntilSettled({
-    data, props, falcor, version, fragment,
+    data, query, props, falcor, version, fragment,
     disposeDelay = 0, disposeScheduler
 }) {
 
     const memo = {
-        query: null, loading: true,
+        query, loading: true,
         data, props, falcor, version, fragment,
         disposeDelay, disposeScheduler
     };
     memo.mapNext = handleNext(memo, falcor);
     memo.catchError = handleError(memo, falcor);
 
-    return Observable.of(memo).expand(_fetchDataUntilSettled);
+    return _fetchDataInitial(memo).expand(_fetchDataUntilSettled);
+}
+
+function _fetchDataInitial(memo) {
+    if (memo.query) {
+        const { ast, error } = memoizedQuerySyntax(memo.query);
+        if (!error) {
+            return Observable
+                .from(memo.falcor.get(ast).progressively())
+                .map(memo.mapNext).catch(memo.catchError)
+                .let(delayDispose.bind(null, memo.disposeScheduler, memo.disposeDelay));
+        }
+    }
+    return Observable.of(memo);
 }
 
 function _fetchDataUntilSettled(memo) {
@@ -39,11 +52,11 @@ function _fetchDataUntilSettled(memo) {
         return memo.catchError(e);
     }
     if (query !== (memo.query = nextQuery)) {
-        const { ast, error } = memoizedQuerySyntax(memo.query);
+        const { ast, error } = memoizedQuerySyntax(nextQuery);
         if (error) {
             if (typeof console !== 'undefined' && typeof console.error === 'function') {
                 console.error(errorMessage(error));
-                console.error(`Error parsing query: ${memo.query}`);
+                console.error(`Error parsing query: ${nextQuery}`);
             }
             memo.error = error;
             memo.version = falcor.getVersion();

@@ -148,14 +148,14 @@ function fetchEachPropUpdate(update) {
 
 function mergeEachPropUpdate(
     { props, falcor, dispatch },
-    { data, error, version, loading }
+    { data, query, error, version, loading }
 ) {
     const hash = data && data.$__hash;
     const status = data && data.$__status;
     loading = status === 'pending';
     return {
         hash, props, falcor, dispatch,
-        data, error, loading, version
+        data, query, error, loading, version
     };
 }
 
@@ -178,7 +178,7 @@ class FalcorContainer extends React.Component {
         );
 
         this.state = {
-            data, props,
+            data, props, query: null,
             dispatch: context.dispatch,
             falcor: tryDeref({ data, falcor })
         };
@@ -230,11 +230,14 @@ class FalcorContainer extends React.Component {
         const { data, ...props } = nextProps;
         this.propsStream.next({
             data, props,
+            query: this.state.query,
             fragment: this.fragment,
             falcor: nextContext.falcor,
             version: this.state.version,
             dispatch: nextContext.dispatch,
-            renderLoading: this.renderLoading
+            renderLoading: this.renderLoading,
+            disposeDelay: this.disposeDelay,
+            disposeScheduler: this.disposeScheduler,
         });
     }
     componentWillMount() {
@@ -243,6 +246,7 @@ class FalcorContainer extends React.Component {
         this.propsSubscription = this.propsAction.subscribe(this.setState.bind(this));
         this.propsStream.next({
             data, props,
+            query: this.state.query,
             fragment: this.fragment,
             falcor: this.context.falcor,
             version: this.state.version,

@@ -58,6 +58,7 @@ var memoizedQuerySyntax = (0, _memoizeQueryies2.default)(100);
 
 function fetchDataUntilSettled(_ref) {
     var data = _ref.data,
+        query = _ref.query,
         props = _ref.props,
         falcor = _ref.falcor,
         version = _ref.version,
@@ -68,14 +69,27 @@ function fetchDataUntilSettled(_ref) {
 
 
     var memo = {
-        query: null, loading: true,
+        query: query, loading: true,
         data: data, props: props, falcor: falcor, version: version, fragment: fragment,
         disposeDelay: disposeDelay, disposeScheduler: disposeScheduler
     };
     memo.mapNext = handleNext(memo, falcor);
     memo.catchError = handleError(memo, falcor);
 
-    return _Observable.Observable.of(memo).expand(_fetchDataUntilSettled);
+    return _fetchDataInitial(memo).expand(_fetchDataUntilSettled);
+}
+
+function _fetchDataInitial(memo) {
+    if (memo.query) {
+        var _memoizedQuerySyntax = memoizedQuerySyntax(memo.query),
+            ast = _memoizedQuerySyntax.ast,
+            error = _memoizedQuerySyntax.error;
+
+        if (!error) {
+            return _Observable.Observable.from(memo.falcor.get(ast).progressively()).map(memo.mapNext).catch(memo.catchError).let(delayDispose.bind(null, memo.disposeScheduler, memo.disposeDelay));
+        }
+    }
+    return _Observable.Observable.of(memo);
 }
 
 function _fetchDataUntilSettled(memo) {
@@ -93,14 +107,14 @@ function _fetchDataUntilSettled(memo) {
         return memo.catchError(e);
     }
     if (query !== (memo.query = nextQuery)) {
-        var _memoizedQuerySyntax = memoizedQuerySyntax(memo.query),
-            ast = _memoizedQuerySyntax.ast,
-            error = _memoizedQuerySyntax.error;
+        var _memoizedQuerySyntax2 = memoizedQuerySyntax(nextQuery),
+            ast = _memoizedQuerySyntax2.ast,
+            error = _memoizedQuerySyntax2.error;
 
         if (error) {
             if (typeof console !== 'undefined' && typeof console.error === 'function') {
                 console.error((0, _pegjsUtil.errorMessage)(error));
-                console.error('Error parsing query: ' + memo.query);
+                console.error('Error parsing query: ' + nextQuery);
             }
             memo.error = error;
             memo.version = falcor.getVersion();

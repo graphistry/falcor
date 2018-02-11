@@ -227,6 +227,7 @@ function mergeEachPropUpdate(_ref2, _ref3) {
         falcor = _ref2.falcor,
         dispatch = _ref2.dispatch;
     var data = _ref3.data,
+        query = _ref3.query,
         error = _ref3.error,
         version = _ref3.version,
         loading = _ref3.loading;
@@ -236,7 +237,7 @@ function mergeEachPropUpdate(_ref2, _ref3) {
     loading = status === 'pending';
     return {
         hash: hash, props: props, falcor: falcor, dispatch: dispatch,
-        data: data, error: error, loading: loading, version: version
+        data: data, query: query, error: error, loading: loading, version: version
     };
 }
 
@@ -262,7 +263,7 @@ var FalcorContainer = function (_React$Component) {
         _this2.propsAction = _this2.propsStream.switchMap(fetchEachPropUpdate, mergeEachPropUpdate);
 
         _this2.state = {
-            data: data, props: props,
+            data: data, props: props, query: null,
             dispatch: context.dispatch,
             falcor: tryDeref({ data: data, falcor: falcor })
         };
@@ -336,11 +337,14 @@ var FalcorContainer = function (_React$Component) {
 
             this.propsStream.next({
                 data: data, props: props,
+                query: this.state.query,
                 fragment: this.fragment,
                 falcor: nextContext.falcor,
                 version: this.state.version,
                 dispatch: nextContext.dispatch,
-                renderLoading: this.renderLoading
+                renderLoading: this.renderLoading,
+                disposeDelay: this.disposeDelay,
+                disposeScheduler: this.disposeScheduler
             });
         }
     }, {
@@ -354,6 +358,7 @@ var FalcorContainer = function (_React$Component) {
             this.propsSubscription = this.propsAction.subscribe(this.setState.bind(this));
             this.propsStream.next({
                 data: data, props: props,
+                query: this.state.query,
                 fragment: this.fragment,
                 falcor: this.context.falcor,
                 version: this.state.version,
