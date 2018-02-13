@@ -1,6 +1,6 @@
 {
   "name": "@graphistry/falcor-react-redux",
-  "version": "2.9.16",
+  "version": "2.9.17",
   "description": "",
   "main": "lib/index.js",
   "browser": "lib/index.js",
@@ -46,11 +46,11 @@
     "warning": "^3.0.0"
   },
   "dependencies": {
-    "@graphistry/falcor": "^2.9.16",
+    "@graphistry/falcor": "^2.9.17",
     "@graphistry/falcor-json-graph": "^2.9.10",
     "@graphistry/falcor-path-syntax": "^2.9.10",
     "@graphistry/falcor-path-utils": "^2.9.10",
-    "@graphistry/falcor-query-syntax": "^2.9.16",
+    "@graphistry/falcor-query-syntax": "^2.9.17",
     "babel-runtime": "^6.26.0",
     "hoist-non-react-statics": "^2.3.1",
     "invariant": "~2.2.2",
