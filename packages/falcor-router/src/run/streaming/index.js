@@ -106,6 +106,39 @@ function runStreaming(match, actionRunner, requestedPaths, method,
 
         return memo;
     }
+
+    function emitStreamingAndFinalValues(streamingValuesShared) {
+        return streamingValuesShared
+            .filter(whenEmitValuesIsTrue)
+            .merge(streamingValuesShared
+                .takeLast(1)
+                .filter(isNotEmptyAndWasNotEmitted)
+                .map(finalizeLastJSONGraphEnv));
+    }
+
+    function finalizeLastJSONGraphEnv(state) {
+        var res, references;
+        var paths = state._paths;
+        var graph = state.jsonGraph;
+        var invalidated = state._invalidated;
+        if (paths.length > 0) {
+            res = jsongMerge(graph = {}, {
+                paths: paths, jsonGraph: jsonGraph
+            });
+            paths = res.paths;
+            references = res.references;
+            if (paths.length || references.length) {
+                paths = paths.concat(references.map(pluckPath));
+            } else {
+                paths = graph = undefined;
+            }
+        }
+        return {
+            paths: paths,
+            jsonGraph: graph,
+            invalidated: invalidated
+        };
+    }
 }
 
 function newSubject() {
@@ -120,44 +153,11 @@ function whenBufferHasValues(buffer) {
     return buffer.length > 0;
 }
 
-function emitStreamingAndFinalValues(streamingValuesShared) {
-    return streamingValuesShared
-        .filter(whenEmitValuesIsTrue)
-        .merge(streamingValuesShared
-            .takeLast(1)
-            .filter(isNotEmptyAndWasNotEmitted)
-            .map(finalizeLastJSONGraphEnv));
-}
-
 function isNotEmptyAndWasNotEmitted(state) {
-    return state.emitValues === false && (
+    return !state.emitValues && (
         state._paths.length > 0 ||
         state._invalidated.length > 0
     );
-}
-
-function finalizeLastJSONGraphEnv(state) {
-    var res, references;
-    var paths = state._paths;
-    var graph = state.jsonGraph;
-    var invalidated = state._invalidated;
-    if (paths.length > 0) {
-        res = jsongMerge(graph, {
-            paths: paths, jsonGraph: jsonGraph
-        });
-        paths = res.paths;
-        references = res.references;
-        if (paths.length || references.length) {
-            paths = paths.concat(references.map(pluckPath));
-        } else {
-            paths = graph = undefined;
-        }
-    }
-    return {
-        paths: paths,
-        jsonGraph: graph,
-        invalidated: invalidated
-    };
 }
 
 function flattenJSONGraphsBuffer(buffer) {
