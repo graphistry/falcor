@@ -159,8 +159,8 @@ export default function tests({ Observable }, context, runBefore, runAfter) {
             })
             .subscribe(() => {}, done, done);
     });
-    it('should get streaming data from the server', function(done) {
-        const {sink,  model } = context;
+    it.only('should get streaming data from the server', function(done) {
+        const { sink, model } = context;
         sink.getDataSource = getStreamingDataSource(sink.getDataSource);
         // sort same as collapse
         const keys = [1, 3, 'cinco', 'four', 'two'];

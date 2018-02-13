@@ -10,18 +10,6 @@ var aggregateUnhandledPaths = require('./../conversion/aggregateUnhandledPaths')
 
 module.exports = runStreaming;
 
-function newSubject() {
-    return new Subject();
-}
-
-function whenEmitValuesIsTrue(state) {
-    return state.emitValues === true;
-}
-
-function whenBufferHasValues(buffer) {
-    return buffer.length > 0;
-}
-
 function runStreaming(match, actionRunner, requestedPaths, method,
                       router, jsonGraph, unhandledRunner) {
 
@@ -56,7 +44,7 @@ function runStreaming(match, actionRunner, requestedPaths, method,
             .scan(aggregateStreamingValues, {
                 _paths: [], _invalidated: []
             })
-            .filter(whenEmitValuesIsTrue);
+            .multicast(newSubject, emitStreamingAndFinalValues);
 
         if (router._bufferTime > 0) {
             streamingValues = streamingValues
@@ -118,6 +106,58 @@ function runStreaming(match, actionRunner, requestedPaths, method,
 
         return memo;
     }
+}
+
+function newSubject() {
+    return new Subject();
+}
+
+function whenEmitValuesIsTrue(state) {
+    return state.emitValues === true;
+}
+
+function whenBufferHasValues(buffer) {
+    return buffer.length > 0;
+}
+
+function emitStreamingAndFinalValues(streamingValuesShared) {
+    return streamingValuesShared
+        .filter(whenEmitValuesIsTrue)
+        .merge(streamingValuesShared
+            .takeLast(1)
+            .filter(isNotEmptyAndWasNotEmitted)
+            .map(finalizeLastJSONGraphEnv));
+}
+
+function isNotEmptyAndWasNotEmitted(state) {
+    return state.emitValues === false && (
+        state._paths.length > 0 ||
+        state._invalidated.length > 0
+    );
+}
+
+function finalizeLastJSONGraphEnv(state) {
+    var res, references;
+    var paths = state._paths;
+    var graph = state.jsonGraph;
+    var invalidated = state._invalidated;
+    if (paths.length > 0) {
+        res = jsongMerge(graph, {
+            paths: paths, jsonGraph: jsonGraph
+        });
+        paths = res.paths;
+        references = res.references;
+        if (paths.length || references.length) {
+            paths = paths.concat(references.map(pluckPath));
+        } else {
+            paths = graph = undefined;
+        }
+    }
+    return {
+        paths: paths,
+        jsonGraph: graph,
+        invalidated: invalidated
+    };
 }
 
 function flattenJSONGraphsBuffer(buffer) {
