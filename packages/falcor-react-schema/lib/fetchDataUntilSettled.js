@@ -51,6 +51,8 @@ function fetchDataUntilSettled(_ref) {
 }
 
 function fetchData(memo) {
+
+    var nextQuery = void 0;
     var data = memo.data,
         props = memo.props,
         query = memo.query,
@@ -58,7 +60,20 @@ function fetchData(memo) {
         fragment = memo.fragment;
 
 
-    if (memo.error !== undefined || data && data.$__status === 'pending' || query === (memo.query = fragment(data, props))) {
+    if (memo.error !== undefined) {
+        return _Observable.Observable.empty();
+    }
+    if (data && data.$__status === 'pending') {
+        return _Observable.Observable.empty();
+    }
+
+    try {
+        nextQuery = fragment(data, props);
+    } catch (e) {
+        return memo.catchError(e);
+    }
+
+    if (query === (memo.query = nextQuery)) {
         return _Observable.Observable.empty();
     }
 

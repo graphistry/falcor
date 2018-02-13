@@ -76,17 +76,17 @@ function fetchDataUntilSettled(_ref) {
     memo.mapNext = handleNext(memo, falcor);
     memo.catchError = handleError(memo, falcor);
 
-    return _fetchDataInitial(memo).expand(_fetchDataUntilSettled);
+    return hydrateExistingData(memo).expand(_fetchDataUntilSettled);
 }
 
-function _fetchDataInitial(memo) {
+function hydrateExistingData(memo) {
     if (memo.query) {
         var _memoizedQuerySyntax = memoizedQuerySyntax(memo.query),
             ast = _memoizedQuerySyntax.ast,
             error = _memoizedQuerySyntax.error;
 
         if (!error) {
-            return _Observable.Observable.from(memo.falcor.get(ast).progressively()).map(memo.mapNext).catch(memo.catchError).let(delayDispose.bind(null, memo.disposeScheduler, memo.disposeDelay));
+            return _Observable.Observable.from(memo.falcor.withoutDataSource().get(ast)).map(memo.mapNext).catch(memo.catchError);
         }
     }
     return _Observable.Observable.of(memo);
@@ -106,7 +106,7 @@ function _fetchDataUntilSettled(memo) {
     } catch (e) {
         return memo.catchError(e);
     }
-    if (query !== (memo.query = nextQuery)) {
+    if (query !== (memo.query = nextQuery) || memo.data && memo.data.$__status === 'incomplete') {
         var _memoizedQuerySyntax2 = memoizedQuerySyntax(nextQuery),
             ast = _memoizedQuerySyntax2.ast,
             error = _memoizedQuerySyntax2.error;

@@ -24,17 +24,16 @@ export default function fetchDataUntilSettled({
     memo.mapNext = handleNext(memo, falcor);
     memo.catchError = handleError(memo, falcor);
 
-    return _fetchDataInitial(memo).expand(_fetchDataUntilSettled);
+    return hydrateExistingData(memo).expand(_fetchDataUntilSettled);
 }
 
-function _fetchDataInitial(memo) {
+function hydrateExistingData(memo) {
     if (memo.query) {
         const { ast, error } = memoizedQuerySyntax(memo.query);
         if (!error) {
             return Observable
-                .from(memo.falcor.get(ast).progressively())
-                .map(memo.mapNext).catch(memo.catchError)
-                .let(delayDispose.bind(null, memo.disposeScheduler, memo.disposeDelay));
+                .from(memo.falcor.withoutDataSource().get(ast))
+                .map(memo.mapNext).catch(memo.catchError);
         }
     }
     return Observable.of(memo);
@@ -51,7 +50,7 @@ function _fetchDataUntilSettled(memo) {
     } catch (e) {
         return memo.catchError(e);
     }
-    if (query !== (memo.query = nextQuery)) {
+    if (query !== (memo.query = nextQuery) || (memo.data && memo.data.$__status === 'incomplete')) {
         const { ast, error } = memoizedQuerySyntax(nextQuery);
         if (error) {
             if (typeof console !== 'undefined' && typeof console.error === 'function') {

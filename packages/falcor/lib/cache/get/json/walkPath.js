@@ -35,7 +35,7 @@ function walkPathAndBuildOutput(root, node, jsonArg, path,
     if (node === undefined || (
         type = node.$type) || (
         depth === requestedLength)) {
-        arr[1] = hasDataSource && node === undefined;
+        arr[1] = node === undefined;
         arr[0] = onValueType(node, type, json,
                              path, depth, seed, results,
                              requestedPath, requestedLength,
@@ -285,9 +285,13 @@ function walkPathAndBuildOutput(root, node, jsonArg, path,
     } while (true);
 
     if (f_meta) {
-        if (hasMissingPath) {
+        if (!hasMissingPath) {
+            f_meta[f_meta_status] = 'resolved';
+        } else if (hasDataSource) {
             f_meta[f_meta_status] = 'pending';
-        } else if (f_meta[f_meta_status] !== 'pending') {
+        } else if (!materialized) {
+            f_meta[f_meta_status] = 'incomplete';
+        } else {
             f_meta[f_meta_status] = 'resolved';
         }
     }

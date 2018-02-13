@@ -35,7 +35,7 @@ function walkPathAndBuildOutput(root, node, jsonArg, path,
     if (undefined === node ||
         undefined !== (type = node.$type) ||
         undefined === path) {
-        arr[1] = hasDataSource && node === undefined;
+        arr[1] = node === undefined;
         arr[0] = onValueType(node, type, json,
                              path, depth, seed, results,
                              requestedPath, depth,
@@ -78,7 +78,7 @@ function walkPathAndBuildOutput(root, node, jsonArg, path,
 
         if (!arrayEqual(nodeAbsPath, jsonAbsPath)) {
             f_meta['$code'] = '';
-            f_meta[f_meta_status] = 'pending';
+            f_meta[f_meta_status] = hasDataSource && 'pending' || 'incomplete';
             f_meta[f_meta_abs_path] = nodeAbsPath;
             f_meta[f_meta_version] = node[f_version];
             refContainerRefPath && (f_meta[f_meta_deref_to] = refContainerRefPath);
@@ -296,7 +296,16 @@ function walkPathAndBuildOutput(root, node, jsonArg, path,
     if (f_meta) {
         f_meta['$code'] = f_code;
         f_meta[f_meta_keys] = f_new_keys;
-        f_meta[f_meta_status] = hasMissingPath && 'pending' || 'resolved';
+        if (!hasMissingPath) {
+            f_meta[f_meta_status] = 'resolved';
+        } else if (hasDataSource) {
+            f_meta[f_meta_status] = 'pending';
+        } else if (!materialized) {
+            f_meta[f_meta_status] = 'incomplete';
+        } else {
+            f_meta[f_meta_status] = 'resolved';
+        }
+
         if (f_old_keys) {
             for (nextKey in f_old_keys) {
                 if (f_old_keys[nextKey]) {

@@ -75,10 +75,10 @@ function bindArrayMethod(fn) {
               type !== 'object' || atom.$type !== $atom ||
               typeof (length = atom.value) !== 'number')||
             length < 0 || length !== (length | 0)) {
-            if (node.$__status === 'pending') {
-                return [];
+            if (node.$__status === 'resolved') {
+                throw new RangeError('Invalid FalcorJSON length');
             }
-            throw new RangeError('Invalid FalcorJSON length');
+            return [];
         }
         // Temporarily set length to the unboxed length, call the bound Array
         // method, then reset the length back to the boxed value. This is

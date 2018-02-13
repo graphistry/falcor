@@ -513,34 +513,34 @@ describe('Missing', function() {
                 expect(JSON.parse(x.toString(true, true))).to.deep.equals({
                     json: {
                         [f_meta_data]: {
-                            '$code': '970824229',
-                            [f_meta_status]: 'resolved'
+                            '$code': '3347343042',
+                            [f_meta_status]: 'incomplete'
                         },
                         0: {
                             [f_meta_data]: {
-                                '$code': '2533516714',
+                                '$code': '2457998029',
                                 [f_meta_abs_path]: ['0'],
-                                [f_meta_status]: 'resolved'
+                                [f_meta_status]: 'incomplete'
                             },
                             0: {
                                 [f_meta_data]: {
-                                    '$code': '1166878492',
+                                    '$code': '130423995',
                                     [f_meta_abs_path]: ['0', '0'],
-                                    [f_meta_status]: 'resolved'
+                                    [f_meta_status]: 'incomplete'
                                 },
                                 0: {
                                     [f_meta_data]: {
-                                        '$code': '135417139',
+                                        '$code': '2905894143',
                                         [f_meta_abs_path]: ['0', '0', '0'],
-                                        [f_meta_status]: 'resolved'
+                                        [f_meta_status]: 'incomplete'
                                     },
                                     title: '0'
                                 },
                                 1: {
                                     [f_meta_data]: {
-                                        '$code': '135417139',
+                                        '$code': '2905894143',
                                         [f_meta_abs_path]: ['0', '0', '1'],
-                                        [f_meta_status]: 'resolved'
+                                        [f_meta_status]: 'incomplete'
                                     },
                                     title: '1'
                                 }

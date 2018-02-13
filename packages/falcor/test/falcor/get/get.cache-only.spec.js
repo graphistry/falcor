@@ -32,6 +32,20 @@ describe('Cache Only', function() {
                 }).
                 subscribe(noOp, done, done);
         });
+        it('should report missing JSON as incomplete in local mode.', function(done) {
+            var model = new Model({ cache: cacheGenerator(0, 1) });
+            toObservable(model.
+                get(['videos', [0, 'missing'], 'title'])).
+                doAction(function(x) {
+                    expect(x.json.videos).to.be.ok;
+                    expect(x.json.videos[0].title).to.equal('Video 0');
+                    expect(x.json.videos[0].$__status).to.equal('resolved');
+
+                    expect(x.json.$__status).to.equal('incomplete');
+                    expect(x.json.videos.$__status).to.equal('incomplete');
+                }).
+                subscribe(noOp, done, done);
+        });
         it('should just complete on empty paths.', function(done) {
             var model = new Model({
                 cache: cacheGenerator(0, 1)
