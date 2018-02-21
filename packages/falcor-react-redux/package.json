@@ -1,6 +1,6 @@
 {
   "name": "@graphistry/falcor-react-redux",
-  "version": "2.9.18",
+  "version": "2.9.19",
   "description": "",
   "main": "lib/index.js",
   "browser": "lib/index.js",
