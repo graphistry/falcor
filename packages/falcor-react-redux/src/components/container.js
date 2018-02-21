@@ -1,3 +1,5 @@
+import { toProps } from '@graphistry/falcor';
+
 import React from 'react';
 import invariant from 'invariant';
 import PropTypes from 'prop-types';
@@ -194,16 +196,24 @@ class FalcorContainer extends React.Component {
                 state: currState = {} } = this;
 
         if (renderLoading === true && currState.loading !== nextState.loading) {
-            this.traceShouldUpdate('loading', currState.loading, '->', nextState.loading);
+            this.guardTraceShouldUpdate() && this.traceShouldUpdate(`trigger: loading`,
+                { curr: currState.loading, next: nextState.loading }
+            );
             return true;
         } else if (currState.version !== nextState.version) {
-            this.traceShouldUpdate('version', currState.version, '->', nextState.version);
+            this.guardTraceShouldUpdate() && this.traceShouldUpdate(`trigger: version`,
+                { curr: currState.version, next: nextState.version }
+            );
             return true;
         } else if (currState.error !== nextState.error) {
-            this.traceShouldUpdate('error', currState.error, '->', nextState.error);
+            this.guardTraceShouldUpdate() && this.traceShouldUpdate(`trigger: error`,
+                { curr: currState.error, next: nextState.error }
+            );
             return true;
         } else if (currState.hash !== nextState.hash) {
-            this.traceShouldUpdate('hash', currState.hash, '->', nextState.hash);
+            this.guardTraceShouldUpdate() && this.traceShouldUpdate(`trigger: hash`,
+                { curr: currState.hash, next: nextState.hash }
+            );
             return true;
         }
 
@@ -211,17 +221,26 @@ class FalcorContainer extends React.Component {
         const { data: nextData, style: nextStyle = currStyle, ...restNextProps } = nextProps;
 
         if (!shallowEqual(currData, nextData)) {
-            this.traceShouldUpdate('data', currData, '->', nextData);
+            this.guardTraceShouldUpdate() && this.traceShouldUpdate(`trigger: data`,
+                { currData: toProps(currData), nextData: toProps(nextData) }
+            );
             return true;
         } else if (!shallowEqual(currStyle, nextStyle)) {
-            this.traceShouldUpdate('style', currStyle, '->', nextStyle);
+            this.guardTraceShouldUpdate() && this.traceShouldUpdate(`trigger: style`,
+                { currStyle, nextStyle }
+            );
             return true;
         } else if (!shallowEqual(restCurrProps, restNextProps)) {
-            this.traceShouldUpdate('props', restCurrProps, '->', restNextProps);
+            this.guardTraceShouldUpdate() && this.traceShouldUpdate(`trigger: props`,
+                { restCurrProps, restNextProps }
+            );
             return true;
         }
 
-        this.traceShouldUpdate(false, currProps, '->', nextProps);
+        // this.guardTraceShouldUpdate() && this.traceShouldUpdate(false,
+        //     { currProps: serializeObjectWithFalcorData(currProps), nextProps: serializeObjectWithFalcorData(nextProps) },
+        //     { currState: serializeObjectWithFalcorData(currState), nextState: serializeObjectWithFalcorData(nextState) }
+        // );
 
         return false;
     }
@@ -257,19 +276,31 @@ class FalcorContainer extends React.Component {
         });
     }
     componentWillUpdate(nextProps, nextState) {
-        this.traceWillUpdate(nextState.loading || false, nextProps, nextState);
+        this.guardTraceWillUpdate() && this.traceWillUpdate(
+            'loading: ' + nextState.loading || false,
+            { currProps: serializeObjectWithFalcorData(this.props), nextProps: serializeObjectWithFalcorData(nextProps) },
+            { currState: serializeObjectWithFalcorData(this.state), nextState: serializeObjectWithFalcorData(nextState) }
+        );
     }
     traceShouldUpdate(...message) {
-        if (!global['__trace_container_diffs__']) {
-            return;
+        if (this.guardTraceShouldUpdate()) {
+            console.group(`should update: ${this.inspect()}`);
+            message.forEach((x) => console.log(x));
+            console.groupEnd();
         }
-        console.log('should update:', this.inspect(), ...message);
     }
     traceWillUpdate(...message) {
-        if (!global['__trace_container_updates__']) {
-            return;
+        if (this.guardTraceWillUpdate()) {
+            console.group(`  will update: ${this.inspect()}`);
+            message.forEach((x) => console.log(x));
+            console.groupEnd();
         }
-        console.log('  will update:', this.inspect(), ...message);
+    }
+    guardTraceShouldUpdate() {
+        return !!global['__trace_container_diffs__'];
+    }
+    guardTraceWillUpdate() {
+        return !!global['__trace_container_updates__'];
     }
     inspect(...message) {
         const { state = {} } = this;
@@ -314,4 +345,11 @@ class FalcorContainer extends React.Component {
 
         return React.createElement(Component, allMergedProps);
     }
+}
+
+function serializeObjectWithFalcorData(obj) {
+    if (obj && typeof obj === 'object' && obj.data) {
+        return { ...obj, data: toProps(obj.data) };
+    }
+    return obj;
 }

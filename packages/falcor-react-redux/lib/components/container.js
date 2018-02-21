@@ -41,6 +41,8 @@ var _extends2 = require('babel-runtime/helpers/extends');
 
 var _extends3 = _interopRequireDefault(_extends2);
 
+var _falcor = require('@graphistry/falcor');
+
 var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
@@ -290,16 +292,16 @@ var FalcorContainer = function (_React$Component) {
 
 
             if (renderLoading === true && currState.loading !== nextState.loading) {
-                this.traceShouldUpdate('loading', currState.loading, '->', nextState.loading);
+                this.guardTraceShouldUpdate() && this.traceShouldUpdate('trigger: loading', { curr: currState.loading, next: nextState.loading });
                 return true;
             } else if (currState.version !== nextState.version) {
-                this.traceShouldUpdate('version', currState.version, '->', nextState.version);
+                this.guardTraceShouldUpdate() && this.traceShouldUpdate('trigger: version', { curr: currState.version, next: nextState.version });
                 return true;
             } else if (currState.error !== nextState.error) {
-                this.traceShouldUpdate('error', currState.error, '->', nextState.error);
+                this.guardTraceShouldUpdate() && this.traceShouldUpdate('trigger: error', { curr: currState.error, next: nextState.error });
                 return true;
             } else if (currState.hash !== nextState.hash) {
-                this.traceShouldUpdate('hash', currState.hash, '->', nextState.hash);
+                this.guardTraceShouldUpdate() && this.traceShouldUpdate('trigger: hash', { curr: currState.hash, next: nextState.hash });
                 return true;
             }
 
@@ -314,17 +316,20 @@ var FalcorContainer = function (_React$Component) {
 
 
             if (!(0, _shallowEqual2.default)(currData, nextData)) {
-                this.traceShouldUpdate('data', currData, '->', nextData);
+                this.guardTraceShouldUpdate() && this.traceShouldUpdate('trigger: data', { currData: (0, _falcor.toProps)(currData), nextData: (0, _falcor.toProps)(nextData) });
                 return true;
             } else if (!(0, _shallowEqual2.default)(currStyle, nextStyle)) {
-                this.traceShouldUpdate('style', currStyle, '->', nextStyle);
+                this.guardTraceShouldUpdate() && this.traceShouldUpdate('trigger: style', { currStyle: currStyle, nextStyle: nextStyle });
                 return true;
             } else if (!(0, _shallowEqual2.default)(restCurrProps, restNextProps)) {
-                this.traceShouldUpdate('props', restCurrProps, '->', restNextProps);
+                this.guardTraceShouldUpdate() && this.traceShouldUpdate('trigger: props', { restCurrProps: restCurrProps, restNextProps: restNextProps });
                 return true;
             }
 
-            this.traceShouldUpdate(false, currProps, '->', nextProps);
+            // this.guardTraceShouldUpdate() && this.traceShouldUpdate(false,
+            //     { currProps: serializeObjectWithFalcorData(currProps), nextProps: serializeObjectWithFalcorData(nextProps) },
+            //     { currState: serializeObjectWithFalcorData(currState), nextState: serializeObjectWithFalcorData(nextState) }
+            // );
 
             return false;
         }
@@ -371,37 +376,49 @@ var FalcorContainer = function (_React$Component) {
     }, {
         key: 'componentWillUpdate',
         value: function componentWillUpdate(nextProps, nextState) {
-            this.traceWillUpdate(nextState.loading || false, nextProps, nextState);
+            this.guardTraceWillUpdate() && this.traceWillUpdate('loading: ' + nextState.loading || false, { currProps: serializeObjectWithFalcorData(this.props), nextProps: serializeObjectWithFalcorData(nextProps) }, { currState: serializeObjectWithFalcorData(this.state), nextState: serializeObjectWithFalcorData(nextState) });
         }
     }, {
         key: 'traceShouldUpdate',
         value: function traceShouldUpdate() {
-            var _console;
+            if (this.guardTraceShouldUpdate()) {
+                console.group('should update: ' + this.inspect());
 
-            if (!global['__trace_container_diffs__']) {
-                return;
+                for (var _len = arguments.length, message = Array(_len), _key = 0; _key < _len; _key++) {
+                    message[_key] = arguments[_key];
+                }
+
+                message.forEach(function (x) {
+                    return console.log(x);
+                });
+                console.groupEnd();
             }
-
-            for (var _len = arguments.length, message = Array(_len), _key = 0; _key < _len; _key++) {
-                message[_key] = arguments[_key];
-            }
-
-            (_console = console).log.apply(_console, ['should update:', this.inspect()].concat(message));
         }
     }, {
         key: 'traceWillUpdate',
         value: function traceWillUpdate() {
-            var _console2;
+            if (this.guardTraceWillUpdate()) {
+                console.group('  will update: ' + this.inspect());
 
-            if (!global['__trace_container_updates__']) {
-                return;
+                for (var _len2 = arguments.length, message = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+                    message[_key2] = arguments[_key2];
+                }
+
+                message.forEach(function (x) {
+                    return console.log(x);
+                });
+                console.groupEnd();
             }
-
-            for (var _len2 = arguments.length, message = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-                message[_key2] = arguments[_key2];
-            }
-
-            (_console2 = console).log.apply(_console2, ['  will update:', this.inspect()].concat(message));
+        }
+    }, {
+        key: 'guardTraceShouldUpdate',
+        value: function guardTraceShouldUpdate() {
+            return !!global['__trace_container_diffs__'];
+        }
+    }, {
+        key: 'guardTraceWillUpdate',
+        value: function guardTraceWillUpdate() {
+            return !!global['__trace_container_updates__'];
         }
     }, {
         key: 'inspect',
@@ -465,4 +482,11 @@ var FalcorContainer = function (_React$Component) {
     }]);
     return FalcorContainer;
 }(_react2.default.Component);
+
+function serializeObjectWithFalcorData(obj) {
+    if (obj && (typeof obj === 'undefined' ? 'undefined' : (0, _typeof3.default)(obj)) === 'object' && obj.data) {
+        return (0, _extends3.default)({}, obj, { data: (0, _falcor.toProps)(obj.data) });
+    }
+    return obj;
+}
 //# sourceMappingURL=container.js.map

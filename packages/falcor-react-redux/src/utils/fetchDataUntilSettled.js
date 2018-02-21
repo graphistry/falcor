@@ -23,8 +23,10 @@ export default function fetchDataUntilSettled({
     };
     memo.mapNext = handleNext(memo, falcor);
     memo.catchError = handleError(memo, falcor);
-
-    return hydrateExistingData(memo).expand(_fetchDataUntilSettled);
+    if (!memo.data) {
+        return Observable.of(memo).expand(_fetchDataUntilSettled);
+    }
+    return hydrateExistingData(memo).expand(_fetchDataUntilSettled).skip(1);
 }
 
 function hydrateExistingData(memo) {

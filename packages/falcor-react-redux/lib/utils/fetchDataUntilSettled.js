@@ -75,8 +75,10 @@ function fetchDataUntilSettled(_ref) {
     };
     memo.mapNext = handleNext(memo, falcor);
     memo.catchError = handleError(memo, falcor);
-
-    return hydrateExistingData(memo).expand(_fetchDataUntilSettled);
+    if (!memo.data) {
+        return _Observable.Observable.of(memo).expand(_fetchDataUntilSettled);
+    }
+    return hydrateExistingData(memo).expand(_fetchDataUntilSettled).skip(1);
 }
 
 function hydrateExistingData(memo) {
