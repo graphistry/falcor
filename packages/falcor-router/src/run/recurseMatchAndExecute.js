@@ -23,5 +23,6 @@ function recurseMatchAndExecute(match, actionRunner, requestedPaths, method, opt
             method: method, requested: requestedPaths
         })
         .expand(runMatchAndExecute)
+        .skip(1)
         .defaultIfEmpty({ unhandled: requestedPaths });
 }

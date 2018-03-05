@@ -28,9 +28,7 @@ describe('Call', function() {
             call(['a', 'b']).
             do(onNext, noOp, function() {
                 expect(onNext.calledOnce, 'onNext called once').to.be.ok;
-                expect(onNext.getCall(0).args[0]).to.deep.equals({
-                    jsonGraph: {}
-                });
+                expect(onNext.getCall(0).args[0]).to.deep.equals({});
             }).
             subscribe(noOp, done, done);
     });
@@ -48,9 +46,7 @@ describe('Call', function() {
             call(['a', 'b']).
             do(onNext, noOp, function() {
                 expect(onNext.calledOnce, 'onNext called once').to.be.ok;
-                expect(onNext.getCall(0).args[0]).to.deep.equals({
-                    jsonGraph: {}
-                });
+                expect(onNext.getCall(0).args[0]).to.deep.equals({});
             }).
             subscribe(noOp, done, done);
     });

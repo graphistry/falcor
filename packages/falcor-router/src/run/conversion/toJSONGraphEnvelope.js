@@ -10,11 +10,8 @@ function toJSONGraphEnvelope(jsonGraphEnvelope) {
 
     jsonGraphEnvelope = {};
 
-    if (jsonGraph) {
-        jsonGraphEnvelope.jsonGraph = jsonGraph;
-    }
-
     if (paths && paths.length) {
+        jsonGraphEnvelope.jsonGraph = jsonGraph;
         jsonGraphEnvelope.paths = collapse(paths);
     }
 

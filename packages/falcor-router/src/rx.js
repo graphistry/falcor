@@ -17,6 +17,7 @@ require('rxjs/add/operator/expand');
 require('rxjs/add/operator/filter');
 require('rxjs/add/operator/map');
 require('rxjs/add/operator/scan');
+require('rxjs/add/operator/skip');
 require('rxjs/add/operator/multicast');
 require('rxjs/add/operator/materialize');
 require('rxjs/add/operator/merge');
