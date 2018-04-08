@@ -36,6 +36,7 @@
     "@graphistry/falcor-path-utils": "^2.9.10",
     "@graphistry/falcor-query-syntax": "^2.9.20",
     "babel-runtime": "^6.26.0",
+    "create-react-app": "1.5.2",
     "invariant": "^2.2.2",
     "pegjs-util": "^1.4.1"
   },

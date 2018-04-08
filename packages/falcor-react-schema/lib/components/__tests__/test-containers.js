@@ -19,7 +19,7 @@ Object.defineProperty(exports, "__esModule", {
 var _extends = _assign2.default || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 var _templateObject = _taggedTemplateLiteral(['{\n            [id, name]: ', ',\n            rating: ', '\n        }'], ['{\n            [id, name]: ', ',\n            rating: ', '\n        }']),
-    _templateObject2 = _taggedTemplateLiteral(['{\n            id: ', ',\n            titles: {\n                length: ', ',\n                [{ integers: titleIndexes }]: ', '\n            }\n        }'], ['{\n            id: ', ',\n            titles: {\n                length: ', ',\n                [{ integers: titleIndexes }]: ', '\n            }\n        }']),
+    _templateObject2 = _taggedTemplateLiteral(['{\n            [id, name]: ', ',\n            titles: {\n                length: ', ',\n                [{ integers: titleIndexes }]: ', '\n            }\n        }'], ['{\n            [id, name]: ', ',\n            titles: {\n                length: ', ',\n                [{ integers: titleIndexes }]: ', '\n            }\n        }']),
     _templateObject3 = _taggedTemplateLiteral(['{\n            genres: {\n                length: ', ',\n                [{ integers: listIndexes }]: ', '\n            },\n            listsById: {\n                [{ keys: listIds }]: ', '\n            },\n            titlesById: {\n                [{ keys: titleIds }]: ', '\n            }\n        }'], ['{\n            genres: {\n                length: ', ',\n                [{ integers: listIndexes }]: ', '\n            },\n            listsById: {\n                [{ keys: listIds }]: ', '\n            },\n            titlesById: {\n                [{ keys: titleIds }]: ', '\n            }\n        }']);
 
 exports.createTestContainers = createTestContainers;
@@ -73,7 +73,7 @@ function createTestContainers() {
             ),
             _react2.default.createElement(
                 'ul',
-                null,
+                { className: 'genreList' },
                 genres.map(function (genre, index) {
                     return _react2.default.createElement(
                         'li',
@@ -100,7 +100,7 @@ function createTestContainers() {
             ),
             _react2.default.createElement(
                 'ul',
-                null,
+                { className: 'titlesList' },
                 titles.map(function (title, index) {
                     return _react2.default.createElement(
                         'li',
@@ -119,7 +119,7 @@ function createTestContainers() {
 
         return _react2.default.createElement(
             'div',
-            null,
+            { className: 'title' },
             _react2.default.createElement(
                 'h6',
                 null,
@@ -182,7 +182,7 @@ function createGenreContainer() {
 
         var componentProps = arguments[1];
 
-        return '{\n            id, titles: ' + Title.fragments(titles) + '\n        }';
+        return '{\n            id, name, titles: ' + Title.fragments(titles) + '\n        }';
     });
 
     var withGenreSchema = (0, _withSchema2.default)(function (QL, _ref10, context) {

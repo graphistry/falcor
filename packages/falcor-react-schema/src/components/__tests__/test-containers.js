@@ -20,7 +20,7 @@ export function createTestContainers({
         return (
             <div>
                 <h1>Genres</h1>
-                <ul>
+                <ul className='genreList'>
                 {genres.map((genre, index) => (
                     <li key={`${index}: ${genre.id}`}>
                         <Genre falcorData={genre}/>
@@ -35,7 +35,7 @@ export function createTestContainers({
         return (
             <div>
                 <h3>{name}</h3>
-                <ul>
+                <ul className='titlesList'>
                 {titles.map((title, index) => (
                     <li key={`${index}: ${title.id}`}>
                         <Title falcorData={title}/>
@@ -48,7 +48,7 @@ export function createTestContainers({
 
     function TitleView({ id, name, rating }) {
         return (
-            <div>
+            <div className='title'>
                 <h6>{name} - {rating}/100</h6>
             </div>
         );
@@ -83,7 +83,7 @@ function createGenreContainer({ Title, Genre = (() => null) } = {}) {
 
     const withGenreFragment = withFragment(({ titles } = {}, componentProps) => {
         return `{
-            id, titles: ${
+            id, name, titles: ${
                 Title.fragments(titles)
             }
         }`;
@@ -95,7 +95,7 @@ function createGenreContainer({ Title, Genre = (() => null) } = {}) {
         const readListsById = { get: get(loadListsById) };
 
         return QL`{
-            id: ${ readListsById },
+            [id, name]: ${ readListsById },
             titles: {
                 length: ${ readListsById },
                 [{ integers: titleIndexes }]: ${
