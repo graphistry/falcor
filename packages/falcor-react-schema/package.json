@@ -1,6 +1,6 @@
 {
   "name": "@graphistry/falcor-react-schema",
-  "version": "2.9.20",
+  "version": "2.10.0",
   "description": "",
   "main": "lib/index.js",
   "browser": "lib/index.js",
