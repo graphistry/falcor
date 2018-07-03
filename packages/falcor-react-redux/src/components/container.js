@@ -305,7 +305,8 @@ class FalcorContainer extends React.Component {
     inspect(...message) {
         const { state = {} } = this;
         const { falcor } = state;
-        return falcor && falcor.inspect() || `{ v: -1, p: [] }`;
+        const name = this.constructor && this.constructor.displayName || `Unknown Component`;
+        return `${name}: ${falcor && falcor.inspect() || '{ v: -1, p: [] }'}`;
     }
     componentWillUnmount() {
         // Clean-up subscription before un-mounting
