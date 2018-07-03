@@ -427,7 +427,8 @@ var FalcorContainer = function (_React$Component) {
                 state = _state3 === undefined ? {} : _state3;
             var falcor = state.falcor;
 
-            return falcor && falcor.inspect() || '{ v: -1, p: [] }';
+            var name = this.constructor && this.constructor.displayName || 'Unknown Component';
+            return name + ': ' + (falcor && falcor.inspect() || '{ v: -1, p: [] }');
         }
     }, {
         key: 'componentWillUnmount',
