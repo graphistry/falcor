@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="2.10.1"></a>
+## [2.10.1](https://github.com/graphistry/falcor/compare/v2.10.0...v2.10.1) (2019-03-18)
+
+
+
+
+**Note:** Version bump only for package falcorjs
+
 <a name="2.10.0"></a>
 # [2.10.0](https://github.com/graphistry/falcor/compare/v2.9.20...v2.10.0) (2018-07-03)
 
