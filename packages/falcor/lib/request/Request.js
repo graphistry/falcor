@@ -77,16 +77,16 @@ Request.prototype.onNext = function(env) {
         changed = changed || results[2];
     }
 
-    if (changed && rootChangeHandler) {
-        rootChangeHandler.call(modelRoot.topLevelModel);
-    }
-
     observers.forEach(function(observer, index) {
         observer.onNext({
             type: 'get', paths: requested[index] ||
                 filterPathsBoundTo(boundPath, paths)
         });
     });
+
+    if (changed && rootChangeHandler) {
+        rootChangeHandler.call(modelRoot.topLevelModel);
+    }
 }
 
 Request.prototype.error =

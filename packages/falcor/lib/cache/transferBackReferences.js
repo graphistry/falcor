@@ -8,6 +8,7 @@ function transferBackReferences(fromNode, destNode) {
         var ref = fromNode[f_ref + i];
         if (ref !== undefined) {
             ref[f_context] = destNode;
+            ref[f_ref_index] = destNodeRefsLength + i;
             destNode[f_ref + (destNodeRefsLength + i)] = ref;
             fromNode[f_ref + i] = undefined;
         }
