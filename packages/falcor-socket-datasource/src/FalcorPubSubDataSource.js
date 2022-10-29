@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from 'uuid/v4';
+import { v4 as uuidv4 } from 'uuid';
 
 export class FalcorPubSubDataSource {
     constructor(emitter, model, event = 'falcor-operation', cancel = 'cancel-falcor-operation') {

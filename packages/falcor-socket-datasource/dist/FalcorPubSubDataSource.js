@@ -19,7 +19,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var _v = require('uuid/v4');
+var _uuid = require('uuid');
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -126,7 +126,7 @@ function request(method, parameters, observer) {
         };
 
         var disposed = false;
-        var id = (0, _v.v4)();
+        var id = (0, _uuid.v4)();
         var responseToken = event + '-' + id;
         var cancellationToken = cancel + '-' + id;
 
