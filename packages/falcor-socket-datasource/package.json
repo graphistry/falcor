@@ -1,5 +1,5 @@
 {
-  "version": "2.11.1",
+  "version": "2.11.3",
   "name": "@graphistry/falcor-socket-datasource",
   "main": "dist/index.js",
   "browser": "dist/index.js",
