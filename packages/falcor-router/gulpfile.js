@@ -5,8 +5,6 @@ var mocha = require('gulp-mocha');
 var eslint = require('gulp-eslint');
 var istanbul = require('gulp-istanbul');
 
-gulp.task('lint', ['lint-src', 'lint-test', 'lint-root']);
-
 gulp.task('lint-src', function() {
     return gulp.src('src/**/*.js').
         pipe(eslint()).
@@ -27,6 +25,8 @@ gulp.task('lint-root', function() {
         pipe(eslint.format()).
         pipe(eslint.failAfterError());
 });
+
+gulp.task('lint', gulp.series('lint-src', 'lint-test', 'lint-root'));
 
 gulp.task('test', function (cb) {
   gulp.src(['./test/index.js'])
@@ -56,4 +56,4 @@ gulp.task('test-coverage', function (cb) {
         });
 });
 
-gulp.task('dist', ['lint', 'test-coverage']);
+gulp.task('dist', gulp.series('lint', 'test-coverage'));

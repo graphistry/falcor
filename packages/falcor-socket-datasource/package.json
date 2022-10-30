@@ -1,5 +1,5 @@
 {
-  "version": "2.10.1",
+  "version": "2.11.3",
   "name": "@graphistry/falcor-socket-datasource",
   "main": "dist/index.js",
   "browser": "dist/index.js",
@@ -29,12 +29,12 @@
   ],
   "dependencies": {
     "babel-runtime": "^6.26.0",
-    "uuid": "^3.1.0"
+    "uuid": "9.0.0"
   },
   "description": "A socket DataSource for Falcor",
   "devDependencies": {
-    "@graphistry/falcor": "^2.10.1",
-    "@graphistry/falcor-router": "^2.10.1",
+    "@graphistry/falcor": "^2.11.0",
+    "@graphistry/falcor-router": "^2.11.0",
     "babel-cli": "^6.26.0",
     "babel-plugin-istanbul": "~4.1.4",
     "babel-plugin-transform-runtime": "~6.23.0",
