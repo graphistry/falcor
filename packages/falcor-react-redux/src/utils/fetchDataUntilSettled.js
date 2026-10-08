@@ -100,7 +100,7 @@ class DelayDisposeOperator {
         this.scheduler = scheduler;
     }
     call(sink, source) {
-        return source._subscribe(new DelayDisposeSubscriber(sink, this.scheduler, this.delay));
+        return source.subscribe(new DelayDisposeSubscriber(sink, this.scheduler, this.delay));
     }
 }
 
