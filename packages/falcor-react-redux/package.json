@@ -9,7 +9,8 @@
     "clean": "rimraf lib && mkdirp lib",
     "build": "npm run clean && babel src -d lib --source-maps",
     "watch": "npm run clean && babel src -d lib --source-maps --watch",
-    "prepublish": "npm run build"
+    "prepublish": "npm run build",
+    "test": "node test/fetchDataUntilSettled.test.cjs"
   },
   "repository": {
     "type": "git",

@@ -1,0 +1,39 @@
+name: Falcor React Redux query lifecycle
+
+on:
+  pull_request:
+    paths:
+      - packages/falcor-react-redux/**
+      - .github/workflows/falcor-react-redux.yml
+  push:
+    branches: [master]
+    paths:
+      - packages/falcor-react-redux/**
+      - .github/workflows/falcor-react-redux.yml
+
+permissions:
+  contents: read
+
+jobs:
+  query-lifecycle:
+    name: Query lifecycle (Node ${{ matrix.node }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [24, 26]
+    defaults:
+      run:
+        working-directory: packages/falcor-react-redux
+    steps:
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Install existing package dependencies and peers
+        run: npm install --ignore-scripts --no-package-lock --no-audit --no-fund
+      - name: Build package from source
+        run: npm run build
+      - name: Test actual query and disposal behavior
+        run: npm test
